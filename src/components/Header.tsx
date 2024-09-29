@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -117,27 +117,30 @@ export function HeaderComponent() {
   const popupRef = useRef<HTMLDivElement | null>(null);
 
   // Debounce function for fetching search results
-  const debouncedFetchResults = debounce(async (query: any) => {
-    if (query) {
-      setIsLoading(true);
-      setShowPopup(true);
-      try {
-        const res = await fetch(
-          `/api/search?search=${query.replaceAll(" ", "_")}`
-        );
-        const data = await res.json();
-        const firstFiveResults = data.mangaList.slice(0, 5);
-        setSearchResults(firstFiveResults);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-      } finally {
-        setIsLoading(false);
+  const debouncedFetchResults = useCallback(
+    debounce(async (query) => {
+      if (query) {
+        setIsLoading(true);
+        setShowPopup(true);
+        try {
+          const res = await fetch(
+            `/api/search?search=${query.replaceAll(" ", "_")}`
+          );
+          const data = await res.json();
+          const firstFiveResults = data.mangaList.slice(0, 5);
+          setSearchResults(firstFiveResults);
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setSearchResults([]);
+        setShowPopup(false);
       }
-    } else {
-      setSearchResults([]);
-      setShowPopup(false);
-    }
-  }, 500);
+    }, 500), // 500ms debounce delay
+    []
+  );
 
   // Handle search input changes
   const handleSearchInputChange = (e: { target: { value: any } }) => {
