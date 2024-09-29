@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -114,6 +114,7 @@ export function HeaderComponent() {
   const { accountInfo, setAccountInfo } = useAccountInfo();
   const { accountName, setAccountName } = useAccountName();
   const { settings, setSettings } = useSettings();
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   // Debounce function for fetching search results
   const debouncedFetchResults = debounce(async (query: any) => {
@@ -145,6 +146,15 @@ export function HeaderComponent() {
     debouncedFetchResults(query);
   };
 
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (
+      popupRef.current &&
+      !popupRef.current.contains(e.relatedTarget as Node)
+    ) {
+      setShowPopup(false);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-10 bg-background border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -159,12 +169,12 @@ export function HeaderComponent() {
               placeholder="Search manga..."
               value={searchText}
               onChange={handleSearchInputChange}
-              onBlur={() => setShowPopup(false)}
+              onBlur={handleInputBlur}
               onFocus={() => searchResults.length > 0 && setShowPopup(true)}
               className="w-full"
             />
             {showPopup && (
-              <Card className="absolute z-10 w-full mt-1">
+              <Card ref={popupRef} className="absolute z-10 w-full mt-1">
                 <CardContent className="p-2">
                   {isLoading ? (
                     <CenteredSpinner />
