@@ -153,7 +153,7 @@ export function HeaderComponent() {
         </Link>
 
         <div className="flex items-center space-x-4">
-          <div className="relative w-128">
+          <div className="relative w-128 pl-6">
             <Input
               type="search"
               placeholder="Search manga..."
