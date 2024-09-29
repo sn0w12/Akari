@@ -1,18 +1,21 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import Fuse from 'fuse.js';
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = searchParams.get('search') || 1;
+    const query = searchParams.get('search') || ''; // Get search query
+    const page = searchParams.get('page') || 1;
 
     // Construct the URL with the page number
-    const url = `https://manganato.com/search/story/${page}`;
+    const url = `https://manganato.com/search/story/${query}?page=${page}`;
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
     let mangaList = [];
 
+    // Scrape the manga list from the website
     $('.search-story-item').each((index, element) => {
       const mangaElement = $(element);
       const imageUrl = mangaElement.find('img.img-loading').attr('src');
@@ -23,13 +26,13 @@ export async function GET(req) {
       const latestChapter = chapterElement.text();
       const chapterUrl = chapterElement.attr('href');
       const rating = mangaElement.find('em.item-rate').text();
-      let views;
-      let date;
+      const author = mangaElement.find('.item-author').text();
+
+      let views, date;
       $('.item-time').each((index, element) => {
         if (index === 0) views = $(element).text();
         if (index === 1) date = $(element).text();
       });
-      const author = mangaElement.find('.item-author').text();
 
       mangaList.push({
         id: mangaUrl.split('/').pop(),
@@ -41,6 +44,15 @@ export async function GET(req) {
         author: author,
       });
     });
+
+    // Use Fuse.js to search the manga list
+    const fuse = new Fuse(mangaList, {
+      keys: ['title'],
+      threshold: 0.6,
+    });
+
+    const searchResults = fuse.search(query.replace('_', ' '));
+    mangaList = searchResults.map(result => result.item); // Map Fuse results back to original data
 
     return new Response(
       JSON.stringify({
