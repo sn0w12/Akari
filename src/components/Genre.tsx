@@ -53,7 +53,6 @@ export default function GenrePage({ params }: PageProps) {
   useEffect(() => {
     const fetchMangaList = async (page: number, sort: string) => {
       setIsLoading(true); // Set loading state
-      console.log(sort);
       try {
         const response = await fetch(
           `/api/genre?include=${params.id}&orderBy=${sort}&page=${page}`
@@ -107,7 +106,9 @@ export default function GenrePage({ params }: PageProps) {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="flex gap-4">
-          <h2 className={`text-3xl font-bold mb-6`}>{params.id}</h2>
+          <h2 className={`text-3xl font-bold mb-6`}>
+            {params.id.replaceAll("_", " ")}
+          </h2>
           <Combo
             value={sortOption}
             onChange={handleSortChange}
