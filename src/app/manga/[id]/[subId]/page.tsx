@@ -1,4 +1,4 @@
-"use client"; // Add this line to specify that this is a Client Component
+"use client";
 
 import { useState, useEffect } from "react";
 import { HeaderComponent } from "@/components/Header";
@@ -13,22 +13,19 @@ export default function MangaReaderPage({ params }: PageProps) {
   const [isHoveringHeader, setHoveringHeader] = useState(false); // Track hovering over header
 
   useEffect(() => {
-    // Mouse movement near the top (for showing the header)
     const handleMouseMove = (e: MouseEvent) => {
-      if (e.clientY < 150) {
+      if (e.clientY < 175) {
         setHeaderVisible(true);
       } else if (!isHoveringHeader) {
         setHeaderVisible(false);
       }
     };
 
-    // Handle mouse entering the header (keep it visible)
     const handleMouseEnter = () => {
       setHoveringHeader(true);
       setHeaderVisible(true);
     };
 
-    // Handle mouse leaving the header (allow it to disappear)
     const handleMouseLeave = () => {
       setHoveringHeader(false);
       setHeaderVisible(false);
@@ -44,12 +41,32 @@ export default function MangaReaderPage({ params }: PageProps) {
       headerElement.addEventListener("mouseleave", handleMouseLeave);
     }
 
+    // Retry function to find the popup element
+    const checkForPopupElement = () => {
+      const popupElement = document.querySelector(".manga-title");
+      if (popupElement) {
+        popupElement.addEventListener("mouseenter", handleMouseEnter);
+        popupElement.addEventListener("mouseleave", handleMouseLeave);
+      } else {
+        // Retry after 100ms if popup element is not found
+        setTimeout(checkForPopupElement, 100);
+      }
+    };
+
+    // Start checking for popup element
+    checkForPopupElement();
+
     // Clean up event listeners
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       if (headerElement) {
         headerElement.removeEventListener("mouseenter", handleMouseEnter);
         headerElement.removeEventListener("mouseleave", handleMouseLeave);
+      }
+      const popupElement = document.querySelector(".manga-title");
+      if (popupElement) {
+        popupElement.removeEventListener("mouseenter", handleMouseEnter);
+        popupElement.removeEventListener("mouseleave", handleMouseLeave);
       }
     };
   }, [isHoveringHeader]);

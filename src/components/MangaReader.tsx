@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Chapter } from "@/app/api/interfaces";
 import PageProgress from "@/components/ui/pageProgress";
 import Image from "next/image";
+import { Combo } from "@/components/ui/combo";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -189,7 +190,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
               }`}
               width={700}
               height={1080}
-              className="object-contain w-128"
+              className="object-contain w-128 z-50 relative"
             />
           ))}
         </div>
@@ -228,7 +229,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
           alt={`${chapterData.title} - ${chapterData.chapter} Page ${
             currentPage + 1
           }`}
-          className="object-contain w-full h-full cursor-pointer"
+          className="object-contain w-full h-full cursor-pointer z-50 relative"
         />
 
         <div
@@ -236,7 +237,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHeaderVisible ? "header-visible" : ""
           }`}
         >
-          <Card className="p-4 text-center max-w-64">
+          <Card
+            className="p-4 text-center max-w-80"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="font-bold">
               <a
                 href={`http://${window.location.host}/manga/${chapterData.parentId}`}
@@ -245,7 +249,24 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                 {chapterData.title}
               </a>
             </h3>
-            <p className="text-xs">{chapterData.chapter}</p>
+            <Combo
+              options={chapterData.chapters}
+              value={
+                chapterData.chapter
+                  .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                  .match(/(\d+)(\.\d+)?/)?.[0]
+              }
+              onChange={(e) => {
+                const selectedChapter = e.target.value;
+                const currentUrl = window.location.href;
+                const newUrl = currentUrl.replace(
+                  /\/[^\/]*$/,
+                  `/chapter-${selectedChapter}`
+                );
+                window.location.href = newUrl;
+              }}
+              className="mt-2 mb-2"
+            />
             <p className="text-xs">
               Page {currentPage + 1} of {chapterData.images.length}
             </p>

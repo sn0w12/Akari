@@ -20,13 +20,14 @@ export interface Manga {
 }
 
 export interface Chapter {
-    title: string;
-    chapter: string;
-    pages: number;
-    parentId: string;
-    nextChapter: string;
-    lastChapter: string;
-    images: string[];
-    storyData: string;
-    chapterData: string;
+  title: string;
+  chapter: string;
+  chapters: { value: string; label: string }[];
+  pages: number;
+  parentId: string;
+  nextChapter: string;
+  lastChapter: string;
+  images: string[];
+  storyData: string | null;
+  chapterData: string | null;
 }

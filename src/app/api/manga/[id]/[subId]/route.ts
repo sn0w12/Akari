@@ -2,23 +2,13 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+import { Chapter } from "@/app/api/interfaces";
+
 interface UserData {
   user_version: string;
   user_name: string | null;
   user_image: string;
   user_data: string | null;
-}
-
-interface MangaResponse {
-  title: string;
-  chapter: string;
-  pages: number;
-  parentId: string;
-  nextChapter: string;
-  lastChapter: string;
-  images: string[];
-  storyData: string | null;
-  chapterData: string | null;
 }
 
 export async function GET(req: Request, { params }: { params: { id: string; subId: string } }): Promise<Response> {
@@ -51,6 +41,15 @@ export async function GET(req: Request, { params }: { params: { id: string; subI
     const mangaTitle = $(breadcrumbLinks[1]).text();
     const parent = $(breadcrumbLinks[1]).attr('href')?.split('/').pop() || '';
     const chapterTitle = $(breadcrumbLinks[2]).text();
+    const chapters: Chapter["chapters"] = [];
+    const chapterSelect = $('.navi-change-chapter').first();
+    chapterSelect.find('option').each((index, element) => {
+      const chapterValue = $(element).attr('data-c');
+      const chapterText = $(element).text();
+      if (chapterValue) {
+        chapters.push({value: chapterValue, label: chapterText});
+      }
+    });
 
     // Extract all image URLs from the container-chapter-reader div
     const imageElements = $('.container-chapter-reader img');
@@ -91,9 +90,10 @@ export async function GET(req: Request, { params }: { params: { id: string; subI
     });
 
     // Return the response as JSON
-    const responseData: MangaResponse = {
+    const responseData: Chapter = {
       title: mangaTitle,
       chapter: chapterTitle,
+      chapters: chapters,
       pages: pages,
       parentId: parent,
       nextChapter: nextChapter,
