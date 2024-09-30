@@ -139,10 +139,7 @@ export default function BookmarksPage() {
       // Update localStorage once per batch
       const storedData = JSON.parse(localStorage.getItem("bm_data") || "{}");
       messageQueue.current.forEach((bookmark) => {
-        if (!storedData[bookmark.storyid]) {
-          storedData[bookmark.storyid] = [];
-        }
-        storedData[bookmark.storyid].push(bookmark.bm_data);
+        storedData[bookmark.storyid] = bookmark.bm_data;
       });
       localStorage.setItem("bm_data", JSON.stringify(storedData));
 
