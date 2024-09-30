@@ -14,6 +14,7 @@ import PaginationElement from "@/components/ui/paginationElement";
 import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";
+import { link } from "fs";
 
 interface Bookmark {
   noteid: string;
@@ -142,14 +143,18 @@ export default function BookmarksPage() {
       const lastReadData = JSON.parse(
         localStorage.getItem("last_read") || "{}"
       );
+      const linkIdMap = JSON.parse(localStorage.getItem("link_id_map") || "{}");
       messageQueue.current.forEach((bookmark) => {
         storedData[bookmark.storyid] = bookmark.bm_data;
         lastReadData[bookmark.storyid] = bookmark.link_chapter_now
           .split("/")
           .pop();
+        const linkStoryId = bookmark.link_story.split("/").pop() || "";
+        linkIdMap[linkStoryId] = bookmark.storyid;
       });
       localStorage.setItem("bm_data", JSON.stringify(storedData));
       localStorage.setItem("last_read", JSON.stringify(lastReadData));
+      localStorage.setItem("link_id_map", JSON.stringify(linkIdMap));
 
       // Clear the queue
       messageQueue.current = [];

@@ -51,7 +51,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       const lastReadData = JSON.parse(
         localStorage.getItem("last_read") || "{}"
       );
-      lastReadData[chapterData.parentId] = window.location.href
+      const linkIdMap = JSON.parse(localStorage.getItem("link_id_map") || "{}");
+      lastReadData[linkIdMap[chapterData.parentId]] = window.location.href
         .split("/")
         .pop();
       localStorage.setItem("last_read", JSON.stringify(lastReadData));
