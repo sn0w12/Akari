@@ -13,6 +13,7 @@ import Spinner from "@/components/ui/spinners/puffLoader";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
 import { distance, closest } from "fastest-levenshtein";
+import BookmarkButton from "./ui/bookmarkButton";
 
 interface MalData {
   titles: { type: string; title: string }[];
@@ -183,6 +184,7 @@ const formatChapterDate = (date: string) => {
 
 export function MangaDetailsComponent({ id }: { id: string }) {
   const [manga, setManga] = useState<Manga | null>(null);
+  const [bmData, setBmData] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
@@ -190,14 +192,39 @@ export function MangaDetailsComponent({ id }: { id: string }) {
   const [currentPage, setCurrentPage] = useState(1);
   const chaptersPerPage = 24;
 
+  async function removeBookmark(setIsBookmarked: (value: boolean) => void) {
+    const user_data = localStorage.getItem("accountInfo");
+
+    if (!user_data) {
+      console.error("User data not found");
+      return;
+    }
+
+    const response = await fetch("/api/bookmarks/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_data: user_data,
+        bm_data: bmData,
+      }),
+    });
+    const data = await response.json();
+    if (data.result === "ok") {
+      setIsBookmarked(false);
+    }
+  }
+
   useEffect(() => {
     // Fetch manga details
     const loadManga = async () => {
       setIsLoading(true);
       const settings = JSON.parse(localStorage.getItem("settings") || "{}");
-      console.log(settings);
+      const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
       const data = await fetchManga(id);
       const malData = await fetchMalData(data?.name || "");
+      setBmData(bmDataArr[data?.mangaId || 0]);
       if (data) {
         setManga(data);
         setIsLoading(false);
@@ -355,33 +382,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
               {/* Bookmark and Start Reading Buttons */}
               <div className="flex gap-4 mt-auto">
                 {/* Toggle bookmark button based on bookmark status */}
-                <Button
-                  variant={isBookmarked ? "default" : "outline"}
-                  size="lg"
-                  className={`w-full flex items-center justify-center ${
-                    isBookmarked
-                      ? "bg-green-500 text-white hover:bg-green-600"
-                      : "hover:bg-gray-100 hover:text-background"
-                  }`}
-                  disabled={isBookmarked === null}
-                  onClick={() => {
-                    if (isBookmarked !== null) {
-                      bookmark(manga.storyData, isBookmarked, setIsBookmarked);
-                    }
-                  }}
-                >
-                  {isBookmarked === null ? (
-                    <Spinner size={30} />
-                  ) : isBookmarked ? (
-                    <>
-                      <Bookmark className="mr-2 h-4 w-4" /> Bookmarked
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark className="mr-2 h-4 w-4" /> Bookmark
-                    </>
-                  )}
-                </Button>
+                <BookmarkButton
+                  isBookmarked={isBookmarked}
+                  manga={manga}
+                  bookmark={bookmark}
+                  removeBookmark={removeBookmark}
+                  setIsBookmarked={setIsBookmarked}
+                />
                 <Button
                   size="lg"
                   className="w-full"
