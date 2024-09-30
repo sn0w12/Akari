@@ -51,6 +51,7 @@ export default function BookmarksPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Bookmark[]>([]);
+  const [workerFinished, setWorkerFinished] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const batchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messageQueue = useRef<Bookmark[]>([]);
@@ -172,6 +173,7 @@ export default function BookmarksPage() {
           console.log("Worker has finished processing.");
           processBatch(); // Process any remaining bookmarks
           workerRef.current?.terminate();
+          setWorkerFinished(true);
         }
       };
     }
@@ -196,6 +198,14 @@ export default function BookmarksPage() {
   );
 
   const handleSearch = (query: string) => {
+    if (!workerFinished) {
+      console.warn("Search attempted before worker finished.");
+      return;
+    }
+    if (allBookmarks.length === 0) {
+      return;
+    }
+
     setSearchQuery(query);
     if (query.trim() === "") {
       setSearchResults([]);
@@ -204,7 +214,6 @@ export default function BookmarksPage() {
       const results = fuse.search(query);
       // Limit the number of results, e.g., to 10
       const limitedResults = results.slice(0, 10).map((result) => result.item);
-      console.log(limitedResults);
       setSearchResults(limitedResults);
     }
   };
@@ -219,7 +228,11 @@ export default function BookmarksPage() {
             <div className="relative mb-6">
               <Input
                 type="search"
-                placeholder="Search bookmarks..."
+                placeholder={
+                  workerFinished
+                    ? "Search bookmarks..."
+                    : "Loading bookmarks, please wait..."
+                }
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full no-cancel"
