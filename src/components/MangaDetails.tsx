@@ -5,14 +5,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bookmark, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { Manga } from "@/app/api/interfaces";
 import React from "react";
-import Spinner from "@/components/ui/spinners/puffLoader";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
-import { distance, closest } from "fastest-levenshtein";
+import { distance } from "fastest-levenshtein";
 import BookmarkButton from "./ui/bookmarkButton";
 
 interface MalData {
