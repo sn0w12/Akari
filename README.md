@@ -73,9 +73,13 @@ yarn start
 
 If you want to use your bookmarks from [Manganato](https://manganato.com/) you will need to get your `Username` and your `user_data`. The username is very easy to find, while the user_data is in your cookies.
 
+### Username
+
 Your username is simply the text in this box in the header.
 
 ![username](https://i.imgur.com/QUjTGdi.png)
+
+### User Data
 
 To get your user_data:
 
