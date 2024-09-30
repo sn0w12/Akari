@@ -13,6 +13,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
 import { distance } from "fastest-levenshtein";
 import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
+import ReadingButton from "./ui/MangaDetails/readingButton";
 
 interface MalData {
   titles: { type: string; title: string }[];
@@ -392,24 +393,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                   removeBookmark={removeBookmark}
                   setIsBookmarked={setIsBookmarked}
                 />
-                <Button
-                  size="lg"
-                  className="w-full"
-                  asChild
-                  disabled={!manga.chapterList.length}
-                >
-                  {manga.chapterList.length ? (
-                    <Link
-                      href={`${window.location.pathname}/${
-                        manga.chapterList[manga.chapterList.length - 1].id
-                      }`}
-                    >
-                      Start Reading
-                    </Link>
-                  ) : (
-                    <p>No Chapters</p>
-                  )}
-                </Button>
+                <ReadingButton manga={manga} />
               </div>
             </div>
 
