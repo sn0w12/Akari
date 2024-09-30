@@ -340,7 +340,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
             {/* Right section for the description */}
             <div className="md:w-1/2 flex-grow">
-              <Card className="w-full h-full p-4 max-h-[25.5rem] overflow-y-auto">
+              <Card className="w-full h-full p-4 max-h-[25.05rem] overflow-y-auto">
                 <p>{manga.description}</p>
               </Card>
             </div>
