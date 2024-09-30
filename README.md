@@ -68,3 +68,23 @@ or
 yarn build
 yarn start
 ```
+
+## Required Info
+
+If you want to use your bookmarks from [Manganato](https://manganato.com/) you will need to get your `Username` and your `user_data`. The username is very easy to find, while the user_data is in your cookies.
+
+Your username is simply the text in this box in the header.
+
+![username](https://i.imgur.com/QUjTGdi.png)
+
+To get your user_data:
+
+1. Open Manganato Website: Visit Manganato and log in to your account.
+
+2. Open Developer Tools: Right-click anywhere on the page and select Inspect or press F12 to open the developer tools. Navigate to the Application tab (or Storage in some browsers).
+
+3. Locate the Cookie: Under Storage or Application, find Cookies in the left sidebar, and click on the https://manganato.com entry.
+
+4. Find user_acc Cookie: Look for the user_acc cookie in the list. Copy its value.
+
+5. Extract user_data: The user_acc cookie value is a JSON string. Paste it into a tool like JSON Formatter to view it properly. Extract the user_data field from this JSON object.
