@@ -6,8 +6,6 @@ self.onmessage = function (e) {
     return;
   }
 
-  console.log('Worker received userData:', userData);
-
   const eventSource = new EventSource(
     `/api/bookmarks/all?user_data=${encodeURIComponent(userData)}`
   );
@@ -15,13 +13,11 @@ self.onmessage = function (e) {
   // Handle incoming bookmark data
   eventSource.onmessage = function (event) {
     const bookmark = JSON.parse(event.data);
-    console.log('Worker received bookmark:', bookmark);
     self.postMessage({ type: 'bookmark', data: bookmark });
   };
 
   // Handle the 'stop' event sent by the server
   eventSource.addEventListener('stop', function (event) {
-    console.log('Worker received stop event');
     self.postMessage({ type: 'finished' });
     eventSource.close(); // Close the EventSource
     self.close();        // Terminate the worker
@@ -32,7 +28,6 @@ self.onmessage = function (e) {
     console.error('Worker EventSource error:', error);
 
     if (eventSource.readyState === EventSource.CLOSED) {
-      console.log('EventSource connection closed by server.');
       self.postMessage({ type: 'finished' });
       eventSource.close();
       self.close(); // Terminate the worker
