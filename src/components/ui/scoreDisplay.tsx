@@ -18,7 +18,7 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
         {[...Array(5)].map((_, index) => (
           <div key={index} className="relative">
             {/* Background star in primary color */}
-            <Star className="absolute w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 fill-primary/10 text-primary/50 z-10" />
+            <Star className="absolute w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary/50 z-10" />
             {/* Foreground star based on score */}
             {index < fullStars ? (
               <Star className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 z-20" />
