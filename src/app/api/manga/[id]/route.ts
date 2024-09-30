@@ -24,6 +24,7 @@ interface MangaDetails {
   imageUrl: string | undefined;
   name: string;
   authors: string[];
+  author_urls: string[];
   status: string;
   updated: string;
   view: string;
@@ -73,8 +74,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
       const name = $('.story-info-right h1').text();
       const alternativeTitles = $('.variations-tableInfo .info-alternative').parent().find('h2').text().trim();
       const authors: string[] = [];
+      const author_urls: string[] = [];
       $('.variations-tableInfo .info-author').closest('tr').find('a').each((index, element) => {
         authors.push($(element).text().trim());
+        author_urls.push($(element).attr('href') || '');
       });
       const status = $('.variations-tableInfo .info-status').closest('tr').find('td.table-value').text().trim();
       const description = $('.panel-story-info-description').clone().children().remove().end().text().replace(`Come visit MangaNato.com sometime to read the latest chapter.`, '').trim();
@@ -132,6 +135,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
         imageUrl,
         name,
         authors,
+        author_urls,
         status,
         updated,
         view,
