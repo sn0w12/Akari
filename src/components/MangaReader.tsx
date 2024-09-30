@@ -47,6 +47,14 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     ) {
       updateBookmark(chapterData);
       bookmarkUpdatedRef.current = true;
+
+      const lastReadData = JSON.parse(
+        localStorage.getItem("last_read") || "{}"
+      );
+      lastReadData[chapterData.parentId] = window.location.href
+        .split("/")
+        .pop();
+      localStorage.setItem("last_read", JSON.stringify(lastReadData));
     }
   }, [chapterData, currentPage, timeElapsed]);
 
@@ -190,7 +198,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
               }`}
               width={700}
               height={1080}
-              className="object-contain w-128 z-50 relative"
+              className="object-contain w-128 z-20 relative"
             />
           ))}
         </div>
@@ -229,7 +237,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
           alt={`${chapterData.title} - ${chapterData.chapter} Page ${
             currentPage + 1
           }`}
-          className="object-contain w-full h-full cursor-pointer z-50 relative"
+          className="object-contain w-full h-full cursor-pointer z-20 relative"
         />
 
         <div
