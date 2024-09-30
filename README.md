@@ -13,7 +13,7 @@ MangaReader is a Next.js application designed to provide an enhanced manga readi
 
 Before running MangaReader, make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/)
+- [Node.js](https://nodejs.org/) (v14 or later)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ## Installation
