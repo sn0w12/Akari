@@ -4,10 +4,11 @@ import Spinner from "@/components/ui/spinners/puffLoader";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import { useState } from "react";
 import React from "react";
+import { Manga } from "@/app/api/interfaces";
 
 interface BookmarkButtonProps {
   isBookmarked: boolean | null;
-  manga: any; // Adjust type as needed
+  manga: Manga;
   bookmark: (
     storyData: any,
     isBookmarked: boolean,
