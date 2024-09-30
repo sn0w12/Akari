@@ -137,6 +137,15 @@ export default function BookmarksPage() {
                 (bookmark) => bookmark.storyid === data.storyid
               );
 
+              const existingData = JSON.parse(
+                localStorage.getItem("bm_data") || "{}"
+              );
+              if (!existingData[data.storyid]) {
+                existingData[data.storyid] = [];
+              }
+              existingData[data.storyid].push(data.bm_data);
+              localStorage.setItem("bm_data", JSON.stringify(existingData));
+
               if (!isDuplicate) {
                 // Add the new bookmark if it's not a duplicate
                 return [...prevBookmarks, data];
