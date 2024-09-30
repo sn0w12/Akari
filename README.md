@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MangaReader
 
-## Getting Started
+MangaReader is a Next.js application designed to provide an enhanced manga reading experience. It uses [Manganato](https://manganato.com/) as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
 
-First, run the development server:
+# Features
+
+- **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
+- **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
+
+# Getting Started
+
+## Prerequisites
+
+Before running MangaReader, make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/sn0w12/manga-reader
+cd manga-reader
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+or
+
+```bash
+yarn install
+```
+
+## Running the Development Server
+
+To start the development server, run:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open http://localhost:3000 in your browser to see the application.
 
-## Learn More
+## Production Build
 
-To learn more about Next.js, take a look at the following resources:
+To build the app for production:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+or
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+yarn build
+yarn start
+```
