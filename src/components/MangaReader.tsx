@@ -98,6 +98,14 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       const data: Chapter = await response.json();
       setChapterData(data);
       document.title = `${data.title} - ${data.chapter}`;
+
+      data.images.forEach((image) => {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = `/api/image-proxy?imageUrl=${encodeURIComponent(image)}`;
+        document.head.appendChild(link);
+      });
     };
 
     fetchChapter();
@@ -213,15 +221,13 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       onClick={handleClick}
     >
       <div className="relative h-full w-full">
-        <Image
+        <img
           src={`/api/image-proxy?imageUrl=${encodeURIComponent(
             chapterData.images[currentPage]
           )}`}
           alt={`${chapterData.title} - ${chapterData.chapter} Page ${
             currentPage + 1
           }`}
-          width={700}
-          height={1080}
           className="object-contain w-full h-full cursor-pointer"
         />
 
@@ -230,7 +236,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHeaderVisible ? "header-visible" : ""
           }`}
         >
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center max-w-64">
             <h3 className="font-bold">
               <a
                 href={`http://${window.location.host}/manga/${chapterData.parentId}`}
