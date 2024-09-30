@@ -12,6 +12,7 @@ import { Manga } from "@/app/api/interfaces";
 import React from "react";
 import Spinner from "@/components/ui/spinners/puffLoader";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
+import ScoreDisplay from "@/components/ui/scoreDisplay";
 
 async function fetchManga(id: string): Promise<Manga | null> {
   const user_data = localStorage.getItem("accountInfo");
@@ -194,19 +195,17 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="md:w-1/4">
-          <Image
+      <div className="flex flex-col md:flex-row gap-8 mb-8 items-stretch h-128">
+        <div className="flex-shrink-0 relative h-128">
+          <img
             src={manga.imageUrl}
             alt={manga.name}
-            width={250}
-            height={375}
-            className="w-full h-auto max-h-128 object-cover rounded-lg shadow-lg"
+            className="rounded-lg shadow-lg object-contain h-128 w-auto"
           />
         </div>
 
         {/* Card with flex layout to lock title and buttons */}
-        <Card className="md:w-3/4 p-6 flex flex-col justify-between h-full">
+        <Card className="p-6 flex flex-col justify-between flex-grow">
           {/* Title stays at the top */}
           <h1 className="text-3xl font-bold mb-4 border-b pb-2">
             {manga.name}
@@ -215,7 +214,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
           {/* Middle section grows as needed */}
           <div className="flex flex-col md:flex-row gap-8 flex-grow">
             {/* Left section for the manga details */}
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 flex flex-col justify-between">
               <div>
                 <div className="text-lg mb-2">
                   Authors:
@@ -260,37 +259,42 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                   </Badge>
                 </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Genres:</h2>
-                <div className="flex flex-wrap gap-2">
-                  {manga.genres.map((genre) => (
-                    <Link
-                      key={genre}
-                      href={`/genre/${encodeURIComponent(genre)}`}
-                    >
-                      <Badge
-                        variant="outline"
-                        className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
+              <div className="flex flex-col h-full">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">Genres:</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {manga.genres.map((genre) => (
+                      <Link
+                        key={genre}
+                        href={`/genre/${encodeURIComponent(genre)}`}
                       >
-                        {genre}
-                      </Badge>
-                    </Link>
-                  ))}
+                        <Badge
+                          variant="outline"
+                          className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
+                        >
+                          {genre}
+                        </Badge>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 mb-4 flex-grow h-full">
+                  <ScoreDisplay score={manga.score} />
                 </div>
               </div>
 
               {/* Bookmark and Start Reading Buttons */}
-              <div className="flex gap-4 mt-6">
+              <div className="flex gap-4 mt-auto">
                 {/* Toggle bookmark button based on bookmark status */}
                 <Button
-                  variant={isBookmarked ? "default" : "outline"} // Change the variant if needed
+                  variant={isBookmarked ? "default" : "outline"}
                   size="lg"
                   className={`w-full flex items-center justify-center ${
                     isBookmarked
                       ? "bg-green-500 text-white hover:bg-green-600"
                       : "hover:bg-gray-100 hover:text-background"
-                  }`} // Conditionally apply hover colors
-                  disabled={isBookmarked === null} // Disable the button if isBookmarked is null
+                  }`}
+                  disabled={isBookmarked === null}
                   onClick={() => {
                     if (isBookmarked !== null) {
                       bookmark(manga.storyData, isBookmarked, setIsBookmarked);
@@ -332,7 +336,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
             {/* Right section for the description */}
             <div className="md:w-1/2 flex-grow">
-              <Card className="w-full h-full p-4 max-h-96 overflow-y-auto">
+              <Card className="w-full h-full p-4 max-h-[25.5rem] overflow-y-auto">
                 <p>{manga.description}</p>
               </Card>
             </div>

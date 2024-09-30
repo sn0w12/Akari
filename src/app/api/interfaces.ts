@@ -7,6 +7,7 @@ export interface Manga {
     status: string;
     updated: string;
     view: string;
+    score: number;
     genres: string[];
     description: string;
     chapterList: {

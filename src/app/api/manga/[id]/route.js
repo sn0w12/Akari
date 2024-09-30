@@ -51,6 +51,7 @@ export async function GET(req, { params }) {
       });
       const status = $('.variations-tableInfo .info-status').closest('tr').find('td.table-value').text().trim();
       const description = $('.panel-story-info-description').clone().children().remove().end().text().replace(`Come visit MangaNato.com sometime to read the latest chapter of A Cool Older Lady That Makes Me Crazy. If you have any question about this manga, Please don't hesitate to contact us or translate team. Hope you enjoy it.`, '').trim();
+      const score = parseFloat($('em[property="v:average"]').text().trim());
 
       // Extract Genres
       const genres = [];
@@ -112,6 +113,7 @@ export async function GET(req, { params }) {
         status,
         updated,
         view,
+        score,
         genres,
         description,
         chapterList,
