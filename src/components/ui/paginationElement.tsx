@@ -48,7 +48,7 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
       <PaginationContent className="flex items-center">
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
             className={`cursor-pointer ${currentPage === 1 ? "disabled" : ""}`}
           />
         </PaginationItem>
@@ -163,7 +163,9 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
 
         <PaginationItem>
           <PaginationNext
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() =>
+              currentPage < totalPages && handlePageChange(currentPage + 1)
+            }
             className={`cursor-pointer ${
               currentPage === totalPages ? "disabled" : ""
             }`}
