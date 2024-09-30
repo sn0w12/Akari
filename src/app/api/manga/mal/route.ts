@@ -11,7 +11,7 @@ export async function GET(req: Request): Promise<Response> {
 
     const response = {
         titles: manga.titles,
-        imageUrl: manga.images.jpg.large_image_url,
+        imageUrl: manga.images.webp.large_image_url,
         url: manga.url,
         score: manga.scored,
     }
