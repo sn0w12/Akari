@@ -224,7 +224,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                       className="bg-primary text-secondary ml-2"
                     >
                       <Link
-                        href={`/author/${encodeURIComponent(author)}`}
+                        href={`/author/${encodeURIComponent(
+                          author.replaceAll(" ", "_")
+                        )}`}
                         className="hover:underline"
                       >
                         {author}
@@ -266,7 +268,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     {manga.genres.map((genre) => (
                       <Link
                         key={genre}
-                        href={`/genre/${encodeURIComponent(genre)}`}
+                        href={`/genre/${encodeURIComponent(
+                          genre.replaceAll(" ", "_")
+                        )}`}
                       >
                         <Badge
                           variant="outline"
