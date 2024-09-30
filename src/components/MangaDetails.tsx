@@ -262,11 +262,15 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     })
     .slice()
     .sort((a, b) => {
-      const compareResult = a.name.localeCompare(b.name, undefined, {
-        numeric: true,
-        sensitivity: "base",
-      });
-      return sortOrder === "asc" ? compareResult : -compareResult;
+      const extractChapterNumber = (name: string) => {
+        const match = name.replace("-", ".").match(/[Cc]hapter\s(\d+)(\.\d+)?/);
+        return match ? parseFloat(match[1] + (match[2] || "")) : 0;
+      };
+
+      const chapterA = extractChapterNumber(a.name);
+      const chapterB = extractChapterNumber(b.name);
+
+      return sortOrder === "asc" ? chapterA - chapterB : chapterB - chapterA;
     });
 
   const totalPages = sortedChapters
