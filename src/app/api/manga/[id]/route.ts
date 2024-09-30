@@ -3,10 +3,40 @@ import { CookieJar } from 'tough-cookie';
 import { HttpCookieAgent, HttpsCookieAgent } from 'http-cookie-agent/http';
 import * as cheerio from 'cheerio';
 
-export async function GET(req, { params }) {
+interface UserData {
+  user_version: string;
+  user_name: string | null;
+  user_image: string;
+  user_data: string | null;
+}
+
+interface Chapter {
+  id: string;
+  path: string;
+  name: string;
+  view: string;
+  createdAt: string | undefined;
+}
+
+interface MangaDetails {
+  mangaId: string | null;
+  storyData: string | null;
+  imageUrl: string | undefined;
+  name: string;
+  authors: string[];
+  status: string;
+  updated: string;
+  view: string;
+  score: number;
+  genres: string[];
+  description: string;
+  chapterList: Chapter[];
+}
+
+export async function GET(req: Request, { params }: { params: { id: string } }): Promise<Response> {
   const id = params.id;
   const { searchParams } = new URL(req.url);
-  const userData = {
+  const userData: UserData = {
     user_version: "2.3",
     user_name: searchParams.get('user_name'),
     user_image: "https://user.manganelo.com/avt.png",
@@ -17,12 +47,10 @@ export async function GET(req, { params }) {
   try {
     const jar = new CookieJar();
 
-    // Function to fetch and parse manga details from a given URL
-    const fetchMangaDetails = async (baseUrl) => {
+    const fetchMangaDetails = async (baseUrl: string): Promise<MangaDetails> => {
       const url = `${baseUrl}/${id}`;
 
-      // Set the cookie in the jar for the current URL
-      if (searchParams.get('user_name') && searchParams.get('user_data')) {
+      if (userData.user_name && userData.user_data) {
         jar.setCookieSync(`user_acc=${JSON.stringify(userData)}`, url);
       }
 
@@ -31,7 +59,6 @@ export async function GET(req, { params }) {
         httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
       });
 
-      // Make the request without the 'cookie' header
       const response = await instance.get(url, {
         headers: {
           'User-Agent': req.headers.get('user-agent') || 'Mozilla/5.0',
@@ -45,26 +72,23 @@ export async function GET(req, { params }) {
       const imageUrl = $('.story-info-left .info-image img').attr('src');
       const name = $('.story-info-right h1').text();
       const alternativeTitles = $('.variations-tableInfo .info-alternative').parent().find('h2').text().trim();
-      const authors = [];
+      const authors: string[] = [];
       $('.variations-tableInfo .info-author').closest('tr').find('a').each((index, element) => {
         authors.push($(element).text().trim());
       });
       const status = $('.variations-tableInfo .info-status').closest('tr').find('td.table-value').text().trim();
-      const description = $('.panel-story-info-description').clone().children().remove().end().text().replace(`Come visit MangaNato.com sometime to read the latest chapter of A Cool Older Lady That Makes Me Crazy. If you have any question about this manga, Please don't hesitate to contact us or translate team. Hope you enjoy it.`, '').trim();
+      const description = $('.panel-story-info-description').clone().children().remove().end().text().replace(`Come visit MangaNato.com sometime to read the latest chapter.`, '').trim();
       const score = parseFloat($('em[property="v:average"]').text().trim());
 
-      // Extract Genres
-      const genres = [];
+      const genres: string[] = [];
       $('.variations-tableInfo .info-genres').closest('tr').find('a').each((index, element) => {
         genres.push($(element).text().trim());
       });
 
-      // Extract updated time and view count
       const updated = $('.story-info-right-extent .info-time').parent().parent().find('.stre-value').text().trim();
       const view = $('.story-info-right-extent .info-view').parent().parent().find('.stre-value').text().trim();
 
-      // Extract Chapters
-      const chapterList = [];
+      const chapterList: Chapter[] = [];
       $('.panel-story-chapter-list .row-content-chapter li').each((index, element) => {
         const chapterElement = $(element);
         const chapterName = chapterElement.find('.chapter-name').text().trim();
@@ -73,8 +97,8 @@ export async function GET(req, { params }) {
         const chapterTime = chapterElement.find('.chapter-time').attr('title');
 
         chapterList.push({
-          id: chapterUrl.split('/').pop(),
-          path: chapterUrl,
+          id: chapterUrl?.split('/').pop() || '',
+          path: chapterUrl || '',
           name: chapterName,
           view: chapterView,
           createdAt: chapterTime,
@@ -83,10 +107,9 @@ export async function GET(req, { params }) {
 
       const scriptTags = $('.body-site script');
 
-      let glbStoryData = null;
-      let mangaId = null;
+      let glbStoryData: string | null = null;
+      let mangaId: string | null = null;
 
-      // Loop through script tags to find the one containing glb_story_data
       scriptTags.each((i, elem) => {
         const scriptContent = $(elem).html();
 
@@ -103,8 +126,7 @@ export async function GET(req, { params }) {
         }
       });
 
-      // Construct the response object
-      const mangaDetails = {
+      return {
         mangaId,
         storyData: glbStoryData,
         imageUrl,
@@ -118,23 +140,19 @@ export async function GET(req, { params }) {
         description,
         chapterList,
       };
-
-      return mangaDetails;
     };
 
-    // First attempt with chapmanganato.to
     let mangaDetails = await fetchMangaDetails('https://chapmanganato.to');
     let oldMangaDetails = mangaDetails;
 
-    // If glbStoryData is not found, retry with manganato.com
     if (!mangaDetails.storyData) {
       console.log('glbStoryData not found on chapmanganato.to, retrying with manganato.com');
       mangaDetails = await fetchMangaDetails('https://manganato.com');
     }
 
-    const hasMoreInfo = (oldDetails, newDetails) => {
+    const hasMoreInfo = (oldDetails: MangaDetails, newDetails: MangaDetails) => {
       for (let key in oldDetails) {
-        if (oldDetails[key] && !newDetails[key]) {
+        if (oldDetails[key as keyof MangaDetails] && !newDetails[key as keyof MangaDetails]) {
           return true;
         }
       }
@@ -145,14 +163,13 @@ export async function GET(req, { params }) {
       mangaDetails = oldMangaDetails;
     }
 
-    // Return the manga details as JSON
     return new Response(JSON.stringify(mangaDetails), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error fetching manga details:', error.message);
-    if (error.response) {
+    console.error('Error fetching manga details:', (error as Error).message);
+    if (axios.isAxiosError(error) && error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
       console.error('Response headers:', error.response.headers);

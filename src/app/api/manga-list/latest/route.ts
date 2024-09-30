@@ -1,18 +1,36 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-export async function GET(req) {
+interface Manga {
+  id: string;
+  image: string | undefined;
+  title: string;
+  chapter: string;
+  chapterUrl: string | undefined;
+  description?: string;
+  rating?: string;
+  views?: string;
+  date?: string;
+  author?: string;
+}
+
+interface MetaData {
+  totalStories: number;
+  totalPages: number;
+}
+
+export async function GET(req: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(req.url);
-    const page = searchParams.get('search') || 1;
+    const page: string = searchParams.get('search') || '1';
 
     // Construct the URL with the page number
     const url = `https://manganato.com/genre-all/${page}`;
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
-    let mangaList = [];
-    let popular = [];
+    let mangaList: Manga[] = [];
+    let popular: Manga[] = [];
 
     // Loop through each .content-genres-item div and extract the relevant information
     $('.content-genres-item').each((index, element) => {
@@ -22,7 +40,7 @@ export async function GET(req) {
       const title = titleElement.text();
       const mangaUrl = titleElement.attr('href');
       const chapterElement = mangaElement.find('a.genres-item-chap');
-      const latestChapter = chapterElement.text().replace('-', '.').match(/[Cc]hapter\s(\d+)(\.\d+)?/)[0];
+      const latestChapter = chapterElement.text().replace('-', '.').match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || '';
       const chapterUrl = chapterElement.attr('href');
       const description = mangaElement.find('.genres-item-description').text().trim();
       const rating = mangaElement.find('em.genres-item-rate').text();
@@ -31,7 +49,7 @@ export async function GET(req) {
       const author = mangaElement.find('.genres-item-author').text();
 
       mangaList.push({
-        id: mangaUrl.split('/').pop(),
+        id: mangaUrl?.split('/').pop() || '',
         image: imageUrl,
         title: title,
         chapter: latestChapter,
@@ -44,9 +62,9 @@ export async function GET(req) {
       });
     });
 
-    const totalStories = mangaList.length;
+    const totalStories: number = mangaList.length;
     const lastPageElement = $('a.page-last');
-    const totalPages = lastPageElement.length ? parseInt(lastPageElement.text().match(/\d+/)[0], 10) : 1;
+    const totalPages: number = lastPageElement.length ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || '1', 10) : 1;
 
     $('.item').each((index, element) => {
       const mangaElement = $(element);
@@ -55,11 +73,11 @@ export async function GET(req) {
       const title = titleElement.text();
       const mangaUrl = titleElement.attr('href');
       const chapterElement = mangaElement.find('a.text-nowrap');
-      const latestChapter = chapterElement.text().replace(title, '').replace('-', '.').match(/[Cc]hapter\s(\d+)(\.\d+)?/)[0];
+      const latestChapter = chapterElement.text().replace(title, '').replace('-', '.').match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || '';
       const chapterUrl = chapterElement.attr('href');
 
       popular.push({
-        id: mangaUrl.split('/').pop(),
+        id: mangaUrl?.split('/').pop() || '',
         image: imageUrl,
         title: title,
         chapter: latestChapter,
@@ -74,7 +92,7 @@ export async function GET(req) {
         metaData: {
           totalStories,
           totalPages,
-        },
+        } as MetaData,
       }),
       {
         status: 200,

@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
 
-const BOOKMARK_UPDATE_URL = 'https://user.mngusr.com/bookmark_update';
+const BOOKMARK_ADD_URL = 'https://user.mngusr.com/bookmark_add';
 
-export async function POST(request) {
+interface BookmarkAddRequest {
+  user_data: string;
+  story_data: string;
+}
+
+export async function POST(request: Request): Promise<Response> {
   try {
-    const { user_data, story_data, chapter_data } = await request.json();
+    const { user_data, story_data }: BookmarkAddRequest = await request.json();
 
-    if (!user_data || !story_data || !chapter_data) {
+    if (!user_data || !story_data) {
       return NextResponse.json(
-        { result: 'error', data: 'Missing user_data, story_data, or chapter_data' },
+        { result: 'error', data: 'Missing user_data or story_data' },
         { status: 400 }
       );
     }
@@ -16,9 +21,8 @@ export async function POST(request) {
     const formData = new URLSearchParams();
     formData.append('user_data', user_data);
     formData.append('story_data', story_data);
-    formData.append('chapter_data', chapter_data);
 
-    const response = await fetch(BOOKMARK_UPDATE_URL, {
+    const response = await fetch(BOOKMARK_ADD_URL, {
       method: 'POST',
       body: formData.toString(),
       headers: {
@@ -30,8 +34,8 @@ export async function POST(request) {
     const result = JSON.parse(data);
 
     return NextResponse.json(result);
-  } catch (error) {
-    console.error('Error in /api/bookmarks/update:', error);
+  } catch (error: any) {
+    console.error('Error in /api/bookmarks/add:', error);
     return NextResponse.json(
       { result: 'error', data: error.message },
       { status: 500 }

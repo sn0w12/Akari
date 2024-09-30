@@ -2,9 +2,13 @@ import axios from 'axios';
 import { NextResponse } from 'next/server';
 import sizeOf from 'image-size';
 
-export async function GET(req) {
+export async function GET(req: Request): Promise<Response> {
   const { searchParams } = new URL(req.url);
   const imageUrl = searchParams.get('imageUrl');
+
+  if (!imageUrl) {
+    return NextResponse.json({ error: 'Missing imageUrl parameter' }, { status: 400 });
+  }
 
   try {
     const response = await axios.get(imageUrl, {

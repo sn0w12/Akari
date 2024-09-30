@@ -2,10 +2,30 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-export async function GET(req, { params }) {
+interface UserData {
+  user_version: string;
+  user_name: string | null;
+  user_image: string;
+  user_data: string | null;
+}
+
+interface MangaResponse {
+  title: string;
+  chapter: string;
+  pages: number;
+  parentId: string;
+  nextChapter: string;
+  lastChapter: string;
+  images: string[];
+  storyData: string | null;
+  chapterData: string | null;
+}
+
+export async function GET(req: Request, { params }: { params: { id: string; subId: string } }): Promise<Response> {
   const { id, subId } = params;
   const { searchParams } = new URL(req.url);
-  const userData = {
+
+  const userData: UserData = {
     user_version: "2.3",
     user_name: searchParams.get('user_name'),
     user_image: "https://user.manganelo.com/avt.png",
@@ -19,7 +39,7 @@ export async function GET(req, { params }) {
         cookie: `user_acc=${JSON.stringify(userData)}`,
         'User-Agent': req.headers.get('user-agent') || 'Mozilla/5.0',
         'Accept-Language': req.headers.get('accept-language') || 'en-US,en;q=0.9',
-      }
+      },
     });
     const html = response.data;
 
@@ -29,15 +49,15 @@ export async function GET(req, { params }) {
     // Extract the title and chapter name from the panel-breadcrumb
     const breadcrumbLinks = $('.panel-breadcrumb a');
     const mangaTitle = $(breadcrumbLinks[1]).text();
-    const parent = $(breadcrumbLinks[1]).attr('href').split('/').pop();
+    const parent = $(breadcrumbLinks[1]).attr('href')?.split('/').pop() || '';
     const chapterTitle = $(breadcrumbLinks[2]).text();
 
     // Extract all image URLs from the container-chapter-reader div
     const imageElements = $('.container-chapter-reader img');
-    const images = [];
+    const images: string[] = [];
     imageElements.each((index, element) => {
       const imageUrl = $(element).attr('src');
-      images.push(imageUrl);
+      if (imageUrl) images.push(imageUrl);
     });
 
     const pages = images.length;
@@ -49,8 +69,8 @@ export async function GET(req, { params }) {
 
     const scriptTags = $('.body-site script');
 
-    let glbStoryData = null;
-    let glbChapterData = null;
+    let glbStoryData: string | null = null;
+    let glbChapterData: string | null = null;
 
     // Loop through script tags to find the one containing glb_story_data
     scriptTags.each((i, elem) => {
@@ -71,7 +91,7 @@ export async function GET(req, { params }) {
     });
 
     // Return the response as JSON
-    return NextResponse.json({
+    const responseData: MangaResponse = {
       title: mangaTitle,
       chapter: chapterTitle,
       pages: pages,
@@ -81,7 +101,9 @@ export async function GET(req, { params }) {
       images: images,
       storyData: glbStoryData,
       chapterData: glbChapterData,
-    });
+    };
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Error fetching manga chapter:', error);
     return NextResponse.json({ error: 'Failed to fetch manga chapter data' }, { status: 500 });
