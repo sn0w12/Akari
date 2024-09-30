@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +12,14 @@ import React from "react";
 import Spinner from "@/components/ui/spinners/puffLoader";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
+import { distance, closest } from "fastest-levenshtein";
+
+interface MalData {
+  titles: { type: string; title: string }[];
+  imageUrl: string;
+  url: string;
+  score: number | null;
+}
 
 async function fetchManga(id: string): Promise<Manga | null> {
   const user_data = localStorage.getItem("accountInfo");
@@ -28,6 +35,54 @@ async function fetchManga(id: string): Promise<Manga | null> {
   } catch (error) {
     return null;
   }
+}
+
+async function fetchMalData(title: string): Promise<MalData | null> {
+  try {
+    const response = await fetch(
+      `${window.location.origin}/api/manga/mal?title=${encodeURIComponent(
+        title
+      )}`
+    );
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+function normalizeTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s]/gi, "")
+    .trim();
+}
+
+function compareTitle(
+  origTitle: string,
+  titles: { type: string; title: string }[],
+  maxDiff: number = 5
+): boolean {
+  const normalizedOrigTitle = normalizeTitle(origTitle);
+
+  return titles.some(({ title }) => {
+    const normalizedTitle = normalizeTitle(title);
+
+    // Check if one title is a substring of the other and at least 50% of the title
+    if (
+      (normalizedOrigTitle.includes(normalizedTitle) &&
+        normalizedTitle.length / normalizedOrigTitle.length >= 0.5) ||
+      (normalizedTitle.includes(normalizedOrigTitle) &&
+        normalizedOrigTitle.length / normalizedTitle.length >= 0.5)
+    ) {
+      return true;
+    }
+    // Check Levenshtein distance
+    return distance(normalizedOrigTitle, normalizedTitle) <= maxDiff;
+  });
 }
 
 async function checkIfBookmarked(
@@ -140,11 +195,15 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     const loadManga = async () => {
       setIsLoading(true);
       const data = await fetchManga(id);
+      const malData = await fetchMalData(data?.name || "");
       if (data) {
         setManga(data);
         setIsLoading(false);
         checkIfBookmarked(data.mangaId, setIsBookmarked);
-        console.log(data.storyData);
+        if (malData && compareTitle(data.name, malData.titles)) {
+          console.log(data.name, malData.titles);
+          data.imageUrl = malData.imageUrl;
+        }
         document.title = data?.name;
       } else {
         setError("Failed to load manga details");
@@ -195,12 +254,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8 mb-8 items-stretch h-128">
+      <div className="flex flex-col md:flex-row gap-8 mb-8 items-stretch h-auto">
         <div className="flex-shrink-0 relative h-128">
           <img
             src={manga.imageUrl}
             alt={manga.name}
-            className="rounded-lg shadow-lg object-contain h-128 w-auto"
+            className="rounded-lg shadow-lg object-cover h-full w-auto max-w-lg"
           />
         </div>
 
