@@ -194,13 +194,19 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     // Fetch manga details
     const loadManga = async () => {
       setIsLoading(true);
+      const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+      console.log(settings);
       const data = await fetchManga(id);
       const malData = await fetchMalData(data?.name || "");
       if (data) {
         setManga(data);
         setIsLoading(false);
         checkIfBookmarked(data.mangaId, setIsBookmarked);
-        if (malData && compareTitle(data.name, malData.titles)) {
+        if (
+          malData &&
+          compareTitle(data.name, malData.titles) &&
+          settings.fetchMalImage
+        ) {
           console.log(data.name, malData.titles);
           data.imageUrl = malData.imageUrl;
         }

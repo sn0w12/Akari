@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
-import { Search, Bookmark, User, Moon, Sun } from "lucide-react";
+import { Search, Bookmark, User, Moon, Sun, Settings } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -87,16 +87,12 @@ const useAccountName = () => {
 
 // Hook to manage settings
 const useSettings = () => {
-  const [settings, setSettings] = useState({
-    cacheSize: 100, // Default value
-  });
-
-  useEffect(() => {
+  const [settings, setSettings] = useState(() => {
     const storedSettings = localStorage.getItem("settings");
-    if (storedSettings) {
-      setSettings(JSON.parse(storedSettings));
-    }
-  }, []);
+    return storedSettings
+      ? JSON.parse(storedSettings)
+      : { fetchMalImage: true };
+  });
 
   useEffect(() => {
     localStorage.setItem("settings", JSON.stringify(settings));
@@ -250,7 +246,6 @@ export function HeaderComponent() {
           </Dialog>
 
           {/* Settings Dialog */}
-          {/*
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -262,26 +257,25 @@ export function HeaderComponent() {
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
               <div className="flex flex-col space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Cache Size
+                <div className="flex items-center justify-start gap-2">
+                  <label className="block text-sm font-medium mb-2 mt-2">
+                    Fetch MAL Image:
                   </label>
                   <Input
-                    type="number"
-                    value={settings.cacheSize}
+                    type="checkbox"
+                    checked={settings.fetchMalImage}
                     onChange={(e) =>
-                      setSettings((prevSettings) => ({
+                      setSettings((prevSettings: any) => ({
                         ...prevSettings,
-                        cacheSize: Number(e.target.value),
+                        fetchMalImage: e.target.checked,
                       }))
                     }
-                    className="w-full"
+                    className="h-4 w-auto"
                   />
                 </div>
               </div>
             </DialogContent>
           </Dialog>
-          */}
 
           {/* Theme Toggle Button */}
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
