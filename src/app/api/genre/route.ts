@@ -74,8 +74,8 @@ const getGenreIds = (genres: (keyof typeof genreMap)[]): number[] => {
 export async function GET(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
-    const includeGenresParam = searchParams.get('include')?.split(',') || [];
-    const excludeGenresParam = searchParams.get('exclude')?.split(',') || [];
+    const includeGenresParam = searchParams.get('include')?.replaceAll('_', ' ').split(',') || [];
+    const excludeGenresParam = searchParams.get('exclude')?.replaceAll('_', ' ').split(',') || [];
     const orderBy = searchParams.get('orderBy') || '';
     const page = searchParams.get('page') || '1';
 
