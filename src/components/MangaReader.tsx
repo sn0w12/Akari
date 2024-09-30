@@ -40,7 +40,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     const hasFewImages = chapterData.images.length < 4;
     const thirtySecondsPassed = timeElapsed >= 30;
 
-    if (isHalfwayThrough || (hasFewImages && thirtySecondsPassed)) {
+    if (
+      isHalfwayThrough ||
+      ((hasFewImages || isStripMode) && thirtySecondsPassed)
+    ) {
       updateBookmark(chapterData);
       bookmarkUpdatedRef.current = true;
     }
