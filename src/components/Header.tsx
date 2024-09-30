@@ -181,8 +181,7 @@ export function HeaderComponent() {
                 <CardContent className="p-2">
                   {isLoading ? (
                     <CenteredSpinner />
-                  ) : (
-                    searchResults.length > 0 &&
+                  ) : searchResults.length > 0 ? (
                     searchResults.map((result: Manga) => (
                       <Link
                         href={`/manga/${result.id}`}
@@ -197,6 +196,10 @@ export function HeaderComponent() {
                         {result.title}
                       </Link>
                     ))
+                  ) : (
+                    <div className="text-center text-muted-foreground p-4">
+                      No Results
+                    </div>
                   )}
                 </CardContent>
               </Card>
