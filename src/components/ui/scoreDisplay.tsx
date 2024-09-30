@@ -18,14 +18,14 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
         {[...Array(5)].map((_, index) => (
           <div key={index} className="relative">
             {/* Background star in primary color */}
-            <Star className="absolute w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary/25 z-10" />
+            <Star className="absolute w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary/25 z-10" />
             {/* Foreground star based on score */}
             {index < fullStars ? (
-              <Star className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 z-20" />
+              <Star className="relative w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-yellow-400 z-20" />
             ) : index === fullStars && hasHalfStar ? (
-              <StarHalf className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 z-20" />
+              <StarHalf className="relative w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-yellow-400 z-20" />
             ) : (
-              <Star className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary/0 z-20" />
+              <Star className="relative w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary/0 z-20" />
             )}
           </div>
         ))}
