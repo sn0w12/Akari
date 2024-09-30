@@ -12,7 +12,7 @@ import React from "react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
 import { distance } from "fastest-levenshtein";
-import BookmarkButton from "./ui/bookmarkButton";
+import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
 
 interface MalData {
   titles: { type: string; title: string }[];
