@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
+import Image from "next/image";
 
 interface Bookmark {
   noteid: string;
@@ -50,6 +51,9 @@ export default function BookmarksPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Bookmark[]>([]);
+  const workerRef = useRef<Worker | null>(null);
+  const batchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const messageQueue = useRef<Bookmark[]>([]);
 
   useEffect(() => {
     document.title = "Bookmarks";
@@ -119,65 +123,80 @@ export default function BookmarksPage() {
     fetchBookmarks(page);
   }, [searchParams]);
 
+  const processBatch = () => {
+    if (messageQueue.current.length > 0) {
+      // Add all new bookmarks in the batch to the state
+      setAllBookmarks((prevBookmarks) => {
+        const uniqueBookmarks = messageQueue.current.filter(
+          (newBookmark) =>
+            !prevBookmarks.some(
+              (bookmark) => bookmark.storyid === newBookmark.storyid
+            )
+        );
+        return [...prevBookmarks, ...uniqueBookmarks];
+      });
+
+      // Update localStorage once per batch
+      const storedData = JSON.parse(localStorage.getItem("bm_data") || "{}");
+      messageQueue.current.forEach((bookmark) => {
+        if (!storedData[bookmark.storyid]) {
+          storedData[bookmark.storyid] = [];
+        }
+        storedData[bookmark.storyid].push(bookmark.bm_data);
+      });
+      localStorage.setItem("bm_data", JSON.stringify(storedData));
+
+      // Clear the queue
+      messageQueue.current = [];
+    }
+  };
+
   useEffect(() => {
-    // Only initialize the worker if it hasn't been initialized yet
-    if (!workerInitialized && typeof window !== "undefined") {
-      const user_data = localStorage.getItem("accountInfo");
-      if (user_data) {
-        worker = new Worker("/workers/eventSourceWorker.js");
-        worker.postMessage({ userData: user_data });
+    const user_data = localStorage.getItem("accountInfo");
+    if (user_data && typeof window !== "undefined" && !workerRef.current) {
+      workerRef.current = new Worker("/workers/eventSourceWorker.js");
+      workerRef.current.postMessage({ userData: user_data });
+      console.log("Worker initialized.");
 
-        worker.onmessage = (e) => {
-          const { type, data, message, error } = e.data;
+      workerRef.current.onmessage = (e) => {
+        const { type, data, message, error } = e.data;
 
-          if (type === "bookmark") {
-            setAllBookmarks((prevBookmarks) => {
-              // Check if the bookmark already exists
-              const isDuplicate = prevBookmarks.some(
-                (bookmark) => bookmark.storyid === data.storyid
-              );
+        if (type === "bookmark") {
+          // Push new bookmark data to the queue
+          messageQueue.current.push(data);
 
-              const existingData = JSON.parse(
-                localStorage.getItem("bm_data") || "{}"
-              );
-              if (!existingData[data.storyid]) {
-                existingData[data.storyid] = [];
-              }
-              existingData[data.storyid].push(data.bm_data);
-              localStorage.setItem("bm_data", JSON.stringify(existingData));
-
-              if (!isDuplicate) {
-                // Add the new bookmark if it's not a duplicate
-                return [...prevBookmarks, data];
-              } else {
-                // Return the existing bookmarks if it's a duplicate
-                return prevBookmarks;
-              }
-            });
-          } else if (type === "error") {
-            console.error("Worker error:", message, error);
-            worker?.terminate();
-          } else if (type === "finished") {
-            // The worker indicates it has finished its task
-            console.log("Worker has finished processing.");
-            worker?.terminate();
-          }
-        };
-
-        // Mark the worker as initialized
-        workerInitialized = true;
-      } else {
-        console.error("No user_data found in localStorage.");
-      }
+          // Clear the previous batch timeout and set a new one
+          if (batchTimeout.current) clearTimeout(batchTimeout.current);
+          batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
+        } else if (type === "error") {
+          console.error("Worker error:", message, error);
+          workerRef.current?.terminate();
+        } else if (type === "finished") {
+          console.log("Worker has finished processing.");
+          processBatch(); // Process any remaining bookmarks
+          workerRef.current?.terminate();
+        }
+      };
     }
 
-    // Do not terminate the worker on component unmount
-    // Since we want it to run until it finishes, even if the component unmounts
+    // Cleanup function to terminate the worker on unmount
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+      if (batchTimeout.current) {
+        clearTimeout(batchTimeout.current);
+      }
+    };
   }, []);
 
-  const handlePageChange = (page: number) => {
-    router.push(`/bookmarks?page=${page}`);
-  };
+  const handlePageChange = useCallback(
+    (page: number) => {
+      router.push(`/bookmarks?page=${page}`);
+    },
+    [router]
+  );
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -218,9 +237,11 @@ export default function BookmarksPage() {
                         key={result.noteid}
                         className="block p-2 hover:bg-accent flex items-center rounded-lg"
                       >
-                        <img
+                        <Image
                           src={result.image}
                           alt={result.note_story_name}
+                          width={300}
+                          height={450}
                           className="max-h-24 w-auto rounded mr-2"
                         />
                         {result.note_story_name}
@@ -254,9 +275,11 @@ export default function BookmarksPage() {
                 />
                 <Card className="flex flex-col md:flex-row items-center p-6 shadow-lg bg-card border border-border rounded-lg">
                   <div className="w-full md:w-40 mb-4 md:mb-0">
-                    <img
+                    <Image
                       src={bookmark.image}
                       alt={bookmark.storyname}
+                      width={300}
+                      height={450}
                       className="w-full h-auto object-cover rounded"
                     />
                   </div>
