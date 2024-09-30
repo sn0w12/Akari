@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import { Card } from "@/components/ui/card";
 import { Chapter } from "@/app/api/interfaces";
 import PageProgress from "@/components/ui/pageProgress";
+import Image from "next/image";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -18,8 +19,32 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   const [isStripMode, setIsStripMode] = useState<boolean | undefined>(
     undefined
   );
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const router = useRouter();
   const { id, subId } = useParams();
+  const bookmarkUpdatedRef = useRef(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeElapsed((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (!chapterData || bookmarkUpdatedRef.current) return;
+
+    const isHalfwayThrough =
+      currentPage >= Math.floor(chapterData.images.length / 2);
+    const hasFewImages = chapterData.images.length < 4;
+    const thirtySecondsPassed = timeElapsed >= 30;
+
+    if (isHalfwayThrough || (hasFewImages && thirtySecondsPassed)) {
+      updateBookmark(chapterData);
+      bookmarkUpdatedRef.current = true;
+    }
+  }, [chapterData, currentPage, timeElapsed]);
 
   // Detect if the majority of images have a long aspect ratio
   useEffect(() => {
@@ -77,12 +102,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
   // Navigate to the next page
   const nextPage = useCallback(() => {
-    if (
-      chapterData &&
-      currentPage === Math.floor(chapterData.images.length / 2)
-    ) {
-      updateBookmark(chapterData);
-    }
     if (chapterData && currentPage < chapterData.images.length - 1) {
       setCurrentPage((prev) => prev + 1);
     } else if (chapterData && currentPage === chapterData.images.length - 1) {
@@ -115,24 +134,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     const result = await response.json();
     return result;
   }
-
-  // Preload next and previous images
-  useEffect(() => {
-    if (chapterData) {
-      const nextImage = chapterData.images[currentPage + 1];
-      const prevImage = chapterData.images[currentPage - 1];
-
-      if (nextImage) {
-        const img = new Image();
-        img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(nextImage)}`;
-      }
-
-      if (prevImage) {
-        const img = new Image();
-        img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(prevImage)}`;
-      }
-    }
-  }, [chapterData, currentPage]);
 
   // Handle key press events for navigation
   useEffect(() => {
@@ -169,12 +170,14 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       <div className="h-screen w-screen bg-black">
         <div className="flex flex-col items-center bg-black overflow-y-scroll h-screen">
           {chapterData.images.map((image, index) => (
-            <img
+            <Image
               key={index}
               src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
               alt={`${chapterData.title} - ${chapterData.chapter} Page ${
                 index + 1
               }`}
+              width={700}
+              height={1080}
               className="object-contain w-128"
             />
           ))}
@@ -207,13 +210,15 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       onClick={handleClick}
     >
       <div className="relative h-full w-full">
-        <img
+        <Image
           src={`/api/image-proxy?imageUrl=${encodeURIComponent(
             chapterData.images[currentPage]
           )}`}
           alt={`${chapterData.title} - ${chapterData.chapter} Page ${
             currentPage + 1
           }`}
+          width={700}
+          height={1080}
           className="object-contain w-full h-full cursor-pointer"
         />
 
