@@ -33,12 +33,12 @@ const ConfirmDialog = ({
         {/* Ensure triggerButton is a single element */}
         {triggerButton}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="gap-2">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-2xl">{title}</DialogTitle>
         </DialogHeader>
         <p>{message}</p>
-        <div className="mt-4 flex justify-between space-x-2">
+        <div className="mt-2 flex justify-between space-x-2">
           <DialogTrigger asChild>
             <Button variant="outline" className="w-full">
               {cancelLabel}
