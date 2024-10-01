@@ -26,6 +26,8 @@
     "manga-reader": "file:",
     "next": "14.2.13",
     "next-base64": "^1.1.0",
+    "puppeteer": "^23.4.1",
+    "puppeteer-core": "^23.4.1",
     "react": "^18",
     "react-dom": "^18",
     "react-spinners": "^0.14.1",

@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
+import LoginDialog from "./ui/Header/AccountDialog";
 
 interface Manga {
   id: string;
@@ -252,42 +253,7 @@ export function HeaderComponent() {
           </Link>
 
           {/* Account Information Dialog */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Account Information</DialogTitle>
-              </DialogHeader>
-              <div className="flex items-center space-x-4 mb-4 border-t">
-                <div className="mt-4 w-full">
-                  <label className="block text-sm font-medium mb-2">
-                    Username
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Username..."
-                    className="w-full"
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)}
-                  />
-                  <label className="block text-sm font-medium mb-2 mt-2">
-                    User Data
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="User Data..."
-                    className="w-full"
-                    value={accountInfo}
-                    onChange={(e) => setAccountInfo(e.target.value)}
-                  />
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <LoginDialog />
 
           {/* Settings Dialog */}
           <Dialog>
