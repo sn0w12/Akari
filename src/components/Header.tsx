@@ -218,7 +218,7 @@ export function HeaderComponent() {
               <DialogHeader>
                 <DialogTitle>Account Information</DialogTitle>
               </DialogHeader>
-              <div className="flex items-center space-x-4 mb-4">
+              <div className="flex items-center space-x-4 mb-4 border-t">
                 <div className="mt-4 w-full">
                   <label className="block text-sm font-medium mb-2">
                     Username
@@ -256,7 +256,7 @@ export function HeaderComponent() {
               <DialogHeader>
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 border-t">
                 <div className="flex items-center justify-start gap-2">
                   <label className="block text-sm font-medium mb-2 mt-2">
                     Fetch MAL Image:
