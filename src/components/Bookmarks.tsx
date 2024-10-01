@@ -39,9 +39,6 @@ const fuseOptions = {
   threshold: 0.4, // Adjust the fuzziness (0.0 = exact match, 1.0 = match all)
 };
 
-let worker: Worker | null = null;
-let workerInitialized = false;
-
 export default function BookmarksPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
