@@ -8,6 +8,7 @@ MangaReader is a Next.js application designed to provide an enhanced manga readi
 - **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
 - **All Manganato Features:** All normal manganato features are available.
 - **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
+- **Search Through Bookmarks:** Search through all your bookmarks to find the manga you are looking for.
 
 # Settings
 
@@ -21,7 +22,7 @@ If you have a [Manganato](https://manganato.com/) account, press the account but
 
 ![Login](https://i.imgur.com/NtVKEvt.png)
 
-After you've been logged in, you can use it as you normally would. Accessing your bookmarks:
+After you've been logged in, you can use it as you normally would.
 
 <details>
   <summary>Showcase of Pages</summary>
