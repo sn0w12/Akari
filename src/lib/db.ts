@@ -9,19 +9,19 @@ export interface CacheItem<T> {
 
 // Create and manage multiple caches
 class CacheDatabase extends Dexie {
-  public dataCache: Dexie.Table<CacheItem<any>, string>; // Generic cache for any data type
-  public mangaCache: Dexie.Table<CacheItem<any>, string>; // Cache for images
+  public bookmarkCache: Dexie.Table<CacheItem<any>, string>;
+  public mangaCache: Dexie.Table<CacheItem<any>, string>;
 
   constructor() {
     super('MangaReaderCache');
 
     // Define multiple stores/caches for different data types
     this.version(1).stores({
-      dataCache: 'key, timestamp',
+      bookmarkCache: 'key, timestamp',
       mangaCache: 'key, timestamp',
     });
 
-    this.dataCache = this.table('dataCache');
+    this.bookmarkCache = this.table('bookmarkCache');
     this.mangaCache = this.table('mangaCache');
   }
 

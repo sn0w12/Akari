@@ -138,7 +138,10 @@ export default function BookmarksPage() {
         return [...prevBookmarks, ...uniqueBookmarks];
       });
 
+      const allBookmarks: Bookmark[] = [];
+
       messageQueue.current.forEach((bookmark) => {
+        allBookmarks.push(bookmark);
         const cacheObject = {
           bm_data: bookmark.bm_data,
           last_read: bookmark.link_chapter_now.split("/").pop(),
@@ -150,39 +153,58 @@ export default function BookmarksPage() {
         }
       });
 
+      db.setCache(db.bookmarkCache, "allBookmarks", allBookmarks);
       // Clear the queue
       messageQueue.current = [];
     }
   };
 
   useEffect(() => {
-    const user_data = localStorage.getItem("accountInfo");
-    if (user_data && typeof window !== "undefined" && !workerRef.current) {
-      workerRef.current = new Worker("/workers/eventSourceWorker.js");
-      workerRef.current.postMessage({ userData: user_data });
-      console.log("Worker initialized.");
+    const initWorker = async () => {
+      // Fetch bookmark cache asynchronously
+      const bookmarkCache = await db.getCache(
+        db.bookmarkCache,
+        "allBookmarks",
+        1000 * 60 * 60 * 1 // 1-hour expiration
+      );
+      if (bookmarkCache) {
+        setAllBookmarks(bookmarkCache);
+        setWorkerFinished(true);
+        return;
+      }
 
-      workerRef.current.onmessage = (e) => {
-        const { type, data, message, error } = e.data;
+      const user_data = localStorage.getItem("accountInfo");
 
-        if (type === "bookmark") {
-          // Push new bookmark data to the queue
-          messageQueue.current.push(data);
+      if (user_data && typeof window !== "undefined" && !workerRef.current) {
+        workerRef.current = new Worker("/workers/eventSourceWorker.js");
+        workerRef.current.postMessage({ userData: user_data });
+        console.log("Worker initialized.");
 
-          // Clear the previous batch timeout and set a new one
-          if (batchTimeout.current) clearTimeout(batchTimeout.current);
-          batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
-        } else if (type === "error") {
-          console.error("Worker error:", message, error);
-          workerRef.current?.terminate();
-        } else if (type === "finished") {
-          console.log("Worker has finished processing.");
-          processBatch(); // Process any remaining bookmarks
-          workerRef.current?.terminate();
-          setWorkerFinished(true);
-        }
-      };
-    }
+        workerRef.current.onmessage = (e) => {
+          const { type, data, message, error } = e.data;
+
+          if (type === "bookmark") {
+            // Push new bookmark data to the queue
+            messageQueue.current.push(data);
+
+            // Clear the previous batch timeout and set a new one
+            if (batchTimeout.current) clearTimeout(batchTimeout.current);
+            batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
+          } else if (type === "error") {
+            console.error("Worker error:", message, error);
+            workerRef.current?.terminate();
+          } else if (type === "finished") {
+            console.log("Worker has finished processing.");
+            processBatch(); // Process any remaining bookmarks
+            workerRef.current?.terminate();
+            setWorkerFinished(true);
+          }
+        };
+      }
+    };
+
+    // Call the async function inside useEffect
+    initWorker();
 
     // Cleanup function to terminate the worker on unmount
     return () => {
