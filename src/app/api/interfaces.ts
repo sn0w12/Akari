@@ -4,6 +4,7 @@ export interface Manga {
     imageUrl: string;
     name: string;
     authors: string[];
+    author_urls: string[];
     status: string;
     updated: string;
     view: string;

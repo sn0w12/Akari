@@ -314,14 +314,14 @@ export function MangaDetailsComponent({ id }: { id: string }) {
               <div>
                 <div className="text-lg mb-2">
                   Authors:
-                  {manga.authors.map((author) => (
+                  {manga.authors.map((author, index) => (
                     <Badge
-                      key={author}
+                      key={index}
                       className="bg-primary text-secondary ml-2"
                     >
                       <Link
                         href={`/author/${encodeURIComponent(
-                          author.replaceAll(" ", "_")
+                          manga.author_urls[index]?.split("/").pop() || ""
                         )}`}
                         className="hover:underline"
                       >
