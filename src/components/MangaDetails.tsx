@@ -40,6 +40,11 @@ async function fetchManga(id: string): Promise<Manga | null> {
 }
 
 async function fetchMalData(title: string): Promise<MalData | null> {
+  const cachedData = JSON.parse(localStorage.getItem(`mal_data`) || "{}");
+  if (cachedData[title]) {
+    return cachedData[title];
+  }
+
   try {
     const response = await fetch(
       `${window.location.origin}/api/manga/mal?title=${encodeURIComponent(
@@ -50,6 +55,8 @@ async function fetchMalData(title: string): Promise<MalData | null> {
       return null;
     }
     const data = await response.json();
+    cachedData[title] = data;
+    localStorage.setItem(`mal_data`, JSON.stringify(cachedData));
     return data;
   } catch (error) {
     return null;
