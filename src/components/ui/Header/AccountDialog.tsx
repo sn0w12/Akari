@@ -118,6 +118,7 @@ export default function LoginDialog() {
         }
       } else {
         setLoginError(data.error || "Login failed");
+        setCaptchaUrl("");
         fetchCaptcha();
       }
     } catch (error) {
