@@ -14,6 +14,18 @@ module.exports = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 's4.anilist.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.myanimelist.net',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

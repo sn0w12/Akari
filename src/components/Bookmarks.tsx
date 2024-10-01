@@ -77,6 +77,24 @@ export default function BookmarksPage() {
         throw new Error("Failed to fetch bookmarks.");
       }
       const data = await response.json();
+
+      const updateBookmarkImages = async (bookmarks: Bookmark[]) => {
+        await Promise.all(
+          bookmarks.map(async (bookmark: Bookmark) => {
+            const mangaCache = await db.getCache(
+              db.hqMangaCache,
+              bookmark.link_story?.split("/").pop() || ""
+            );
+            if (mangaCache && mangaCache?.imageUrl) {
+              bookmark.image = mangaCache.imageUrl;
+            }
+          })
+        );
+
+        return bookmarks;
+      };
+
+      data.bookmarks = await updateBookmarkImages(data.bookmarks);
       setBookmarks(data.bookmarks);
       setCurrentPage(data.page);
       setTotalPages(Number(data.totalPages));
