@@ -10,7 +10,7 @@ interface ReadingButtonProps {
 
 const ReadingButton: React.FC<ReadingButtonProps> = async ({ manga }) => {
   const mangaCache = await db.getCache(db.mangaCache, manga.identifier);
-  const lastRead = mangaCache.last_read;
+  const lastRead = mangaCache?.last_read;
   const getLinkText = () => {
     if (lastRead) {
       if (lastRead === manga.chapterList[0].id) {
