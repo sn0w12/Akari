@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import ScoreDisplay from "@/components/ui/scoreDisplay";
 import { distance } from "fastest-levenshtein";
 import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
 import ReadingButton from "./ui/MangaDetails/readingButton";
+import { debounce } from "lodash";
 
 interface MalData {
   titles: { type: string; title: string }[];
@@ -216,39 +217,44 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     }
   }
 
-  useEffect(() => {
-    // Fetch manga details
-    const loadManga = async () => {
-      setIsLoading(true);
-      const settings = JSON.parse(localStorage.getItem("settings") || "{}");
-      const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
-      const data = await fetchManga(id);
-      const malData = await fetchMalData(data?.name || "");
-      setBmData(bmDataArr[data?.mangaId || 0]);
-      if (data) {
-        setManga(data);
-        setIsLoading(false);
-        checkIfBookmarked(data.mangaId, setIsBookmarked);
-        if (
-          malData &&
-          compareTitle(data.name, malData.titles) &&
-          settings.fetchMalImage
-        ) {
-          console.log(data.name, malData.titles);
-          data.imageUrl = malData.imageUrl;
-        }
-        document.title = data?.name;
-      } else {
-        setError("Failed to load manga details");
-        setIsLoading(false);
+  const loadManga = useCallback(async () => {
+    setIsLoading(true);
+    const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+    const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
+    const data = await fetchManga(id);
+    const malData = await fetchMalData(data?.name || "");
+    setBmData(bmDataArr[data?.mangaId || 0]);
+    if (data) {
+      setManga(data);
+      setIsLoading(false);
+      checkIfBookmarked(data.mangaId, setIsBookmarked);
+      if (
+        malData &&
+        compareTitle(data.name, malData.titles) &&
+        settings.fetchMalImage
+      ) {
+        console.log(data.name, malData.titles);
+        data.imageUrl = malData.imageUrl;
       }
-    };
-
-    // Fetch bookmark status
-    if (!manga) {
-      loadManga();
+      document.title = data?.name;
+    } else {
+      setError("Failed to load manga details");
+      setIsLoading(false);
     }
   }, [id]);
+
+  const debouncedLoadManga = useCallback(debounce(loadManga, 10), [loadManga]);
+
+  useEffect(() => {
+    if (!manga) {
+      debouncedLoadManga();
+    }
+
+    // Cleanup debounce on unmount
+    return () => {
+      debouncedLoadManga.cancel();
+    };
+  }, [debouncedLoadManga, manga]);
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
