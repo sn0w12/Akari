@@ -161,7 +161,6 @@ export function HeaderComponent() {
         `/api/bookmarks/notification?user_data=${accountInfo}`
       );
       const data = await res.json();
-      console.log(data);
       setNotification(data);
     } catch (error) {
       console.error("Error fetching search results:", error);
