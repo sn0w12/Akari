@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Combo } from "@/components/ui/combo";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
+import { debounce } from "lodash";
 
 interface Manga {
   id: string;
@@ -50,8 +51,8 @@ export default function GenrePage({ params }: PageProps) {
   );
 
   // Fetch manga list when currentPage changes
-  useEffect(() => {
-    const fetchMangaList = async (page: number, sort: string) => {
+  const fetchMangaList = useCallback(
+    async (page: number, sort: string) => {
       setIsLoading(true); // Set loading state
       try {
         const response = await fetch(
@@ -68,13 +69,24 @@ export default function GenrePage({ params }: PageProps) {
         setError("Error fetching manga list. Please try again later.");
         setIsLoading(false);
       }
-    };
+    },
+    [params.id]
+  );
 
-    // Only fetch when currentPage or sortOption changes
+  const debouncedFetchMangaList = useCallback(debounce(fetchMangaList, 10), [
+    fetchMangaList,
+  ]);
+
+  useEffect(() => {
     if (currentPage && sortOption) {
-      fetchMangaList(currentPage, sortOption);
+      debouncedFetchMangaList(currentPage, sortOption);
     }
-  }, [currentPage, sortOption]);
+
+    // Cleanup to cancel the debounced function when the component unmounts or dependencies change
+    return () => {
+      debouncedFetchMangaList.cancel();
+    };
+  }, [currentPage, sortOption, debouncedFetchMangaList]);
 
   // Update the URL when the page changes and avoid re-triggering fetch
   const updateUrl = (page: number, sort: string) => {
