@@ -192,6 +192,7 @@ const formatChapterDate = (date: string) => {
 
 export function MangaDetailsComponent({ id }: { id: string }) {
   const [manga, setManga] = useState<Manga | null>(null);
+  const [image, setImage] = useState<string>("");
   const [bmData, setBmData] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -229,21 +230,23 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     const settings = JSON.parse(localStorage.getItem("settings") || "{}");
     const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
     const data = await fetchManga(id);
-    const malData = await fetchMalData(data?.name || "");
     setBmData(bmDataArr[data?.mangaId || 0]);
     if (data) {
       setManga(data);
-      setIsLoading(false);
+      setImage(data.imageUrl);
       checkIfBookmarked(data.mangaId, setIsBookmarked);
+      document.title = data?.name;
+      setIsLoading(false);
+
+      const malData = await fetchMalData(data?.name || "");
       if (
         malData &&
         compareTitle(data.name, malData.titles) &&
         settings.fetchMalImage
       ) {
         console.log(data.name, malData.titles);
-        data.imageUrl = malData.imageUrl;
+        setImage(malData.imageUrl);
       }
-      document.title = data?.name;
     } else {
       setError("Failed to load manga details");
       setIsLoading(false);
@@ -307,7 +310,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       <div className="flex flex-col md:flex-row gap-8 mb-8 items-stretch h-auto">
         <div className="flex-shrink-0 relative h-128">
           <img
-            src={manga.imageUrl}
+            src={image}
             alt={manga.name}
             className="rounded-lg shadow-lg object-cover h-full w-auto max-w-lg"
           />
