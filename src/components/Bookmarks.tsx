@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { BookmarkPlus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Fuse from "fuse.js";
@@ -16,6 +16,7 @@ import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";
 import { debounce } from "lodash";
 import db from "@/lib/db";
+import { getHqImage } from "@/hooks/manga";
 
 interface Bookmark {
   noteid: string;
@@ -81,13 +82,10 @@ export default function BookmarksPage() {
       const updateBookmarkImages = async (bookmarks: Bookmark[]) => {
         await Promise.all(
           bookmarks.map(async (bookmark: Bookmark) => {
-            const mangaCache = await db.getCache(
-              db.hqMangaCache,
-              bookmark.link_story?.split("/").pop() || ""
+            bookmark.image = await getHqImage(
+              bookmark.link_story?.split("/").pop() || "",
+              bookmark.image
             );
-            if (mangaCache && mangaCache?.imageUrl) {
-              bookmark.image = mangaCache.imageUrl;
-            }
           })
         );
 
