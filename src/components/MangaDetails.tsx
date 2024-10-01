@@ -193,6 +193,7 @@ const formatChapterDate = (date: string) => {
 export function MangaDetailsComponent({ id }: { id: string }) {
   const [manga, setManga] = useState<Manga | null>(null);
   const [image, setImage] = useState<string>("");
+  const [lastRead, setLastRead] = useState<string>("");
   const [bmData, setBmData] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -225,6 +226,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     }
   }
 
+  async function getLastReadChapter(manga: Manga) {
+    const lastReadCache = JSON.parse(localStorage.getItem("last_read") || "{}");
+    const lastRead = lastReadCache[manga.mangaId];
+    setLastRead(lastRead || "");
+  }
+
   const loadManga = useCallback(async () => {
     setIsLoading(true);
     const settings = JSON.parse(localStorage.getItem("settings") || "{}");
@@ -235,6 +242,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       setManga(data);
       setImage(data.imageUrl);
       checkIfBookmarked(data.mangaId, setIsBookmarked);
+      getLastReadChapter(data);
       document.title = data?.name;
       setIsLoading(false);
 
@@ -438,15 +446,33 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             href={`${window.location.pathname}/${chapter.id}`}
             key={chapter.id}
           >
-            <Card className="h-full hover:bg-accent transition-colors">
+            <Card
+              className={`h-full transition-colors ${
+                chapter.id === lastRead
+                  ? "bg-green-500 hover:bg-green-400"
+                  : "hover:bg-accent"
+              }`}
+            >
               <CardContent className="p-4">
-                <h3 className="font-semibold mb-2 line-clamp-2">
+                <h3
+                  className={`font-semibold mb-2 line-clamp-2 ${
+                    chapter.id === lastRead ? "text-zinc-950" : ""
+                  }`}
+                >
                   {chapter.name}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p
+                  className={`text-sm text-muted-foreground ${
+                    chapter.id === lastRead ? "text-zinc-900" : ""
+                  }`}
+                >
                   Views: {chapter.view}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p
+                  className={`text-sm text-muted-foreground ${
+                    chapter.id === lastRead ? "text-zinc-900" : ""
+                  }`}
+                >
                   Released: {formatChapterDate(chapter.createdAt)}
                 </p>
               </CardContent>
