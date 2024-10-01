@@ -9,6 +9,7 @@ import { Chapter } from "@/app/api/interfaces";
 import PageProgress from "@/components/ui/pageProgress";
 import Image from "next/image";
 import { Combo } from "@/components/ui/combo";
+import { debounce } from "lodash";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -115,28 +116,37 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   }, [chapterData]);
 
   // Fetch the chapter data
-  useEffect(() => {
+  const fetchChapter = useCallback(async () => {
     const user_data = localStorage.getItem("accountInfo");
     const user_name = localStorage.getItem("accountName");
-    const fetchChapter = async () => {
-      const response = await fetch(
-        `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}`
-      );
-      const data: Chapter = await response.json();
-      setChapterData(data);
-      document.title = `${data.title} - ${data.chapter}`;
+    const response = await fetch(
+      `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}`
+    );
+    const data = await response.json();
+    setChapterData(data);
+    document.title = `${data.title} - ${data.chapter}`;
 
-      data.images.forEach((image) => {
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
-        link.href = `/api/image-proxy?imageUrl=${encodeURIComponent(image)}`;
-        document.head.appendChild(link);
-      });
-    };
-
-    fetchChapter();
+    data.images.forEach((image: string) => {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = `/api/image-proxy?imageUrl=${encodeURIComponent(image)}`;
+      document.head.appendChild(link);
+    });
   }, [id, subId]);
+
+  const debouncedFetchChapter = useCallback(debounce(fetchChapter, 10), [
+    fetchChapter,
+  ]);
+
+  useEffect(() => {
+    debouncedFetchChapter();
+
+    // Cleanup to cancel the debounced function when component unmounts or id/subId changes
+    return () => {
+      debouncedFetchChapter.cancel();
+    };
+  }, [debouncedFetchChapter]);
 
   // Navigate to the next page
   const nextPage = useCallback(() => {
