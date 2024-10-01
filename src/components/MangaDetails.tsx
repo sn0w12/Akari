@@ -222,7 +222,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
       cachedManga.hq = data;
       await db.setCache(db.mangaCache, identifier, cachedManga);
-      return data;
+      return cachedManga;
     } catch (error) {
       return null;
     }
