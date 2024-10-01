@@ -13,7 +13,7 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga }) => {
   const getLinkText = () => {
     if (lastRead) {
       if (lastRead === manga.chapterList[0].id) {
-        return "Caught Up";
+        return "Up To Date";
       }
       return "Continue Reading";
     } else {
