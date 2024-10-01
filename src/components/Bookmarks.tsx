@@ -16,7 +16,7 @@ import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";
 import { debounce } from "lodash";
 import db from "@/lib/db";
-import { getHqImage } from "@/hooks/manga";
+import { getHqImage } from "@/lib/utils";
 
 interface Bookmark {
   noteid: string;
