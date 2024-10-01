@@ -118,6 +118,7 @@ export default function LoginDialog() {
         }
       } else {
         setLoginError(data.error || "Login failed");
+        fetchCaptcha();
       }
     } catch (error) {
       setLoginError("An error occurred during login.");
