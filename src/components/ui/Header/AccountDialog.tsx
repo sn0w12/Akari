@@ -221,18 +221,20 @@ export default function LoginDialog() {
                 {/* CAPTCHA Field */}
                 {!captchaUrl && <CenteredSpinner />}
                 {captchaUrl && (
-                  <div className="mt-4">
-                    <img src={captchaUrl} alt="CAPTCHA" className="mb-2" />
-                    <label className="block text-sm font-medium mb-2">
-                      CAPTCHA
-                    </label>
-                    <Input
-                      type="text"
-                      placeholder="Enter CAPTCHA..."
-                      className="w-full"
-                      value={captcha}
-                      onChange={(e) => setCaptcha(e.target.value)}
-                    />
+                  <div className="mt-4 flex items-center">
+                    <img src={captchaUrl} alt="CAPTCHA" className="mr-2 w-auto h-full" />
+                    <div className="w-full">
+                      <label className="block text-sm font-medium mb-2">
+                        CAPTCHA
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Enter CAPTCHA..."
+                        className="w-full"
+                        value={captcha}
+                        onChange={(e) => setCaptcha(e.target.value)}
+                      />
+                    </div>
                   </div>
                 )}
 
