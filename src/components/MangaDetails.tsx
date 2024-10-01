@@ -195,13 +195,11 @@ export function MangaDetailsComponent({ id }: { id: string }) {
   }
 
   async function fetchMalData(identifier: string) {
-    const cachedManga = await db.getCache(db.mangaCache, identifier);
+    let cachedManga = await db.getCache(db.hqMangaCache, identifier);
     if (cachedManga) {
-      if (cachedManga.hq) {
-        setMalLink(cachedManga.hq.malUrl);
-        setAniLink(cachedManga.hq.aniUrl);
-        return cachedManga;
-      }
+      setMalLink(cachedManga.malUrl);
+      setAniLink(cachedManga.aniUrl);
+      return cachedManga;
     }
 
     try {
@@ -220,8 +218,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       data["malUrl"] = malSyncResponseData.malUrl;
       data["aniUrl"] = malSyncResponseData.aniUrl;
 
-      cachedManga.hq = data;
-      await db.setCache(db.mangaCache, identifier, cachedManga);
+      cachedManga = data;
+      await db.setCache(db.hqMangaCache, identifier, cachedManga);
       return cachedManga;
     } catch (error) {
       return null;
@@ -246,7 +244,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
       const malData = await fetchMalData(data?.identifier || "");
       if (malData && settings.fetchMalImage) {
-        setImage(malData.hq.imageUrl);
+        setImage(malData.imageUrl);
       }
 
       setIsLoading(false);

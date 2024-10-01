@@ -11,18 +11,21 @@ export interface CacheItem<T> {
 class CacheDatabase extends Dexie {
   public bookmarkCache: Dexie.Table<CacheItem<any>, string>;
   public mangaCache: Dexie.Table<CacheItem<any>, string>;
+  public hqMangaCache: Dexie.Table<CacheItem<any>, string>;
 
   constructor() {
     super('MangaReaderCache');
 
     // Define multiple stores/caches for different data types
     this.version(1).stores({
-      bookmarkCache: 'key, timestamp',
-      mangaCache: 'key, timestamp',
+        bookmarkCache: 'key, timestamp',
+        mangaCache: 'key, timestamp',
+        hqMangaCache: 'key, timestamp',
     });
 
     this.bookmarkCache = this.table('bookmarkCache');
     this.mangaCache = this.table('mangaCache');
+    this.hqMangaCache = this.table('hqMangaCache');
   }
 
 /**
