@@ -104,8 +104,9 @@ const useSettings = () => {
 export function HeaderComponent() {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [notification, setNotification] = useState("");
   const { theme, toggleTheme } = useTheme();
   const { accountInfo, setAccountInfo } = useAccountInfo();
   const { accountName, setAccountName } = useAccountName();
@@ -116,7 +117,7 @@ export function HeaderComponent() {
   const debouncedFetchResults = useCallback(
     debounce(async (query) => {
       if (query) {
-        setIsLoading(true);
+        setIsSearchLoading(true);
         setShowPopup(true);
         try {
           const res = await fetch(
@@ -128,7 +129,7 @@ export function HeaderComponent() {
         } catch (error) {
           console.error("Error fetching search results:", error);
         } finally {
-          setIsLoading(false);
+          setIsSearchLoading(false);
         }
       } else {
         setSearchResults([]);
@@ -154,6 +155,35 @@ export function HeaderComponent() {
     }
   };
 
+  const fetchNotification = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/bookmarks/notification?user_data=${accountInfo}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setNotification(data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  }, [accountInfo]);
+
+  const debouncedFetchNotification = useCallback(
+    debounce(fetchNotification, 10),
+    [fetchNotification]
+  );
+
+  useEffect(() => {
+    if (accountInfo) {
+      debouncedFetchNotification();
+    }
+
+    // Cleanup to cancel the debounced function when the component unmounts or dependencies change
+    return () => {
+      debouncedFetchNotification.cancel();
+    };
+  }, [accountInfo, debouncedFetchNotification]);
+
   return (
     <header className="sticky top-0 z-10 bg-background border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -175,7 +205,7 @@ export function HeaderComponent() {
             {showPopup && (
               <Card ref={popupRef} className="absolute z-10 w-full mt-1">
                 <CardContent className="p-2">
-                  {isLoading ? (
+                  {isSearchLoading ? (
                     <CenteredSpinner />
                   ) : searchResults.length > 0 ? (
                     searchResults.map((result: Manga) => (
@@ -202,9 +232,24 @@ export function HeaderComponent() {
             )}
           </div>
           <Link href="/bookmarks">
-            <Button variant="ghost" size="icon">
-              <Bookmark className="h-5 w-5" />
-            </Button>
+            <div className="relative group">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="group-hover:bg-accent"
+              >
+                <Bookmark className="h-5 w-5" />
+              </Button>
+              {/* Badge element */}
+              {notification && (
+                <span
+                  className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
+                  style={{ bottom: "0", right: "0" }}
+                >
+                  {notification}
+                </span>
+              )}
+            </div>
           </Link>
 
           {/* Account Information Dialog */}
