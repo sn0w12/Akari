@@ -328,7 +328,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
               {aniLink && (
                 <a href={aniLink} target="_blank" rel="noopener noreferrer">
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg"
+                    src="/img/AniList-logo.png"
                     alt="AniList Logo"
                     className="h-10 ml-2 rounded hover:opacity-75"
                   />
@@ -337,7 +337,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
               {malLink && (
                 <a href={malLink} target="_blank" rel="noopener noreferrer">
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png"
+                    src="/img/MAL-logo.png"
                     alt="MyAnimeList Logo"
                     className="h-10 ml-2 rounded hover:opacity-75"
                   />
