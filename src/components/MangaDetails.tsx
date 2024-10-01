@@ -243,12 +243,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       setImage(data.imageUrl);
       checkIfBookmarked(data.mangaId, setIsBookmarked);
       document.title = data?.name;
-      setIsLoading(false);
 
       const malData = await fetchMalData(data?.identifier || "");
       if (malData && settings.fetchMalImage) {
         setImage(malData.hq.imageUrl);
       }
+
+      setIsLoading(false);
     } else {
       setError("Failed to load manga details");
       setIsLoading(false);
