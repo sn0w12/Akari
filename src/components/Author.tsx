@@ -9,6 +9,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { debounce } from "lodash";
+import nextBase64 from "next-base64";
 
 interface Manga {
   id: string;
@@ -49,7 +50,6 @@ export default function AuthorPage({ params }: PageProps) {
   const [sortOption, setSortOption] = useState<string>(
     searchParams.get("sort") || "latest"
   );
-  const [mostCommonAuthor, setMostCommonAuthor] = useState<string | null>(null);
 
   // Fetch manga list when currentPage changes
   const fetchMangaList = useCallback(
@@ -63,23 +63,6 @@ export default function AuthorPage({ params }: PageProps) {
           throw new Error("Failed to fetch manga list");
         }
         const data: MangaListResponse = await response.json();
-
-        const authorCounts: { [key: string]: number } = {};
-        data.mangaList.forEach((manga) => {
-          manga.author.split(",").forEach((author) => {
-            const trimmedAuthor = author.trim();
-            if (authorCounts[trimmedAuthor]) {
-              authorCounts[trimmedAuthor]++;
-            } else {
-              authorCounts[trimmedAuthor] = 1;
-            }
-          });
-        });
-
-        const mostCommonAuthor = Object.keys(authorCounts).reduce((a, b) =>
-          authorCounts[a] > authorCounts[b] ? a : b
-        );
-        setMostCommonAuthor(mostCommonAuthor);
 
         setMangaList(data.mangaList);
         setTotalPages(data.metaData.totalPages);
@@ -137,7 +120,15 @@ export default function AuthorPage({ params }: PageProps) {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="flex gap-4">
-          <h2 className={`text-3xl font-bold mb-6`}>{mostCommonAuthor}</h2>
+          <h2 className={`text-3xl font-bold mb-6`}>
+            {nextBase64
+              .decode(params.id)
+              .replaceAll("_", " ")
+              .replaceAll("|", " ")
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")}
+          </h2>
           <Combo
             value={sortOption}
             onChange={handleSortChange}
