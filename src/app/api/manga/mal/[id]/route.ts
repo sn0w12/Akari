@@ -1,19 +1,19 @@
 import axios from 'axios';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request): Promise<Response> {
-  const { searchParams } = new URL(req.url);
-  const apiEndpoint = `https://api.jikan.moe/v4/manga?q=${encodeURIComponent(searchParams.get('title') || '')}&limit=1`;
+export async function GET(req: Request, { params }: { params: { id: string } }): Promise<Response> {
+  const apiEndpoint = `https://api.jikan.moe/v4/manga/${params.id}`;
 
   try {
     const request = await axios.get(apiEndpoint);
-    const manga = request.data.data[0]; // Retrieve the first result
+    const manga = request.data.data; // Retrieve the first result
 
     const response = {
         titles: manga.titles,
         imageUrl: manga.images.webp.large_image_url,
         url: manga.url,
-        score: manga.scored,
+        score: manga.scored / 2,
+        description: manga.synopsis,
     }
 
     return new NextResponse(JSON.stringify(response), {

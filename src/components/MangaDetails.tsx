@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown } from "lucide-react";
 import PaginationElement from "@/components/ui/paginationElement";
-import { Manga } from "@/app/api/interfaces";
+import { Manga, MalSync } from "@/app/api/interfaces";
 import React from "react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
@@ -39,59 +39,25 @@ async function fetchManga(id: string): Promise<Manga | null> {
   }
 }
 
-async function fetchMalData(title: string): Promise<MalData | null> {
-  const cachedData = JSON.parse(localStorage.getItem(`mal_data`) || "{}");
-  if (cachedData[title]) {
-    return cachedData[title];
-  }
+async function getHqData(malSyncData: MalSync) {
+  let service;
+  let id;
+  if (malSyncData.malId) {
+    service = "mal";
+    id = malSyncData.malId;
+  } else if (malSyncData.aniId) {
+    service = "ani";
+    id = malSyncData.aniId;
+  } else return null;
 
-  try {
-    const response = await fetch(
-      `${window.location.origin}/api/manga/mal?title=${encodeURIComponent(
-        title
-      )}`
-    );
-    if (!response.ok) {
-      return null;
-    }
-    const data = await response.json();
-    cachedData[title] = data;
-    localStorage.setItem(`mal_data`, JSON.stringify(cachedData));
-    return data;
-  } catch (error) {
+  const response = await fetch(
+    `${window.location.origin}/api/manga/${service}/${id}`
+  );
+  if (!response.ok) {
     return null;
   }
-}
-
-function normalizeTitle(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s]/gi, "")
-    .trim();
-}
-
-function compareTitle(
-  origTitle: string,
-  titles: { type: string; title: string }[],
-  maxDiff: number = 5
-): boolean {
-  const normalizedOrigTitle = normalizeTitle(origTitle);
-
-  return titles.some(({ title }) => {
-    const normalizedTitle = normalizeTitle(title);
-
-    // Check if one title is a substring of the other and at least 50% of the title
-    if (
-      (normalizedOrigTitle.includes(normalizedTitle) &&
-        normalizedTitle.length / normalizedOrigTitle.length >= 0.5) ||
-      (normalizedTitle.includes(normalizedOrigTitle) &&
-        normalizedOrigTitle.length / normalizedTitle.length >= 0.5)
-    ) {
-      return true;
-    }
-    // Check Levenshtein distance
-    return distance(normalizedOrigTitle, normalizedTitle) <= maxDiff;
-  });
+  const data = await response.json();
+  return data;
 }
 
 async function checkIfBookmarked(
@@ -200,6 +166,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
   const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
+  const [malLink, setMalLink] = useState<string | null>(null);
+  const [aniLink, setAniLink] = useState<string | null>(null);
   const chaptersPerPage = 24;
 
   async function removeBookmark(setIsBookmarked: (value: boolean) => void) {
@@ -232,12 +200,45 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     setLastRead(lastRead || "");
   }
 
+  async function fetchMalData(identifier: string): Promise<MalData | null> {
+    const cachedData = JSON.parse(localStorage.getItem(`mal_data`) || "{}");
+    if (cachedData[identifier]) {
+      setMalLink(cachedData[identifier].malUrl);
+      setAniLink(cachedData[identifier].aniUrl);
+      return cachedData[identifier];
+    }
+
+    try {
+      const malSyncResponse = await fetch(
+        `${window.location.origin}/api/manga/malsync/${encodeURIComponent(
+          identifier
+        )}`
+      );
+      if (!malSyncResponse.ok) {
+        return null;
+      }
+      const malSyncResponseData: MalSync = await malSyncResponse.json();
+      setMalLink(malSyncResponseData.malUrl);
+      setAniLink(malSyncResponseData.aniUrl);
+      const data = await getHqData(malSyncResponseData);
+      data["malUrl"] = malSyncResponseData.malUrl;
+      data["aniUrl"] = malSyncResponseData.aniUrl;
+
+      cachedData[identifier] = data;
+      localStorage.setItem(`mal_data`, JSON.stringify(cachedData));
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
   const loadManga = useCallback(async () => {
     setIsLoading(true);
     const settings = JSON.parse(localStorage.getItem("settings") || "{}");
     const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
     const data = await fetchManga(id);
     setBmData(bmDataArr[data?.mangaId || 0]);
+
     if (data) {
       setManga(data);
       setImage(data.imageUrl);
@@ -246,12 +247,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       document.title = data?.name;
       setIsLoading(false);
 
-      const malData = await fetchMalData(data?.name || "");
-      if (
-        malData &&
-        compareTitle(data.name, malData.titles) &&
-        settings.fetchMalImage
-      ) {
+      const malData = await fetchMalData(data?.identifier || "");
+      if (malData && settings.fetchMalImage) {
         console.log(data.name, malData.titles);
         setImage(malData.imageUrl);
       }
@@ -327,9 +324,29 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         {/* Card with flex layout to lock title and buttons */}
         <Card className="p-6 flex flex-col justify-between flex-grow">
           {/* Title stays at the top */}
-          <h1 className="text-3xl font-bold mb-4 border-b pb-2">
-            {manga.name}
-          </h1>
+          <div className="flex items-center justify-between mb-4 border-b pb-2">
+            <h1 className="text-3xl font-bold">{manga.name}</h1>
+            <div className="flex">
+              {aniLink && (
+                <a href={aniLink} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg"
+                    alt="AniList Logo"
+                    className="h-10 ml-2 rounded hover:opacity-75"
+                  />
+                </a>
+              )}
+              {malLink && (
+                <a href={malLink} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png"
+                    alt="MyAnimeList Logo"
+                    className="h-10 ml-2 rounded hover:opacity-75"
+                  />
+                </a>
+              )}
+            </div>
+          </div>
 
           {/* Middle section grows as needed */}
           <div className="flex flex-col md:flex-row gap-8 flex-grow">

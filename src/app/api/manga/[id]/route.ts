@@ -20,6 +20,7 @@ interface Chapter {
 
 interface MangaDetails {
   mangaId: string | null;
+  identifier: string;
   storyData: string | null;
   imageUrl: string | undefined;
   name: string;
@@ -70,6 +71,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
       const html = response.data;
       const $ = cheerio.load(html);
 
+      const identifier = url.split('/').pop() || '';
       const imageUrl = $('.story-info-left .info-image img').attr('src');
       const name = $('.story-info-right h1').text();
       const alternativeTitles = $('.variations-tableInfo .info-alternative').parent().find('h2').text().trim();
@@ -131,6 +133,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
 
       return {
         mangaId,
+        identifier,
         storyData: glbStoryData,
         imageUrl,
         name,

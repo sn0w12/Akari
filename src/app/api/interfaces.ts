@@ -1,5 +1,6 @@
 export interface Manga {
     mangaId: string;
+    identifier: string;
     storyData: string;
     imageUrl: string;
     name: string;
@@ -18,6 +19,19 @@ export interface Manga {
       view: string;
       createdAt: string;
     }[]
+}
+
+export interface MalSync {
+  identifier: string;
+  image: string;
+  malId: number;
+  aniId: number;
+  page: string;
+  title: string;
+  type: string;
+  url: string;
+  malUrl: string;
+  aniUrl: string;
 }
 
 export interface Chapter {
