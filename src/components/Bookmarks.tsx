@@ -15,6 +15,7 @@ import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";
 import { debounce } from "lodash";
+import db from "@/lib/db";
 
 interface Bookmark {
   noteid: string;
@@ -140,23 +141,17 @@ export default function BookmarksPage() {
         return [...prevBookmarks, ...uniqueBookmarks];
       });
 
-      // Update localStorage once per batch
-      const storedData = JSON.parse(localStorage.getItem("bm_data") || "{}");
-      const lastReadData = JSON.parse(
-        localStorage.getItem("last_read") || "{}"
-      );
-      const linkIdMap = JSON.parse(localStorage.getItem("link_id_map") || "{}");
       messageQueue.current.forEach((bookmark) => {
-        storedData[bookmark.storyid] = bookmark.bm_data;
-        lastReadData[bookmark.storyid] = bookmark.link_chapter_now
-          .split("/")
-          .pop();
-        const linkStoryId = bookmark.link_story.split("/").pop() || "";
-        linkIdMap[linkStoryId] = bookmark.storyid;
+        const cacheObject = {
+          bm_data: bookmark.bm_data,
+          last_read: bookmark.link_chapter_now.split("/").pop(),
+          id: bookmark.storyid,
+        };
+        const storyId = bookmark.link_story.split("/").pop();
+        if (storyId) {
+          db.setCache(db.mangaCache, storyId, cacheObject);
+        }
       });
-      localStorage.setItem("bm_data", JSON.stringify(storedData));
-      localStorage.setItem("last_read", JSON.stringify(lastReadData));
-      localStorage.setItem("link_id_map", JSON.stringify(linkIdMap));
 
       // Clear the queue
       messageQueue.current = [];

@@ -11,10 +11,10 @@ import { Manga, MalSync } from "@/app/api/interfaces";
 import React from "react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/scoreDisplay";
-import { distance } from "fastest-levenshtein";
 import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
 import ReadingButton from "./ui/MangaDetails/readingButton";
 import { debounce } from "lodash";
+import db from "@/lib/db";
 
 interface MalData {
   titles: { type: string; title: string }[];
@@ -194,18 +194,14 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     }
   }
 
-  async function getLastReadChapter(manga: Manga) {
-    const lastReadCache = JSON.parse(localStorage.getItem("last_read") || "{}");
-    const lastRead = lastReadCache[manga.mangaId];
-    setLastRead(lastRead || "");
-  }
-
-  async function fetchMalData(identifier: string): Promise<MalData | null> {
-    const cachedData = JSON.parse(localStorage.getItem(`mal_data`) || "{}");
-    if (cachedData[identifier]) {
-      setMalLink(cachedData[identifier].malUrl);
-      setAniLink(cachedData[identifier].aniUrl);
-      return cachedData[identifier];
+  async function fetchMalData(identifier: string) {
+    const cachedManga = await db.getCache(db.mangaCache, identifier);
+    if (cachedManga) {
+      if (cachedManga.hq) {
+        setMalLink(cachedManga.hq.malUrl);
+        setAniLink(cachedManga.hq.aniUrl);
+        return cachedManga;
+      }
     }
 
     try {
@@ -224,8 +220,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       data["malUrl"] = malSyncResponseData.malUrl;
       data["aniUrl"] = malSyncResponseData.aniUrl;
 
-      cachedData[identifier] = data;
-      localStorage.setItem(`mal_data`, JSON.stringify(cachedData));
+      cachedManga.hq = data;
+      await db.setCache(db.mangaCache, identifier, cachedManga);
       return data;
     } catch (error) {
       return null;
@@ -235,22 +231,23 @@ export function MangaDetailsComponent({ id }: { id: string }) {
   const loadManga = useCallback(async () => {
     setIsLoading(true);
     const settings = JSON.parse(localStorage.getItem("settings") || "{}");
-    const bmDataArr = JSON.parse(localStorage.getItem("bm_data") || "{}");
     const data = await fetchManga(id);
-    setBmData(bmDataArr[data?.mangaId || 0]);
+    const cachedData = await db.getCache(db.mangaCache, data?.identifier || "");
+    if (cachedData) {
+      setBmData(cachedData.bm_data);
+      setLastRead(cachedData.last_read);
+    }
 
     if (data) {
       setManga(data);
       setImage(data.imageUrl);
       checkIfBookmarked(data.mangaId, setIsBookmarked);
-      getLastReadChapter(data);
       document.title = data?.name;
       setIsLoading(false);
 
       const malData = await fetchMalData(data?.identifier || "");
       if (malData && settings.fetchMalImage) {
-        console.log(data.name, malData.titles);
-        setImage(malData.imageUrl);
+        setImage(malData.hq.imageUrl);
       }
     } else {
       setError("Failed to load manga details");

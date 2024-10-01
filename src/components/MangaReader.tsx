@@ -10,6 +10,7 @@ import PageProgress from "@/components/ui/pageProgress";
 import Image from "next/image";
 import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
+import db from "@/lib/db";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -34,6 +35,12 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     return () => clearInterval(interval);
   }, []);
 
+  async function setCache(mangaId: string, lastRead: string) {
+    const cachedData = (await db.getCache(db.mangaCache, mangaId)) ?? {};
+    cachedData.last_read = lastRead;
+    await db.setCache(db.mangaCache, mangaId, cachedData);
+  }
+
   useEffect(() => {
     if (!chapterData || bookmarkUpdatedRef.current) return;
 
@@ -49,37 +56,35 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       updateBookmark(chapterData);
       bookmarkUpdatedRef.current = true;
 
-      const lastReadData = JSON.parse(
-        localStorage.getItem("last_read") || "{}"
+      setCache(
+        chapterData.parentId,
+        window.location.href.split("/").pop() || ""
       );
-      const linkIdMap = JSON.parse(localStorage.getItem("link_id_map") || "{}");
-      lastReadData[linkIdMap[chapterData.parentId]] = window.location.href
-        .split("/")
-        .pop();
-      localStorage.setItem("last_read", JSON.stringify(lastReadData));
     }
   }, [chapterData, currentPage, timeElapsed]);
 
   // Detect if the majority of images have a long aspect ratio
   useEffect(() => {
     if (chapterData && chapterData.images.length > 0) {
-      const stripModeCache = JSON.parse(
-        localStorage.getItem("strip_mode_cache") || "{}"
-      );
-      if (stripModeCache[chapterData.parentId] === true) {
-        setIsStripMode(true);
-        return;
-      } else if (stripModeCache[chapterData.parentId] === false) {
-        setIsStripMode(false);
-        return;
-      }
-
-      let longImageCount = 0;
       const maxImagesToCheck = 5; // Limit the number of images to check
       const imagesToCheck = chapterData.images.slice(0, maxImagesToCheck);
 
       const checkSelectedImages = async () => {
-        // Fetch dimensions for all images concurrently
+        // Fetch strip mode cache from Dexie (asynchronous operation)
+        const mangaCache =
+          (await db.getCache(db.mangaCache, chapterData.parentId)) ?? {};
+
+        // Check if the chapter's parentId is cached
+        if (mangaCache?.is_strip === true) {
+          setIsStripMode(true);
+          return;
+        } else if (mangaCache?.is_strip === false) {
+          setIsStripMode(false);
+          return;
+        }
+
+        // If not cached, calculate the strip mode based on image dimensions
+        let longImageCount = 0;
         const dimensionPromises = imagesToCheck.map(async (img) => {
           try {
             const response = await fetch(
@@ -97,20 +102,16 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
         await Promise.all(dimensionPromises);
 
-        // If more than half of the checked images are long, switch to strip mode
-        if (longImageCount > imagesToCheck.length / 2) {
-          setIsStripMode(true);
-          stripModeCache[chapterData.parentId] = true;
-        } else {
-          setIsStripMode(false);
-          stripModeCache[chapterData.parentId] = false;
-        }
-        localStorage.setItem(
-          "strip_mode_cache",
-          JSON.stringify(stripModeCache)
-        );
+        // Determine if strip mode should be enabled and cache the result
+        const isStripMode = longImageCount > imagesToCheck.length / 2;
+        setIsStripMode(isStripMode);
+
+        // Update the cache with the new value
+        mangaCache.is_strip = isStripMode;
+        await db.setCache(db.mangaCache, chapterData.parentId, mangaCache);
       };
 
+      // Call the async function inside useEffect
       checkSelectedImages();
     }
   }, [chapterData]);
