@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
+import { debounce } from "lodash";
 
 interface Manga {
   id: string;
@@ -49,32 +50,40 @@ export default function MangaReaderHome() {
   const totalPopularPages = Math.ceil(popularList.length / itemsPerPage);
 
   // Fetch manga list when currentPage changes
-  useEffect(() => {
-    const fetchMangaList = async (page: number) => {
-      setIsLoading(true); // Set loading state
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/manga-list/latest?page=${page}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch manga list");
-        }
-        const data: MangaListResponse = await response.json();
-        setMangaList(data.mangaList);
-        setPopularList(data.popular);
-        setTotalPages(data.metaData.totalPages);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Error fetching manga list. Please try again later.");
-        setIsLoading(false);
+  const fetchMangaList = useCallback(async (page: number) => {
+    setIsLoading(true); // Set loading state
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/manga-list/latest?page=${page}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch manga list");
       }
-    };
-
-    // Only fetch when currentPage changes
-    if (currentPage) {
-      fetchMangaList(currentPage);
+      const data: MangaListResponse = await response.json();
+      setMangaList(data.mangaList);
+      setPopularList(data.popular);
+      setTotalPages(data.metaData.totalPages);
+      setIsLoading(false);
+    } catch (err) {
+      setError("Error fetching manga list. Please try again later.");
+      setIsLoading(false);
     }
-  }, [currentPage]);
+  }, []);
+
+  const debouncedFetchMangaList = useCallback(debounce(fetchMangaList, 10), [
+    fetchMangaList,
+  ]);
+
+  useEffect(() => {
+    if (currentPage) {
+      debouncedFetchMangaList(currentPage);
+    }
+
+    // Cleanup to cancel the debounced function when the component unmounts or currentPage changes
+    return () => {
+      debouncedFetchMangaList.cancel();
+    };
+  }, [currentPage, debouncedFetchMangaList]);
 
   // Update the URL when the page changes and avoid re-triggering fetch
   const updateUrl = (page: number) => {
