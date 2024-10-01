@@ -56,9 +56,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       let views: string | undefined;
       let date: string | undefined;
 
-      $('.item-time').each((i, timeElement) => {
-        if (i === 0) views = $(timeElement).text();
-        if (i === 1) date = $(timeElement).text();
+      mangaElement.find('.item-time').each((i, timeElement) => {
+        if (i === 0) date = $(timeElement).text();
+        if (i === 1) views = $(timeElement).text();
       });
 
       mangaList.push({
@@ -69,6 +69,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         chapterUrl: chapterUrl,
         rating: rating,
         author: author,
+        views: views?.replace("View : ", ""),
       });
     });
 
