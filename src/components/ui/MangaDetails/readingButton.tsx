@@ -22,6 +22,14 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga }) => {
   };
 
   const text = getLinkText();
+
+  if (manga.chapterList.length === 0) {
+    return (
+      <Button size="lg" className="w-full" asChild disabled>
+        <p>No Chapters</p>
+      </Button>
+    );
+  }
   const link = lastRead
     ? lastRead
     : manga.chapterList[manga.chapterList.length - 1].id;
