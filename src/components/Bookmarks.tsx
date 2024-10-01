@@ -14,7 +14,7 @@ import PaginationElement from "@/components/ui/paginationElement";
 import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";
-import { link } from "fs";
+import { debounce } from "lodash";
 
 interface Bookmark {
   noteid: string;
@@ -90,6 +90,8 @@ export default function BookmarksPage() {
     }
   };
 
+  const debounceFetchBookmarks = useCallback(debounce(fetchBookmarks, 10), []);
+
   async function removeBookmark(bm_data: string, noteid: string) {
     const user_data = localStorage.getItem("accountInfo");
 
@@ -122,7 +124,7 @@ export default function BookmarksPage() {
   // Fetch bookmarks on component mount and whenever the page changes
   useEffect(() => {
     const page = Number(searchParams.get("page")) || 1;
-    fetchBookmarks(page);
+    debounceFetchBookmarks(page);
   }, [searchParams]);
 
   const processBatch = () => {
