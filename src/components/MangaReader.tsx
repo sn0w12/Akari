@@ -62,6 +62,17 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   // Detect if the majority of images have a long aspect ratio
   useEffect(() => {
     if (chapterData && chapterData.images.length > 0) {
+      const stripModeCache = JSON.parse(
+        localStorage.getItem("strip_mode_cache") || "{}"
+      );
+      if (stripModeCache[chapterData.parentId] === true) {
+        setIsStripMode(true);
+        return;
+      } else if (stripModeCache[chapterData.parentId] === false) {
+        setIsStripMode(false);
+        return;
+      }
+
       let longImageCount = 0;
       const maxImagesToCheck = 5; // Limit the number of images to check
       const imagesToCheck = chapterData.images.slice(0, maxImagesToCheck);
@@ -88,9 +99,15 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         // If more than half of the checked images are long, switch to strip mode
         if (longImageCount > imagesToCheck.length / 2) {
           setIsStripMode(true);
+          stripModeCache[chapterData.parentId] = true;
         } else {
           setIsStripMode(false);
+          stripModeCache[chapterData.parentId] = false;
         }
+        localStorage.setItem(
+          "strip_mode_cache",
+          JSON.stringify(stripModeCache)
+        );
       };
 
       checkSelectedImages();
