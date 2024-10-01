@@ -60,43 +60,27 @@ const useAccountInfo = () => {
     setAccountInfo(storedAccountInfo);
   }, []);
 
-  useEffect(() => {
-    if (accountInfo) {
-      localStorage.setItem("accountInfo", accountInfo);
-    }
-  }, [accountInfo]);
-
   return { accountInfo, setAccountInfo };
-};
-
-const useAccountName = () => {
-  const [accountName, setAccountName] = useState<string>("");
-
-  useEffect(() => {
-    const storedAccountName = localStorage.getItem("accountName") || "";
-    setAccountName(storedAccountName);
-  }, []);
-
-  useEffect(() => {
-    if (accountName) {
-      localStorage.setItem("accountName", accountName);
-    }
-  }, [accountName]);
-
-  return { accountName, setAccountName };
 };
 
 // Hook to manage settings
 const useSettings = () => {
-  const [settings, setSettings] = useState(() => {
-    const storedSettings = localStorage.getItem("settings");
-    return storedSettings
-      ? JSON.parse(storedSettings)
-      : { fetchMalImage: true };
+  const [settings, setSettings] = useState<{ fetchMalImage: boolean }>(() => {
+    // Initialize from localStorage or return default values
+    if (typeof window !== "undefined") {
+      const storedSettings = localStorage.getItem("settings");
+      return storedSettings
+        ? JSON.parse(storedSettings)
+        : { fetchMalImage: true };
+    }
+    return { fetchMalImage: true }; // Default settings in case window is not defined
   });
 
   useEffect(() => {
-    localStorage.setItem("settings", JSON.stringify(settings));
+    // Only set localStorage if we're in a browser environment
+    if (typeof window !== "undefined") {
+      localStorage.setItem("settings", JSON.stringify(settings));
+    }
   }, [settings]);
 
   return { settings, setSettings };
@@ -110,7 +94,6 @@ export function HeaderComponent() {
   const [notification, setNotification] = useState("");
   const { theme, toggleTheme } = useTheme();
   const { accountInfo, setAccountInfo } = useAccountInfo();
-  const { accountName, setAccountName } = useAccountName();
   const { settings, setSettings } = useSettings();
   const popupRef = useRef<HTMLDivElement | null>(null);
 
