@@ -397,7 +397,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
               </div>
 
               {/* Bookmark and Start Reading Buttons */}
-              <div className="flex gap-4 mt-auto">
+              <div className="flex flex-col xl:flex-row gap-4 mt-auto">
                 {/* Toggle bookmark button based on bookmark status */}
                 <BookmarkButton
                   isBookmarked={isBookmarked}
