@@ -430,7 +430,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                   removeBookmark={removeBookmark}
                   setIsBookmarked={setIsBookmarked}
                 />
-                <ReadingButton manga={manga} />
+                <ReadingButton manga={manga} lastRead={lastRead} />
               </div>
             </div>
 

@@ -6,11 +6,10 @@ import db from "@/lib/db";
 
 interface ReadingButtonProps {
   manga: Manga;
+  lastRead: string;
 }
 
-const ReadingButton: React.FC<ReadingButtonProps> = async ({ manga }) => {
-  const mangaCache = await db.getCache(db.mangaCache, manga.identifier);
-  const lastRead = mangaCache?.last_read;
+const ReadingButton: React.FC<ReadingButtonProps> = ({ manga, lastRead }) => {
   const getLinkText = () => {
     if (lastRead) {
       if (lastRead === manga.chapterList[0].id) {
