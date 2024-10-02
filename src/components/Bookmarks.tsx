@@ -78,6 +78,7 @@ export default function BookmarksPage() {
         throw new Error("Failed to fetch bookmarks.");
       }
       const data = await response.json();
+      db.setCache(db.bookmarkCache, "allBookmarksTotalPages", data.totalPages);
 
       const updateBookmarkImages = async (bookmarks: Bookmark[]) => {
         await Promise.all(
@@ -183,7 +184,15 @@ export default function BookmarksPage() {
         "allBookmarks",
         1000 * 60 * 60 * 1 // 1-hour expiration
       );
-      if (bookmarkCache) {
+      let bookmarksTotalPages = await db.getCache(
+        db.bookmarkCache,
+        "allBookmarksTotalPages"
+      );
+      if (!bookmarksTotalPages) bookmarksTotalPages = 0;
+      if (
+        bookmarkCache &&
+        Math.ceil(bookmarkCache.length / 20) != bookmarksTotalPages
+      ) {
         setAllBookmarks(bookmarkCache);
         setWorkerFinished(true);
         return;
