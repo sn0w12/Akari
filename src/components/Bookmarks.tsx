@@ -191,7 +191,7 @@ export default function BookmarksPage() {
         console.log("Worker initialized.");
 
         workerRef.current.onmessage = (e) => {
-          const { type, data, message, error } = e.data;
+          const { type, data, message, details } = e.data;
 
           if (type === "bookmark") {
             // Push new bookmark data to the queue
@@ -201,7 +201,7 @@ export default function BookmarksPage() {
             if (batchTimeout.current) clearTimeout(batchTimeout.current);
             batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
           } else if (type === "error") {
-            console.error("Worker error:", message, error);
+            console.error("Worker error:", message, details);
             workerRef.current?.terminate();
           } else if (type === "finished") {
             console.log("Worker has finished processing.");
