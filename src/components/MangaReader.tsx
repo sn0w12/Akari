@@ -216,7 +216,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   function getCard(chapterData: Chapter) {
     return (
       <div
-        className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title ${
+        className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title w-full ${
           isHeaderVisible ? "header-visible" : ""
         }`}
       >
