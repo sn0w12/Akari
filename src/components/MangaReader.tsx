@@ -205,6 +205,9 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const screenWidth = window.innerWidth;
     const clickX = e.clientX;
+    const clickY = e.clientY;
+    if (clickY < 100 || clickY > window.innerHeight - 100) return;
+
     if (clickX > screenWidth / 2) {
       nextPage(); // Click on the right side
     } else {
@@ -295,7 +298,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
   // Normal mode (single image navigation)
   return (
-    <div className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-black">
+    <div
+      className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-black"
+      onClick={handleClick}
+    >
       <div id="reader" className="relative max-h-dvh w-auto">
         <img
           src={`/api/image-proxy?imageUrl=${encodeURIComponent(
@@ -305,7 +311,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             currentPage + 1
           }`}
           className="object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative"
-          onClick={handleClick}
         />
       </div>
       {getCard(chapterData)}
