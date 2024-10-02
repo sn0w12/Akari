@@ -32,8 +32,12 @@ self.onmessage = function (e) {
       eventSource.close();
       self.close(); // Terminate the worker
     } else {
-      // Handle other errors if needed
-      self.postMessage({ type: 'error', message: 'SSE error', error });
+      // Instead of sending the entire error object, just send a message
+      self.postMessage({
+        type: 'error',
+        message: 'SSE error',
+        details: error.message || 'Unknown error occurred',
+      });
       eventSource.close();
       self.close(); // Terminate the worker
     }
