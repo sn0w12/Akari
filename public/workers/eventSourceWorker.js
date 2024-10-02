@@ -24,19 +24,27 @@ self.onmessage = function (e) {
   });
 
   // Handle errors, including when the server closes the connection
-  eventSource.onerror = function (error) {
-    console.error('Worker EventSource error:', error);
+  eventSource.onerror = function (event) {
+    console.error('Worker EventSource error:', event);
+
+    // Send a more meaningful error message
+    const errorDetails = {
+      type: event.type,
+      readyState: eventSource.readyState,  // Ready state of the EventSource
+      status: eventSource.status || 'unknown', // Status if available
+      url: eventSource.url, // The URL being connected to
+    };
 
     if (eventSource.readyState === EventSource.CLOSED) {
       self.postMessage({ type: 'finished' });
       eventSource.close();
       self.close(); // Terminate the worker
     } else {
-      // Instead of sending the entire error object, just send a message
+      // Send the error details to the main thread
       self.postMessage({
         type: 'error',
-        message: 'SSE error',
-        details: error.message || 'Unknown error occurred',
+        message: 'SSE error occurred',
+        details: errorDetails,
       });
       eventSource.close();
       self.close(); // Terminate the worker
