@@ -53,9 +53,7 @@ export default function MangaReaderHome() {
   const fetchMangaList = useCallback(async (page: number) => {
     setIsLoading(true); // Set loading state
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/manga-list/latest?page=${page}`
-      );
+      const response = await fetch(`/api/manga-list/latest?page=${page}`);
       if (!response.ok) {
         throw new Error("Failed to fetch manga list");
       }
