@@ -7,7 +7,7 @@ self.onmessage = function (e) {
   }
 
   const eventSource = new EventSource(
-    `/api/bookmarks/all?user_data=${encodeURIComponent(userData)}`
+    `/api/bookmarks/all/${encodeURIComponent(userData)}`
   );
 
   // Handle incoming bookmark data

@@ -21,9 +21,8 @@ async function fetchBookmarks(user_data: string, page: number) {
 }
 
 // Named export for GET requests (you can also use POST if needed)
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const user_data = searchParams.get('user_data');
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const user_data = params.id
 
   if (!user_data) {
     return NextResponse.json(
