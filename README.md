@@ -4,6 +4,11 @@
 
 <h1 align="center">灯 - Akari</h1>
 
+<div align="center">
+    <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
+    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
+</div>
+
 Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It uses manganato as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
 
 # Features
