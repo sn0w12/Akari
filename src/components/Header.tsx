@@ -170,8 +170,8 @@ export function HeaderComponent() {
   return (
     <header className="sticky top-0 z-50 bg-background border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold">
-          Manga Reader
+        <Link href="/" className="text-2xl font-bold title">
+          灯
         </Link>
 
         <div className="flex items-center space-x-4">

@@ -1,6 +1,10 @@
-# MangaReader
+<p align="center">
+  <img src="./public/img/icon.png" alt="Icon" width="100" />
+</p>
 
-MangaReader is a Next.js application designed to provide an enhanced manga reading experience. It uses [Manganato](https://manganato.com/) as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
+<h1 align="center">灯 - Akari</h1>
+
+Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It uses manganato as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
 
 # Features
 
@@ -47,7 +51,7 @@ After you've been logged in, you can use it as you normally would.
 
 ## Prerequisites
 
-Before running MangaReader, make sure you have the following installed:
+Before running Akari, make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v14 or later)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)

@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Manga Reader",
+  title: "灯 - Akari",
 };
 
 export default function RootLayout({
