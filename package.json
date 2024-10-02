@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:network": "next dev -H 0.0.0.0",
-    "postinstall": "npx puppeteer install",
+    "postinstall": "npx puppeteer browsers install chrome",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
