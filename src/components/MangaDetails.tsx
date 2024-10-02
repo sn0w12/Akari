@@ -10,7 +10,7 @@ import PaginationElement from "@/components/ui/paginationElement";
 import { Manga, MalSync } from "@/app/api/interfaces";
 import React from "react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
-import ScoreDisplay from "@/components/ui/scoreDisplay";
+import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";
 import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
 import ReadingButton from "./ui/MangaDetails/readingButton";
 import { debounce } from "lodash";
