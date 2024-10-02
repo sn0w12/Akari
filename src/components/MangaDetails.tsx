@@ -415,7 +415,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     ))}
                   </div>
                 </div>
-                <div className="mt-4 mb-4 flex-grow h-full">
+                <div className="mt-4 lg:mb-4 flex-grow h-full">
                   <ScoreDisplay score={manga.score} />
                 </div>
               </div>
