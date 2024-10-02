@@ -222,7 +222,11 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       >
         <Card
           className="p-4 text-center max-w-96 sm:max-w-80"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            if (isHeaderVisible) {
+              e.stopPropagation();
+            }
+          }}
         >
           <h3 className="font-bold">
             <a
@@ -266,7 +270,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       <div className="h-screen w-screen bg-black">
         <div
           id="reader"
-          className="flex flex-col items-center bg-black overflow-y-scroll h-screen"
+          className="flex flex-col items-center bg-black h-screen"
         >
           {chapterData.images.map((image, index) => (
             <Image
