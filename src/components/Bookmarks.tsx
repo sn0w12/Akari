@@ -338,13 +338,19 @@ export default function BookmarksPage() {
                 />
                 <Card className="flex flex-col md:flex-row items-center p-6 shadow-lg bg-card border border-border rounded-lg">
                   <div className="w-full md:w-40 mb-4 md:mb-0">
-                    <Image
-                      src={bookmark.image}
-                      alt={bookmark.storyname}
-                      width={300}
-                      height={450}
-                      className="w-full h-auto object-cover rounded"
-                    />
+                    <a
+                      href={`/manga/${bookmark.link_story.split("/").pop()}}`}
+                      rel="noopener noreferrer"
+                      className="block mt-4"
+                    >
+                      <Image
+                        src={bookmark.image}
+                        alt={bookmark.storyname}
+                        width={300}
+                        height={450}
+                        className="w-full h-auto object-cover rounded"
+                      />
+                    </a>
                   </div>
                   <CardContent className="ml-4 flex flex-col justify-between">
                     <div className="mb-4">
@@ -362,7 +368,6 @@ export default function BookmarksPage() {
                           .pop()}/${bookmark.link_chapter_now
                           .split("/")
                           .pop()}`}
-                        target="_blank"
                         rel="noopener noreferrer"
                         className="block mt-4"
                       >
@@ -383,7 +388,6 @@ export default function BookmarksPage() {
                             .pop()}/${bookmark.link_chapter_last
                             .split("/")
                             .pop()}`}
-                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
                         >
