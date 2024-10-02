@@ -277,7 +277,7 @@ export default function BookmarksPage() {
         {isLoading && <CenteredSpinner />}
         {error && <p className="text-red-500">{error}</p>}
         {!isLoading && !error && (
-          <div className="space-y-6">
+          <>
             <div className="relative mb-6">
               <Input
                 type="search"
@@ -314,95 +314,99 @@ export default function BookmarksPage() {
                 </Card>
               )}
             </div>
-            {bookmarks.map((bookmark) => (
-              <div key={bookmark.noteid} className="block relative">
-                {/* X button in top-right corner */}
-                <ConfirmDialog
-                  triggerButton={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 bg-red-600 text-accent hover:text-red-600 focus:outline-none"
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
-                  }
-                  title="Confirm Bookmark Removal"
-                  message="Are you sure you want to remove this bookmark?"
-                  confirmLabel="Remove"
-                  confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
-                  cancelLabel="Cancel"
-                  onConfirm={() =>
-                    removeBookmark(bookmark.bm_data, bookmark.noteid)
-                  }
-                />
-                <Card className="flex flex-col md:flex-row items-center p-6 shadow-lg bg-card border border-border rounded-lg">
-                  <div className="w-full md:w-40 mb-4 md:mb-0">
-                    <a
-                      href={`/manga/${bookmark.link_story.split("/").pop()}`}
-                      rel="noopener noreferrer"
-                      className="block mt-4"
-                    >
-                      <Image
-                        src={bookmark.image}
-                        alt={bookmark.storyname}
-                        width={300}
-                        height={450}
-                        className="w-full h-auto object-cover rounded"
-                      />
-                    </a>
-                  </div>
-                  <CardContent className="ml-4 flex flex-col justify-between">
-                    <div className="mb-4">
-                      <Link
-                        href={`/manga/${bookmark.link_story.split("/").pop()}`}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {bookmarks.map((bookmark) => (
+                <div key={bookmark.noteid} className="block relative">
+                  {/* X button in top-right corner */}
+                  <ConfirmDialog
+                    triggerButton={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 bg-red-600 text-accent hover:text-red-600 focus:outline-none"
                       >
-                        <h3 className="font-bold text-2xl mb-2 hover:underline">
-                          {bookmark.storyname}
-                        </h3>
-                      </Link>
-                      {/* Continue Reading Button */}
+                        <X className="h-5 w-5" />
+                      </Button>
+                    }
+                    title="Confirm Bookmark Removal"
+                    message="Are you sure you want to remove this bookmark?"
+                    confirmLabel="Remove"
+                    confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+                    cancelLabel="Cancel"
+                    onConfirm={() =>
+                      removeBookmark(bookmark.bm_data, bookmark.noteid)
+                    }
+                  />
+                  <Card className="flex flex-col md:flex-row md:items-start items-center p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
+                    <div className="w-full md:w-40 md:h-full mb-4 md:mb-0 shrink-0">
                       <a
-                        href={`/manga/${bookmark.link_story
-                          .split("/")
-                          .pop()}/${bookmark.link_chapter_now
-                          .split("/")
-                          .pop()}`}
+                        href={`/manga/${bookmark.link_story.split("/").pop()}`}
                         rel="noopener noreferrer"
-                        className="block mt-4"
+                        className="block"
                       >
-                        <Button className="py-4 px-6 text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                          Continue Reading - Chapter{" "}
-                          {bookmark.chapter_numbernow}
-                        </Button>
+                        <Image
+                          src={bookmark.image}
+                          alt={bookmark.storyname}
+                          width={300}
+                          height={450}
+                          className="w-full h-auto object-cover rounded"
+                        />
                       </a>
                     </div>
-
-                    {/* Latest Chapter Info */}
-                    <div className="text-sm text-muted-foreground">
-                      <p>
-                        Latest Chapter:{" "}
+                    <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
+                      <div className="mb-4">
+                        <Link
+                          href={`/manga/${bookmark.link_story
+                            .split("/")
+                            .pop()}`}
+                        >
+                          <h3 className="font-bold text-2xl mb-2 text-center hover:underline md:text-left">
+                            {bookmark.storyname}
+                          </h3>
+                        </Link>
+                        {/* Continue Reading Button */}
                         <a
                           href={`/manga/${bookmark.link_story
                             .split("/")
-                            .pop()}/${bookmark.link_chapter_last
+                            .pop()}/${bookmark.link_chapter_now
                             .split("/")
                             .pop()}`}
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
+                          className="block mt-4"
                         >
-                          {bookmark.chapterlastname}
+                          <Button className="py-4 px-6 text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            Continue Reading - Chapter{" "}
+                            {bookmark.chapter_numbernow}
+                          </Button>
                         </a>
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Updated: {bookmark.chapterlastdateupdate}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
+                      </div>
+
+                      {/* Latest Chapter Info */}
+                      <div className="text-sm text-muted-foreground">
+                        <p>
+                          Latest Chapter:{" "}
+                          <a
+                            href={`/manga/${bookmark.link_story
+                              .split("/")
+                              .pop()}/${bookmark.link_chapter_last
+                              .split("/")
+                              .pop()}`}
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            {bookmark.chapterlastname}
+                          </a>
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Updated: {bookmark.chapterlastdateupdate}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </main>
 
