@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
+  const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
   const response = await fetch(
-    `http://localhost:3000/api/bookmarks?page=${page}&user_data=${user_data}`
+    `${apiBaseUrl}/api/bookmarks?page=${page}&user_data=${user_data}`
   );
 
   if (!response.ok) {
