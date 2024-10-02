@@ -322,7 +322,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
           {/* Title stays at the top */}
           <div className="flex items-center justify-between mb-4 border-b pb-2">
             <h1 className="text-3xl font-bold">{manga.name}</h1>
-            <div className="flex">
+            <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row">
               {aniLink && (
                 <a href={aniLink} target="_blank" rel="noopener noreferrer">
                   <img
