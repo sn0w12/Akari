@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:network": "next dev -H 0.0.0.0",
+    "postinstall": "npx puppeteer install",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
