@@ -175,8 +175,8 @@ export function HeaderComponent() {
           <Icon />
         </Link>
 
-        <div className="flex items-center space-x-4">
-          <div className="relative xl:w-128 lg:w-96 ml-6 sm:w-auto">
+        <div className="flex items-center space-x-4 flex-grow justify-end">
+          <div className="relative xl:w-128 lg:w-96 lg:grow-0 ml-6 w-auto flex-grow">
             <Input
               type="search"
               placeholder="Search manga..."
@@ -184,10 +184,13 @@ export function HeaderComponent() {
               onChange={handleSearchInputChange}
               onBlur={handleInputBlur}
               onFocus={() => searchResults.length > 0 && setShowPopup(true)}
-              className="w-full"
+              className="w-full hidden sm:block"
             />
             {showPopup && (
-              <Card ref={popupRef} className="absolute z-10 w-full mt-1">
+              <Card
+                ref={popupRef}
+                className="hidden absolute p-2 z-10 mt-1 m-auto sm:w-full sm:block"
+              >
                 <CardContent className="p-2">
                   {isSearchLoading ? (
                     <CenteredSpinner />
@@ -215,70 +218,122 @@ export function HeaderComponent() {
               </Card>
             )}
           </div>
-          <Link href="/bookmarks">
-            <div className="relative group">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="group-hover:bg-accent"
-              >
-                <Bookmark className="h-5 w-5" />
-              </Button>
-              {/* Badge element */}
-              {notification && (
-                <span
-                  className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
-                  style={{ bottom: "0", right: "0" }}
-                >
-                  {notification}
-                </span>
-              )}
-            </div>
-          </Link>
-
-          {/* Account Information Dialog */}
-          <LoginDialog />
-
-          {/* Settings Dialog */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Settings</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col space-y-4 border-t">
-                <div className="flex items-center justify-start gap-2">
-                  <label className="block text-sm font-medium mb-2 mt-2">
-                    Fetch MAL Image:
-                  </label>
-                  <Input
-                    type="checkbox"
-                    checked={settings.fetchMalImage}
-                    onChange={(e) =>
-                      setSettings((prevSettings: any) => ({
-                        ...prevSettings,
-                        fetchMalImage: e.target.checked,
-                      }))
-                    }
-                    className="h-4 w-auto"
-                  />
+          <div className="flex gap-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="sm:hidden">
+                  <Search className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Search</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col space-y-4 border-t">
+                  <div className="flex items-center justify-start gap-2">
+                    <Input
+                      type="search"
+                      placeholder="Search manga..."
+                      value={searchText}
+                      onChange={handleSearchInputChange}
+                      onBlur={handleInputBlur}
+                      onFocus={() =>
+                        searchResults.length > 0 && setShowPopup(true)
+                      }
+                      className="w-full block sm:hidden mt-4"
+                    />
+                  </div>
+                  {isSearchLoading ? (
+                    <CenteredSpinner />
+                  ) : searchResults.length > 0 ? (
+                    searchResults.map((result: Manga) => (
+                      <Link
+                        href={`/manga/${result.id}`}
+                        key={result.id}
+                        className="block p-2 hover:bg-accent flex items-center rounded-lg border"
+                      >
+                        <img
+                          src={result.image}
+                          alt={result.title}
+                          className="max-h-24 w-auto rounded mr-2"
+                        />
+                        {result.title}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-center text-muted-foreground p-4">
+                      No Results
+                    </div>
+                  )}
                 </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
 
-          {/* Theme Toggle Button */}
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === "light" ? (
-              <Moon className="h-5 w-5" />
-            ) : (
-              <Sun className="h-5 w-5" />
-            )}
-          </Button>
+            <Link href="/bookmarks">
+              <div className="relative group">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="group-hover:bg-accent"
+                >
+                  <Bookmark className="h-5 w-5" />
+                </Button>
+                {/* Badge element */}
+                {notification && (
+                  <span
+                    className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
+                    style={{ bottom: "0", right: "0" }}
+                  >
+                    {notification}
+                  </span>
+                )}
+              </div>
+            </Link>
+
+            {/* Account Information Dialog */}
+            <LoginDialog />
+
+            {/* Settings Dialog */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Settings</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col space-y-4 border-t">
+                  <div className="flex items-center justify-start gap-2">
+                    <label className="block text-sm font-medium mb-2 mt-2">
+                      Fetch MAL Image:
+                    </label>
+                    <Input
+                      type="checkbox"
+                      checked={settings.fetchMalImage}
+                      onChange={(e) =>
+                        setSettings((prevSettings: any) => ({
+                          ...prevSettings,
+                          fetchMalImage: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-auto"
+                    />
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            {/* Theme Toggle Button */}
+            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              {theme === "light" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </header>
