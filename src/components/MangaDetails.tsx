@@ -236,7 +236,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       setLastRead(cachedData.last_read);
     }
 
-    if (data) {
+    if (data && data.mangaId) {
       setManga(data);
       setImage(data.imageUrl);
       checkIfBookmarked(data.mangaId, setIsBookmarked);
