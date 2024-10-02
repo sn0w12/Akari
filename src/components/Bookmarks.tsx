@@ -191,7 +191,7 @@ export default function BookmarksPage() {
       if (!bookmarksTotalPages) bookmarksTotalPages = 0;
       if (
         bookmarkCache &&
-        Math.ceil(bookmarkCache.length / 20) != bookmarksTotalPages
+        Math.ceil(bookmarkCache.length / 20) == bookmarksTotalPages
       ) {
         setAllBookmarks(bookmarkCache);
         setWorkerFinished(true);
@@ -322,7 +322,7 @@ export default function BookmarksPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute top-2 right-2 text-gray-500 hover:text-red-600 focus:outline-none"
+                      className="absolute top-2 right-2 bg-red-600 text-accent hover:text-red-600 focus:outline-none"
                     >
                       <X className="h-5 w-5" />
                     </Button>
