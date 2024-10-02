@@ -2,6 +2,8 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import Fuse from 'fuse.js';
 
+export const dynamic = 'force-dynamic';
+
 interface Manga {
   id: string;
   image: string | undefined;
