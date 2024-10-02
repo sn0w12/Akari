@@ -213,6 +213,53 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     return <CenteredSpinner />;
   }
 
+  function getCard(chapterData: Chapter) {
+    return (
+      <div
+        className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title ${
+          isHeaderVisible ? "header-visible" : ""
+        }`}
+      >
+        <Card
+          className="p-4 text-center max-w-96 sm:max-w-80"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 className="font-bold">
+            <a
+              href={`http://${window.location.host}/manga/${chapterData.parentId}`}
+              className="hover:underline"
+            >
+              {chapterData.title}
+            </a>
+          </h3>
+          <Combo
+            options={chapterData.chapters}
+            value={
+              chapterData.chapter
+                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                .match(/(\d+)(\.\d+)?/)?.[0]
+            }
+            onChange={(e) => {
+              const selectedChapter = e.target.value;
+              const currentUrl = window.location.href;
+              const newUrl = currentUrl.replace(
+                /\/[^\/]*$/,
+                `/chapter-${selectedChapter}`
+              );
+              window.location.href = newUrl;
+            }}
+            className="mt-2 mb-2"
+          />
+          {!isStripMode && (
+            <p className="text-xs">
+              Page {currentPage + 1} of {chapterData.images.length}
+            </p>
+          )}
+        </Card>
+      </div>
+    );
+  }
+
   // Render "strip" mode for long images
   if (isStripMode) {
     return (
@@ -231,46 +278,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             />
           ))}
         </div>
-        <div
-          className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title ${
-            isHeaderVisible ? "header-visible" : ""
-          }`}
-        >
-          <Card
-            className="p-4 text-center max-w-80"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="font-bold">
-              <a
-                href={`http://${window.location.host}/manga/${chapterData.parentId}`}
-                className="hover:underline"
-              >
-                {chapterData.title}
-              </a>
-            </h3>
-            <Combo
-              options={chapterData.chapters}
-              value={
-                chapterData.chapter
-                  .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                  .match(/(\d+)(\.\d+)?/)?.[0]
-              }
-              onChange={(e) => {
-                const selectedChapter = e.target.value;
-                const currentUrl = window.location.href;
-                const newUrl = currentUrl.replace(
-                  /\/[^\/]*$/,
-                  `/chapter-${selectedChapter}`
-                );
-                window.location.href = newUrl;
-              }}
-              className="mt-2 mb-2"
-            />
-            <p className="text-xs">
-              Page {currentPage + 1} of {chapterData.images.length}
-            </p>
-          </Card>
-        </div>
+        {getCard(chapterData)}
       </div>
     );
   }
@@ -291,48 +299,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
           }`}
           className="object-contain w-full h-full cursor-pointer z-20 relative"
         />
-
-        <div
-          className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title ${
-            isHeaderVisible ? "header-visible" : ""
-          }`}
-        >
-          <Card
-            className="p-4 text-center max-w-80"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="font-bold">
-              <a
-                href={`http://${window.location.host}/manga/${chapterData.parentId}`}
-                className="hover:underline"
-              >
-                {chapterData.title}
-              </a>
-            </h3>
-            <Combo
-              options={chapterData.chapters}
-              value={
-                chapterData.chapter
-                  .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                  .match(/(\d+)(\.\d+)?/)?.[0]
-              }
-              onChange={(e) => {
-                const selectedChapter = e.target.value;
-                const currentUrl = window.location.href;
-                const newUrl = currentUrl.replace(
-                  /\/[^\/]*$/,
-                  `/chapter-${selectedChapter}`
-                );
-                window.location.href = newUrl;
-              }}
-              className="mt-2 mb-2"
-            />
-            <p className="text-xs">
-              Page {currentPage + 1} of {chapterData.images.length}
-            </p>
-          </Card>
-        </div>
       </div>
+      {getCard(chapterData)}
       <PageProgress
         currentPage={currentPage}
         totalPages={chapterData.images.length}
