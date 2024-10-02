@@ -339,7 +339,7 @@ export default function BookmarksPage() {
                 <Card className="flex flex-col md:flex-row items-center p-6 shadow-lg bg-card border border-border rounded-lg">
                   <div className="w-full md:w-40 mb-4 md:mb-0">
                     <a
-                      href={`/manga/${bookmark.link_story.split("/").pop()}}`}
+                      href={`/manga/${bookmark.link_story.split("/").pop()}`}
                       rel="noopener noreferrer"
                       className="block mt-4"
                     >
