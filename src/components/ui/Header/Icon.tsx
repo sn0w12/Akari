@@ -5,7 +5,7 @@ export default function Icon() {
   return (
     <Card>
       <Button variant="ghost" size="icon" className="group-hover:bg-accent">
-        <p className="w-6 h-5 font-bold" translate="no">
+        <p className="w-6 h-5 font-bold" translate="no" lang="ja">
           灯
         </p>
       </Button>
