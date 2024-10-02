@@ -22,12 +22,11 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## Usage
 
+Either go to the [Website](https://akari-psi.vercel.app/) or host it yourself, see the Installation header.
+
 If you have a [Manganato](https://manganato.com/) account, press the account button in the top right and sign in to your account as normal.
 
-> [!NOTE]
-> Currently the login may require several retries.
-
-![Login](https://i.imgur.com/NtVKEvt.png)
+![Login](https://i.imgur.com/FqBrXCJ.png)
 
 After you've been logged in, you can use it as you normally would.
 
