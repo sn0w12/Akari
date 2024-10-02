@@ -308,12 +308,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8 mb-8 items-stretch h-auto">
-        <div className="flex-shrink-0 relative h-128">
+      <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
+        <div className="flex flex-shrink-0 justify-center lg:relative lg:h-128">
           <img
             src={image}
             alt={manga.name}
-            className="rounded-lg shadow-lg object-cover h-full w-auto max-w-lg"
+            className="rounded-lg shadow-lg object-cover w-full lg:h-full lg:w-auto max-w-lg"
           />
         </div>
 
@@ -345,9 +345,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
           </div>
 
           {/* Middle section grows as needed */}
-          <div className="flex flex-col md:flex-row gap-8 flex-grow">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow">
             {/* Left section for the manga details */}
-            <div className="md:w-1/2 flex flex-col justify-between">
+            <div className="lg:w-1/2 flex flex-col justify-between">
               <div>
                 <div className="text-lg mb-2">
                   Authors:
@@ -435,7 +435,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             {/* Right section for the description */}
-            <div className="md:w-1/2 flex-grow">
+            <div className="lg:w-1/2 flex-grow">
               <Card className="w-full h-full p-4 max-h-[25.05rem] overflow-y-auto">
                 <p>{manga.description}</p>
               </Card>
