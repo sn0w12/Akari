@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+export const config = {
+  runtime: 'edge',
+};
+
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
   const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
