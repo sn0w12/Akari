@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
+import Icon from "./ui/Header/Icon";
 
 interface Manga {
   id: string;
@@ -171,11 +172,11 @@ export function HeaderComponent() {
     <header className="sticky top-0 z-50 bg-background border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="text-2xl font-bold title">
-          灯
+          <Icon />
         </Link>
 
         <div className="flex items-center space-x-4">
-          <div className="relative w-128 ml-6">
+          <div className="relative xl:w-128 lg:w-96 ml-6 sm:w-auto">
             <Input
               type="search"
               placeholder="Search manga..."
