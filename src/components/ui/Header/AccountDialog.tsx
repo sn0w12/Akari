@@ -18,6 +18,7 @@ export default function LoginDialog() {
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState("");
   const [captchaUrl, setCaptchaUrl] = useState("");
+  const [ciSessionCookie, setCiSessionCookie] = useState("");
   const [loginError, setLoginError] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,21 +28,6 @@ export default function LoginDialog() {
     user_data: string;
     user_image: string;
   }
-
-  const handleOpenChange = async (isOpen: boolean) => {
-    if (isOpen) {
-      fetchCaptcha();
-    } else {
-      try {
-        await fetch("/api/login/close", {
-          method: "GET",
-        });
-        console.log("Puppeteer instance closed");
-      } catch (error) {
-        console.error("Failed to close Puppeteer:", error);
-      }
-    }
-  };
 
   // Check if the user_acc cookie exists in localStorage and parse it
   useEffect(() => {
@@ -74,6 +60,7 @@ export default function LoginDialog() {
       const response = await fetch("/api/login/captcha");
       const data = await response.json();
       setCaptchaUrl(data.captchaUrl);
+      setCiSessionCookie(data.ciSessionCookie[0]);
     } catch (error) {
       console.error("Failed to fetch CAPTCHA:", error);
       setLoginError("Failed to fetch CAPTCHA.");
@@ -90,37 +77,28 @@ export default function LoginDialog() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          cookie: ciSessionCookie,
         },
         body: JSON.stringify({
           username,
           password,
           captcha,
+          ciSessionCookie,
         }),
       });
 
       const data = await response.json();
-      if (data.success) {
-        const userAccCookie = data.cookies.find(
-          (cookie: { name: string }) => cookie.name === "user_acc"
-        );
+      if (data.userAccCookie) {
+        localStorage.setItem("user_acc", data.userAccCookie);
+        console.log("user_acc cookie saved:", data.userAccCookie);
 
-        if (userAccCookie) {
-          localStorage.setItem("user_acc", userAccCookie.value);
-          console.log("user_acc cookie saved:", userAccCookie.value);
-
-          // Decode and parse the user_acc cookie value to update user data
-          const decodedCookie = decodeURIComponent(userAccCookie.value);
-          const parsedData = JSON.parse(decodedCookie);
-          localStorage.setItem("accountInfo", parsedData.user_data);
-          localStorage.setItem("accountName", parsedData.user_name);
-          setUserData(parsedData);
-        } else {
-          console.error("user_acc cookie not found");
-        }
+        // Decode and parse the user_acc cookie value to update user data
+        const parsedData = JSON.parse(data.userAccCookie);
+        localStorage.setItem("accountInfo", parsedData.user_data);
+        localStorage.setItem("accountName", parsedData.user_name);
+        setUserData(parsedData);
       } else {
         setLoginError(data.error || "Login failed");
-        setCaptchaUrl("");
-        fetchCaptcha();
       }
     } catch (error) {
       console.error("Failed to submit login:", error);
@@ -181,7 +159,7 @@ export default function LoginDialog() {
 
   // Show the login form if the user is not logged in
   return (
-    <Dialog onOpenChange={handleOpenChange}>
+    <Dialog onOpenChange={fetchCaptcha}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <User className="h-5 w-5" />
@@ -223,16 +201,16 @@ export default function LoginDialog() {
                 {/* CAPTCHA Field */}
                 {!captchaUrl && <CenteredSpinner />}
                 {captchaUrl && (
-                  <div className="mt-4 flex items-center">
-                    <img
-                      src={captchaUrl}
-                      alt="CAPTCHA"
-                      className="mr-2 w-auto h-full"
-                    />
-                    <div className="w-full">
-                      <label className="block text-sm font-medium mb-2">
-                        CAPTCHA
-                      </label>
+                  <div className="mt-4 flex flex-col">
+                    <label className="block text-sm font-medium mb-2">
+                      CAPTCHA
+                    </label>
+                    <div className="flex items-center w-full">
+                      <img
+                        src={captchaUrl}
+                        alt="CAPTCHA"
+                        className="mr-2 w-auto h-full"
+                      />
                       <Input
                         type="text"
                         placeholder="Enter CAPTCHA..."

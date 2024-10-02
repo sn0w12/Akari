@@ -1,29 +1,39 @@
 import { NextResponse } from 'next/server';
-import { getPuppeteerSession } from '@/lib/puppeteerSession';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { wrapper } from 'axios-cookiejar-support';
+import { CookieJar } from 'tough-cookie';
 
 export async function GET() {
   try {
-    const { pageInstance } = await getPuppeteerSession();
+    const jar = new CookieJar();
+    const client = wrapper(axios.create({ jar }));
 
-    // Step 2: Go to the login page
-    await pageInstance.goto('https://user.manganelo.com/login?l=manganato&re_l=login', {
-      waitUntil: 'networkidle2',
+    const loginPageResponse = await client.get('https://user.manganelo.com/login?l=manganato&re_l=login', {
+      withCredentials: true,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        'Referer': 'https://user.manganelo.com/login?l=manganato&re_l=login',
+        'Sec-CH-UA': '"Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
+        'Sec-CH-UA-Mobile': '?0',
+        'Sec-CH-UA-Platform': '"Windows"',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+      }
     });
 
-    // Step 3: Extract CAPTCHA image URL
-    const captchaUrl = await pageInstance.evaluate(() => {
-      const captchaImg = document.querySelector('.captchar img');
-      return captchaImg ? (captchaImg as HTMLImageElement).src : null;
-    });
+    // Step 2: Parse the CAPTCHA URL from the HTML
+    const $ = cheerio.load(loginPageResponse.data);
+    const captchaParent = $('.captchar');
+    const captchaUrl = captchaParent.find('img').attr('src');
 
     if (!captchaUrl) {
-      throw new Error('CAPTCHA not found');
+      return NextResponse.json({ error: 'Failed to retrieve CAPTCHA image' }, { status: 400 });
     }
 
-    // Step 4: Return CAPTCHA URL
-    return NextResponse.json({ captchaUrl });
+    // Step 3: Return both the CAPTCHA URL and the session cookie to the client
+    return NextResponse.json({ captchaUrl, ciSessionCookie: await jar.getCookies('https://user.manganelo.com') });
   } catch (error) {
-    console.error('Error fetching CAPTCHA:', error);
-    return NextResponse.json({ error: 'Failed to fetch CAPTCHA' }, { status: 500 });
+    return NextResponse.json({ error: 'Error fetching login page', details: (error as Error).message }, { status: 500 });
   }
 }
