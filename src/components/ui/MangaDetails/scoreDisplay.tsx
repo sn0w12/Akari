@@ -13,7 +13,7 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
   const hasHalfStar = clampedScore % 1 >= 0.5;
 
   return (
-    <div className="hidden w-full h-full bg-primary/10 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 lg:block">
+    <div className="hidden w-full h-full bg-primary/10 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 lg:flex">
       <div className="flex items-center justify-center space-x-1">
         {[...Array(5)].map((_, index) => (
           <div key={index} className="relative">
