@@ -198,7 +198,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
     try {
       const malSyncResponse = await fetch(
-        `/api/manga/malsync/${encodeURIComponent(identifier)}`
+        `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(
+          identifier
+        )}`
       );
       if (!malSyncResponse.ok) {
         return null;
