@@ -246,7 +246,7 @@ export function HeaderComponent() {
                   {isSearchLoading ? (
                     <CenteredSpinner />
                   ) : searchResults.length > 0 ? (
-                    searchResults.map((result: Manga) => (
+                    searchResults.slice(0, 3).map((result: Manga) => (
                       <Link
                         href={`/manga/${result.id}`}
                         key={result.id}
