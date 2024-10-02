@@ -125,11 +125,6 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 700px) {
-  .header {
-    top: 0;
-    opacity: 1;
-  }
-
   .manga-title {
     opacity: 0;
   }

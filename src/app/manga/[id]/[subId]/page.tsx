@@ -72,7 +72,7 @@ export default function MangaReaderPage({ params }: PageProps) {
   }, [isHoveringHeader]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <div className={`header ${isHeaderVisible ? "header-visible" : ""}`}>
         <HeaderComponent />
       </div>

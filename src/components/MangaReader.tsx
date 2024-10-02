@@ -217,7 +217,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     return (
       <div
         className={`absolute top-0 left-0 p-4 text-white text-sm z-10 manga-title w-full ${
-          isHeaderVisible ? "header-visible" : ""
+          isHeaderVisible ? "header-visible" : "pointer-events-none"
         }`}
       >
         <Card
@@ -264,7 +264,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
   if (isStripMode) {
     return (
       <div className="h-screen w-screen bg-black">
-        <div className="flex flex-col items-center bg-black overflow-y-scroll h-screen">
+        <div
+          id="reader"
+          className="flex flex-col items-center bg-black overflow-y-scroll h-screen"
+        >
           {chapterData.images.map((image, index) => (
             <Image
               key={index}
@@ -285,11 +288,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
   // Normal mode (single image navigation)
   return (
-    <div
-      className="flex justify-center items-center h-screen w-screen bg-black"
-      onClick={handleClick}
-    >
-      <div className="relative h-full w-full">
+    <div className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-black">
+      <div id="reader" className="relative max-h-dvh w-auto">
         <img
           src={`/api/image-proxy?imageUrl=${encodeURIComponent(
             chapterData.images[currentPage]
@@ -297,7 +297,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
           alt={`${chapterData.title} - ${chapterData.chapter} Page ${
             currentPage + 1
           }`}
-          className="object-contain w-full h-full cursor-pointer z-20 relative"
+          className="object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative"
+          onClick={handleClick}
         />
       </div>
       {getCard(chapterData)}
