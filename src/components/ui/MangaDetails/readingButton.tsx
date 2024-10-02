@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
 import { Manga } from "@/app/api/interfaces";
-import db from "@/lib/db";
 
 interface ReadingButtonProps {
   manga: Manga;

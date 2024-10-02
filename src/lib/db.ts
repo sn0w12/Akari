@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import { MangaCacheItem, HqMangaCacheItem, Bookmark } from '@/app/api/interfaces';
 
 // Define the structure of your caches
 export interface CacheItem<T> {
@@ -9,9 +10,9 @@ export interface CacheItem<T> {
 
 // Create and manage multiple caches
 class CacheDatabase extends Dexie {
-  public bookmarkCache: Dexie.Table<CacheItem<any>, string>;
-  public mangaCache: Dexie.Table<CacheItem<any>, string>;
-  public hqMangaCache: Dexie.Table<CacheItem<any>, string>;
+  public bookmarkCache: Dexie.Table<CacheItem<number | Bookmark[]>, string>;
+  public mangaCache: Dexie.Table<CacheItem<MangaCacheItem>, string>;
+  public hqMangaCache: Dexie.Table<CacheItem<HqMangaCacheItem>, string>;
 
   constructor() {
     super('MangaReaderCache');

@@ -36,10 +36,10 @@ export async function POST(request: Request): Promise<Response> {
     const result = JSON.parse(data);
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in /api/bookmarks/update:', error);
     return NextResponse.json(
-      { result: 'error', data: error.message },
+      { result: 'error', data: (error as Error).message },
       { status: 500 }
     );
   }

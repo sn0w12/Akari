@@ -16,13 +16,6 @@ import ReadingButton from "./ui/MangaDetails/readingButton";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 
-interface MalData {
-  titles: { type: string; title: string }[];
-  imageUrl: string;
-  url: string;
-  score: number | null;
-}
-
 async function fetchManga(id: string): Promise<Manga | null> {
   const user_data = localStorage.getItem("accountInfo");
   const user_name = localStorage.getItem("accountName");
@@ -35,6 +28,7 @@ async function fetchManga(id: string): Promise<Manga | null> {
     }
     return await response.json();
   } catch (error) {
+    console.error(error);
     return null;
   }
 }
@@ -160,7 +154,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
   const [manga, setManga] = useState<Manga | null>(null);
   const [image, setImage] = useState<string>("");
   const [lastRead, setLastRead] = useState<string>("");
-  const [bmData, setBmData] = useState<String | null>(null);
+  const [bmData, setBmData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
@@ -222,6 +216,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
       await db.setCache(db.hqMangaCache, identifier, cachedManga);
       return cachedManga;
     } catch (error) {
+      console.error(error);
       return null;
     }
   }

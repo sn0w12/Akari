@@ -21,6 +21,43 @@ export interface Manga {
     }[]
 }
 
+export interface MangaCacheItem {
+  bm_data: string;
+  id: string;
+  last_read: string;
+  is_strip: boolean | undefined;
+}
+
+export interface HqMangaCacheItem {
+  aniUrl: string;
+  malUrl: string;
+  description: string;
+  imageUrl: string;
+  score: number;
+  titles: {type: string, title: string}[];
+  url: string;
+}
+
+export interface Bookmark {
+  bm_data: string;
+  chapter_namenow: string;
+  chapter_numbernow: string;
+  chapterlastdateupdate: string;
+  chapterlastname: string;
+  chapterlastnumber: string;
+  image: string;
+  isread: string;
+  link_chapter_last: string;
+  link_chapter_now: string;
+  link_story: string;
+  note_story_id: string;
+  note_story_name: string;
+  noteid: string;
+  storyid: string;
+  storyname: string;
+  storynameunsigned_storykkl: string;
+}
+
 export interface MalSync {
   identifier: string;
   image: string;

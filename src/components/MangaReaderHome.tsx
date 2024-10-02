@@ -63,7 +63,7 @@ export default function MangaReaderHome() {
       setTotalPages(data.metaData.totalPages);
       setIsLoading(false);
     } catch (err) {
-      setError("Error fetching manga list. Please try again later.");
+      setError(`Error fetching manga list. Please try again later: ${err}`);
       setIsLoading(false);
     }
   }, []);

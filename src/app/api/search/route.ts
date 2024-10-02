@@ -10,6 +10,7 @@ interface Manga {
   chapterUrl: string | undefined;
   rating: string;
   author: string;
+  views: string;
 }
 
 export async function GET(req: Request): Promise<Response> {
@@ -38,12 +39,10 @@ export async function GET(req: Request): Promise<Response> {
       const rating = mangaElement.find('em.item-rate').text();
       const author = mangaElement.find('.item-author').text();
 
-      let views: string | undefined;
-      let date: string | undefined;
+      let views: string = "";
 
       $('.item-time').each((i, timeElement) => {
         if (i === 0) views = $(timeElement).text();
-        if (i === 1) date = $(timeElement).text();
       });
 
       mangaList.push({
@@ -54,6 +53,7 @@ export async function GET(req: Request): Promise<Response> {
         chapterUrl: chapterUrl,
         rating: rating,
         author: author,
+        views: views,
       });
     });
 

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookmarkPlus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Fuse from "fuse.js";
@@ -17,22 +17,7 @@ import Image from "next/image";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { getHqImage } from "@/lib/utils";
-
-interface Bookmark {
-  noteid: string;
-  note_story_name: string;
-  chapter_numbernow: string;
-  chapter_namenow: string;
-  link_chapter_now: string;
-  storyid: string;
-  storyname: string;
-  link_story: string;
-  image: string;
-  chapterlastname: string;
-  chapterlastdateupdate: string;
-  link_chapter_last: string;
-  bm_data: string;
-}
+import { Bookmark } from "@/app/api/interfaces";
 
 const fuseOptions = {
   keys: ["note_story_name"], // The fields to search in your data
@@ -98,8 +83,8 @@ export default function BookmarksPage() {
       setCurrentPage(data.page);
       setTotalPages(Number(data.totalPages));
       setError(null); // Clear any previous errors
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err) {
+      setError((err as Error).message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -179,11 +164,11 @@ export default function BookmarksPage() {
   useEffect(() => {
     const initWorker = async () => {
       // Fetch bookmark cache asynchronously
-      const bookmarkCache = await db.getCache(
+      const bookmarkCache = (await db.getCache(
         db.bookmarkCache,
         "allBookmarks",
         1000 * 60 * 60 * 1 // 1-hour expiration
-      );
+      )) as Bookmark[];
       let bookmarksTotalPages = await db.getCache(
         db.bookmarkCache,
         "allBookmarksTotalPages"

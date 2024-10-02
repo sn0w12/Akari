@@ -66,7 +66,7 @@ export async function GET(request: Request) {
     const $ = cheerio.load(html.data);
 
     // Iterate through the JSON data
-    jsonResult.data.forEach((item: { noteid: any; bm_data?: string }) => {
+    jsonResult.data.forEach((item: { noteid: string; bm_data?: string }) => {
       const noteId = item.noteid;
       const className = `bm-it-${noteId}`;
 
@@ -108,7 +108,7 @@ export async function GET(request: Request) {
       bookmarks: jsonResult.data,
     }, { status: 200 });
 
-  } catch (error: any) {
-    return NextResponse.json({ message: 'Error fetching bookmarks', error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ message: 'Error fetching bookmarks', error: (error as Error).message }, { status: 500 });
   }
 }

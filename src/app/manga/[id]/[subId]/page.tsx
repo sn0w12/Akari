@@ -4,11 +4,7 @@ import { useState, useEffect } from "react";
 import { HeaderComponent } from "@/components/Header";
 import ChapterReader from "@/components/MangaReader";
 
-interface PageProps {
-  params: { id: string; subId: string };
-}
-
-export default function MangaReaderPage({ params }: PageProps) {
+export default function MangaReaderPage() {
   const [isHeaderVisible, setHeaderVisible] = useState(false);
   const [isHoveringHeader, setHoveringHeader] = useState(false); // Track hovering over header
 

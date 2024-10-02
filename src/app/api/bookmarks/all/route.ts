@@ -59,7 +59,7 @@ export async function GET(request: Request) {
 
           currentPage++;
         }
-      } catch (error: any) {
+      } catch (error) {
         controller.error(error);
       }
     },

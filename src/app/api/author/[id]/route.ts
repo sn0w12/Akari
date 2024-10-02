@@ -38,7 +38,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { data } = await axios.get(searchUrl);
     const $ = cheerio.load(data);
 
-    let mangaList: Manga[] = [];
+    const mangaList: Manga[] = [];
 
     // Loop through each .content-genres-item div and extract the relevant information
     $('.search-story-item').each((index, element) => {
@@ -69,6 +69,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         chapterUrl: chapterUrl,
         rating: rating,
         author: author,
+        date: date,
         views: views?.replace("View : ", ""),
       });
     });
@@ -91,10 +92,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
         headers: { 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching author search results:', error);
     return NextResponse.json(
-      { result: 'error', data: error.message },
+      { result: 'error', data: (error as Error).message },
       { status: 500 }
     );
   }

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
-import { Search, Bookmark, User, Moon, Sun, Settings } from "lucide-react";
+import { Search, Bookmark, Moon, Sun, Settings } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,10 @@ interface Manga {
   chapterUrl: string;
   rating: string;
   author: string;
+}
+
+interface SettingsInterface {
+  fetchMalImage: boolean;
 }
 
 // Custom hook for managing theme
@@ -94,7 +98,7 @@ export function HeaderComponent() {
   const [showPopup, setShowPopup] = useState(false);
   const [notification, setNotification] = useState("");
   const { theme, toggleTheme } = useTheme();
-  const { accountInfo, setAccountInfo } = useAccountInfo();
+  const { accountInfo } = useAccountInfo();
   const { settings, setSettings } = useSettings();
   const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -125,7 +129,7 @@ export function HeaderComponent() {
   );
 
   // Handle search input changes
-  const handleSearchInputChange = (e: { target: { value: any } }) => {
+  const handleSearchInputChange = (e: { target: { value: string } }) => {
     const query = e.target.value;
     setSearchText(query);
     debouncedFetchResults(query);
@@ -313,7 +317,7 @@ export function HeaderComponent() {
                       type="checkbox"
                       checked={settings.fetchMalImage}
                       onChange={(e) =>
-                        setSettings((prevSettings: any) => ({
+                        setSettings((prevSettings: SettingsInterface) => ({
                           ...prevSettings,
                           fetchMalImage: e.target.checked,
                         }))

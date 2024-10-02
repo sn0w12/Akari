@@ -20,7 +20,7 @@ export default function LoginDialog() {
   const [captchaUrl, setCaptchaUrl] = useState("");
   const [loginError, setLoginError] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   interface UserData {
     user_name: string;
@@ -75,6 +75,7 @@ export default function LoginDialog() {
       const data = await response.json();
       setCaptchaUrl(data.captchaUrl);
     } catch (error) {
+      console.error("Failed to fetch CAPTCHA:", error);
       setLoginError("Failed to fetch CAPTCHA.");
     }
   };
@@ -122,6 +123,7 @@ export default function LoginDialog() {
         fetchCaptcha();
       }
     } catch (error) {
+      console.error("Failed to submit login:", error);
       setLoginError("An error occurred during login.");
     }
     setIsLoading(false);
@@ -222,7 +224,11 @@ export default function LoginDialog() {
                 {!captchaUrl && <CenteredSpinner />}
                 {captchaUrl && (
                   <div className="mt-4 flex items-center">
-                    <img src={captchaUrl} alt="CAPTCHA" className="mr-2 w-auto h-full" />
+                    <img
+                      src={captchaUrl}
+                      alt="CAPTCHA"
+                      className="mr-2 w-auto h-full"
+                    />
                     <div className="w-full">
                       <label className="block text-sm font-medium mb-2">
                         CAPTCHA

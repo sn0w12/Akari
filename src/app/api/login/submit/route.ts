@@ -36,6 +36,7 @@ export async function POST(request: Request) {
         redirectCount++;
       } catch (error) {
         // If navigation times out, assume no more redirects
+        console.log(error);
         isRedirecting = false;
       }
     }

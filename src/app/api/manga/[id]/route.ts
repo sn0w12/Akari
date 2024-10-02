@@ -74,7 +74,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
       const identifier = url.split('/').pop() || '';
       const imageUrl = $('.story-info-left .info-image img').attr('src');
       const name = $('.story-info-right h1').text();
-      const alternativeTitles = $('.variations-tableInfo .info-alternative').parent().find('h2').text().trim();
       const authors: string[] = [];
       const author_urls: string[] = [];
       $('.variations-tableInfo .info-author').closest('tr').find('a').each((index, element) => {
@@ -150,7 +149,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
     };
 
     let mangaDetails = await fetchMangaDetails('https://chapmanganato.to');
-    let oldMangaDetails = mangaDetails;
+    const oldMangaDetails = mangaDetails;
 
     if (!mangaDetails.storyData) {
       console.log('glbStoryData not found on chapmanganato.to, retrying with manganato.com');
@@ -158,7 +157,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
     }
 
     const hasMoreInfo = (oldDetails: MangaDetails, newDetails: MangaDetails) => {
-      for (let key in oldDetails) {
+      for (const key in oldDetails) {
         if (oldDetails[key as keyof MangaDetails] && !newDetails[key as keyof MangaDetails]) {
           return true;
         }

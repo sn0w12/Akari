@@ -29,8 +29,8 @@ export async function GET(req: Request): Promise<Response> {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
-    let mangaList: Manga[] = [];
-    let popular: Manga[] = [];
+    const mangaList: Manga[] = [];
+    const popular: Manga[] = [];
 
     // Loop through each .content-genres-item div and extract the relevant information
     $('.content-genres-item').each((index, element) => {

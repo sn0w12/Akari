@@ -98,7 +98,7 @@ export async function GET(request: Request): Promise<Response> {
     const { data } = await axios.get(searchUrl);
     const $ = cheerio.load(data);
 
-    let mangaList: Manga[] = [];
+    const mangaList: Manga[] = [];
 
     // Loop through each .content-genres-item div and extract the relevant information
     $('.content-genres-item').each((index, element) => {
@@ -149,10 +149,10 @@ export async function GET(request: Request): Promise<Response> {
         headers: { 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching genre search results:', error);
     return NextResponse.json(
-      { result: 'error', data: error.message },
+      { result: 'error', data: (error as Error).message },
       { status: 500 }
     );
   }

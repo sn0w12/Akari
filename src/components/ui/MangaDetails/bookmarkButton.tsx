@@ -10,7 +10,7 @@ interface BookmarkButtonProps {
   isBookmarked: boolean | null;
   manga: Manga;
   bookmark: (
-    storyData: any,
+    storyData: string,
     isBookmarked: boolean,
     setIsBookmarked: (state: boolean) => void
   ) => void;
