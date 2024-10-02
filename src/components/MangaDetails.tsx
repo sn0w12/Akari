@@ -198,9 +198,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
     try {
       const malSyncResponse = await fetch(
-        `${window.location.origin}/api/manga/malsync/${encodeURIComponent(
-          identifier
-        )}`
+        `/api/manga/malsync/${encodeURIComponent(identifier)}`
       );
       if (!malSyncResponse.ok) {
         return null;
