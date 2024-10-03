@@ -185,7 +185,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       body: JSON.stringify({ user_data, story_data, chapter_data }),
     });
 
-    const theme = localStorage.getItem("theme") || "light";
     if (response.ok) {
       new Toast("Bookmark updated successfully!", "success", {
         autoClose: 1000,
