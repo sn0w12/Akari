@@ -272,7 +272,7 @@ export default function LoginDialog() {
                     </label>
                     <div className="flex items-center w-full">
                       <img
-                        src={captchaUrl}
+                        src={`/api/image-proxy?imageUrl=${captchaUrl}`}
                         alt="CAPTCHA"
                         className="mr-2 w-auto h-full"
                       />
