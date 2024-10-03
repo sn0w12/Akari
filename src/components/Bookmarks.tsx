@@ -18,128 +18,13 @@ import { debounce } from "lodash";
 import db from "@/lib/db";
 import { getHqImage } from "@/lib/utils";
 import { Bookmark } from "@/app/api/interfaces";
+import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
+import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 
 const fuseOptions = {
   keys: ["note_story_name"], // The fields to search in your data
   includeScore: false, // Optional: include the score in the results
   threshold: 0.4, // Adjust the fuzziness (0.0 = exact match, 1.0 = match all)
-};
-
-const latestChapterInfo: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
-  return (
-    <div className="text-sm text-muted-foreground">
-      <p>
-        Latest Chapter:{" "}
-        <a
-          href={`/manga/${bookmark.link_story
-            .split("/")
-            .pop()}/${bookmark.link_chapter_last.split("/").pop()}`}
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline"
-        >
-          {bookmark.chapterlastname}
-        </a>
-      </p>
-      <p className="text-xs text-gray-400">
-        Updated: {bookmark.chapterlastdateupdate}
-      </p>
-    </div>
-  );
-};
-
-const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
-  bookmark,
-}) => {
-  return (
-    <Card className="flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
-      <div className="w-40 h-full mb-0 shrink-0">
-        <a
-          href={`/manga/${bookmark.link_story.split("/").pop()}`}
-          rel="noopener noreferrer"
-          className="block"
-        >
-          <Image
-            src={bookmark.image}
-            alt={bookmark.storyname}
-            width={300}
-            height={450}
-            className="w-full h-auto object-cover rounded"
-          />
-        </a>
-      </div>
-      <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
-        <div className="mb-4">
-          <Link href={`/manga/${bookmark.link_story.split("/").pop()}`}>
-            <h3 className="font-bold text-2xl mb-2 hover:underline text-left">
-              {bookmark.storyname}
-            </h3>
-          </Link>
-          {/* Continue Reading Button */}
-          <a
-            href={`/manga/${bookmark.link_story
-              .split("/")
-              .pop()}/${bookmark.link_chapter_now.split("/").pop()}`}
-            rel="noopener noreferrer"
-            className="block mt-4"
-          >
-            <Button className="py-4 px-6 text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-              Continue Reading - Chapter {bookmark.chapter_numbernow}
-            </Button>
-          </a>
-        </div>
-        {latestChapterInfo({ bookmark })}
-      </CardContent>
-    </Card>
-  );
-};
-
-const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
-  return (
-    <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg xl:h-full">
-      <CardContent className="pt-6 flex flex-col flex-shrink justify-between">
-        <div className="mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-20 h-full mb-0 shrink-0">
-              <a
-                href={`/manga/${bookmark.link_story.split("/").pop()}`}
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Image
-                  src={bookmark.image}
-                  alt={bookmark.storyname}
-                  width={300}
-                  height={450}
-                  className="w-full h-auto object-cover rounded"
-                />
-              </a>
-            </div>
-            <Link
-              className="w-full"
-              href={`/manga/${bookmark.link_story.split("/").pop()}`}
-            >
-              <h3 className="font-bold text-2xl mb-2 text-center hover:underline">
-                {bookmark.storyname}
-              </h3>
-            </Link>
-          </div>
-          {/* Continue Reading Button */}
-          <a
-            href={`/manga/${bookmark.link_story
-              .split("/")
-              .pop()}/${bookmark.link_chapter_now.split("/").pop()}`}
-            rel="noopener noreferrer"
-            className="block mt-4"
-          >
-            <Button className="py-4 px-6 w-full text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-              Chapter {bookmark.chapter_numbernow}
-            </Button>
-          </a>
-        </div>
-        {latestChapterInfo({ bookmark })}
-      </CardContent>
-    </Card>
-  );
 };
 
 export default function BookmarksPage() {
