@@ -36,6 +36,27 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
+			'accent-color': '#6366F1', // Tailwind's indigo-500
+			success: {
+				DEFAULT: '#10B981', // Tailwind's green-500
+				light: '#6EE7B7', // Light variant of green-500
+				dark: '#047857', // Dark variant of green-500
+			},
+			warning: {
+				DEFAULT: '#F59E0B', // Tailwind's yellow-500
+				light: '#FDE68A', // Light variant of yellow-500
+				dark: '#B45309', // Dark variant of yellow-500
+			},
+			danger: {
+				DEFAULT: '#DC2626', // Tailwind's red-600
+				light: '#F87171', // Light variant of red-600
+				dark: '#991B1B', // Dark variant of red-600
+			},
+			info: {
+				DEFAULT: '#0EA5E9', // Tailwind's sky-500
+				light: '#7DD3FC', // Light variant of sky-500
+				dark: '#0369A1', // Dark variant of sky-500
+			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
