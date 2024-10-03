@@ -12,7 +12,7 @@ import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { MangaCacheItem } from "@/app/api/interfaces";
-import { toast } from "react-toastify";
+import Toast from "@/lib/toastWrapper";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -187,18 +187,11 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
     const theme = localStorage.getItem("theme") || "light";
     if (response.ok) {
-      toast.success("Bookmark updated successfully!", {
-        position: "top-right",
-        theme: theme as "light" | "dark",
+      new Toast("Bookmark updated successfully!", "success", {
         autoClose: 1000,
       });
     } else {
-      // Handle error response
-      toast.error("Failed to update bookmark.", {
-        position: "top-right",
-        theme: theme as "light" | "dark",
-        autoClose: 1000,
-      });
+      new Toast("Failed to update bookmark.", "error");
     }
 
     const result = await response.json();

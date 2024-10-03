@@ -20,6 +20,7 @@ import { getHqImage } from "@/lib/utils";
 import { Bookmark } from "@/app/api/interfaces";
 import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
 import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
+import Toast from "@/lib/toastWrapper";
 
 const fuseOptions = {
   keys: ["note_story_name"], // The fields to search in your data
@@ -188,6 +189,10 @@ export default function BookmarksPage() {
       const user_data = localStorage.getItem("accountInfo");
 
       if (user_data && typeof window !== "undefined" && !workerRef.current) {
+        const bookmarkToast = new Toast("Processing bookmarks...", "info", {
+          autoClose: false,
+        });
+
         workerRef.current = new Worker("/workers/eventSourceWorker.js");
         workerRef.current.postMessage({ userData: user_data });
         console.log("Worker initialized.");
@@ -205,11 +210,14 @@ export default function BookmarksPage() {
           } else if (type === "error") {
             console.error("Worker error:", message, details);
             workerRef.current?.terminate();
+            new Toast("Error processing bookmarks.", "error");
           } else if (type === "finished") {
             console.log("Worker has finished processing.");
             processBatch(); // Process any remaining bookmarks
             workerRef.current?.terminate();
             setWorkerFinished(true);
+            new Toast("Bookmarks processed.", "success");
+            bookmarkToast.close();
           }
         };
       }
