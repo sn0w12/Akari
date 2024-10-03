@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import Cookies from "js-cookie";
+import { Suspense } from "react";
+import FallbackPage from "@/components/FallbackPage";
 
 const CallbackPage = () => {
   const router = useRouter();
@@ -66,21 +68,23 @@ const CallbackPage = () => {
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
-      <Card className="p-6 space-y-4 text-center">
-        {errorMessage ? (
-          <p className="text-red-700">Error: {errorMessage}</p>
-        ) : (
-          <p
-            className={`${
-              success ? "text-green-500" : "text-muted-foreground"
-            }`}
-          >
-            {success
-              ? "Success!"
-              : "Exchanging authorization code for access token..."}
-          </p>
-        )}
-      </Card>
+      <Suspense fallback={<FallbackPage />}>
+        <Card className="p-6 space-y-4 text-center">
+          {errorMessage ? (
+            <p className="text-red-700">Error: {errorMessage}</p>
+          ) : (
+            <p
+              className={`${
+                success ? "text-green-500" : "text-muted-foreground"
+              }`}
+            >
+              {success
+                ? "Success!"
+                : "Exchanging authorization code for access token..."}
+            </p>
+          )}
+        </Card>
+      </Suspense>
     </div>
   );
 };
