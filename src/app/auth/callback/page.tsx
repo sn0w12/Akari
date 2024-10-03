@@ -67,8 +67,8 @@ const CallbackPage = () => {
   }, [searchParams, router]);
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
-      <Suspense fallback={<FallbackPage />}>
+    <Suspense fallback={<FallbackPage />}>
+      <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
         <Card className="p-6 space-y-4 text-center">
           {errorMessage ? (
             <p className="text-red-700">Error: {errorMessage}</p>
@@ -84,8 +84,8 @@ const CallbackPage = () => {
             </p>
           )}
         </Card>
-      </Suspense>
-    </div>
+      </div>
+    </Suspense>
   );
 };
 
