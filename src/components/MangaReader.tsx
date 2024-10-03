@@ -12,6 +12,7 @@ import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { MangaCacheItem } from "@/app/api/interfaces";
+import { toast } from "react-toastify";
 
 interface ChapterReaderProps {
   isHeaderVisible: boolean;
@@ -183,6 +184,23 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
       },
       body: JSON.stringify({ user_data, story_data, chapter_data }),
     });
+
+    const theme = localStorage.getItem("theme") || "light";
+    if (response.ok) {
+      toast.success("Bookmark updated successfully!", {
+        position: "top-right",
+        theme: theme as "light" | "dark",
+        autoClose: 1000,
+      });
+    } else {
+      // Handle error response
+      toast.error("Failed to update bookmark.", {
+        position: "top-right",
+        theme: theme as "light" | "dark",
+        autoClose: 1000,
+      });
+    }
+
     const result = await response.json();
     return result;
   }
