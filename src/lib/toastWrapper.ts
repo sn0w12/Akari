@@ -6,12 +6,17 @@ const getUserTheme = (): "light" | "dark" => {
 };
 
 class Toast {
-  private toastId: string;
-  private theme: "light" | "dark";
+  private toastId: string = "toast";
+  private theme: "light" | "dark" = "dark";
+  private showToast: boolean;
 
   constructor(message: string, type: "success" | "error" | "info" | "warning", options = {}) {
+    this.showToast = JSON.parse(localStorage.getItem("settings") || '{}').useToast != false;
+    if (!this.showToast) return;
+
     this.theme = getUserTheme();
     this.toastId = `toast-${Math.random().toString(36).substr(2, 9)}`; // Generate a custom ID
+
     this.show(message, type, options);
   }
 

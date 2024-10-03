@@ -17,6 +17,7 @@ import {
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
+import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
 
 interface Manga {
   id: string;
@@ -30,7 +31,13 @@ interface Manga {
 
 interface SettingsInterface {
   fetchMalImage: boolean;
+  useToast: boolean;
 }
+
+const defaultSettings: SettingsInterface = {
+  fetchMalImage: true,
+  useToast: true,
+};
 
 // Custom hook for managing theme
 const useTheme = () => {
@@ -70,15 +77,13 @@ const useAccountInfo = () => {
 
 // Hook to manage settings
 const useSettings = () => {
-  const [settings, setSettings] = useState<{ fetchMalImage: boolean }>(() => {
+  const [settings, setSettings] = useState<SettingsInterface>(() => {
     // Initialize from localStorage or return default values
     if (typeof window !== "undefined") {
       const storedSettings = localStorage.getItem("settings");
-      return storedSettings
-        ? JSON.parse(storedSettings)
-        : { fetchMalImage: true };
+      return storedSettings ? JSON.parse(storedSettings) : defaultSettings;
     }
-    return { fetchMalImage: true }; // Default settings in case window is not defined
+    return defaultSettings; // Default settings in case window is not defined
   });
 
   useEffect(() => {
@@ -101,6 +106,37 @@ export function HeaderComponent() {
   const { accountInfo } = useAccountInfo();
   const { settings, setSettings } = useSettings();
   const popupRef = useRef<HTMLDivElement | null>(null);
+
+  const settingsMap: SettingsMap = {
+    fetchMalImage: {
+      label: "Fetch MAL Image",
+      type: "checkbox",
+      value: settings.fetchMalImage,
+      default: true,
+      onChange: (value: SettingValue) => {
+        if (typeof value === "boolean") {
+          setSettings((prevSettings) => ({
+            ...prevSettings,
+            fetchMalImage: value,
+          }));
+        }
+      },
+    },
+    useToast: {
+      label: "Use Toasts",
+      type: "checkbox",
+      value: settings.useToast,
+      default: true,
+      onChange: (value: SettingValue) => {
+        if (typeof value === "boolean") {
+          setSettings((prevSettings) => ({
+            ...prevSettings,
+            useToast: value,
+          }));
+        }
+      },
+    },
+  };
 
   // Debounce function for fetching search results
   const debouncedFetchResults = useCallback(
@@ -308,24 +344,7 @@ export function HeaderComponent() {
                 <DialogHeader>
                   <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
-                <div className="flex flex-col space-y-4 border-t">
-                  <div className="flex items-center justify-start gap-2">
-                    <label className="block text-sm font-medium mb-2 mt-2">
-                      Fetch MAL Image:
-                    </label>
-                    <Input
-                      type="checkbox"
-                      checked={settings.fetchMalImage}
-                      onChange={(e) =>
-                        setSettings((prevSettings: SettingsInterface) => ({
-                          ...prevSettings,
-                          fetchMalImage: e.target.checked,
-                        }))
-                      }
-                      className="h-4 w-auto"
-                    />
-                  </div>
-                </div>
+                <SettingsForm settingsMap={settingsMap} />
               </DialogContent>
             </Dialog>
 
