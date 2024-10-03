@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input";
 import { User } from "lucide-react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
+import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
+import Cookies from "js-cookie";
+import { BASE_URL } from "@/lib/consts";
 
 export default function LoginDialog() {
   const [username, setUsername] = useState("");
@@ -22,11 +25,20 @@ export default function LoginDialog() {
   const [loginError, setLoginError] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [authUrl, setAuthUrl] = useState<string | null>(null);
+  const [isMalAuth, setIsMalAuth] = useState<boolean>(false);
+  const [malUser, setMalUser] = useState<MalUser | null>(null);
 
   interface UserData {
     user_name: string;
     user_data: string;
     user_image: string;
+  }
+
+  interface MalUser {
+    name: string;
+    picture: string;
+    id: number;
   }
 
   // Check if the user_acc cookie exists in localStorage and parse it
@@ -47,11 +59,19 @@ export default function LoginDialog() {
   }, []);
 
   const handleLogout = () => {
+    // Manganato
     localStorage.removeItem("accountInfo");
     localStorage.removeItem("accountName");
     localStorage.removeItem("user_acc");
     setUserData(null); // Reset userData to trigger the login view again
     fetchCaptcha(); // Fetch a new CAPTCHA when logging out
+
+    // MyAnimeList
+    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
+    localStorage.removeItem("mal_user");
+    setMalUser(null);
+    setIsMalAuth(false);
   };
 
   // Fetch CAPTCHA when opening the dialog
@@ -107,6 +127,34 @@ export default function LoginDialog() {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    const accessToken = Cookies.get("access_token");
+    if (accessToken) {
+      const malUser = JSON.parse(localStorage.getItem("mal_user") || "{}");
+      setMalUser(malUser);
+      setIsMalAuth(true);
+      return;
+    } else {
+      setIsMalAuth(false);
+    }
+
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = generateCodeChallenge(codeVerifier);
+    const clientId = process.env.NEXT_PUBLIC_CLIENT_ID!;
+
+    // Store the codeVerifier in a cookie
+    Cookies.set("pkce_code_verifier", codeVerifier, { sameSite: "strict" });
+
+    const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
+    url.searchParams.append("response_type", "code");
+    url.searchParams.append("client_id", clientId);
+    url.searchParams.append("code_challenge", codeChallenge);
+    url.searchParams.append("code_challenge_method", "plain");
+    url.searchParams.append("redirect_uri", `${BASE_URL}/auth/callback`);
+
+    setAuthUrl(url.toString());
+  }, []);
+
   // If user data exists, display the user's name and user data, otherwise show the login dialog
   if (userData) {
     return (
@@ -133,6 +181,23 @@ export default function LoginDialog() {
                 value={userData.user_data}
                 readOnly
               />
+
+              {authUrl && !isMalAuth && (
+                <a href={authUrl}>
+                  <Button
+                    variant="outline"
+                    className="mt-4 w-full bg-blue-600 hover:bg-blue-500"
+                  >
+                    MyAnimeList
+                  </Button>
+                </a>
+              )}
+              {isMalAuth && malUser && (
+                <div className="mt-4">
+                  <h2 className="text-xl font-bold">{malUser.name}</h2>
+                  <p className="mt-2">Logged In With Mal</p>
+                </div>
+              )}
               {/* Logout Button */}
               <ConfirmDialog
                 triggerButton={

@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
+import { BASE_URL } from '@/lib/consts';
 
 export const runtime = "edge"
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
-  const apiBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000';
-  console.log('apiBaseUrl:', apiBaseUrl);
   const response = await fetch(
-    `${apiBaseUrl}/api/bookmarks?page=${page}&user_data=${user_data}`
+    `${BASE_URL}/api/bookmarks?page=${page}&user_data=${user_data}`
   );
 
   if (!response.ok) {

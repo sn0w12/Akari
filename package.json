@@ -25,6 +25,7 @@
     "http-cookie-agent": "^6.0.6",
     "image-size": "^1.1.1",
     "jimp": "^1.6.0",
+    "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.446.0",
     "manga-reader": "file:",
@@ -38,6 +39,7 @@
     "tough-cookie": "^5.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.9",
     "@types/node": "^20",
     "@types/react": "^18",
