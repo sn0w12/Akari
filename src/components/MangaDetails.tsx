@@ -15,6 +15,7 @@ import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
 import ReadingButton from "./ui/MangaDetails/readingButton";
 import { debounce } from "lodash";
 import db from "@/lib/db";
+import { fetchMalData } from "@/lib/malSync";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     const user_data = localStorage.getItem("accountInfo");
@@ -31,27 +32,6 @@ async function fetchManga(id: string): Promise<Manga | null> {
         console.error(error);
         return null;
     }
-}
-
-async function getHqData(malSyncData: MalSync) {
-    let service;
-    let id;
-    if (malSyncData.malId) {
-        service = "mal";
-        id = malSyncData.malId;
-    } else if (malSyncData.aniId) {
-        service = "ani";
-        id = malSyncData.aniId;
-    } else return null;
-
-    const response = await fetch(
-        `${window.location.origin}/api/manga/${service}/${id}`,
-    );
-    if (!response.ok) {
-        return null;
-    }
-    const data = await response.json();
-    return data;
 }
 
 async function checkIfBookmarked(
@@ -188,39 +168,6 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         }
     }
 
-    async function fetchMalData(identifier: string) {
-        let cachedManga = await db.getCache(db.hqMangaCache, identifier);
-        if (cachedManga) {
-            setMalLink(cachedManga.malUrl);
-            setAniLink(cachedManga.aniUrl);
-            return cachedManga;
-        }
-
-        try {
-            const malSyncResponse = await fetch(
-                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(
-                    identifier,
-                )}`,
-            );
-            if (!malSyncResponse.ok) {
-                return null;
-            }
-            const malSyncResponseData: MalSync = await malSyncResponse.json();
-            setMalLink(malSyncResponseData.malUrl);
-            setAniLink(malSyncResponseData.aniUrl);
-            const data = await getHqData(malSyncResponseData);
-            data["malUrl"] = malSyncResponseData.malUrl;
-            data["aniUrl"] = malSyncResponseData.aniUrl;
-
-            cachedManga = data;
-            await db.setCache(db.hqMangaCache, identifier, cachedManga);
-            return cachedManga;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
     const loadManga = useCallback(async () => {
         setIsLoading(true);
         const settings = JSON.parse(localStorage.getItem("settings") || "{}");
@@ -242,6 +189,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
             const malData = await fetchMalData(data?.identifier || "");
             if (malData && settings.fetchMalImage) {
+                setMalLink(malData.malUrl);
+                setAniLink(malData.aniUrl);
                 setImage(malData.imageUrl);
             }
 
