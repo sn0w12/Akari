@@ -4,7 +4,7 @@ export function getBaseUrl() {
         if (vercelEnv === "production") {
             return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
         } else {
-            return `https://${process.env.VERCEL_URL}`;
+            return `https://${process.env.VERCEL_BRANCH_URL}`;
         }
     } else {
         return "http://localhost:3000";
