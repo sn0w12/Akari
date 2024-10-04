@@ -16,9 +16,7 @@ async function fetchBookmarks(user_data: string, page: number) {
             throw new Error(`HTTP error ${response.status}: ${errorText}`);
         }
 
-        const jsonResponse = await response.json();
-        jsonResponse["result"] = "ok";
-        return jsonResponse;
+        return await response.json();
     } catch (error) {
         return { result: "error", error: (error as Error).message };
     }
@@ -46,8 +44,8 @@ export async function GET(
                 while (true) {
                     const result = await fetchBookmarks(user_data, currentPage);
 
-                    if (result.result !== "ok") {
-                        controller.error(new Error("Error fetching bookmarks"));
+                    if (result.result === "error") {
+                        controller.error(result.error);
                         return;
                     }
 
