@@ -13,7 +13,6 @@ import { debounce } from "lodash";
 import db from "@/lib/db";
 import { MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
-import { getAccessToken } from "@/lib/accessToken";
 import { fetchMalData } from "@/lib/malSync";
 
 interface ChapterReaderProps {
@@ -185,9 +184,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     }, [chapterData, currentPage]);
 
     async function syncBookmark(data: Chapter) {
-        const accessToken = await getAccessToken();
-        if (!accessToken) return;
-
         const regex = /Chapter\s(\d+)/;
         const match = data.chapter.match(regex);
         const chapterNumber = match ? match[1] : null;
@@ -195,13 +191,11 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
         const malData = await fetchMalData(data.parentId);
         if (!malData || !malData.malUrl) return;
-        console.log(malData);
 
         await fetch("/api/mal/me/mangalist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
             },
             body: JSON.stringify({
                 manga_id: malData.malUrl.split("/").pop(),

@@ -128,15 +128,8 @@ export default function LoginDialog() {
     };
 
     useEffect(() => {
-        console.log("All cookies:", document.cookie);
-        console.log("All Cookies Func:", Cookies.get());
-        const accessToken = Cookies.get("access_token");
-        console.log("Access Token:", accessToken);
-        console.log(accessToken);
-        if (accessToken) {
-            const malUser = JSON.parse(
-                localStorage.getItem("mal_user") || "{}",
-            );
+        const malUser = JSON.parse(localStorage.getItem("mal_user") || "{}");
+        if (malUser.name) {
             setMalUser(malUser);
             setIsMalAuth(true);
             return;

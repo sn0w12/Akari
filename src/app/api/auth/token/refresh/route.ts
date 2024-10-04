@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-    const { refresh_token } = await req.json();
+export async function GET(req: NextRequest) {
+    const refreshToken = req.cookies.get("refresh_token")?.value;
 
-    if (!refresh_token) {
+    if (!refreshToken) {
         return NextResponse.json(
             { error: "Missing refresh token" },
             { status: 400 },
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
                 client_id: process.env.NEXT_PUBLIC_MAL_CLIENT_ID!,
-                refresh_token: refresh_token,
+                refresh_token: refreshToken,
                 grant_type: "refresh_token",
             }),
         },

@@ -3,7 +3,6 @@ import { getBaseUrl } from "../../baseUrl";
 
 export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();
-    console.log(getBaseUrl());
 
     if (!code || !code_verifier) {
         return NextResponse.json({ error: "Missing input" }, { status: 400 });
@@ -33,11 +32,11 @@ export async function POST(req: NextRequest) {
     if (response.ok) {
         const response = NextResponse.json(data);
         response.cookies.set("access_token", data.access_token, {
-            httpOnly: process.env.VERCEL === "1",
+            httpOnly: true,
             expires: accessExpirationDate,
         });
         response.cookies.set("refresh_token", data.refresh_token, {
-            httpOnly: process.env.VERCEL === "1",
+            httpOnly: true,
             expires: refreshExpirationDate,
         });
         return response;
