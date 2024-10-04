@@ -13,6 +13,8 @@ import { debounce } from "lodash";
 import db from "@/lib/db";
 import { MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
+import { getAccessToken } from "@/lib/accessToken";
+import { fetchMalData } from "@/lib/malSync";
 
 interface ChapterReaderProps {
     isHeaderVisible: boolean;
@@ -182,6 +184,32 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         }
     }, [chapterData, currentPage]);
 
+    async function syncBookmark(data: Chapter) {
+        const accessToken = await getAccessToken();
+        if (!accessToken) return;
+
+        const regex = /Chapter\s(\d+)/;
+        const match = data.chapter.match(regex);
+        const chapterNumber = match ? match[1] : null;
+        if (!chapterNumber) return;
+
+        const malData = await fetchMalData(data.parentId);
+        if (!malData || !malData.malUrl) return;
+        console.log(malData);
+
+        const response = await fetch("/api/mal/me/mangalist", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                manga_id: malData.malUrl.split("/").pop(),
+                num_chapters_read: chapterNumber,
+            }),
+        });
+    }
+
     async function updateBookmark(data: Chapter) {
         const user_data = localStorage.getItem("accountInfo");
         const story_data = data.storyData;
@@ -197,6 +225,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         });
 
         if (response.ok) {
+            await syncBookmark(data);
             new Toast("Bookmark updated successfully!", "success", {
                 autoClose: 1000,
             });
