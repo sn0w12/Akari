@@ -227,6 +227,7 @@ export default function BookmarksPage() {
                     } else if (type === "error") {
                         console.error("Worker error:", message, details);
                         workerRef.current?.terminate();
+                        bookmarkToast.close();
                         new Toast("Error processing bookmarks.", "error");
                     } else if (type === "finished") {
                         console.log("Worker has finished processing.");

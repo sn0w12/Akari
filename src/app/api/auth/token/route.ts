@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BASE_URL } from "@/lib/consts";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
             code,
             code_verifier: code_verifier,
             grant_type: "authorization_code",
-            redirect_uri: `${BASE_URL}/auth/callback`,
+            redirect_uri: `${getBaseUrl()}/auth/callback`,
         }),
     });
 
@@ -32,11 +32,11 @@ export async function POST(req: NextRequest) {
     if (response.ok) {
         const response = NextResponse.json(data);
         response.cookies.set("access_token", data.access_token, {
-            httpOnly: process.env.VERCEL === "1",
+            httpOnly: true,
             expires: accessExpirationDate,
         });
         response.cookies.set("refresh_token", data.refresh_token, {
-            httpOnly: process.env.VERCEL === "1",
+            httpOnly: true,
             expires: refreshExpirationDate,
         });
         return response;

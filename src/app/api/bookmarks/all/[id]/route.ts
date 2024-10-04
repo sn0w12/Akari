@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
-import { BASE_URL } from "@/lib/consts";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 export const runtime = "edge";
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
-    const response = await fetch(
-        `${BASE_URL}/api/bookmarks?page=${page}&user_data=${user_data}`,
-    );
+    try {
+        const response = await fetch(
+            `${getBaseUrl()}/api/bookmarks?page=${page}&user_data=${user_data}`,
+        );
 
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        return { result: "error", error: (error as Error).message };
     }
-
-    const jsonResponse = await response.json();
-    jsonResponse["result"] = "ok";
-    return jsonResponse;
 }
 
 // Named export for GET requests (you can also use POST if needed)
@@ -41,8 +43,8 @@ export async function GET(
                 while (true) {
                     const result = await fetchBookmarks(user_data, currentPage);
 
-                    if (result.result !== "ok") {
-                        controller.error(new Error("Error fetching bookmarks"));
+                    if (result.result === "error") {
+                        controller.error(result.error);
                         return;
                     }
 
@@ -70,7 +72,7 @@ export async function GET(
         },
     });
 
-    return new Response(readableStream, {
+    return new NextResponse(readableStream, {
         headers: {
             "Content-Type": "text/event-stream; charset=utf-8",
             "Cache-Control": "no-cache",

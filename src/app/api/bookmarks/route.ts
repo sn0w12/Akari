@@ -29,13 +29,18 @@ async function fetchBookmarks(user_data: string, page: number, url: string) {
         return out_type === "json" ? response.json() : response.text();
     }
 
-    // Fetch both JSON and HTML in parallel
-    const [jsonResponse, htmlResponse] = await Promise.all([
-        fetchData("json"), // Fetch JSON response
-        fetchData("html"), // Fetch HTML response
-    ]);
-
-    return { jsonResponse, htmlResponse };
+    try {
+        // Fetch both JSON and HTML in parallel
+        const [jsonResponse, htmlResponse] = await Promise.all([
+            fetchData("json"), // Fetch JSON response
+            fetchData("html"), // Fetch HTML response
+        ]);
+        return { jsonResponse, htmlResponse };
+    } catch (error) {
+        throw new Error(
+            `Error fetching bookmarks: ${(error as Error).message}`,
+        );
+    }
 }
 
 // Named export for GET requests (fetch a specific page of bookmarks)

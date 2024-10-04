@@ -6,9 +6,19 @@ self.onmessage = function (e) {
         return;
     }
 
-    const eventSource = new EventSource(
-        `/api/bookmarks/all/${encodeURIComponent(userData)}`,
-    );
+    let eventSource;
+    try {
+        eventSource = new EventSource(
+            `/api/bookmarks/all/${encodeURIComponent(userData)}`,
+        );
+    } catch (error) {
+        self.postMessage({
+            type: "error",
+            message: "Failed to create EventSource",
+            details: error.message,
+        });
+        return;
+    }
 
     // Handle incoming bookmark data
     eventSource.onmessage = function (event) {

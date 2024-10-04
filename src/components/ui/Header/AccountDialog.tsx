@@ -14,7 +14,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
-import { BASE_URL } from "@/lib/consts";
+import { baseUrl } from "@/lib/consts";
 
 export default function LoginDialog() {
     const [username, setUsername] = useState("");
@@ -128,11 +128,8 @@ export default function LoginDialog() {
     };
 
     useEffect(() => {
-        const accessToken = Cookies.get("access_token");
-        if (accessToken) {
-            const malUser = JSON.parse(
-                localStorage.getItem("mal_user") || "{}",
-            );
+        const malUser = JSON.parse(localStorage.getItem("mal_user") || "{}");
+        if (malUser.name) {
             setMalUser(malUser);
             setIsMalAuth(true);
             return;
@@ -152,7 +149,7 @@ export default function LoginDialog() {
         url.searchParams.append("client_id", clientId);
         url.searchParams.append("code_challenge", codeChallenge);
         url.searchParams.append("code_challenge_method", "plain");
-        url.searchParams.append("redirect_uri", `${BASE_URL}/auth/callback`);
+        url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
 
         setAuthUrl(url.toString());
     }, []);

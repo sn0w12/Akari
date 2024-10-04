@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getBaseUrl } from "../../../baseUrl";
+import { getAccessToken } from "@/lib/accessToken";
 
 export async function GET(req: NextRequest) {
     const authorizationHeader = req.headers.get("authorization");
@@ -32,15 +34,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     const { manga_id, num_chapters_read } = await req.json();
-    const authorizationHeader = req.headers.get("authorization");
-    if (!authorizationHeader) {
-        return NextResponse.json(
-            { error: "Authorization header missing" },
-            { status: 401 },
-        );
-    }
     if (!manga_id || !num_chapters_read) {
         return NextResponse.json({ error: "Missing input" }, { status: 400 });
+    }
+    const accessToken = await getAccessToken(req, getBaseUrl());
+    if (!accessToken) {
+        return NextResponse.json(
+            { error: "Failed to get access token" },
+            { status: 500 },
+        );
     }
 
     const response = await fetch(
@@ -48,7 +50,7 @@ export async function POST(req: NextRequest) {
         {
             method: "PATCH",
             headers: {
-                Authorization: authorizationHeader,
+                Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({

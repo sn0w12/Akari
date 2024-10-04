@@ -1,3 +1,4 @@
-export const BASE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000";
+export const baseUrl =
+    typeof window !== "undefined" && window.location.hostname === "localhost"
+        ? "http://localhost:3000"
+        : `https://${typeof window !== "undefined" ? window.location.hostname : "default-hostname"}`;
