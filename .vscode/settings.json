@@ -1,16 +1,28 @@
 {
-  "cSpell.words": [
-    "Akari",
-    "chapterlastdateupdate",
-    "chapterlastname",
-    "dexie",
-    "Keybind",
-    "Keybinds",
-    "Manganato",
-    "namenow",
-    "noteid",
-    "numbernow",
-    "storyid",
-    "storyname"
-  ]
+    "cSpell.words": [
+        "Akari",
+        "chapterlastdateupdate",
+        "chapterlastname",
+        "dexie",
+        "Keybind",
+        "Keybinds",
+        "mangalist",
+        "Manganato",
+        "namenow",
+        "noteid",
+        "numbernow",
+        "storyid",
+        "storyname"
+    ],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "eslint.format.enable": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

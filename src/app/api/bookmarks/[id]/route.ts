@@ -1,49 +1,57 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 const BOOKMARK_LIST_URL = "https://user.mngusr.com/bookmark_get_list_idstory";
 
 // Helper function to check if the manga is bookmarked
 async function isMangaBookmarked(user_data: string, mangaId: string) {
-  try {
-    const response = await fetch(BOOKMARK_LIST_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        user_data: user_data,
-      }),
-    });
+    try {
+        const response = await fetch(BOOKMARK_LIST_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                user_data: user_data,
+            }),
+        });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch bookmark list: ${response.statusText}`);
+        if (!response.ok) {
+            throw new Error(
+                `Failed to fetch bookmark list: ${response.statusText}`,
+            );
+        }
+
+        const data = await response.json();
+
+        if (data.result !== "ok") {
+            throw new Error(`API Error: ${data.data}`);
+        }
+
+        const bookmarkedIds = data.data.split(","); // The list of bookmarked IDs
+        return bookmarkedIds.includes(mangaId);
+    } catch (error) {
+        console.error(error);
+        return false;
     }
-
-    const data = await response.json();
-
-    if (data.result !== "ok") {
-      throw new Error(`API Error: ${data.data}`);
-    }
-
-    const bookmarkedIds = data.data.split(","); // The list of bookmarked IDs
-    return bookmarkedIds.includes(mangaId);
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
 }
 
 // API handler to check if a manga is bookmarked
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { id: mangaId } = params;
-  const url = new URL(req.url);
-  const user_data = url.searchParams.get("user_data"); // Get user_data from query params
+export async function GET(
+    req: Request,
+    { params }: { params: { id: string } },
+) {
+    const { id: mangaId } = params;
+    const url = new URL(req.url);
+    const user_data = url.searchParams.get("user_data"); // Get user_data from query params
 
-  if (!user_data) {
-    return NextResponse.json({ message: "User data is required" }, { status: 400 });
-  }
+    if (!user_data) {
+        return NextResponse.json(
+            { message: "User data is required" },
+            { status: 400 },
+        );
+    }
 
-  const isBookmarked = await isMangaBookmarked(user_data, mangaId);
+    const isBookmarked = await isMangaBookmarked(user_data, mangaId);
 
-  return NextResponse.json({ isBookmarked });
+    return NextResponse.json({ isBookmarked });
 }

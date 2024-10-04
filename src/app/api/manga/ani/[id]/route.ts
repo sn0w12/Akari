@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-export async function GET(req: Request, { params }: { params: { id: string } }): Promise<Response> {
-  const query = `
+export async function GET(
+    req: Request,
+    { params }: { params: { id: string } },
+): Promise<Response> {
+    const query = `
     query ExampleQuery($mediaId: Int!) {
       Media(id: $mediaId) {
         id
@@ -22,22 +25,19 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
   `;
 
     const variables = {
-      mediaId: params.id,
+        mediaId: params.id,
     };
     try {
-        const request = await fetch(
-          "https://graphql.anilist.co",
-          {
+        const request = await fetch("https://graphql.anilist.co", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              query,
-              variables,
+                query,
+                variables,
             }),
-          }
-        );
+        });
 
         const data = await request.json();
         const manga = data.data.Media;
@@ -45,8 +45,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
         const titles = [
             { type: "Romaji", title: manga.title.romaji },
             { type: "English", title: manga.title.english },
-            { type: "Native", title: manga.title.native }
-        ].filter(title => title.title !== null);
+            { type: "Native", title: manga.title.native },
+        ].filter((title) => title.title !== null);
 
         const response = {
             titles: titles,
@@ -54,14 +54,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
             url: manga.siteUrl,
             score: manga.averageScore / 20,
             description: manga.description,
-        }
+        };
 
         return new NextResponse(JSON.stringify(response), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error('Error searching for manga:', error);
-        return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
+        console.error("Error searching for manga:", error);
+        return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
     }
 }

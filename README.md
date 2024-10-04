@@ -13,15 +13,15 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 # Features
 
-- **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
-- **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
-- **All Manganato Features:** All normal manganato features are available.
-- **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
-- **Search Through Bookmarks:** Search through all your bookmarks to find the manga you are looking for.
+-   **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
+-   **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
+-   **All Manganato Features:** All normal manganato features are available.
+-   **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
+-   **Search Through Bookmarks:** Search through all your bookmarks to find the manga you are looking for.
 
 # Settings
 
-- **Fetch MAL Image:** Uses the public `jikan` api to try and find the manga on `MyAnimeList` to get a better cover for it. Can be wrong, specially for smaller titles.
+-   **Fetch MAL Image:** Uses the public `jikan` api to try and find the manga on `MyAnimeList` to get a better cover for it. Can be wrong, specially for smaller titles.
 
 # Getting Started
 
@@ -60,8 +60,8 @@ After you've been logged in, you can use it as you normally would.
 
 Before running Akari, make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (v14 or later)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+-   [Node.js](https://nodejs.org/) (v14 or later)
+-   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ## Installation
 
