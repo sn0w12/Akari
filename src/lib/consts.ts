@@ -1,4 +1,5 @@
 export function get_base_url() {
+    console.log(process.env);
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
         return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     } else if (process.env.VERCEL_URL) {
