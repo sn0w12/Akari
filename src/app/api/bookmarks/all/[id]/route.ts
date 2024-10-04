@@ -70,13 +70,10 @@ export async function GET(
         },
     });
 
-    const response = new NextResponse(readableStream, {
-        headers: {
-            "Content-Type": "text/event-stream; charset=utf-8",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-        },
-    });
+    const response = new NextResponse(readableStream);
+    response.headers.set("Content-Type", "text/event-stream; charset=utf-8");
+    response.headers.set("Cache-Control", "no-cache");
+    response.headers.set("Connection", "keep-alive");
 
     console.log("Response headers:", response.headers);
 
