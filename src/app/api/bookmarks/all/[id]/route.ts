@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { baseUrl } from "@/lib/consts";
+import { getBaseUrl } from "../../../baseUrl";
 
 export const runtime = "edge";
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
     const response = await fetch(
-        `${baseUrl}/api/bookmarks?page=${page}&user_data=${user_data}`,
+        `${getBaseUrl}/api/bookmarks?page=${page}&user_data=${user_data}`,
     );
 
     if (!response.ok) {

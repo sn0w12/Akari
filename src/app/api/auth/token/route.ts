@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { baseUrl } from "@/lib/consts";
+import { getBaseUrl } from "../../baseUrl";
 
 export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();
+    console.log(getBaseUrl());
 
     if (!code || !code_verifier) {
         return NextResponse.json({ error: "Missing input" }, { status: 400 });
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
             code,
             code_verifier: code_verifier,
             grant_type: "authorization_code",
-            redirect_uri: `${baseUrl}/auth/callback`,
+            redirect_uri: `${getBaseUrl()}/auth/callback`,
         }),
     });
 
