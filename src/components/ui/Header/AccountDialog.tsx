@@ -129,6 +129,7 @@ export default function LoginDialog() {
 
     useEffect(() => {
         const accessToken = Cookies.get("access_token");
+        console.log(accessToken);
         if (accessToken) {
             const malUser = JSON.parse(
                 localStorage.getItem("mal_user") || "{}",
