@@ -5,18 +5,22 @@ export const runtime = "edge";
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
-    const response = await fetch(
-        `${getBaseUrl()}/api/bookmarks?page=${page}&user_data=${user_data}`,
-    );
+    try {
+        const response = await fetch(
+            `${getBaseUrl()}/api/bookmarks?page=${page}&user_data=${user_data}`,
+        );
 
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        }
+
+        const jsonResponse = await response.json();
+        jsonResponse["result"] = "ok";
+        return jsonResponse;
+    } catch (error) {
+        return { result: "error", error: (error as Error).message };
     }
-
-    const jsonResponse = await response.json();
-    jsonResponse["result"] = "ok";
-    return jsonResponse;
 }
 
 // Named export for GET requests (you can also use POST if needed)
@@ -70,12 +74,11 @@ export async function GET(
         },
     });
 
-    const response = new NextResponse(readableStream);
-    response.headers.set("Content-Type", "text/event-stream; charset=utf-8");
-    response.headers.set("Cache-Control", "no-cache");
-    response.headers.set("Connection", "keep-alive");
-
-    console.log("Response headers:", response.headers);
-
-    return response;
+    return new NextResponse(readableStream, {
+        headers: {
+            "Content-Type": "text/event-stream; charset=utf-8",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+        },
+    });
 }
