@@ -70,11 +70,15 @@ export async function GET(
         },
     });
 
-    return new Response(readableStream, {
+    const response = new Response(readableStream, {
         headers: {
             "Content-Type": "text/event-stream; charset=utf-8",
             "Cache-Control": "no-cache",
             Connection: "keep-alive",
         },
     });
+
+    console.log("Response headers:", response.headers);
+
+    return response;
 }
