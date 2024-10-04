@@ -70,7 +70,7 @@ export async function GET(
         },
     });
 
-    const response = new Response(readableStream, {
+    const response = new NextResponse(readableStream, {
         headers: {
             "Content-Type": "text/event-stream; charset=utf-8",
             "Cache-Control": "no-cache",
