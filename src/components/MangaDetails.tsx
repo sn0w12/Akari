@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown } from "lucide-react";
 import PaginationElement from "@/components/ui/paginationElement";
-import { Manga, MalSync } from "@/app/api/interfaces";
+import { Manga } from "@/app/api/interfaces";
 import React from "react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";

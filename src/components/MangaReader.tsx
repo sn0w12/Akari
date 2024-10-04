@@ -197,7 +197,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         if (!malData || !malData.malUrl) return;
         console.log(malData);
 
-        const response = await fetch("/api/mal/me/mangalist", {
+        await fetch("/api/mal/me/mangalist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
