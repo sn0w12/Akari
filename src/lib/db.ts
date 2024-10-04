@@ -46,9 +46,32 @@ class CacheDatabase extends Dexie {
         store: Dexie.Table<CacheItem<T>, string>,
         key: string,
         value: T,
-    ) {
+    ): Promise<void> {
         const cacheItem: CacheItem<T> = { key, value, timestamp: Date.now() };
         await store.put(cacheItem);
+    }
+
+    /**
+     * Updates a cache item in the specified Dexie store.
+     *
+     * @template T - The type of the value to be cached.
+     * @param {Dexie.Table<CacheItem<T>, string>} store - The Dexie table where the cache item will be stored.
+     * @param {string} key - The key associated with the cache item.
+     * @param {Partial<T>} newValue - The new value to be merged with the existing cache item.
+     * @returns {Promise<void>} A promise that resolves when the cache item has been updated.
+     */
+    async updateCache<T>(
+        store: Dexie.Table<CacheItem<T>, string>,
+        key: string,
+        newValue: Partial<T>,
+    ): Promise<void> {
+        const existingCacheItem = await db.getCache(store, key);
+        if (existingCacheItem) {
+            const updatedValue = { ...existingCacheItem, ...newValue };
+            await db.setCache(store, key, updatedValue);
+        } else {
+            await db.setCache(store, key, newValue as T);
+        }
     }
 
     /**
