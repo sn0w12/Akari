@@ -12,8 +12,7 @@ import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { MangaCacheItem, HqMangaCacheItem } from "@/app/api/interfaces";
-import Toast from "@/lib/toastWrapper";
-import { fetchMalData } from "@/lib/malSync";
+import { syncAllBookmarks } from "@/lib/sync";
 
 interface ChapterReaderProps {
     isHeaderVisible: boolean;
@@ -58,7 +57,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHalfwayThrough ||
             ((hasFewImages || isStripMode) && thirtySecondsPassed)
         ) {
-            updateBookmark(chapterData);
+            syncAllBookmarks(chapterData);
             bookmarkUpdatedRef.current = true;
 
             setCache(
@@ -184,54 +183,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             router.push(`/manga/${chapterData.lastChapter}`);
         }
     }, [chapterData, currentPage]);
-
-    async function syncBookmark(data: Chapter) {
-        const regex = /Chapter\s(\d+)/;
-        const match = data.chapter.match(regex);
-        const chapterNumber = match ? match[1] : null;
-        if (!chapterNumber) return;
-
-        const malData = await fetchMalData(data.parentId);
-        if (!malData || !malData.malUrl) return;
-
-        await fetch("/api/mal/me/mangalist", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                manga_id: malData.malUrl.split("/").pop(),
-                num_chapters_read: chapterNumber,
-            }),
-        });
-    }
-
-    async function updateBookmark(data: Chapter) {
-        const user_data = localStorage.getItem("accountInfo");
-        const story_data = data.storyData;
-        const chapter_data = data.chapterData;
-        if (!chapter_data || !story_data || !user_data) return;
-
-        const response = await fetch("/api/bookmarks/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ user_data, story_data, chapter_data }),
-        });
-
-        if (response.ok) {
-            await syncBookmark(data);
-            new Toast("Bookmark updated successfully!", "success", {
-                autoClose: 1000,
-            });
-        } else {
-            new Toast("Failed to update bookmark.", "error");
-        }
-
-        const result = await response.json();
-        return result;
-    }
 
     // Handle key press events for navigation
     useEffect(() => {
