@@ -5,6 +5,8 @@ const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
 
 // Function to fetch bookmarks for a single page from the external API
 async function fetchBookmarks(user_data: string, page: number, url: string) {
+    console.log("fetchBookmarks", user_data, page);
+
     // Function to fetch based on output type
     async function fetchData(out_type: string) {
         const data = new URLSearchParams();
@@ -34,7 +36,7 @@ async function fetchBookmarks(user_data: string, page: number, url: string) {
         fetchData("json"), // Fetch JSON response
         fetchData("html"), // Fetch HTML response
     ]);
-
+    console.log(jsonResponse, htmlResponse);
     return { jsonResponse, htmlResponse };
 }
 
