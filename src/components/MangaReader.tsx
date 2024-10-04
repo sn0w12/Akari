@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
-import { MangaCacheItem } from "@/app/api/interfaces";
+import { MangaCacheItem, HqMangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { fetchMalData } from "@/lib/malSync";
 
@@ -77,8 +77,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             const checkSelectedImages = async () => {
                 // Fetch strip mode cache from Dexie (asynchronous operation)
                 const mangaCache =
-                    (await db.getCache(db.mangaCache, chapterData.parentId)) ??
-                    ({} as MangaCacheItem);
+                    (await db.getCache(
+                        db.hqMangaCache,
+                        chapterData.parentId,
+                    )) ?? ({} as HqMangaCacheItem);
 
                 // Check if the chapter's parentId is cached
                 if (mangaCache?.is_strip === true) {
@@ -118,7 +120,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                 // Update the cache with the new value
                 mangaCache.is_strip = isStripMode;
                 await db.setCache(
-                    db.mangaCache,
+                    db.hqMangaCache,
                     chapterData.parentId,
                     mangaCache,
                 );

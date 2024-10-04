@@ -25,7 +25,6 @@ export interface MangaCacheItem {
     bm_data: string;
     id: string;
     last_read: string;
-    is_strip: boolean | undefined;
 }
 
 export interface HqMangaCacheItem {
@@ -36,6 +35,7 @@ export interface HqMangaCacheItem {
     score: number;
     titles: { type: string; title: string }[];
     url: string;
+    is_strip: boolean | undefined;
 }
 
 export interface Bookmark {
