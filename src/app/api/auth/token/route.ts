@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BASE_URL } from "@/lib/consts";
+import { get_base_url } from "@/lib/consts";
 
 export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
             code,
             code_verifier: code_verifier,
             grant_type: "authorization_code",
-            redirect_uri: `${BASE_URL}/auth/callback`,
+            redirect_uri: `${get_base_url()}/auth/callback`,
         }),
     });
 
