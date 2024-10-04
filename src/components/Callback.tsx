@@ -60,6 +60,7 @@ const CallbackPage = () => {
                 router.push("/");
             } catch (error) {
                 setErrorMessage((error as Error).message);
+                router.push("/");
             }
         };
 
