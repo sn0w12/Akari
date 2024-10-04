@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBaseUrl } from "../../baseUrl";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getBaseUrl } from "../../../baseUrl";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 export const runtime = "edge";
 
