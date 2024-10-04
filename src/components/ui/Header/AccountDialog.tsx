@@ -14,7 +14,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
-import { get_base_url } from "@/lib/consts";
+import { baseUrl } from "@/lib/consts";
 
 export default function LoginDialog() {
     const [username, setUsername] = useState("");
@@ -152,10 +152,7 @@ export default function LoginDialog() {
         url.searchParams.append("client_id", clientId);
         url.searchParams.append("code_challenge", codeChallenge);
         url.searchParams.append("code_challenge_method", "plain");
-        url.searchParams.append(
-            "redirect_uri",
-            `${get_base_url()}/auth/callback`,
-        );
+        url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
 
         setAuthUrl(url.toString());
     }, []);

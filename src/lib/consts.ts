@@ -1,10 +1,13 @@
-export function get_base_url() {
-    console.log(process.env);
-    if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-        return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-    } else if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
-    } else {
-        return "http://localhost:3000";
-    }
+let baseUrl: string;
+
+async function fetchBaseUrl() {
+    const response = await fetch("/api/base-url");
+    const data = await response.json();
+    baseUrl = data.baseUrl;
 }
+
+(async () => {
+    await fetchBaseUrl();
+})();
+
+export { baseUrl };
