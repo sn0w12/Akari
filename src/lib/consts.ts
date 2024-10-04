@@ -1,4 +1,4 @@
 export const baseUrl =
-    window.location.hostname === "localhost"
+    typeof window !== "undefined" && window.location.hostname === "localhost"
         ? "http://localhost:3000"
-        : `https://${window.location.hostname}`;
+        : `https://${typeof window !== "undefined" ? window.location.hostname : "default-hostname"}`;
