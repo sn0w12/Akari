@@ -5,7 +5,6 @@ export const runtime = "edge";
 
 // Function to fetch bookmarks from the external API
 async function fetchBookmarks(user_data: string, page: number) {
-    console.log("all", user_data, page);
     try {
         const response = await fetch(
             `${getBaseUrl()}/api/bookmarks?page=${page}&user_data=${user_data}`,
