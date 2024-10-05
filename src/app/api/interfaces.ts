@@ -22,9 +22,14 @@ export interface Manga {
 }
 
 export interface MangaCacheItem {
+    name: string;
+    link: string;
+    image: string;
+    last_chapter: string;
+    last_read: string;
+    last_update: string;
     bm_data: string;
     id: string;
-    last_read: string;
 }
 
 export interface HqMangaCacheItem {

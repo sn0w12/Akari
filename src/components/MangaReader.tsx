@@ -118,7 +118,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
                 // Update the cache with the new value
                 mangaCache.is_strip = isStripMode;
-                await db.setCache(
+                await db.updateCache(
                     db.hqMangaCache,
                     chapterData.parentId,
                     mangaCache,

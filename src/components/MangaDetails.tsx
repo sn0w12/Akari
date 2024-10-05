@@ -22,7 +22,7 @@ async function fetchManga(id: string): Promise<Manga | null> {
     const user_name = localStorage.getItem("accountName");
     try {
         const response = await fetch(
-            `${window.location.origin}/api/manga/${id}?user_data=${user_data}&user_name=${user_name}`,
+            `/api/manga/${id}?user_data=${user_data}&user_name=${user_name}`,
         );
         if (!response.ok) {
             return null;
@@ -182,6 +182,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         }
 
         if (data && data.mangaId) {
+            console.log(data);
             setManga(data);
             setImage(data.imageUrl);
             checkIfBookmarked(data.mangaId, setIsBookmarked);
@@ -189,6 +190,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
             const malData = await fetchMalData(data?.identifier || "");
             if (malData && settings.fetchMalImage) {
+                console.log(malData);
                 setMalLink(malData.malUrl);
                 setAniLink(malData.aniUrl);
                 setImage(malData.imageUrl);
