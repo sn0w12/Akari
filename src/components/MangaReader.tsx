@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
-import { MangaCacheItem, HqMangaCacheItem } from "@/app/api/interfaces";
+import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { syncAllBookmarks } from "@/lib/sync";
 
 interface ChapterReaderProps {
@@ -37,14 +37,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         return () => clearInterval(interval);
     }, []);
 
-    async function setCache(mangaId: string, lastRead: string) {
-        const cachedData =
-            (await db.getCache(db.mangaCache, mangaId)) ??
-            ({} as MangaCacheItem);
-        cachedData.last_read = lastRead;
-        await db.setCache(db.mangaCache, mangaId, cachedData);
-    }
-
     useEffect(() => {
         if (!chapterData || bookmarkUpdatedRef.current) return;
 
@@ -60,10 +52,9 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             syncAllBookmarks(chapterData);
             bookmarkUpdatedRef.current = true;
 
-            setCache(
-                chapterData.parentId,
-                window.location.href.split("/").pop() || "",
-            );
+            db.updateCache(db.mangaCache, chapterData.parentId, {
+                last_read: window.location.href.split("/").pop() || "",
+            });
         }
     }, [chapterData, currentPage, timeElapsed]);
 
