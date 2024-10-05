@@ -161,6 +161,8 @@ export default function BookmarksPage() {
     };
 
     const initWorker = async (bookmarkFirstPage: Bookmark[]) => {
+        if (currentPage !== 1) return;
+
         const cachedFirstPage = (await db.getCache(
             db.bookmarkCache,
             "firstPage",
