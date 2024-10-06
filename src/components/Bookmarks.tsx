@@ -21,6 +21,7 @@ import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
 import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 import Toast from "@/lib/toastWrapper";
+import { numberArraysEqual } from "@/lib/utils";
 
 const fuseOptions = {
     keys: ["note_story_name"], // The fields to search in your data
@@ -174,23 +175,34 @@ export default function BookmarksPage() {
             cachedFirstPage.length > 0 &&
             bookmarkFirstPage.length > 0
         ) {
-            const firstPageIds = bookmarkFirstPage.map(
-                (bookmark) => bookmark.storyid,
+            const firstPageIds = bookmarkFirstPage.map((bookmark) =>
+                Number(bookmark.storyid),
             );
-            const cacheIds = cachedFirstPage.map(
-                (bookmark) => bookmark.storyid,
+            const cacheIds = cachedFirstPage.map((bookmark) =>
+                Number(bookmark.storyid),
             );
 
             let matchFound = false;
-            for (let i = 0; i <= cacheIds.length - firstPageIds.length; i++) {
-                if (
-                    cacheIds
-                        .slice(i, i + firstPageIds.length)
-                        .every((id, index) => id === firstPageIds[index])
-                ) {
-                    matchFound = true;
-                    break;
+            const len = firstPageIds.length;
+            // Loop through the bookmarks and try matching smaller and smaller slices of the cache
+            for (let i = 0; i < len; i++) {
+                for (let j = len; j > 0; j--) {
+                    if (j < 3) {
+                        // Skip comparisons if the length of the slice is less than the minimum length
+                        continue;
+                    }
+                    const bookmarkSlice = firstPageIds.slice(i, i + j);
+                    const cacheSlice = cacheIds.slice(0, j);
+
+                    //console.log("Comparing", bookmarkSlice, cacheSlice);
+
+                    if (numberArraysEqual(bookmarkSlice, cacheSlice)) {
+                        console.log("Cache hit");
+                        matchFound = true;
+                        break;
+                    }
                 }
+                if (matchFound) break;
             }
 
             if (matchFound) {
