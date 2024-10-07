@@ -28,7 +28,6 @@ export default function LoginDialog() {
     const [authUrl, setAuthUrl] = useState<string | null>(null);
     const [isMalAuth, setIsMalAuth] = useState<boolean>(false);
     const [malUser, setMalUser] = useState<MalUser | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
 
     interface UserData {
         user_name: string;
@@ -158,7 +157,6 @@ export default function LoginDialog() {
     const handleOpenChange = (
         open: boolean | ((prevState: boolean) => boolean),
     ) => {
-        setIsOpen(open);
         if (open) {
             fetchCaptcha();
         }
