@@ -9,6 +9,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { debounce } from "lodash";
+import Image from "next/image";
 
 interface Manga {
     id: string;
@@ -130,9 +131,11 @@ export default function MangaReaderHome() {
                                     >
                                         <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
                                             <CardContent className="p-0">
-                                                <img
+                                                <Image
                                                     src={manga.image}
                                                     alt={manga.title}
+                                                    width={250}
+                                                    height={350}
                                                     className="w-full h-auto object-cover"
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
@@ -198,9 +201,11 @@ export default function MangaReaderHome() {
                             >
                                 <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
                                     <CardContent className="p-0">
-                                        <img
+                                        <Image
                                             src={manga.image}
                                             alt={manga.title}
+                                            width={250}
+                                            height={350}
                                             className="w-full h-auto object-cover"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
