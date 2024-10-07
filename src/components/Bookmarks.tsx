@@ -162,7 +162,14 @@ export default function BookmarksPage() {
     };
 
     const initWorker = async (bookmarkFirstPage: Bookmark[]) => {
-        if (currentPage !== 1) return;
+        if (currentPage !== 1) {
+            const bookmarkCache = (await db.getAllCacheValues(
+                db.mangaCache,
+            )) as MangaCacheItem[];
+            setAllBookmarks(bookmarkCache);
+            setWorkerFinished(true);
+            return;
+        }
 
         const cachedFirstPage = (await db.getCache(
             db.bookmarkCache,
