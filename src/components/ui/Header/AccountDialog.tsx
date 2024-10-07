@@ -28,6 +28,7 @@ export default function LoginDialog() {
     const [authUrl, setAuthUrl] = useState<string | null>(null);
     const [isMalAuth, setIsMalAuth] = useState<boolean>(false);
     const [malUser, setMalUser] = useState<MalUser | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     interface UserData {
         user_name: string;
@@ -154,6 +155,15 @@ export default function LoginDialog() {
         setAuthUrl(url.toString());
     }, []);
 
+    const handleOpenChange = (
+        open: boolean | ((prevState: boolean) => boolean),
+    ) => {
+        setIsOpen(open);
+        if (open) {
+            fetchCaptcha();
+        }
+    };
+
     // If user data exists, display the user's name and user data, otherwise show the login dialog
     if (userData) {
         return (
@@ -227,7 +237,7 @@ export default function LoginDialog() {
 
     // Show the login form if the user is not logged in
     return (
-        <Dialog onOpenChange={fetchCaptcha}>
+        <Dialog onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <User className="h-5 w-5" />
