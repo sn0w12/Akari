@@ -7,12 +7,14 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
+    <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
 Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It uses manganato as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
 
 # Features
 
+-   **MyAnimeList Syncing:** Akari has built in MAL syncing.
 -   **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
 -   **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
 -   **All Manganato Features:** All normal manganato features are available.
@@ -22,6 +24,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 # Settings
 
 -   **Fetch MAL Image:** Uses the public `jikan` api to try and find the manga on `MyAnimeList` to get a better cover for it. Can be wrong, specially for smaller titles.
+-   **Use Toasts:** Turns on or off the notification toasts.
 
 # Getting Started
 
@@ -115,3 +118,8 @@ or
 yarn build
 yarn start
 ```
+
+### DMCA disclaimer
+
+The developers of this application do not have any affiliation with the content available in the app.
+It collects content from sources that are freely available through any web browser
