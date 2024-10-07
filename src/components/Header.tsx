@@ -355,9 +355,6 @@ export function HeaderComponent() {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Settings</DialogTitle>
-                                </DialogHeader>
                                 <SettingsForm settingsMap={settingsMap} />
                             </DialogContent>
                         </Dialog>
