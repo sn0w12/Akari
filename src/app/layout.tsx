@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
+import Footer from "@/components/Footer";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
             >
                 {children}
                 <ToastContainer />
+                <Footer />
             </body>
         </html>
     );
