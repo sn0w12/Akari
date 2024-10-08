@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
+import { HeaderComponent } from "@/components/Header";
 import Footer from "@/components/Footer";
 import "@/app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,6 +49,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
+                <HeaderComponent />
                 {children}
                 <ToastContainer />
                 <Footer />
