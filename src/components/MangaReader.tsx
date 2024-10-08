@@ -262,7 +262,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Render "strip" mode for long images
     if (isStripMode) {
         return (
-            <div className="h-screen w-screen">
+            <div>
                 <div
                     id="reader"
                     className="flex flex-col items-center h-screen bg-transparent"
