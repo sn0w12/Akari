@@ -262,10 +262,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Render "strip" mode for long images
     if (isStripMode) {
         return (
-            <div className="h-screen w-screen bg-black">
+            <div className="h-screen w-screen">
                 <div
                     id="reader"
-                    className="flex flex-col items-center bg-black h-screen"
+                    className="flex flex-col items-center h-screen bg-transparent"
                 >
                     {chapterData.images.map((image, index) => (
                         <Image
@@ -277,6 +277,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                             width={700}
                             height={1080}
                             className="object-contain w-128 z-20 relative"
+                            loading="eager"
+                            priority={index < 3}
                         />
                     ))}
                 </div>
@@ -288,7 +290,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Normal mode (single image navigation)
     return (
         <div
-            className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-black"
+            className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-transparent"
             onClick={handleClick}
         >
             <div id="reader" className="relative max-h-dvh w-auto">
