@@ -4,6 +4,8 @@ import * as cheerio from "cheerio";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
+export const fetchCache = "force-no-store";
+
 export async function GET() {
     try {
         const jar = new CookieJar();
