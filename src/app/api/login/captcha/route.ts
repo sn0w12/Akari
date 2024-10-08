@@ -26,6 +26,9 @@ export async function GET() {
                     "Sec-CH-UA-Platform": '"Windows"',
                     Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                     "Accept-Language": "en-US,en;q=0.5",
+                    "Cache-Control": "no-cache",
+                    Pragma: "no-cache",
+                    Expires: "0",
                 },
             },
         );
