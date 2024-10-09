@@ -27,6 +27,7 @@ export interface MangaCacheItem {
     image: string;
     last_chapter: string;
     last_read: string;
+    up_to_date: boolean;
     last_update: string;
     bm_data: string;
     id: string;

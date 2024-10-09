@@ -51,10 +51,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         ) {
             syncAllBookmarks(chapterData);
             bookmarkUpdatedRef.current = true;
-
-            db.updateCache(db.mangaCache, chapterData.parentId, {
-                last_read: window.location.href.split("/").pop() || "",
-            });
         }
     }, [chapterData, currentPage, timeElapsed]);
 

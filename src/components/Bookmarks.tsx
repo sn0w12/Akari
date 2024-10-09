@@ -140,6 +140,7 @@ export default function BookmarksPage() {
             link: bookmark.link_story,
             last_chapter: bookmark.link_chapter_last.split("/").pop(),
             last_read: bookmark.link_chapter_now.split("/").pop(),
+            up_to_date: bookmark.link_chapter_last == bookmark.link_chapter_now,
             bm_data: bookmark.bm_data,
             id: bookmark.storyid,
             image: bookmark.image,
