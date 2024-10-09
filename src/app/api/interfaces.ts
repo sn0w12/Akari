@@ -27,7 +27,6 @@ export interface MangaCacheItem {
     image: string;
     last_chapter: string;
     last_read: string;
-    up_to_date: boolean;
     last_update: string;
     bm_data: string;
     id: string;
@@ -42,6 +41,7 @@ export interface HqMangaCacheItem {
     titles: { type: string; title: string }[];
     url: string;
     is_strip: boolean | undefined;
+    up_to_date: boolean | undefined;
 }
 
 export interface Bookmark {

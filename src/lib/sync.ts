@@ -22,6 +22,8 @@ export async function syncAllBookmarks(data: Chapter) {
     if (success) {
         db.updateCache(db.mangaCache, data.parentId, {
             last_read: window.location.href.split("/").pop() || "",
+        });
+        db.updateCache(db.hqMangaCache, data.parentId, {
             up_to_date: data.parentId == data.nextChapter,
         });
 
