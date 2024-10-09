@@ -45,6 +45,7 @@ export interface HqMangaCacheItem {
 }
 
 export interface Bookmark {
+    up_to_date: boolean | undefined;
     bm_data: string;
     chapter_namenow: string;
     chapter_numbernow: string;

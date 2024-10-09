@@ -189,8 +189,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             document.title = data?.name;
 
             const malData = await fetchMalData(data?.identifier || "");
+            console.log(malData, settings.fetchMalImage);
             if (malData && settings.fetchMalImage) {
-                console.log(malData);
                 setMalLink(malData.malUrl);
                 setAniLink(malData.aniUrl);
                 setImage(malData.imageUrl);

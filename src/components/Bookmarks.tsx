@@ -68,7 +68,7 @@ export default function BookmarksPage() {
             }
             const data = await response.json();
 
-            const updateBookmarkImages = async (bookmarks: Bookmark[]) => {
+            const updateBookmarks = async (bookmarks: Bookmark[]) => {
                 await Promise.all(
                     bookmarks.map(async (bookmark: Bookmark) => {
                         bookmark.image = await getHqImage(
@@ -78,10 +78,23 @@ export default function BookmarksPage() {
                     }),
                 );
 
+                await Promise.all(
+                    bookmarks.map(async (bookmark) => {
+                        const id = bookmark.link_story.split("/").pop();
+                        if (!id) return;
+                        const hqBookmark = await db.getCache(
+                            db.hqMangaCache,
+                            id,
+                        );
+                        if (!hqBookmark) return;
+                        bookmark.up_to_date = hqBookmark.up_to_date;
+                    }),
+                );
+
                 return bookmarks;
             };
 
-            data.bookmarks = await updateBookmarkImages(data.bookmarks);
+            data.bookmarks = await updateBookmarks(data.bookmarks);
             setBookmarks(data.bookmarks);
             initWorker(data.bookmarks);
             setCurrentPage(data.page);
@@ -134,7 +147,7 @@ export default function BookmarksPage() {
         debounceFetchBookmarks(page);
     }, [searchParams]);
 
-    function updateBookmark(bookmark: Bookmark) {
+    async function updateBookmark(bookmark: Bookmark) {
         const cacheObject = {
             name: bookmark.note_story_name,
             link: bookmark.link_story,
@@ -148,10 +161,14 @@ export default function BookmarksPage() {
         const storyId = bookmark.link_story.split("/").pop();
         if (storyId) {
             db.updateCache(db.mangaCache, storyId, cacheObject);
-            db.updateCache(db.hqMangaCache, storyId, {
-                up_to_date:
-                    bookmark.link_chapter_last == bookmark.link_chapter_now,
-            });
+
+            const cacheEntry = await db.getCache(db.hqMangaCache, storyId);
+            if (!cacheEntry || cacheEntry.up_to_date === undefined) {
+                await db.updateCache(db.hqMangaCache, storyId, {
+                    up_to_date:
+                        bookmark.link_chapter_last == bookmark.link_chapter_now,
+                });
+            }
         }
     }
 
