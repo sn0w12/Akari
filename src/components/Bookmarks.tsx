@@ -96,7 +96,7 @@ export default function BookmarksPage() {
 
             data.bookmarks = await updateBookmarks(data.bookmarks);
             setBookmarks(data.bookmarks);
-            initWorker(data.bookmarks);
+            initWorker(data.bookmarks, data.page);
             setCurrentPage(data.page);
             setTotalPages(Number(data.totalPages));
             setError(null); // Clear any previous errors
@@ -182,8 +182,8 @@ export default function BookmarksPage() {
         }
     };
 
-    const initWorker = async (bookmarkFirstPage: Bookmark[]) => {
-        if (currentPage !== 1) {
+    const initWorker = async (bookmarkFirstPage: Bookmark[], page: number) => {
+        if (page !== 1) {
             const bookmarkCache = (await db.getAllCacheValues(
                 db.mangaCache,
             )) as MangaCacheItem[];
