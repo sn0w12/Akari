@@ -22,10 +22,14 @@ export interface Manga {
 }
 
 export interface MangaCacheItem {
+    name: string;
+    link: string;
+    image: string;
+    last_chapter: string;
+    last_read: string;
+    last_update: string;
     bm_data: string;
     id: string;
-    last_read: string;
-    is_strip: boolean | undefined;
 }
 
 export interface HqMangaCacheItem {
@@ -36,9 +40,12 @@ export interface HqMangaCacheItem {
     score: number;
     titles: { type: string; title: string }[];
     url: string;
+    is_strip: boolean | undefined;
+    up_to_date: boolean | undefined;
 }
 
 export interface Bookmark {
+    up_to_date: boolean | undefined;
     bm_data: string;
     chapter_namenow: string;
     chapter_numbernow: string;

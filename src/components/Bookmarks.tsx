@@ -17,10 +17,11 @@ import Image from "next/image";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { getHqImage } from "@/lib/utils";
-import { Bookmark } from "@/app/api/interfaces";
+import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
 import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 import Toast from "@/lib/toastWrapper";
+import { numberArraysEqual } from "@/lib/utils";
 
 const fuseOptions = {
     keys: ["note_story_name"], // The fields to search in your data
@@ -32,13 +33,13 @@ export default function BookmarksPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-    const [allBookmarks, setAllBookmarks] = useState<Bookmark[]>([]);
+    const [allBookmarks, setAllBookmarks] = useState<MangaCacheItem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<Bookmark[]>([]);
+    const [searchResults, setSearchResults] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
     const workerRef = useRef<Worker | null>(null);
     const batchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -66,13 +67,8 @@ export default function BookmarksPage() {
                 throw new Error("Failed to fetch bookmarks.");
             }
             const data = await response.json();
-            db.setCache(
-                db.bookmarkCache,
-                "allBookmarksTotalPages",
-                data.totalPages,
-            );
 
-            const updateBookmarkImages = async (bookmarks: Bookmark[]) => {
+            const updateBookmarks = async (bookmarks: Bookmark[]) => {
                 await Promise.all(
                     bookmarks.map(async (bookmark: Bookmark) => {
                         bookmark.image = await getHqImage(
@@ -82,11 +78,25 @@ export default function BookmarksPage() {
                     }),
                 );
 
+                await Promise.all(
+                    bookmarks.map(async (bookmark) => {
+                        const id = bookmark.link_story.split("/").pop();
+                        if (!id) return;
+                        const hqBookmark = await db.getCache(
+                            db.hqMangaCache,
+                            id,
+                        );
+                        if (!hqBookmark) return;
+                        bookmark.up_to_date = hqBookmark.up_to_date;
+                    }),
+                );
+
                 return bookmarks;
             };
 
-            data.bookmarks = await updateBookmarkImages(data.bookmarks);
+            data.bookmarks = await updateBookmarks(data.bookmarks);
             setBookmarks(data.bookmarks);
+            initWorker(data.bookmarks, data.page);
             setCurrentPage(data.page);
             setTotalPages(Number(data.totalPages));
             setError(null); // Clear any previous errors
@@ -137,124 +147,152 @@ export default function BookmarksPage() {
         debounceFetchBookmarks(page);
     }, [searchParams]);
 
+    async function updateBookmark(bookmark: Bookmark) {
+        const cacheObject = {
+            name: bookmark.note_story_name,
+            link: bookmark.link_story,
+            last_chapter: bookmark.link_chapter_last.split("/").pop(),
+            last_read: bookmark.link_chapter_now.split("/").pop(),
+            bm_data: bookmark.bm_data,
+            id: bookmark.storyid,
+            image: bookmark.image,
+            last_update: bookmark.chapterlastdateupdate,
+        };
+        const storyId = bookmark.link_story.split("/").pop();
+        if (storyId) {
+            db.updateCache(db.mangaCache, storyId, cacheObject);
+
+            const cacheEntry = await db.getCache(db.hqMangaCache, storyId);
+            if (!cacheEntry || cacheEntry.up_to_date === undefined) {
+                await db.updateCache(db.hqMangaCache, storyId, {
+                    up_to_date:
+                        bookmark.link_chapter_last == bookmark.link_chapter_now,
+                });
+            }
+        }
+    }
+
     const processBatch = () => {
         if (messageQueue.current.length > 0) {
-            // Add all new bookmarks in the batch to the state
-            setAllBookmarks((prevBookmarks) => {
-                const uniqueBookmarks = messageQueue.current.filter(
-                    (newBookmark) =>
-                        !prevBookmarks.some(
-                            (bookmark) =>
-                                bookmark.storyid === newBookmark.storyid,
-                        ),
-                );
-                return [...prevBookmarks, ...uniqueBookmarks];
-            });
-
-            const allBookmarks: Bookmark[] = [];
-
             messageQueue.current.forEach((bookmark) => {
-                allBookmarks.push(bookmark);
-                const cacheObject = {
-                    bm_data: bookmark.bm_data,
-                    last_read: bookmark.link_chapter_now.split("/").pop(),
-                    id: bookmark.storyid,
-                };
-                const storyId = bookmark.link_story.split("/").pop();
-                if (storyId) {
-                    db.setCache(db.mangaCache, storyId, cacheObject);
-                }
+                updateBookmark(bookmark);
             });
-
-            db.setCache(db.bookmarkCache, "allBookmarks", allBookmarks);
             // Clear the queue
             messageQueue.current = [];
         }
     };
 
-    useEffect(() => {
-        const initWorker = async () => {
-            // Fetch bookmark cache asynchronously
-            const bookmarkCache = (await db.getCache(
-                db.bookmarkCache,
-                "allBookmarks",
-                1000 * 60 * 60 * 1, // 1-hour expiration
-            )) as Bookmark[];
-            let bookmarksTotalPages = await db.getCache(
-                db.bookmarkCache,
-                "allBookmarksTotalPages",
+    const initWorker = async (bookmarkFirstPage: Bookmark[], page: number) => {
+        if (page !== 1) {
+            const bookmarkCache = (await db.getAllCacheValues(
+                db.mangaCache,
+            )) as MangaCacheItem[];
+            setAllBookmarks(bookmarkCache);
+            setWorkerFinished(true);
+            return;
+        }
+
+        const cachedFirstPage = (await db.getCache(
+            db.bookmarkCache,
+            "firstPage",
+        )) as Bookmark[];
+
+        // Check if the first page of bookmarks has changed
+        if (
+            cachedFirstPage &&
+            cachedFirstPage.length > 0 &&
+            bookmarkFirstPage.length > 0
+        ) {
+            const firstPageIds = bookmarkFirstPage.map((bookmark) =>
+                Number(bookmark.storyid),
             );
-            if (!bookmarksTotalPages) bookmarksTotalPages = 0;
-            if (
-                bookmarkCache &&
-                Math.ceil(bookmarkCache.length / 20) == bookmarksTotalPages
-            ) {
+            const cacheIds = cachedFirstPage.map((bookmark) =>
+                Number(bookmark.storyid),
+            );
+
+            let matchFound = false;
+            const len = firstPageIds.length;
+            // Loop through the bookmarks and try matching smaller and smaller slices of the cache
+            for (let i = 0; i < len; i++) {
+                for (let j = len; j > 0; j--) {
+                    if (j < 3) {
+                        // Skip comparisons if the length of the slice is less than the minimum length
+                        continue;
+                    }
+                    const bookmarkSlice = firstPageIds.slice(i, i + j);
+                    const cacheSlice = cacheIds.slice(0, j);
+
+                    //console.log("Comparing", bookmarkSlice, cacheSlice);
+
+                    if (numberArraysEqual(bookmarkSlice, cacheSlice)) {
+                        console.log("Cache hit");
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if (matchFound) break;
+            }
+
+            if (matchFound) {
+                const bookmarkCache = (await db.getAllCacheValues(
+                    db.mangaCache,
+                )) as MangaCacheItem[];
+
+                // Update all bookmark items from bookmarkFirstPage in bookmarkCache
+                for (const bookmark of bookmarkFirstPage) {
+                    const cachedItemIndex = bookmarkCache.findIndex(
+                        (item) => item.id === bookmark.storyid,
+                    );
+                    if (cachedItemIndex !== -1) {
+                        updateBookmark(bookmark);
+                    }
+                }
+
                 setAllBookmarks(bookmarkCache);
                 setWorkerFinished(true);
                 return;
             }
+        }
 
-            const user_data = localStorage.getItem("accountInfo");
+        await db.setCache(db.bookmarkCache, "firstPage", bookmarkFirstPage);
+        const user_data = localStorage.getItem("accountInfo");
 
-            if (
-                user_data &&
-                typeof window !== "undefined" &&
-                !workerRef.current
-            ) {
-                const bookmarkToast = new Toast(
-                    "Processing bookmarks...",
-                    "info",
-                    {
-                        autoClose: false,
-                    },
-                );
+        if (user_data && typeof window !== "undefined" && !workerRef.current) {
+            const bookmarkToast = new Toast("Processing bookmarks...", "info", {
+                autoClose: false,
+            });
 
-                workerRef.current = new Worker("/workers/eventSourceWorker.js");
-                workerRef.current.postMessage({ userData: user_data });
-                console.log("Worker initialized.");
+            workerRef.current = new Worker("/workers/eventSourceWorker.js");
+            workerRef.current.postMessage({ userData: user_data });
+            console.log("Worker initialized.");
 
-                workerRef.current.onmessage = (e) => {
-                    const { type, data, message, details } = e.data;
+            workerRef.current.onmessage = (e) => {
+                const { type, data, message, details } = e.data;
 
-                    if (type === "bookmark") {
-                        // Push new bookmark data to the queue
-                        messageQueue.current.push(data);
+                if (type === "bookmark") {
+                    // Push new bookmark data to the queue
+                    messageQueue.current.push(data);
 
-                        // Clear the previous batch timeout and set a new one
-                        if (batchTimeout.current)
-                            clearTimeout(batchTimeout.current);
-                        batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
-                    } else if (type === "error") {
-                        console.error("Worker error:", message, details);
-                        workerRef.current?.terminate();
-                        bookmarkToast.close();
-                        new Toast("Error processing bookmarks.", "error");
-                    } else if (type === "finished") {
-                        console.log("Worker has finished processing.");
-                        processBatch(); // Process any remaining bookmarks
-                        workerRef.current?.terminate();
-                        setWorkerFinished(true);
-                        new Toast("Bookmarks processed.", "success");
-                        bookmarkToast.close();
-                    }
-                };
-            }
-        };
-
-        // Call the async function inside useEffect
-        initWorker();
-
-        // Cleanup function to terminate the worker on unmount
-        return () => {
-            if (workerRef.current) {
-                workerRef.current.terminate();
-                workerRef.current = null;
-            }
-            if (batchTimeout.current) {
-                clearTimeout(batchTimeout.current);
-            }
-        };
-    }, []);
+                    // Clear the previous batch timeout and set a new one
+                    if (batchTimeout.current)
+                        clearTimeout(batchTimeout.current);
+                    batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
+                } else if (type === "error") {
+                    console.error("Worker error:", message, details);
+                    workerRef.current?.terminate();
+                    bookmarkToast.close();
+                    new Toast("Error processing bookmarks.", "error");
+                } else if (type === "finished") {
+                    console.log("Worker has finished processing.");
+                    processBatch(); // Process any remaining bookmarks
+                    workerRef.current?.terminate();
+                    setWorkerFinished(true);
+                    new Toast("Bookmarks processed.", "success");
+                    bookmarkToast.close();
+                }
+            };
+        }
+    };
 
     const handlePageChange = useCallback(
         (page: number) => {
@@ -321,18 +359,18 @@ export default function BookmarksPage() {
                                     <CardContent className="p-2">
                                         {searchResults.map((result) => (
                                             <Link
-                                                href={`/manga/${result.link_story.split("/").pop()}`}
-                                                key={result.noteid}
+                                                href={`/manga/${result.link.split("/").pop()}`}
+                                                key={result.id}
                                                 className="block p-2 hover:bg-accent flex items-center rounded-lg"
                                             >
                                                 <Image
                                                     src={result.image}
-                                                    alt={result.note_story_name}
+                                                    alt={result.name}
                                                     width={300}
                                                     height={450}
                                                     className="max-h-24 w-auto rounded mr-2"
                                                 />
-                                                {result.note_story_name}
+                                                {result.name}
                                             </Link>
                                         ))}
                                     </CardContent>

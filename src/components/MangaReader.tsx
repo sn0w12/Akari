@@ -11,9 +11,8 @@ import Image from "next/image";
 import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
-import { MangaCacheItem } from "@/app/api/interfaces";
-import Toast from "@/lib/toastWrapper";
-import { fetchMalData } from "@/lib/malSync";
+import { HqMangaCacheItem } from "@/app/api/interfaces";
+import { syncAllBookmarks } from "@/lib/sync";
 
 interface ChapterReaderProps {
     isHeaderVisible: boolean;
@@ -38,14 +37,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         return () => clearInterval(interval);
     }, []);
 
-    async function setCache(mangaId: string, lastRead: string) {
-        const cachedData =
-            (await db.getCache(db.mangaCache, mangaId)) ??
-            ({} as MangaCacheItem);
-        cachedData.last_read = lastRead;
-        await db.setCache(db.mangaCache, mangaId, cachedData);
-    }
-
     useEffect(() => {
         if (!chapterData || bookmarkUpdatedRef.current) return;
 
@@ -58,13 +49,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHalfwayThrough ||
             ((hasFewImages || isStripMode) && thirtySecondsPassed)
         ) {
-            updateBookmark(chapterData);
+            syncAllBookmarks(chapterData);
             bookmarkUpdatedRef.current = true;
-
-            setCache(
-                chapterData.parentId,
-                window.location.href.split("/").pop() || "",
-            );
         }
     }, [chapterData, currentPage, timeElapsed]);
 
@@ -77,8 +63,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             const checkSelectedImages = async () => {
                 // Fetch strip mode cache from Dexie (asynchronous operation)
                 const mangaCache =
-                    (await db.getCache(db.mangaCache, chapterData.parentId)) ??
-                    ({} as MangaCacheItem);
+                    (await db.getCache(
+                        db.hqMangaCache,
+                        chapterData.parentId,
+                    )) ?? ({} as HqMangaCacheItem);
 
                 // Check if the chapter's parentId is cached
                 if (mangaCache?.is_strip === true) {
@@ -117,8 +105,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
                 // Update the cache with the new value
                 mangaCache.is_strip = isStripMode;
-                await db.setCache(
-                    db.mangaCache,
+                await db.updateCache(
+                    db.hqMangaCache,
                     chapterData.parentId,
                     mangaCache,
                 );
@@ -182,54 +170,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             router.push(`/manga/${chapterData.lastChapter}`);
         }
     }, [chapterData, currentPage]);
-
-    async function syncBookmark(data: Chapter) {
-        const regex = /Chapter\s(\d+)/;
-        const match = data.chapter.match(regex);
-        const chapterNumber = match ? match[1] : null;
-        if (!chapterNumber) return;
-
-        const malData = await fetchMalData(data.parentId);
-        if (!malData || !malData.malUrl) return;
-
-        await fetch("/api/mal/me/mangalist", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                manga_id: malData.malUrl.split("/").pop(),
-                num_chapters_read: chapterNumber,
-            }),
-        });
-    }
-
-    async function updateBookmark(data: Chapter) {
-        const user_data = localStorage.getItem("accountInfo");
-        const story_data = data.storyData;
-        const chapter_data = data.chapterData;
-        if (!chapter_data || !story_data || !user_data) return;
-
-        const response = await fetch("/api/bookmarks/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ user_data, story_data, chapter_data }),
-        });
-
-        if (response.ok) {
-            await syncBookmark(data);
-            new Toast("Bookmark updated successfully!", "success", {
-                autoClose: 1000,
-            });
-        } else {
-            new Toast("Failed to update bookmark.", "error");
-        }
-
-        const result = await response.json();
-        return result;
-    }
 
     // Handle key press events for navigation
     useEffect(() => {
@@ -318,10 +258,10 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Render "strip" mode for long images
     if (isStripMode) {
         return (
-            <div className="h-screen w-screen bg-black">
+            <div>
                 <div
                     id="reader"
-                    className="flex flex-col items-center bg-black h-screen"
+                    className="flex flex-col items-center h-screen bg-transparent"
                 >
                     {chapterData.images.map((image, index) => (
                         <Image
@@ -333,6 +273,8 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                             width={700}
                             height={1080}
                             className="object-contain w-128 z-20 relative"
+                            loading="eager"
+                            priority={index < 3}
                         />
                     ))}
                 </div>
@@ -344,7 +286,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Normal mode (single image navigation)
     return (
         <div
-            className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-black"
+            className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-transparent"
             onClick={handleClick}
         >
             <div id="reader" className="relative max-h-dvh w-auto">

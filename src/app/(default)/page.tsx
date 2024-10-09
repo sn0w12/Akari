@@ -1,14 +1,12 @@
-import { HeaderComponent } from "@/components/Header";
-import BookmarksPage from "@/components/Bookmarks";
+import MangaReaderHome from "@/components/MangaReaderHome";
 import { Suspense } from "react";
 import FallbackPage from "@/components/FallbackPage";
 
-export default function Bookmarks() {
+export default function Home() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <HeaderComponent />
             <Suspense fallback={<FallbackPage />}>
-                <BookmarksPage />
+                <MangaReaderHome />
             </Suspense>
         </div>
     );

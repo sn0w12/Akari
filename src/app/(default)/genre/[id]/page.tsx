@@ -1,5 +1,4 @@
-import { HeaderComponent } from "@/components/Header";
-import AuthorPage from "@/components/Author";
+import GenrePage from "@/components/Genre";
 
 interface PageProps {
     params: { id: string };
@@ -8,8 +7,7 @@ interface PageProps {
 export default function Home({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <HeaderComponent />
-            <AuthorPage
+            <GenrePage
                 params={{
                     id: params.id,
                 }}

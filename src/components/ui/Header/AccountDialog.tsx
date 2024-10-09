@@ -154,6 +154,14 @@ export default function LoginDialog() {
         setAuthUrl(url.toString());
     }, []);
 
+    const handleOpenChange = (
+        open: boolean | ((prevState: boolean) => boolean),
+    ) => {
+        if (open) {
+            fetchCaptcha();
+        }
+    };
+
     // If user data exists, display the user's name and user data, otherwise show the login dialog
     if (userData) {
         return (
@@ -172,16 +180,7 @@ export default function LoginDialog() {
                             <h2 className="text-xl font-bold">
                                 {userData.user_name}
                             </h2>
-                            <label className="block text-sm font-medium mb-2 mt-2">
-                                User Data
-                            </label>
-                            <Input
-                                type="text"
-                                placeholder="User Data..."
-                                className="w-full"
-                                value={userData.user_data}
-                                readOnly
-                            />
+                            <p className="mt-2">Logged In With Manganato</p>
 
                             {authUrl && !isMalAuth && (
                                 <a href={authUrl}>
@@ -227,7 +226,7 @@ export default function LoginDialog() {
 
     // Show the login form if the user is not logged in
     return (
-        <Dialog onOpenChange={fetchCaptcha}>
+        <Dialog onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <User className="h-5 w-5" />

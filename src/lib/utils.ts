@@ -13,3 +13,14 @@ export async function getHqImage(identifier: string, origImage: string) {
     }
     return origImage;
 }
+
+export function numberArraysEqual(
+    a: number[] | null,
+    b: string | number[] | null,
+) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+
+    return a.every((val: number, idx: number) => val === b[idx]);
+}

@@ -21,8 +21,8 @@ async function getHqData(malSyncData: MalSync) {
 }
 
 export async function fetchMalData(identifier: string) {
-    let cachedManga = await db.getCache(db.hqMangaCache, identifier);
-    if (cachedManga) {
+    const cachedManga = await db.getCache(db.hqMangaCache, identifier);
+    if (cachedManga && cachedManga.score) {
         return cachedManga;
     }
 
@@ -40,9 +40,8 @@ export async function fetchMalData(identifier: string) {
         data["malUrl"] = malSyncResponseData.malUrl;
         data["aniUrl"] = malSyncResponseData.aniUrl;
 
-        cachedManga = data;
-        await db.setCache(db.hqMangaCache, identifier, cachedManga);
-        return cachedManga;
+        await db.updateCache(db.hqMangaCache, identifier, data);
+        return data;
     } catch (error) {
         console.error(error);
         return null;
