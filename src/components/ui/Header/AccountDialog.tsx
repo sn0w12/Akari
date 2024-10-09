@@ -180,16 +180,7 @@ export default function LoginDialog() {
                             <h2 className="text-xl font-bold">
                                 {userData.user_name}
                             </h2>
-                            <label className="block text-sm font-medium mb-2 mt-2">
-                                User Data
-                            </label>
-                            <Input
-                                type="text"
-                                placeholder="User Data..."
-                                className="w-full"
-                                value={userData.user_data}
-                                readOnly
-                            />
+                            <p className="mt-2">Logged In With Manganato</p>
 
                             {authUrl && !isMalAuth && (
                                 <a href={authUrl}>
