@@ -7,8 +7,8 @@ import LatestChapterInfo from "./LatestChapterInfo";
 
 const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
     return (
-        <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg xl:h-full">
-            <CardContent className="pt-6 flex flex-col flex-shrink justify-between">
+        <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg">
+            <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
                 <div className="mb-4">
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full mb-0 shrink-0">
