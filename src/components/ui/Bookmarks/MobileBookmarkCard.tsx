@@ -4,30 +4,15 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "./LatestChapterInfo";
-import { compareVersions } from "@/lib/bookmarks";
+import { getButtonInfo } from "@/lib/bookmarks";
 
 const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
-    const mangaIdentifier = bookmark.link_story.split("/").pop();
-    let continueReading = bookmark.link_chapter_now;
-    let continueReadingText = `Chapter ${bookmark.chapter_numbernow}`;
-    let buttonColor = "bg-blue-600 hover:bg-blue-700";
-
-    if (bookmark.up_to_date && bookmark.up_to_date === true) {
-        continueReading = bookmark.link_chapter_last;
-
-        if (bookmark.chapterlastnumber === bookmark.chapter_numbernow) {
-            continueReadingText = `Chapter ${bookmark.chapterlastnumber}`;
-            buttonColor = "bg-green-600 hover:bg-green-700";
-        } else if (
-            compareVersions(
-                bookmark.chapterlastnumber,
-                bookmark.chapter_numbernow,
-            )
-        ) {
-            continueReadingText = `Chapter ${bookmark.chapterlastnumber}`;
-            buttonColor = "bg-indigo-600 hover:bg-indigo-700";
-        }
-    }
+    const {
+        mangaIdentifier,
+        continueReading,
+        continueReadingText,
+        buttonColor,
+    } = getButtonInfo(bookmark);
 
     return (
         <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg">
