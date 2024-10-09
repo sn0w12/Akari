@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import ReadingButton from "./ui/MangaDetails/readingButton";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { fetchMalData } from "@/lib/malSync";
+import EnhancedImage from "./ui/enhancedImage";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     const user_data = localStorage.getItem("accountInfo");
@@ -269,10 +271,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         <main className="container mx-auto px-4 py-8">
             <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center lg:relative lg:h-128">
-                    <img
+                    <EnhancedImage
                         src={image}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover w-full lg:h-full lg:w-auto max-w-lg"
+                        hoverEffect="dynamic-tilt"
+                        width={300}
+                        height={512}
                     />
                 </div>
 
@@ -288,10 +293,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    <img
+                                    <Image
                                         src="/img/AniList-logo.png"
                                         alt="AniList Logo"
-                                        className="h-10 ml-2 rounded hover:opacity-75"
+                                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
+                                        width={40}
+                                        height={40}
+                                        quality={100}
                                     />
                                 </a>
                             )}
@@ -301,10 +309,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    <img
+                                    <Image
                                         src="/img/MAL-logo.png"
                                         alt="MyAnimeList Logo"
-                                        className="h-10 ml-2 rounded hover:opacity-75"
+                                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
+                                        width={40}
+                                        height={40}
+                                        quality={100}
                                     />
                                 </a>
                             )}
