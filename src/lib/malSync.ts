@@ -41,7 +41,7 @@ export async function fetchMalData(identifier: string) {
         data["aniUrl"] = malSyncResponseData.aniUrl;
 
         await db.updateCache(db.hqMangaCache, identifier, data);
-        return cachedManga;
+        return data;
     } catch (error) {
         console.error(error);
         return null;
