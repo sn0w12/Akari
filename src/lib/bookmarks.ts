@@ -15,14 +15,18 @@ function compareVersions(str1: string, str2: string): boolean {
     const floorNum1 = Math.floor(num1);
     const floorNum2 = Math.floor(num2);
 
-    if (num1 % 1 === 0.5 && num2 % 1 === 0.5) {
+    if (num1 % 1 === 0.5 || num2 % 1 === 0.5) {
         // Compare after rounding down
         return floorNum1 === floorNum2 + 1;
     }
 
-    // Otherwise, check if the first value is 0.1 larger than the second
-    const diff = num1 - num2;
-    return diff === 0.1;
+    // Check if the first value is 0.1 larger than the second
+    const diff = Math.round((num1 - num2) * 10) / 10;
+    if (diff === 0.1) {
+        return true;
+    }
+
+    return false;
 }
 
 export function getButtonInfo(bookmark: Bookmark) {
