@@ -24,7 +24,7 @@ import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
 
 const fuseOptions = {
-    keys: ["note_story_name"], // The fields to search in your data
+    keys: ["name"], // The fields to search in your data
     includeScore: false, // Optional: include the score in the results
     threshold: 0.4, // Adjust the fuzziness (0.0 = exact match, 1.0 = match all)
 };
@@ -307,6 +307,7 @@ export default function BookmarksPage() {
             return;
         }
         if (allBookmarks.length === 0) {
+            console.warn("No bookmarks found.");
             return;
         }
 
