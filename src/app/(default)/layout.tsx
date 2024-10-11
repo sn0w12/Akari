@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
 import { HeaderComponent } from "@/components/Header";
@@ -45,6 +46,7 @@ export default function RootLayout({
                     }}
                 />
                 <Analytics />
+                <SpeedInsights />
             </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
