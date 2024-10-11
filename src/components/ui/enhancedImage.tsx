@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, CSSProperties } from "react";
 import Image, { ImageProps } from "next/image";
+import { getSetting } from "@/lib/settings";
 
 type HoverEffect =
     | "none"
@@ -152,6 +153,8 @@ export default function EnhancedImage({
     const { containerClass, imageClass, dynamicStyles } =
         effectConfigs[hoverEffect];
 
+    const fancyAnimationsEnabled = getSetting("fancyAnimations");
+
     const handleMouseEnter = () => setIsHovered(true);
     const handleMouseLeave = () => {
         setIsHovered(false);
@@ -160,9 +163,10 @@ export default function EnhancedImage({
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>
         setMouseEvent(e);
 
-    const containerStyle = dynamicStyles
-        ? dynamicStyles(isHovered, mouseEvent, containerRef)
-        : {};
+    const containerStyle =
+        dynamicStyles && fancyAnimationsEnabled
+            ? dynamicStyles(isHovered, mouseEvent, containerRef)
+            : {};
 
     return (
         <div
@@ -174,11 +178,11 @@ export default function EnhancedImage({
             style={containerStyle}
         >
             <Image
-                className={`transition-all duration-300 ease-in-out ${imageClass} ${className}`}
+                className={`${fancyAnimationsEnabled ? "transition-all duration-300 ease-in-out" : ""} ${imageClass} ${className}`}
                 alt={alt}
                 {...props}
             />
-            {hoverEffect === "glitch" && (
+            {hoverEffect === "glitch" && fancyAnimationsEnabled && (
                 <style jsx global>{`
                     @keyframes glitch {
                         0% {
