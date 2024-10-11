@@ -1,7 +1,29 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { Bookmark } from "@/app/api/interfaces";
 
 const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
+
+function pluralizeTimeAgo(input: string): string {
+    const trimmedInput = input.trim();
+    const hourPattern = /^(\d+) hour ago$/;
+    const dayPattern = /^(\d+) day ago$/;
+
+    const hourMatch = trimmedInput.match(hourPattern);
+    const dayMatch = trimmedInput.match(dayPattern);
+
+    if (hourMatch) {
+        const num = parseInt(hourMatch[1], 10);
+        return num === 1 ? trimmedInput : `${num} hours ago`;
+    }
+
+    if (dayMatch) {
+        const num = parseInt(dayMatch[1], 10);
+        return num === 1 ? trimmedInput : `${num} days ago`;
+    }
+
+    return trimmedInput;
+}
 
 // Function to fetch bookmarks for a single page from the external API
 async function fetchBookmarks(user_data: string, page: number, url: string) {
@@ -78,50 +100,48 @@ export async function GET(request: Request) {
         const $ = cheerio.load(html.data);
 
         // Iterate through the JSON data
-        jsonResult.data.forEach(
-            (item: { noteid: string; bm_data?: string }) => {
-                const noteId = item.noteid;
-                const className = `bm-it-${noteId}`;
+        jsonResult.data.forEach((item: Bookmark) => {
+            const noteId = item.noteid;
+            const className = `bm-it-${noteId}`;
+            const pluralizedTime = pluralizeTimeAgo(item.chapterlastdateupdate);
+            item.chapterlastdateupdate = pluralizedTime;
 
-                // Find the element in the HTML by class name using cheerio
-                const element = $(`.${className}`);
+            // Find the element in the HTML by class name using cheerio
+            const element = $(`.${className}`);
 
-                if (element.length > 0) {
-                    // Find the `a` tag with class 'btn-remove' inside the element
-                    const removeButton = element.find(".btn-remove");
+            if (element.length > 0) {
+                // Find the `a` tag with class 'btn-remove' inside the element
+                const removeButton = element.find(".btn-remove");
 
-                    if (removeButton.length > 0) {
-                        // Get the `onclick` attribute value
-                        const onClickAttr = removeButton.attr("onclick");
+                if (removeButton.length > 0) {
+                    // Get the `onclick` attribute value
+                    const onClickAttr = removeButton.attr("onclick");
 
-                        if (onClickAttr) {
-                            // Use regex to extract the first argument from fun_bookmark_delete
-                            const match = onClickAttr.match(
-                                /fun_bookmark_delete\('([^']+)'/,
-                            );
+                    if (onClickAttr) {
+                        // Use regex to extract the first argument from fun_bookmark_delete
+                        const match = onClickAttr.match(
+                            /fun_bookmark_delete\('([^']+)'/,
+                        );
 
-                            if (match && match[1]) {
-                                item["bm_data"] = match[1];
-                            } else {
-                                console.log(
-                                    `Could not extract string from onclick for noteid ${noteId}`,
-                                );
-                            }
+                        if (match && match[1]) {
+                            item["bm_data"] = match[1];
                         } else {
                             console.log(
-                                `No onclick attribute found for noteid ${noteId}`,
+                                `Could not extract string from onclick for noteid ${noteId}`,
                             );
                         }
                     } else {
                         console.log(
-                            `Remove button not found for noteid ${noteId}`,
+                            `No onclick attribute found for noteid ${noteId}`,
                         );
                     }
                 } else {
-                    console.log(`Element not found for noteid ${noteId}`);
+                    console.log(`Remove button not found for noteid ${noteId}`);
                 }
-            },
-        );
+            } else {
+                console.log(`Element not found for noteid ${noteId}`);
+            }
+        });
 
         // Return the fetched data and current page information
         return NextResponse.json(
