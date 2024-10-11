@@ -1,5 +1,6 @@
 import db from "@/lib/db";
 import { MalSync } from "@/app/api/interfaces";
+import { getSetting } from "./settings";
 
 async function getHqData(malSyncData: MalSync) {
     let service;
@@ -20,10 +21,17 @@ async function getHqData(malSyncData: MalSync) {
     return data;
 }
 
-export async function fetchMalData(identifier: string) {
+export async function fetchMalData(
+    identifier: string,
+    overWrite: boolean = false,
+) {
     const cachedManga = await db.getCache(db.hqMangaCache, identifier);
     if (cachedManga && cachedManga.score) {
         return cachedManga;
+    }
+
+    if (!getSetting("fetchMalImage") && !overWrite) {
+        return null;
     }
 
     try {
