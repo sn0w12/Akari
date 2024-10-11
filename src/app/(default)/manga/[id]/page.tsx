@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { MangaDetailsComponent } from "@/components/MangaDetails";
+import FallbackPage from "@/components/FallbackPage";
 
 interface PageProps {
     params: { id: string };
@@ -8,13 +9,7 @@ interface PageProps {
 export default function MangaPage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <Suspense
-                fallback={
-                    <div className="container mx-auto px-4 py-8">
-                        Loading...
-                    </div>
-                }
-            >
+            <Suspense fallback={<FallbackPage />}>
                 <MangaDetailsComponent id={params.id} />
             </Suspense>
         </div>
