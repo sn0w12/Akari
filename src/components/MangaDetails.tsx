@@ -173,25 +173,23 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     const loadManga = useCallback(async () => {
         setIsLoading(true);
         const settings = JSON.parse(localStorage.getItem("settings") || "{}");
-        const data = await fetchManga(id);
-        const cachedData = await db.getCache(
-            db.mangaCache,
-            data?.identifier || "",
-        );
+        const [data, cachedData, malData] = await Promise.all([
+            fetchManga(id),
+            db.getCache(db.mangaCache, id),
+            fetchMalData(id),
+        ]);
+
         if (cachedData) {
             setBmData(cachedData.bm_data);
             setLastRead(cachedData.last_read);
         }
 
         if (data && data.mangaId) {
-            console.log(data);
             setManga(data);
             setImage(data.imageUrl);
             checkIfBookmarked(data.mangaId, setIsBookmarked);
             document.title = data?.name;
 
-            const malData = await fetchMalData(data?.identifier || "");
-            console.log(malData, settings.fetchMalImage);
             if (malData && settings.fetchMalImage) {
                 setMalLink(malData.malUrl);
                 setAniLink(malData.aniUrl);
