@@ -32,11 +32,13 @@ interface Manga {
 interface SettingsInterface {
     fetchMalImage: boolean;
     useToast: boolean;
+    fancyAnimations: boolean;
 }
 
 const defaultSettings: SettingsInterface = {
     fetchMalImage: true,
     useToast: true,
+    fancyAnimations: true,
 };
 
 // Custom hook for managing theme
@@ -114,7 +116,8 @@ export function HeaderComponent() {
 
     const settingsMap: SettingsMap = {
         fetchMalImage: {
-            label: "Fetch MAL Image",
+            label: "Fetch MAL Data",
+            description: "Slows down first load on manga detail pages.",
             type: "checkbox",
             value: settings.fetchMalImage,
             default: true,
@@ -137,6 +140,21 @@ export function HeaderComponent() {
                     setSettings((prevSettings) => ({
                         ...prevSettings,
                         useToast: value,
+                    }));
+                }
+            },
+        },
+        fancyAnimations: {
+            label: "Fancy Animations",
+            description: "Such as manga detail pages cover image.",
+            type: "checkbox",
+            value: settings.fancyAnimations,
+            default: true,
+            onChange: (value: SettingValue) => {
+                if (typeof value === "boolean") {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        fancyAnimations: value,
                     }));
                 }
             },

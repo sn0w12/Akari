@@ -66,7 +66,7 @@ async function syncBookmark(data: Chapter) {
     const chapterNumber = match ? match[1] : null;
     if (!chapterNumber) return;
 
-    const malData = await fetchMalData(data.parentId);
+    const malData = await fetchMalData(data.parentId, true);
     if (!malData || !malData.malUrl) return;
 
     await fetch("/api/mal/me/mangalist", {

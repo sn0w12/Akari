@@ -13,6 +13,7 @@ import { debounce } from "lodash";
 import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { syncAllBookmarks } from "@/lib/sync";
+import MangaFooter from "./ui/MangaReader/mangaFooter";
 
 interface ChapterReaderProps {
     isHeaderVisible: boolean;
@@ -220,7 +221,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                 >
                     <h3 className="font-bold">
                         <a
-                            href={`http://${window.location.host}/manga/${chapterData.parentId}`}
+                            href={`/manga/${chapterData.parentId}`}
                             className="hover:underline"
                         >
                             {chapterData.title}
@@ -261,7 +262,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             <div>
                 <div
                     id="reader"
-                    className="flex flex-col items-center h-screen bg-transparent"
+                    className="flex flex-col items-center bg-transparent"
                 >
                     {chapterData.images.map((image, index) => (
                         <Image
@@ -278,6 +279,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                         />
                     ))}
                 </div>
+                <MangaFooter chapterData={chapterData} />
                 {getCard(chapterData)}
             </div>
         );
@@ -286,7 +288,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     // Normal mode (single image navigation)
     return (
         <div
-            className="flex justify-center items-center overflow-y-hidden h-dvh w-screen bg-transparent"
+            className="flex flex-col justify-center items-center overflow-x-hidden h-dvh w-screen bg-transparent"
             onClick={handleClick}
         >
             <div id="reader" className="relative max-h-dvh w-auto">

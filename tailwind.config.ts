@@ -7,6 +7,14 @@ const config: Config = {
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
+    safelist: [
+        "bg-indigo-600",
+        "hover:bg-indigo-700",
+        "bg-green-600",
+        "hover:bg-green-700",
+        "bg-cyan-600",
+        "hover:bg-cyan-700",
+    ],
     theme: {
         extend: {
             colors: {
@@ -86,7 +94,9 @@ const config: Config = {
         },
     },
     plugins: [
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require("tailwindcss-animate"),
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require("@tailwindcss/typography"),
     ],
 };

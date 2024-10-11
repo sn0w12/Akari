@@ -14,7 +14,8 @@ export default function LatestChapterInfo({
                         .split("/")
                         .pop()}/${bookmark.link_chapter_last.split("/").pop()}`}
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
+                    className="box-decoration-clone text-foreground p-0.5 md:pr-1 rounded-sm bg-indigo-600 hover:bg-indigo-700 transition-colors"
+                    style={{ WebkitBoxDecorationBreak: "clone" }}
                 >
                     {bookmark.chapterlastname}
                 </a>

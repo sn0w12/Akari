@@ -82,7 +82,7 @@ function SettingsForm({ settingsMap }: { settingsMap: SettingsMap }) {
             <CardContent className="space-y-6">
                 {Object.entries(settingsMap).map(([key, setting]) => (
                     <div key={key} className="flex flex-col space-y-2">
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-center">
                             <div>
                                 <Label
                                     htmlFor={key}
