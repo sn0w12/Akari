@@ -2,12 +2,8 @@
 
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import {
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-} from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
+import { DialogHeader, DialogTitle } from "../dialog";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -75,10 +71,9 @@ export interface SettingsMap {
 function SettingsForm({ settingsMap }: { settingsMap: SettingsMap }) {
     return (
         <>
-            <CardHeader className="border-b">
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>Manage your settings here.</CardDescription>
-            </CardHeader>
+            <DialogHeader className="border-b pb-4">
+                <DialogTitle>Settings</DialogTitle>
+            </DialogHeader>
             <CardContent className="space-y-6">
                 {Object.entries(settingsMap).map(([key, setting]) => (
                     <div key={key} className="flex flex-col space-y-2">
