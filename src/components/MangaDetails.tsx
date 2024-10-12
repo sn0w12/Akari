@@ -170,7 +170,6 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         if (data && data.mangaId) {
             setManga(data);
             setImage(data.imageUrl);
-            setIsBookmarked(await checkIfBookmarked(data.mangaId));
             document.title = data?.name;
 
             if (malData && settings.fetchMalImage) {
@@ -180,6 +179,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             }
 
             setIsLoading(false);
+            setIsBookmarked(await checkIfBookmarked(data.mangaId));
         } else {
             setError("Failed to load manga details");
             setIsLoading(false);
