@@ -24,7 +24,7 @@ interface MetaData {
 export async function GET(req: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(req.url);
-        const page: string = searchParams.get("search") || "1";
+        const page: string = searchParams.get("page") || "1";
 
         // Construct the URL with the page number
         const url = `https://manganato.com/genre-all/${page}`;
