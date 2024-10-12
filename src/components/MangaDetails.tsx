@@ -259,6 +259,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         hoverEffect="dynamic-tilt"
                         width={300}
                         height={512}
+                        priority={true}
                     />
                 </div>
 
