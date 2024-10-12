@@ -2,6 +2,7 @@ import { Chapter } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { fetchMalData } from "@/lib/malSync";
 import db from "./db";
+import { checkIfBookmarked } from "./bookmarks";
 
 type SyncHandler = (data: Chapter) => Promise<void>;
 
@@ -9,14 +10,27 @@ export async function syncAllBookmarks(data: Chapter) {
     const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
     let success = true;
 
-    for (const handler of syncHandlers) {
-        try {
-            await handler(data);
-        } catch (error) {
-            console.error(`Failed to sync with ${handler.name}:`, error);
+    const cachedManga = await db.getCache(db.mangaCache, data.parentId);
+    if (!cachedManga) {
+        console.error("Manga not found in cache");
+        return;
+    }
+
+    const isBookmarked = await checkIfBookmarked(cachedManga.id);
+    if (!isBookmarked) {
+        return;
+    }
+
+    const results = await Promise.allSettled(
+        syncHandlers.map((handler) => handler(data)),
+    );
+
+    results.forEach((result) => {
+        if (result.status === "rejected") {
+            console.error(`Failed to sync with handler:`, result.reason);
             success = false; // If any handler fails, mark success as false
         }
-    }
+    });
 
     // Display a toast notification after all sync handlers are done
     if (success) {
