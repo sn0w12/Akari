@@ -56,7 +56,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                         </Button>
                     </a>
                 </div>
-                {LatestChapterInfo({ bookmark })}
+                {LatestChapterInfo({ bookmark, colors: buttonColor })}
             </CardContent>
         </Card>
     );
