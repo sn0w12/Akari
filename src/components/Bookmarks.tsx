@@ -71,23 +71,21 @@ export default function BookmarksPage() {
             const updateBookmarks = async (bookmarks: Bookmark[]) => {
                 await Promise.all(
                     bookmarks.map(async (bookmark: Bookmark) => {
-                        bookmark.image = await getHqImage(
-                            bookmark.link_story?.split("/").pop() || "",
-                            bookmark.image,
-                        );
-                    }),
-                );
+                        const id = bookmark.link_story?.split("/").pop() || "";
 
-                await Promise.all(
-                    bookmarks.map(async (bookmark) => {
-                        const id = bookmark.link_story.split("/").pop();
-                        if (!id) return;
-                        const hqBookmark = await db.getCache(
-                            db.hqMangaCache,
-                            id,
-                        );
-                        if (!hqBookmark) return;
-                        bookmark.up_to_date = hqBookmark.up_to_date;
+                        // Fetch high-quality image
+                        bookmark.image = await getHqImage(id, bookmark.image);
+
+                        // Check cache and update 'up_to_date' field if needed
+                        if (id) {
+                            const hqBookmark = await db.getCache(
+                                db.hqMangaCache,
+                                id,
+                            );
+                            if (hqBookmark) {
+                                bookmark.up_to_date = hqBookmark.up_to_date;
+                            }
+                        }
                     }),
                 );
 
