@@ -323,6 +323,28 @@ export default function BookmarksPage() {
         }
     };
 
+    function exportBookmarks() {
+        if (!allBookmarks) {
+            new Toast("No bookmarks found.", "warning");
+            return;
+        }
+
+        const bookmarksBlob = new Blob(
+            [JSON.stringify(allBookmarks, null, 2)],
+            { type: "application/json" },
+        );
+        const url = URL.createObjectURL(bookmarksBlob);
+        const a = Object.assign(document.createElement("a"), {
+            href: url,
+            download: "bookmarks.json",
+        });
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     function getBookmarkCard(bookmark: Bookmark) {
         if (typeof window !== "undefined") {
             return window.innerWidth > 768 ? (
@@ -341,21 +363,37 @@ export default function BookmarksPage() {
                 {!isLoading && !error && (
                     <>
                         <div className="relative mb-6">
-                            <Input
-                                type="search"
-                                placeholder={
-                                    workerFinished
-                                        ? "Search bookmarks..."
-                                        : "Loading bookmarks, please wait..."
-                                }
-                                value={searchQuery}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                className="w-full no-cancel"
-                            />
-                            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    className={
+                                        "w-auto md:h-auto flex items-center justify-center"
+                                    }
+                                    onClick={exportBookmarks}
+                                >
+                                    Export Bookmarks
+                                </Button>
+                                <div className="relative w-full">
+                                    <Input
+                                        type="search"
+                                        placeholder={
+                                            workerFinished
+                                                ? "Search bookmarks..."
+                                                : "Loading bookmarks, please wait..."
+                                        }
+                                        value={searchQuery}
+                                        onChange={(e) =>
+                                            handleSearch(e.target.value)
+                                        }
+                                        className="no-cancel"
+                                    />
+                                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                </div>
+                            </div>
                             {searchResults.length > 0 && (
                                 <Card className="absolute z-10 w-full mt-1">
-                                    <CardContent className="p-2">
+                                    <CardContent className="p-2 max-h-[60vh] overflow-y-scroll">
                                         {searchResults.map((result) => (
                                             <Link
                                                 href={`/manga/${result.link.split("/").pop()}`}
