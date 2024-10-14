@@ -12,7 +12,7 @@ import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
-import { syncAllBookmarks } from "@/lib/sync";
+import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
 
 interface ChapterReaderProps {
@@ -50,7 +50,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHalfwayThrough ||
             ((hasFewImages || isStripMode) && thirtySecondsPassed)
         ) {
-            syncAllBookmarks(chapterData);
+            syncAllServices(chapterData);
             bookmarkUpdatedRef.current = true;
         }
     }, [chapterData, currentPage, timeElapsed]);

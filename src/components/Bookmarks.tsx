@@ -22,6 +22,7 @@ import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
 import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
+import { fetchMalData, syncMal } from "@/lib/malSync";
 
 const fuseOptions = {
     keys: ["name"], // The fields to search in your data
@@ -345,6 +346,41 @@ export default function BookmarksPage() {
         URL.revokeObjectURL(url);
     }
 
+    async function syncAllBookmarks() {
+        console.time("Syncing bookmarks");
+        if (!allBookmarks || allBookmarks.length === 0) {
+            new Toast("No bookmarks found.", "warning");
+            return;
+        }
+
+        const syncToast = new Toast("Syncing bookmarks...", "info", {
+            autoClose: false,
+        });
+
+        const syncBookmarks = async () => {
+            for (const bookmark of allBookmarks) {
+                const identifier = bookmark.link.split("/").pop();
+                if (!identifier) continue;
+
+                const lastReadNumber = bookmark.last_read.split("-").pop();
+                const malData = await fetchMalData(identifier, true);
+
+                if (malData && malData.malUrl && lastReadNumber) {
+                    const malId = malData.malUrl.split("/").pop();
+                    const result = await syncMal(malId, lastReadNumber);
+                    console.log(result);
+                }
+
+                // Wait a bit between requests to avoid rate limiting
+                await new Promise((resolve) => setTimeout(resolve, 350));
+            }
+        };
+
+        await syncBookmarks();
+        syncToast.close();
+        console.timeEnd("Syncing bookmarks");
+    }
+
     function getBookmarkCard(bookmark: Bookmark) {
         if (typeof window !== "undefined") {
             return window.innerWidth > 768 ? (
@@ -374,6 +410,25 @@ export default function BookmarksPage() {
                                 >
                                     Export Bookmarks
                                 </Button>
+                                <ConfirmDialog
+                                    triggerButton={
+                                        <Button
+                                            variant="outline"
+                                            size="lg"
+                                            className={
+                                                "w-auto md:h-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500"
+                                            }
+                                        >
+                                            Sync Bookmarks
+                                        </Button>
+                                    }
+                                    title="Confirm Bookmark Sync"
+                                    message="Are you sure you want to sync your bookmarks to MyAnimeList? It takes approximately 40 seconds per page."
+                                    confirmLabel="Confirm"
+                                    confirmColor="bg-blue-600 border-blue-500 hover:bg-blue-500"
+                                    cancelLabel="Cancel"
+                                    onConfirm={syncAllBookmarks}
+                                />
                                 <div className="relative w-full">
                                     <Input
                                         type="search"
