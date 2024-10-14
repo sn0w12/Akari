@@ -53,7 +53,7 @@ const DesktopBookmarkCard: React.FC<{
                         </Button>
                     </a>
                 </div>
-                {LatestChapterInfo({ bookmark })}
+                {LatestChapterInfo({ bookmark, colors: buttonColor })}
             </CardContent>
         </Card>
     );

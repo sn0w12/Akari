@@ -12,7 +12,7 @@ import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
-import { syncAllBookmarks } from "@/lib/sync";
+import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
 
 interface ChapterReaderProps {
@@ -50,7 +50,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             isHalfwayThrough ||
             ((hasFewImages || isStripMode) && thirtySecondsPassed)
         ) {
-            syncAllBookmarks(chapterData);
+            syncAllServices(chapterData);
             bookmarkUpdatedRef.current = true;
         }
     }, [chapterData, currentPage, timeElapsed]);
@@ -128,14 +128,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         const data = await response.json();
         setChapterData(data);
         document.title = `${data.title} - ${data.chapter}`;
-
-        data.images.forEach((image: string) => {
-            const link = document.createElement("link");
-            link.rel = "preload";
-            link.as = "image";
-            link.href = `/api/image-proxy?imageUrl=${encodeURIComponent(image)}`;
-            document.head.appendChild(link);
-        });
     }, [id, subId]);
 
     const debouncedFetchChapter = useCallback(debounce(fetchChapter, 10), [
@@ -292,15 +284,18 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             onClick={handleClick}
         >
             <div id="reader" className="relative max-h-dvh w-auto">
-                <img
-                    src={`/api/image-proxy?imageUrl=${encodeURIComponent(
-                        chapterData.images[currentPage],
-                    )}`}
-                    alt={`${chapterData.title} - ${chapterData.chapter} Page ${
-                        currentPage + 1
-                    }`}
-                    className="object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative"
-                />
+                {chapterData.images.map((image, index) => (
+                    <Image
+                        key={index}
+                        src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                        alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
+                        width={700}
+                        height={1080}
+                        loading="eager"
+                        priority={index === 1}
+                        className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                    />
+                ))}
             </div>
             {getCard(chapterData)}
             <PageProgress

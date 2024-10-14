@@ -18,6 +18,7 @@ import { debounce } from "lodash";
 import db from "@/lib/db";
 import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
+import { checkIfBookmarked } from "@/lib/bookmarks";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     const user_data = localStorage.getItem("accountInfo");
@@ -34,26 +35,6 @@ async function fetchManga(id: string): Promise<Manga | null> {
         console.error(error);
         return null;
     }
-}
-
-async function checkIfBookmarked(
-    mangaId: string,
-    setIsBookmarked: (value: boolean) => void,
-) {
-    const user_data = localStorage.getItem("accountInfo");
-
-    if (!user_data) {
-        console.error("User data not found");
-        setIsBookmarked(false);
-        return;
-    }
-
-    const response = await fetch(
-        `/api/bookmarks/${mangaId}?user_data=${encodeURIComponent(user_data)}`,
-    );
-    const data = await response.json();
-
-    setIsBookmarked(data.isBookmarked);
 }
 
 async function bookmark(
@@ -182,12 +163,13 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         if (cachedData) {
             setBmData(cachedData.bm_data);
             setLastRead(cachedData.last_read);
+        } else if (data) {
+            db.updateCache(db.mangaCache, id, { id: data.mangaId });
         }
 
         if (data && data.mangaId) {
             setManga(data);
             setImage(data.imageUrl);
-            checkIfBookmarked(data.mangaId, setIsBookmarked);
             document.title = data?.name;
 
             if (malData && settings.fetchMalImage) {
@@ -197,6 +179,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             }
 
             setIsLoading(false);
+            setIsBookmarked(await checkIfBookmarked(data.mangaId));
         } else {
             setError("Failed to load manga details");
             setIsLoading(false);
@@ -276,6 +259,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         hoverEffect="dynamic-tilt"
                         width={300}
                         height={512}
+                        priority={true}
                     />
                 </div>
 

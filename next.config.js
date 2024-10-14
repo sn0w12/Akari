@@ -27,6 +27,7 @@ module.exports = {
                 pathname: "/**",
             },
         ],
+        unoptimized: true,
     },
     webpack: (config, { isServer }) => {
         // Ignore source maps for production

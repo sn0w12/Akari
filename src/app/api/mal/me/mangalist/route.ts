@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
     if (response.ok) {
         return NextResponse.json(data);
     } else {
-        console.log(data);
         return NextResponse.json(
             { error: "Failed to get manga list" },
             { status: 500 },

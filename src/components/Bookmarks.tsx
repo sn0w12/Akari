@@ -22,6 +22,7 @@ import DesktopBookmarkCard from "./ui/Bookmarks/DesktopBookmarkCard";
 import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
+import { fetchMalData, syncMal } from "@/lib/malSync";
 
 const fuseOptions = {
     keys: ["name"], // The fields to search in your data
@@ -71,23 +72,21 @@ export default function BookmarksPage() {
             const updateBookmarks = async (bookmarks: Bookmark[]) => {
                 await Promise.all(
                     bookmarks.map(async (bookmark: Bookmark) => {
-                        bookmark.image = await getHqImage(
-                            bookmark.link_story?.split("/").pop() || "",
-                            bookmark.image,
-                        );
-                    }),
-                );
+                        const id = bookmark.link_story?.split("/").pop() || "";
 
-                await Promise.all(
-                    bookmarks.map(async (bookmark) => {
-                        const id = bookmark.link_story.split("/").pop();
-                        if (!id) return;
-                        const hqBookmark = await db.getCache(
-                            db.hqMangaCache,
-                            id,
-                        );
-                        if (!hqBookmark) return;
-                        bookmark.up_to_date = hqBookmark.up_to_date;
+                        // Fetch high-quality image
+                        bookmark.image = await getHqImage(id, bookmark.image);
+
+                        // Check cache and update 'up_to_date' field if needed
+                        if (id) {
+                            const hqBookmark = await db.getCache(
+                                db.hqMangaCache,
+                                id,
+                            );
+                            if (hqBookmark) {
+                                bookmark.up_to_date = hqBookmark.up_to_date;
+                            }
+                        }
                     }),
                 );
 
@@ -325,6 +324,63 @@ export default function BookmarksPage() {
         }
     };
 
+    function exportBookmarks() {
+        if (!allBookmarks) {
+            new Toast("No bookmarks found.", "warning");
+            return;
+        }
+
+        const bookmarksBlob = new Blob(
+            [JSON.stringify(allBookmarks, null, 2)],
+            { type: "application/json" },
+        );
+        const url = URL.createObjectURL(bookmarksBlob);
+        const a = Object.assign(document.createElement("a"), {
+            href: url,
+            download: "bookmarks.json",
+        });
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async function syncAllBookmarks() {
+        console.time("Syncing bookmarks");
+        if (!allBookmarks || allBookmarks.length === 0) {
+            new Toast("No bookmarks found.", "warning");
+            return;
+        }
+
+        const syncToast = new Toast("Syncing bookmarks...", "info", {
+            autoClose: false,
+        });
+
+        const syncBookmarks = async () => {
+            for (const bookmark of allBookmarks) {
+                const identifier = bookmark.link.split("/").pop();
+                if (!identifier) continue;
+
+                const lastReadNumber = bookmark.last_read.split("-").pop();
+                const malData = await fetchMalData(identifier, true);
+
+                if (malData && malData.malUrl && lastReadNumber) {
+                    const malId = malData.malUrl.split("/").pop();
+                    const result = await syncMal(malId, lastReadNumber);
+                    console.log(result);
+                }
+
+                // Wait a bit between requests to avoid rate limiting
+                await new Promise((resolve) => setTimeout(resolve, 350));
+            }
+        };
+
+        await syncBookmarks();
+        syncToast.close();
+        console.timeEnd("Syncing bookmarks");
+    }
+
     function getBookmarkCard(bookmark: Bookmark) {
         if (typeof window !== "undefined") {
             return window.innerWidth > 768 ? (
@@ -343,21 +399,56 @@ export default function BookmarksPage() {
                 {!isLoading && !error && (
                     <>
                         <div className="relative mb-6">
-                            <Input
-                                type="search"
-                                placeholder={
-                                    workerFinished
-                                        ? "Search bookmarks..."
-                                        : "Loading bookmarks, please wait..."
-                                }
-                                value={searchQuery}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                className="w-full no-cancel"
-                            />
-                            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    className={
+                                        "w-auto md:h-auto flex items-center justify-center"
+                                    }
+                                    onClick={exportBookmarks}
+                                >
+                                    Export Bookmarks
+                                </Button>
+                                <ConfirmDialog
+                                    triggerButton={
+                                        <Button
+                                            variant="outline"
+                                            size="lg"
+                                            className={
+                                                "w-auto md:h-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500"
+                                            }
+                                        >
+                                            Sync Bookmarks
+                                        </Button>
+                                    }
+                                    title="Confirm Bookmark Sync"
+                                    message="Are you sure you want to sync your bookmarks to MyAnimeList? It takes approximately 40 seconds per page."
+                                    confirmLabel="Confirm"
+                                    confirmColor="bg-blue-600 border-blue-500 hover:bg-blue-500"
+                                    cancelLabel="Cancel"
+                                    onConfirm={syncAllBookmarks}
+                                />
+                                <div className="relative w-full">
+                                    <Input
+                                        type="search"
+                                        placeholder={
+                                            workerFinished
+                                                ? "Search bookmarks..."
+                                                : "Loading bookmarks, please wait..."
+                                        }
+                                        value={searchQuery}
+                                        onChange={(e) =>
+                                            handleSearch(e.target.value)
+                                        }
+                                        className="no-cancel"
+                                    />
+                                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                </div>
+                            </div>
                             {searchResults.length > 0 && (
                                 <Card className="absolute z-10 w-full mt-1">
-                                    <CardContent className="p-2">
+                                    <CardContent className="p-2 max-h-[60vh] overflow-y-scroll">
                                         {searchResults.map((result) => (
                                             <Link
                                                 href={`/manga/${result.link.split("/").pop()}`}
