@@ -31,7 +31,7 @@ export default function PageProgress({
                 <div
                     className="absolute left-1 top-1 right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-lg"
                     style={{
-                        height: `${((currentPage + 1 - 0.5) / totalPages) * 100}%`,
+                        height: `${((Math.min(currentPage + 1, totalPages) - 0.5) / totalPages) * 100}%`,
                     }}
                 />
                 <div className="relative flex flex-col h-full gap-1">

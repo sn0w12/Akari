@@ -14,6 +14,7 @@ import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
+import EndOfManga from "./ui/MangaReader/endOfManga";
 
 interface ChapterReaderProps {
     isHeaderVisible: boolean;
@@ -145,13 +146,16 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
     // Navigate to the next page
     const nextPage = useCallback(() => {
-        if (chapterData && currentPage < chapterData.images.length - 1) {
+        if (!chapterData) return;
+
+        if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
-        } else if (
-            chapterData &&
-            currentPage === chapterData.images.length - 1
-        ) {
-            router.push(`/manga/${chapterData.nextChapter}`);
+        } else if (currentPage === chapterData.images.length - 1) {
+            if (chapterData.nextChapter.split("/").length === 2) {
+                router.push(`/manga/${chapterData.nextChapter}`);
+            } else {
+                setCurrentPage((prev) => prev + 1);
+            }
         }
     }, [chapterData, currentPage]);
 
@@ -296,6 +300,11 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                         className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
                     />
                 ))}
+                <EndOfManga
+                    title={chapterData.title}
+                    identifier={chapterData.parentId}
+                    className={`${chapterData.images.length !== currentPage ? "hidden" : ""}`}
+                />
             </div>
             {getCard(chapterData)}
             <PageProgress
