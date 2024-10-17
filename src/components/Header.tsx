@@ -18,6 +18,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
+import Image from "next/image";
 
 interface Manga {
     id: string;
@@ -266,10 +267,12 @@ export function HeaderComponent() {
                                                 key={result.id}
                                                 className="block p-2 hover:bg-accent flex items-center rounded-lg"
                                             >
-                                                <img
+                                                <Image
                                                     src={result.image}
                                                     alt={result.title}
                                                     className="max-h-24 w-auto rounded mr-2"
+                                                    height={100}
+                                                    width={70}
                                                 />
                                                 {result.title}
                                             </Link>
@@ -324,10 +327,12 @@ export function HeaderComponent() {
                                                     key={result.id}
                                                     className="block p-2 hover:bg-accent flex items-center rounded-lg border"
                                                 >
-                                                    <img
+                                                    <Image
                                                         src={result.image}
                                                         alt={result.title}
                                                         className="max-h-24 w-auto rounded mr-2"
+                                                        height={100}
+                                                        width={70}
                                                     />
                                                     {result.title}
                                                 </Link>
