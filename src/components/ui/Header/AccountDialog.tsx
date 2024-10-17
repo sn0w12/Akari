@@ -15,6 +15,7 @@ import React from "react";
 import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
+import Image from "next/image";
 
 export default function LoginDialog() {
     const [username, setUsername] = useState("");
@@ -76,6 +77,10 @@ export default function LoginDialog() {
 
     // Fetch CAPTCHA when opening the dialog
     const fetchCaptcha = async () => {
+        if (captchaUrl && ciSessionCookie) {
+            return;
+        }
+
         try {
             const response = await fetch("/api/login/captcha");
             const data = await response.json();
@@ -277,10 +282,12 @@ export default function LoginDialog() {
                                             CAPTCHA
                                         </label>
                                         <div className="flex items-center w-full">
-                                            <img
+                                            <Image
                                                 src={`/api/image-proxy?imageUrl=${captchaUrl}`}
                                                 alt="CAPTCHA"
                                                 className="mr-2 w-auto h-full"
+                                                width={100}
+                                                height={45}
                                             />
                                             <Input
                                                 type="text"
