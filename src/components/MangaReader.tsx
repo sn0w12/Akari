@@ -13,6 +13,7 @@ import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
 import EndOfManga from "./ui/MangaReader/endOfManga";
+import { getSetting } from "@/lib/settings";
 
 interface ChapterReaderProps {
     isFooterVisible: boolean;
@@ -121,8 +122,11 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     const fetchChapter = useCallback(async () => {
         const user_data = localStorage.getItem("accountInfo");
         const user_name = localStorage.getItem("accountName");
+        const server = getSetting("mangaServer") as string;
+        console.log(server);
+
         const response = await fetch(
-            `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}`,
+            `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}&server=${server}`,
         );
         const data = await response.json();
         const uniqueChapters: Chapter[] = Array.from(

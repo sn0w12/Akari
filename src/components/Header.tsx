@@ -30,16 +30,18 @@ interface Manga {
     author: string;
 }
 
-interface SettingsInterface {
+export interface SettingsInterface {
     fetchMalImage: boolean;
     useToast: boolean;
     fancyAnimations: boolean;
+    mangaServer: string;
 }
 
-const defaultSettings: SettingsInterface = {
+export const defaultSettings: SettingsInterface = {
     fetchMalImage: true,
     useToast: true,
     fancyAnimations: true,
+    mangaServer: "1",
 };
 
 // Custom hook for managing theme
@@ -156,6 +158,24 @@ export function HeaderComponent() {
                     setSettings((prevSettings) => ({
                         ...prevSettings,
                         fancyAnimations: value,
+                    }));
+                }
+            },
+        },
+        mangaServer: {
+            label: "Manga Server",
+            type: "select",
+            options: [
+                { label: "Server 1", value: "1" },
+                { label: "Server 2", value: "2" },
+            ],
+            value: settings.mangaServer,
+            default: "1",
+            onChange: (value: SettingValue) => {
+                if (typeof value === "string") {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        mangaServer: value,
                     }));
                 }
             },
