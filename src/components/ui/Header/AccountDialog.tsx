@@ -122,6 +122,8 @@ export default function LoginDialog() {
                 localStorage.setItem("accountInfo", parsedData.user_data);
                 localStorage.setItem("accountName", parsedData.user_name);
                 setUserData(parsedData);
+
+                window.location.reload();
             } else {
                 setLoginError(data.error || "Login failed");
             }
