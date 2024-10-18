@@ -6,7 +6,9 @@ import ChapterReader from "@/components/MangaReader";
 
 export default function MangaReaderPage() {
     const [isHeaderVisible, setHeaderVisible] = useState(false);
-    const [isHoveringHeader, setHoveringHeader] = useState(false); // Track hovering over header
+    const [isHoveringHeader, setHoveringHeader] = useState(false);
+    const [isFooterVisible, setFooterVisible] = useState(false);
+    const [isHoveringFooter, setHoveringFooter] = useState(false);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -15,69 +17,113 @@ export default function MangaReaderPage() {
             } else if (!isHoveringHeader) {
                 setHeaderVisible(false);
             }
+
+            if (e.clientY > window.innerHeight - 175) {
+                setFooterVisible(true);
+            } else if (!isHoveringFooter) {
+                setFooterVisible(false);
+            }
         };
 
-        const handleMouseEnter = () => {
+        const handleHeaderMouseEnter = () => {
             setHoveringHeader(true);
             setHeaderVisible(true);
         };
 
-        const handleMouseLeave = () => {
+        const handleHeaderMouseLeave = () => {
             setHoveringHeader(false);
             setHeaderVisible(false);
         };
 
-        // Attach mousemove event listener for top area
+        const handleFooterMouseEnter = () => {
+            setHoveringFooter(true);
+            setFooterVisible(true);
+        };
+
+        const handleFooterMouseLeave = () => {
+            setHoveringFooter(false);
+            setFooterVisible(false);
+        };
+
         window.addEventListener("mousemove", handleMouseMove);
 
-        // Find header element to attach mouse enter/leave events
         const headerElement = document.querySelector(".header");
         if (headerElement) {
-            headerElement.addEventListener("mouseenter", handleMouseEnter);
-            headerElement.addEventListener("mouseleave", handleMouseLeave);
+            headerElement.addEventListener(
+                "mouseenter",
+                handleHeaderMouseEnter,
+            );
+            headerElement.addEventListener(
+                "mouseleave",
+                handleHeaderMouseLeave,
+            );
         }
 
-        // Retry function to find the popup element
+        const footerElement = document.querySelector(".footer");
+        if (footerElement) {
+            footerElement.addEventListener(
+                "mouseenter",
+                handleFooterMouseEnter,
+            );
+            footerElement.addEventListener(
+                "mouseleave",
+                handleFooterMouseLeave,
+            );
+        }
+
         const checkForPopupElement = () => {
             const popupElement = document.querySelector(".manga-title");
             if (popupElement) {
-                popupElement.addEventListener("mouseenter", handleMouseEnter);
-                popupElement.addEventListener("mouseleave", handleMouseLeave);
+                popupElement.addEventListener(
+                    "mouseenter",
+                    handleHeaderMouseEnter,
+                );
+                popupElement.addEventListener(
+                    "mouseleave",
+                    handleHeaderMouseLeave,
+                );
             } else {
-                // Retry after 100ms if popup element is not found
                 setTimeout(checkForPopupElement, 100);
             }
         };
 
-        // Start checking for popup element
         checkForPopupElement();
 
-        // Clean up event listeners
         return () => {
             window.removeEventListener("mousemove", handleMouseMove);
             if (headerElement) {
                 headerElement.removeEventListener(
                     "mouseenter",
-                    handleMouseEnter,
+                    handleHeaderMouseEnter,
                 );
                 headerElement.removeEventListener(
                     "mouseleave",
-                    handleMouseLeave,
+                    handleHeaderMouseLeave,
+                );
+            }
+            if (footerElement) {
+                footerElement.removeEventListener(
+                    "mouseenter",
+                    handleFooterMouseEnter,
+                );
+                footerElement.removeEventListener(
+                    "mouseleave",
+                    handleFooterMouseLeave,
                 );
             }
             const popupElement = document.querySelector(".manga-title");
             if (popupElement) {
                 popupElement.removeEventListener(
                     "mouseenter",
-                    handleMouseEnter,
+                    handleHeaderMouseEnter,
                 );
                 popupElement.removeEventListener(
                     "mouseleave",
-                    handleMouseLeave,
+                    handleHeaderMouseLeave,
                 );
             }
         };
-    }, [isHoveringHeader]);
+    }, [isHoveringHeader, isHoveringFooter]);
 
     return (
         <div className="min-h-dvh bg-background text-foreground">
@@ -86,7 +132,7 @@ export default function MangaReaderPage() {
             >
                 <HeaderComponent />
             </div>
-            <ChapterReader isHeaderVisible={isHeaderVisible} />
+            <ChapterReader isFooterVisible={isFooterVisible} />
         </div>
     );
 }
