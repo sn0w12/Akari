@@ -255,7 +255,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     <EnhancedImage
                         src={image}
                         alt={manga.name}
-                        className="rounded-lg shadow-lg object-cover w-full h-auto xl:h-full max-w-lg"
+                        className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg min-w-full"
                         hoverEffect="dynamic-tilt"
                         width={300}
                         height={512}
