@@ -6,6 +6,8 @@ interface PageProgressProps {
     setCurrentPage: (page: number) => void;
 }
 
+const cutoff = 1024;
+
 export default function PageProgress({
     currentPage,
     totalPages,
@@ -23,7 +25,7 @@ export default function PageProgress({
         const updateBackgroundStyle = () => {
             if (containerRef.current) {
                 const offset = 3;
-                const isVertical = window.innerWidth >= 1024;
+                const isVertical = window.innerWidth >= cutoff;
                 const buttons = containerRef.current.querySelectorAll("button");
                 const targetButton = buttons[currentPage];
 
@@ -57,7 +59,12 @@ export default function PageProgress({
 
     return (
         <div
-            className={`fixed z-50 bottom-${window.innerWidth <= 650 ? 36 : 24} left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
+            className={`fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
+            style={
+                window.innerWidth <= cutoff
+                    ? { bottom: window.innerWidth <= 650 ? "12rem" : "8rem" }
+                    : {}
+            }
             onClick={(e) => e.stopPropagation()}
         >
             <div
