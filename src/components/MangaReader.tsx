@@ -127,6 +127,15 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}`,
         );
         const data = await response.json();
+        const uniqueChapters: Chapter[] = Array.from(
+            new Map<string, Chapter>(
+                data.chapters.map((item: { value: string; label: string }) => [
+                    item.value,
+                    item,
+                ]),
+            ).values(),
+        );
+        data.chapters = uniqueChapters;
         setChapterData(data);
         document.title = `${data.title} - ${data.chapter}`;
     }, [id, subId]);
@@ -148,10 +157,18 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     const nextPage = useCallback(() => {
         if (!chapterData) return;
 
+        const isLastPage = currentPage === chapterData.images.length - 1;
+        const nextChapterParts = chapterData.nextChapter.split("/");
+        const formattedChapter = chapterData.chapter
+            .toLowerCase()
+            .replaceAll(" ", "-");
+
         if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
-        } else if (currentPage === chapterData.images.length - 1) {
-            if (chapterData.nextChapter.split("/").length === 2) {
+        } else if (isLastPage) {
+            if (nextChapterParts.pop() === formattedChapter) {
+                setCurrentPage((prev) => prev + 1);
+            } else if (nextChapterParts.length === 2) {
                 router.push(`/manga/${chapterData.nextChapter}`);
             } else {
                 setCurrentPage((prev) => prev + 1);
