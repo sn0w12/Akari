@@ -122,8 +122,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     const fetchChapter = useCallback(async () => {
         const user_data = localStorage.getItem("accountInfo");
         const user_name = localStorage.getItem("accountName");
-        const server = getSetting("mangaServer") as string;
-        console.log(server);
+        const server = getSetting("mangaServer");
 
         const response = await fetch(
             `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}&server=${server}`,
