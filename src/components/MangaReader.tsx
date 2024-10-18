@@ -4,22 +4,22 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
-import { Card } from "@/components/ui/card";
 import { Chapter } from "@/app/api/interfaces";
 import PageProgress from "@/components/ui/pageProgress";
 import Image from "next/image";
-import { Combo } from "@/components/ui/combo";
 import { debounce } from "lodash";
 import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
+import EndOfManga from "./ui/MangaReader/endOfManga";
+import { getSetting } from "@/lib/settings";
 
 interface ChapterReaderProps {
-    isHeaderVisible: boolean;
+    isFooterVisible: boolean;
 }
 
-export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
+export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     const [chapterData, setChapterData] = useState<Chapter | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [isStripMode, setIsStripMode] = useState<boolean | undefined>(
@@ -53,7 +53,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
             syncAllServices(chapterData);
             bookmarkUpdatedRef.current = true;
         }
-    }, [chapterData, currentPage, timeElapsed]);
+    }, [chapterData, currentPage, isStripMode, timeElapsed]);
 
     // Detect if the majority of images have a long aspect ratio
     useEffect(() => {
@@ -122,10 +122,21 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
     const fetchChapter = useCallback(async () => {
         const user_data = localStorage.getItem("accountInfo");
         const user_name = localStorage.getItem("accountName");
+        const server = getSetting("mangaServer");
+
         const response = await fetch(
-            `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}`,
+            `/api/manga/${id}/${subId}?user_data=${user_data}&user_name=${user_name}&server=${server}`,
         );
         const data = await response.json();
+        const uniqueChapters: Chapter[] = Array.from(
+            new Map<string, Chapter>(
+                data.chapters.map((item: { value: string; label: string }) => [
+                    item.value,
+                    item,
+                ]),
+            ).values(),
+        );
+        data.chapters = uniqueChapters;
         setChapterData(data);
         document.title = `${data.title} - ${data.chapter}`;
     }, [id, subId]);
@@ -145,15 +156,26 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
 
     // Navigate to the next page
     const nextPage = useCallback(() => {
-        if (chapterData && currentPage < chapterData.images.length - 1) {
+        if (!chapterData) return;
+
+        const isLastPage = currentPage === chapterData.images.length - 1;
+        const nextChapterParts = chapterData.nextChapter.split("/");
+        const formattedChapter = chapterData.chapter
+            .toLowerCase()
+            .replaceAll(" ", "-");
+
+        if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
-        } else if (
-            chapterData &&
-            currentPage === chapterData.images.length - 1
-        ) {
-            router.push(`/manga/${chapterData.nextChapter}`);
+        } else if (isLastPage) {
+            if (nextChapterParts.pop() === formattedChapter) {
+                setCurrentPage((prev) => prev + 1);
+            } else if (nextChapterParts.length === 2) {
+                router.push(`/manga/${chapterData.nextChapter}`);
+            } else {
+                setCurrentPage((prev) => prev + 1);
+            }
         }
-    }, [chapterData, currentPage]);
+    }, [chapterData, currentPage, router]);
 
     // Navigate to the previous page
     const prevPage = useCallback(() => {
@@ -162,7 +184,7 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         } else if (chapterData && currentPage === 0) {
             router.push(`/manga/${chapterData.lastChapter}`);
         }
-    }, [chapterData, currentPage]);
+    }, [chapterData, currentPage, router]);
 
     // Handle key press events for navigation
     useEffect(() => {
@@ -196,58 +218,6 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
         return <CenteredSpinner />;
     }
 
-    function getCard(chapterData: Chapter) {
-        return (
-            <div
-                className={`fixed top-0 left-0 p-4 text-white text-sm z-10 manga-title w-full ${
-                    isHeaderVisible ? "header-visible" : "pointer-events-none"
-                }`}
-            >
-                <Card
-                    className="p-4 text-center max-w-96 sm:max-w-80"
-                    onClick={(e) => {
-                        if (isHeaderVisible) {
-                            e.stopPropagation();
-                        }
-                    }}
-                >
-                    <h3 className="font-bold">
-                        <a
-                            href={`/manga/${chapterData.parentId}`}
-                            className="hover:underline"
-                        >
-                            {chapterData.title}
-                        </a>
-                    </h3>
-                    <Combo
-                        options={chapterData.chapters}
-                        value={
-                            chapterData.chapter
-                                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                                .match(/(\d+)(\.\d+)?/)?.[0]
-                        }
-                        onChange={(e) => {
-                            const selectedChapter = e.target.value;
-                            const currentUrl = window.location.href;
-                            const newUrl = currentUrl.replace(
-                                /\/[^\/]*$/,
-                                `/chapter-${selectedChapter}`,
-                            );
-                            window.location.href = newUrl;
-                        }}
-                        className="mt-2 mb-2"
-                    />
-                    {!isStripMode && (
-                        <p className="text-xs">
-                            Page {currentPage + 1} of{" "}
-                            {chapterData.images.length}
-                        </p>
-                    )}
-                </Card>
-            </div>
-        );
-    }
-
     // Render "strip" mode for long images
     if (isStripMode) {
         return (
@@ -272,37 +242,51 @@ export default function ChapterReader({ isHeaderVisible }: ChapterReaderProps) {
                     ))}
                 </div>
                 <MangaFooter chapterData={chapterData} />
-                {getCard(chapterData)}
             </div>
         );
     }
 
     // Normal mode (single image navigation)
     return (
-        <div
-            className="flex flex-col justify-center items-center overflow-x-hidden h-dvh w-screen bg-transparent"
-            onClick={handleClick}
-        >
-            <div id="reader" className="relative max-h-dvh w-auto">
-                {chapterData.images.map((image, index) => (
-                    <Image
-                        key={index}
-                        src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
-                        alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
-                        width={700}
-                        height={1080}
-                        loading="eager"
-                        priority={index === 1}
-                        className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+        <div className="overflow-x-hidden">
+            <div
+                className="flex flex-col justify-center items-center h-dvh w-screen bg-transparent"
+                onClick={handleClick}
+            >
+                <div id="reader" className="relative max-h-dvh w-auto">
+                    {chapterData.images.map((image, index) => (
+                        <Image
+                            key={index}
+                            src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                            alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
+                            width={700}
+                            height={1080}
+                            loading="eager"
+                            priority={index === 1}
+                            className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                        />
+                    ))}
+                    <EndOfManga
+                        title={chapterData.title}
+                        identifier={chapterData.parentId}
+                        className={`${chapterData.images.length !== currentPage ? "hidden" : ""}`}
                     />
-                ))}
+                </div>
+                <div
+                    className={`lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"}`}
+                >
+                    <PageProgress
+                        currentPage={currentPage}
+                        totalPages={chapterData.images.length}
+                        setCurrentPage={setCurrentPage}
+                    />
+                </div>
             </div>
-            {getCard(chapterData)}
-            <PageProgress
-                currentPage={currentPage}
-                totalPages={chapterData.images.length}
-                setCurrentPage={setCurrentPage}
-            />
+            <div
+                className={`footer ${isFooterVisible ? "footer-visible" : ""}`}
+            >
+                <MangaFooter chapterData={chapterData} />
+            </div>
         </div>
     );
 }

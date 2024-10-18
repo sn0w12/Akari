@@ -18,6 +18,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
+import Image from "next/image";
 
 interface Manga {
     id: string;
@@ -29,16 +30,18 @@ interface Manga {
     author: string;
 }
 
-interface SettingsInterface {
+export interface SettingsInterface {
     fetchMalImage: boolean;
     useToast: boolean;
     fancyAnimations: boolean;
+    mangaServer: string;
 }
 
-const defaultSettings: SettingsInterface = {
+export const defaultSettings: SettingsInterface = {
     fetchMalImage: true,
     useToast: true,
     fancyAnimations: true,
+    mangaServer: "1",
 };
 
 // Custom hook for managing theme
@@ -159,6 +162,24 @@ export function HeaderComponent() {
                 }
             },
         },
+        mangaServer: {
+            label: "Manga Server",
+            type: "select",
+            options: [
+                { label: "Server 1", value: "1" },
+                { label: "Server 2", value: "2" },
+            ],
+            value: settings.mangaServer,
+            default: "1",
+            onChange: (value: SettingValue) => {
+                if (typeof value === "string") {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        mangaServer: value,
+                    }));
+                }
+            },
+        },
     };
 
     // Debounce function for fetching search results
@@ -266,10 +287,12 @@ export function HeaderComponent() {
                                                 key={result.id}
                                                 className="block p-2 hover:bg-accent flex items-center rounded-lg"
                                             >
-                                                <img
+                                                <Image
                                                     src={result.image}
                                                     alt={result.title}
                                                     className="max-h-24 w-auto rounded mr-2"
+                                                    height={100}
+                                                    width={70}
                                                 />
                                                 {result.title}
                                             </Link>
@@ -324,10 +347,12 @@ export function HeaderComponent() {
                                                     key={result.id}
                                                     className="block p-2 hover:bg-accent flex items-center rounded-lg border"
                                                 >
-                                                    <img
+                                                    <Image
                                                         src={result.image}
                                                         alt={result.title}
                                                         className="max-h-24 w-auto rounded mr-2"
+                                                        height={100}
+                                                        width={70}
                                                     />
                                                     {result.title}
                                                 </Link>

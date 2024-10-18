@@ -10,6 +10,7 @@ export async function GET() {
     try {
         const jar = new CookieJar();
         const client = wrapper(axios.create({ jar }));
+        await jar.removeAllCookies();
 
         const loginPageResponse = await client.get(
             "https://user.manganelo.com/login?l=manganato&re_l=login",

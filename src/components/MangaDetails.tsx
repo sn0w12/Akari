@@ -251,11 +251,11 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     return (
         <main className="container mx-auto px-4 py-8">
             <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
-                <div className="flex flex-shrink-0 justify-center lg:relative lg:h-128">
+                <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
                         src={image}
                         alt={manga.name}
-                        className="rounded-lg shadow-lg object-cover w-full lg:h-full lg:w-auto max-w-lg"
+                        className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg min-w-full"
                         hoverEffect="dynamic-tilt"
                         width={300}
                         height={512}
@@ -403,7 +403,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow">
-                            <Card className="w-full h-full p-4 max-h-[25.05rem] overflow-y-auto">
+                            <Card className="w-full h-full p-4 overflow-y-auto">
                                 <p>{manga.description}</p>
                             </Card>
                         </div>

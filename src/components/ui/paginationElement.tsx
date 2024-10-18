@@ -22,11 +22,11 @@ interface PaginationElementProps {
     handlePageChange: (page: number) => void;
 }
 
-const PaginationElement: React.FC<PaginationElementProps> = ({
+export default function PaginationElement({
     currentPage,
     totalPages,
     handlePageChange,
-}) => {
+}: PaginationElementProps) {
     const [inputPage, setInputPage] = useState(currentPage);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -38,23 +38,20 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
         e.preventDefault();
         if (inputPage >= 1 && inputPage <= totalPages) {
             handlePageChange(inputPage);
-            setIsDialogOpen(false); // Close the dialog after page change
+            setIsDialogOpen(false);
         }
     };
 
     return (
-        <Pagination className="mb-6 flex items-center justify-center space-x-2">
+        <Pagination className="mb-6 flex items-center justify-center">
             <PaginationContent className="flex items-center">
-                <PaginationItem>
-                    <PaginationPrevious
-                        onClick={() =>
-                            currentPage > 1 && handlePageChange(currentPage - 1)
-                        }
-                        className={`cursor-pointer ${currentPage === 1 ? "disabled" : ""}`}
-                    />
-                </PaginationItem>
+                <PaginationPrevious
+                    onClick={() =>
+                        currentPage > 1 && handlePageChange(currentPage - 1)
+                    }
+                    className={`w-24 cursor-pointer border justify-center ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
+                />
 
-                {/* Render ellipsis and first page link if needed */}
                 {currentPage > 2 && (
                     <>
                         <PaginationItem>
@@ -66,7 +63,6 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                             </PaginationLink>
                         </PaginationItem>
 
-                        {/* Dialog for page input */}
                         <PaginationItem>
                             <Dialog
                                 open={isDialogOpen}
@@ -96,7 +92,7 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                                         />
                                         <button
                                             type="submit"
-                                            className="w-full bg-blue-500 text-white py-2 rounded-md"
+                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
                                         >
                                             Go to Page
                                         </button>
@@ -107,7 +103,6 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                     </>
                 )}
 
-                {/* Render surrounding page numbers */}
                 {[...Array(totalPages)].map((_, i) => {
                     if (i + 1 >= currentPage - 1 && i + 1 <= currentPage + 1) {
                         return (
@@ -125,10 +120,8 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                     return null;
                 })}
 
-                {/* Render ellipsis and last page link if needed */}
                 {currentPage < totalPages - 1 && (
                     <>
-                        {/* Dialog for page input */}
                         <PaginationItem>
                             <Dialog
                                 open={isDialogOpen}
@@ -158,7 +151,7 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                                         />
                                         <button
                                             type="submit"
-                                            className="w-full bg-blue-500 text-white py-2 rounded-md"
+                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
                                         >
                                             Go to Page
                                         </button>
@@ -178,20 +171,14 @@ const PaginationElement: React.FC<PaginationElementProps> = ({
                     </>
                 )}
 
-                <PaginationItem>
-                    <PaginationNext
-                        onClick={() =>
-                            currentPage < totalPages &&
-                            handlePageChange(currentPage + 1)
-                        }
-                        className={`cursor-pointer ${
-                            currentPage === totalPages ? "disabled" : ""
-                        }`}
-                    />
-                </PaginationItem>
+                <PaginationNext
+                    onClick={() =>
+                        currentPage < totalPages &&
+                        handlePageChange(currentPage + 1)
+                    }
+                    className={`w-24 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                />
             </PaginationContent>
         </Pagination>
     );
-};
-
-export default PaginationElement;
+}

@@ -105,6 +105,23 @@ input:-webkit-autofill:active {
     opacity: 1;
 }
 
+.footer {
+    position: fixed;
+    bottom: -100px; /* Hide it initially */
+    opacity: 0;
+    left: 0;
+    right: 0;
+    transition:
+        bottom 0.3s ease,
+        opacity 0.3s ease; /* Smooth scroll effect */
+    z-index: 1000;
+}
+
+.footer-visible {
+    bottom: 0; /* Slide it into view */
+    opacity: 1;
+}
+
 .manga-title {
     transition:
         top 0.3s ease,

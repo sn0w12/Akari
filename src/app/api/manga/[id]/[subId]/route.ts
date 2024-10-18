@@ -17,6 +17,7 @@ export async function GET(
 ): Promise<Response> {
     const { id, subId } = params;
     const { searchParams } = new URL(req.url);
+    const server = searchParams.get("server") || "1";
 
     const userData: UserData = {
         user_version: "2.3",
@@ -31,7 +32,7 @@ export async function GET(
             `https://chapmanganato.to/${id}/${subId}`,
             {
                 headers: {
-                    cookie: `user_acc=${JSON.stringify(userData)}`,
+                    cookie: `user_acc=${JSON.stringify(userData)}; content_server=server${server}`,
                     "User-Agent":
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":

@@ -16,6 +16,7 @@ export async function GET(
         description
         coverImage {
           extraLarge
+          medium
         }
         genres
         averageScore
@@ -51,6 +52,7 @@ export async function GET(
         const response = {
             titles: titles,
             imageUrl: manga.coverImage.extraLarge,
+            smallImageUrl: manga.coverImage.medium,
             url: manga.siteUrl,
             score: manga.averageScore / 20,
             description: manga.description,
