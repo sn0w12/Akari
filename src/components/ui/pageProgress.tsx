@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface PageProgressProps {
     currentPage: number;
@@ -11,43 +11,73 @@ export default function PageProgress({
     totalPages,
     setCurrentPage,
 }: PageProgressProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [backgroundStyle, setBackgroundStyle] = useState({});
+
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentPage(page);
     };
 
+    useEffect(() => {
+        const updateBackgroundStyle = () => {
+            if (containerRef.current) {
+                const offset = 3;
+                const isVertical = window.innerWidth >= 1024;
+                const buttons = containerRef.current.querySelectorAll("button");
+                const targetButton = buttons[currentPage];
+
+                if (targetButton) {
+                    const containerRect =
+                        containerRef.current.getBoundingClientRect();
+                    const buttonRect = targetButton.getBoundingClientRect();
+
+                    if (isVertical) {
+                        const top = buttonRect.top - containerRect.top;
+                        setBackgroundStyle({
+                            height: `${top + buttonRect.height - offset}px`,
+                            width: "calc(100% - 8px)",
+                        });
+                    } else {
+                        const left = buttonRect.left - containerRect.left;
+                        setBackgroundStyle({
+                            width: `${left + buttonRect.width - offset}px`,
+                            height: "calc(100% - 8px)",
+                        });
+                    }
+                }
+            }
+        };
+
+        updateBackgroundStyle();
+        window.addEventListener("resize", updateBackgroundStyle);
+        return () =>
+            window.removeEventListener("resize", updateBackgroundStyle);
+    }, [currentPage, totalPages]);
+
     return (
         <div
-            className="fixed hidden right-4 top-1/2 transform -translate-y-1/2 z-50 lg:flex"
+            className={`fixed z-50 bottom-${window.innerWidth <= 650 ? 36 : 24} left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
             onClick={(e) => e.stopPropagation()}
         >
             <div
-                className="relative p-1 rounded-lg border border-primary/30 bg-background"
-                style={{
-                    width: "30px",
-                    height: "80vh",
-                }}
+                ref={containerRef}
+                className="relative p-1 rounded-lg border border-primary/30 bg-background w-full lg:w-[30px] h-[30px] lg:h-[80vh]"
             >
                 <div
-                    className="absolute left-1 top-1 right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-lg"
-                    style={{
-                        height: `${((Math.min(currentPage + 1, totalPages) - 0.5) / totalPages) * 100}%`,
-                    }}
+                    className="absolute left-1 top-1 lg:top-1 right-1 lg:right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-md"
+                    style={backgroundStyle}
                 />
-                <div className="relative flex flex-col h-full gap-1">
+                <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 w-full transition-all duration-300 ease-in-out ${
-                                index + 1 <= currentPage + 1
+                            className={`flex-1 transition-all duration-300 ease-in-out rounded-sm ${
+                                index <= currentPage
                                     ? "bg-primary"
                                     : "bg-primary/30 hover:bg-primary/50"
                             }`}
-                            style={{
-                                marginTop: index === 0 ? "0" : "2px",
-                                borderRadius: "4px",
-                            }}
                             aria-label={`Go to page ${index + 1}`}
                         />
                     ))}

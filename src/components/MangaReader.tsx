@@ -269,11 +269,15 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                         className={`${chapterData.images.length !== currentPage ? "hidden" : ""}`}
                     />
                 </div>
-                <PageProgress
-                    currentPage={currentPage}
-                    totalPages={chapterData.images.length}
-                    setCurrentPage={setCurrentPage}
-                />
+                <div
+                    className={`lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"}`}
+                >
+                    <PageProgress
+                        currentPage={currentPage}
+                        totalPages={chapterData.images.length}
+                        setCurrentPage={setCurrentPage}
+                    />
+                </div>
             </div>
             <div
                 className={`footer ${isFooterVisible ? "footer-visible" : ""}`}
