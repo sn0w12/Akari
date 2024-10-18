@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Chapter } from "@/app/api/interfaces";
+import { Combo } from "../combo";
 
 export default function MangaFooter({ chapterData }: { chapterData: Chapter }) {
     const lastChapterExists = chapterData.lastChapter.split("/").length === 2;
@@ -18,9 +19,24 @@ export default function MangaFooter({ chapterData }: { chapterData: Chapter }) {
                             {chapterData.title}
                         </a>
                     </h2>
-                    <p className="text-sm text-muted-foreground">
-                        {chapterData.chapter}
-                    </p>
+                    <Combo
+                        options={chapterData.chapters}
+                        value={
+                            chapterData.chapter
+                                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                                .match(/(\d+)(\.\d+)?/)?.[0]
+                        }
+                        onChange={(e) => {
+                            const selectedChapter = e.target.value;
+                            const currentUrl = window.location.href;
+                            const newUrl = currentUrl.replace(
+                                /\/[^\/]*$/,
+                                `/chapter-${selectedChapter}`,
+                            );
+                            window.location.href = newUrl;
+                        }}
+                        className="mt-2 mb-2"
+                    />
                 </div>
                 <div className="flex items-center gap-4">
                     {lastChapterExists ? (
