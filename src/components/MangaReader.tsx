@@ -53,7 +53,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
             syncAllServices(chapterData);
             bookmarkUpdatedRef.current = true;
         }
-    }, [chapterData, currentPage, timeElapsed]);
+    }, [chapterData, currentPage, isStripMode, timeElapsed]);
 
     // Detect if the majority of images have a long aspect ratio
     useEffect(() => {
@@ -175,7 +175,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                 setCurrentPage((prev) => prev + 1);
             }
         }
-    }, [chapterData, currentPage]);
+    }, [chapterData, currentPage, router]);
 
     // Navigate to the previous page
     const prevPage = useCallback(() => {
@@ -184,7 +184,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
         } else if (chapterData && currentPage === 0) {
             router.push(`/manga/${chapterData.lastChapter}`);
         }
-    }, [chapterData, currentPage]);
+    }, [chapterData, currentPage, router]);
 
     // Handle key press events for navigation
     useEffect(() => {
