@@ -31,7 +31,7 @@ export async function GET(
             `https://chapmanganato.to/${id}/${subId}`,
             {
                 headers: {
-                    cookie: `user_acc=${JSON.stringify(userData)}`,
+                    cookie: `user_acc=${JSON.stringify(userData)}; content_server=server2`,
                     "User-Agent":
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
