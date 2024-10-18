@@ -37,6 +37,7 @@ export interface HqMangaCacheItem {
     malUrl: string;
     description: string;
     imageUrl: string;
+    smallImageUrl: string;
     score: number;
     titles: { type: string; title: string }[];
     url: string;

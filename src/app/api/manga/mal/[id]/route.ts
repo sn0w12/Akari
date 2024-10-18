@@ -14,6 +14,7 @@ export async function GET(
         const response = {
             titles: manga.titles,
             imageUrl: manga.images.webp.large_image_url,
+            smallImageUrl: manga.images.webp.small_image_url,
             url: manga.url,
             score: manga.scored / 2,
             description: manga.synopsis,
