@@ -160,14 +160,17 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
 
         const isLastPage = currentPage === chapterData.images.length - 1;
         const nextChapterParts = chapterData.nextChapter.split("/");
+        const nextChapterCopy = [...nextChapterParts];
         const formattedChapter = chapterData.chapter
             .toLowerCase()
             .replaceAll(" ", "-");
 
+        console.log(nextChapterParts);
+
         if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
         } else if (isLastPage) {
-            if (nextChapterParts.pop() === formattedChapter) {
+            if (nextChapterCopy.pop() === formattedChapter) {
                 setCurrentPage((prev) => prev + 1);
             } else if (nextChapterParts.length === 2) {
                 router.push(`/manga/${chapterData.nextChapter}`);
