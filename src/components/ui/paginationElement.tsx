@@ -49,7 +49,7 @@ export default function PaginationElement({
                     onClick={() =>
                         currentPage > 1 && handlePageChange(currentPage - 1)
                     }
-                    className={`w-12 md:w-28 cursor-pointer border justify-center ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
+                    className={`w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
                 />
 
                 {currentPage > 2 && (
@@ -176,7 +176,7 @@ export default function PaginationElement({
                         currentPage < totalPages &&
                         handlePageChange(currentPage + 1)
                     }
-                    className={`w-12 md:w-28 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                    className={`w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
                 />
             </PaginationContent>
         </Pagination>
