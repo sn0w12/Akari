@@ -160,14 +160,17 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
 
         const isLastPage = currentPage === chapterData.images.length - 1;
         const nextChapterParts = chapterData.nextChapter.split("/");
+        const nextChapterCopy = [...nextChapterParts];
         const formattedChapter = chapterData.chapter
             .toLowerCase()
             .replaceAll(" ", "-");
 
+        console.log(nextChapterParts);
+
         if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
         } else if (isLastPage) {
-            if (nextChapterParts.pop() === formattedChapter) {
+            if (nextChapterCopy.pop() === formattedChapter) {
                 setCurrentPage((prev) => prev + 1);
             } else if (nextChapterParts.length === 2) {
                 router.push(`/manga/${chapterData.nextChapter}`);
@@ -263,7 +266,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                             height={1080}
                             loading="eager"
                             priority={index === 1}
-                            className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                            className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
                         />
                     ))}
                     <EndOfManga
