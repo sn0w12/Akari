@@ -10,7 +10,7 @@ export default function MangaFooter({ chapterData }: { chapterData: Chapter }) {
     return (
         <div className="bg-background border-t border-border p-4">
             <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-center sm:text-left">
+                <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
                         <a
                             href={`/manga/${chapterData.parentId}`}
@@ -35,7 +35,7 @@ export default function MangaFooter({ chapterData }: { chapterData: Chapter }) {
                             );
                             window.location.href = newUrl;
                         }}
-                        className="mt-2 mb-2 w-auto"
+                        className="mt-2 mb-2 w-auto max-w-64"
                     />
                 </div>
                 <div className="flex items-center gap-4">
