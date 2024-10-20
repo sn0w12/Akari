@@ -266,7 +266,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                             height={1080}
                             loading="eager"
                             priority={index === 1}
-                            className={`object-contain max-h-dvh w-full h-full cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                            className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
                         />
                     ))}
                     <EndOfManga
