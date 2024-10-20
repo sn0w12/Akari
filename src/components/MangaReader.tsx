@@ -286,7 +286,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                 </div>
             </div>
             <div
-                className={`footer ${isFooterVisible ? "footer-visible" : ""}`}
+                className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapterData.images.length ? "hidden" : ""}`}
             >
                 <MangaFooter chapterData={chapterData} />
             </div>
