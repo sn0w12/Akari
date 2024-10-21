@@ -48,7 +48,7 @@
         "@tailwindcss/typography": "^0.5.15",
         "@types/js-cookie": "^3.0.6",
         "@types/lodash": "^4.17.9",
-        "@types/node": "^20",
+        "@types/node": "^22",
         "@types/react": "^18",
         "@types/react-dom": "^18",
         "eslint": "^8.0.0",
