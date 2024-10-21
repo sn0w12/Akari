@@ -34,7 +34,7 @@
         "lodash": "^4.17.21",
         "lucide-react": "^0.446.0",
         "manga-reader": "file:",
-        "next": "14.2.13",
+        "next": "14.2.15",
         "next-base64": "^1.1.0",
         "react": "^18",
         "react-dom": "^18",
