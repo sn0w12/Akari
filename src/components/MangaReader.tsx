@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import { Chapter } from "@/app/api/interfaces";
 import PageProgress from "@/components/ui/pageProgress";
 import Image from "next/image";
@@ -14,6 +13,7 @@ import { syncAllServices } from "@/lib/sync";
 import MangaFooter from "./ui/MangaReader/mangaFooter";
 import EndOfManga from "./ui/MangaReader/endOfManga";
 import { getSetting } from "@/lib/settings";
+import MangaReaderSkeleton from "./ui/MangaReader/mangaReaderSkeleton";
 
 interface ChapterReaderProps {
     isFooterVisible: boolean;
@@ -218,7 +218,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     };
 
     if (!chapterData || isStripMode === undefined) {
-        return <CenteredSpinner />;
+        return <MangaReaderSkeleton />;
     }
 
     // Render "strip" mode for long images
