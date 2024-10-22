@@ -55,17 +55,16 @@ export async function syncAllServices(data: Chapter) {
 
 // Example sync handler for your website
 async function updateBookmark(data: Chapter) {
-    const user_data = localStorage.getItem("accountInfo");
     const story_data = data.storyData;
     const chapter_data = data.chapterData;
-    if (!chapter_data || !story_data || !user_data) return;
+    if (!chapter_data || !story_data) return;
 
     const response = await fetch("/api/bookmarks/update", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_data, story_data, chapter_data }),
+        body: JSON.stringify({ story_data, chapter_data }),
     });
 
     if (!response.ok) {

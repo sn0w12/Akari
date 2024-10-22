@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_ADD_URL = "https://user.mngusr.com/bookmark_add";
 
@@ -9,8 +11,9 @@ interface BookmarkAddRequest {
 
 export async function POST(request: Request): Promise<Response> {
     try {
-        const { user_data, story_data }: BookmarkAddRequest =
-            await request.json();
+        const { story_data }: BookmarkAddRequest = await request.json();
+        const cookieStore = cookies();
+        const user_data = getUserData(cookieStore);
 
         if (!user_data || !story_data) {
             return NextResponse.json(

@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { cookies } from "next/headers";
 
 import { Chapter } from "@/app/api/interfaces";
-
-interface UserData {
-    user_version: string;
-    user_name: string | null;
-    user_image: string;
-    user_data: string | null;
-}
 
 export async function GET(
     req: Request,
@@ -18,13 +12,8 @@ export async function GET(
     const { id, subId } = params;
     const { searchParams } = new URL(req.url);
     const server = searchParams.get("server") || "1";
-
-    const userData: UserData = {
-        user_version: "2.3",
-        user_name: searchParams.get("user_name"),
-        user_image: "https://user.manganelo.com/avt.png",
-        user_data: searchParams.get("user_data"),
-    };
+    const cookieStore = cookies();
+    const userAcc = cookieStore.get("user_acc")?.value || null;
 
     try {
         // Fetch the HTML content of the page
@@ -32,7 +21,7 @@ export async function GET(
             `https://chapmanganato.to/${id}/${subId}`,
             {
                 headers: {
-                    cookie: `user_acc=${JSON.stringify(userData)}; content_server=server${server}`,
+                    cookie: `user_acc=${userAcc}; content_server=server${server}`,
                     "User-Agent":
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":

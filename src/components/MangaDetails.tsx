@@ -22,12 +22,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import MangaDetailsSkeleton from "./ui/MangaDetails/mangaDetailsSkeleton";
 
 async function fetchManga(id: string): Promise<Manga | null> {
-    const user_data = localStorage.getItem("accountInfo");
-    const user_name = localStorage.getItem("accountName");
     try {
-        const response = await fetch(
-            `/api/manga/${id}?user_data=${user_data}&user_name=${user_name}`,
-        );
+        const response = await fetch(`/api/manga/${id}`);
         if (!response.ok) {
             return null;
         }
@@ -41,16 +37,9 @@ async function fetchManga(id: string): Promise<Manga | null> {
 async function bookmark(
     storyData: string,
     isBookmarked: boolean,
-    setIsBookmarked: (value: boolean) => void,
+    setIsBookmarked: (value: boolean | null) => void,
 ) {
     if (isBookmarked) {
-        return;
-    }
-    const user_data = localStorage.getItem("accountInfo");
-
-    if (!user_data) {
-        console.error("User data not found");
-        setIsBookmarked(false);
         return;
     }
 
@@ -60,12 +49,11 @@ async function bookmark(
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            user_data: user_data,
             story_data: storyData,
         }),
     });
+
     const data = await response.json();
-    console.log(data);
 
     if (data.result === "ok") {
         setIsBookmarked(true);
@@ -130,20 +118,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     const chaptersPerPage = 24;
 
     async function removeBookmark(setIsBookmarked: (value: boolean) => void) {
-        const user_data = localStorage.getItem("accountInfo");
-
-        if (!user_data) {
-            console.error("User data not found");
-            return;
-        }
-
         const response = await fetch("/api/bookmarks/delete", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_data: user_data,
                 bm_data: bmData,
             }),
         });
@@ -163,6 +143,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         ]);
 
         if (cachedData) {
+            console.log(cachedData);
             setBmData(cachedData.bm_data);
             setLastRead(cachedData.last_read);
         } else if (data) {

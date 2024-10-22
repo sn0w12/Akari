@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { Bookmark } from "@/app/api/interfaces";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
 
@@ -68,8 +70,10 @@ async function fetchBookmarks(user_data: string, page: number, url: string) {
 // Named export for GET requests (fetch a specific page of bookmarks)
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const user_data = searchParams.get("user_data");
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not provided
+
+    const cookieStore = cookies();
+    const user_data = getUserData(cookieStore);
 
     if (!user_data) {
         return NextResponse.json(

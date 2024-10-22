@@ -14,10 +14,10 @@ interface BookmarkButtonProps {
     bookmark: (
         storyData: string,
         isBookmarked: boolean,
-        setIsBookmarked: (state: boolean) => void,
+        setIsBookmarked: (state: boolean | null) => void,
     ) => void;
     removeBookmark: (setIsBookmarked: (state: boolean) => void) => void;
-    setIsBookmarked: (state: boolean) => void;
+    setIsBookmarked: (state: boolean | null) => void;
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
@@ -81,7 +81,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             variant={isBookmarked ? "default" : "outline"}
             size="lg"
             className={buttonClass}
-            disabled={isBookmarked === null}
+            disabled={isBookmarked === undefined}
             onClick={handleBookmarkClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

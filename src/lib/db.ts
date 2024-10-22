@@ -48,6 +48,19 @@ class CacheDatabase extends Dexie {
     }
 
     /**
+     * Clears all items from the specified Dexie store.
+     *
+     * @template T - The type of the cached items.
+     * @param {Dexie.Table<CacheItem<T>, string>} store - The Dexie table to be cleared.
+     * @returns {Promise<void>} - A promise that resolves when the cache has been cleared.
+     */
+    async clearCache<T>(
+        store: Dexie.Table<CacheItem<T>, string>,
+    ): Promise<void> {
+        await store.clear();
+    }
+
+    /**
      * Sets a cache item in the specified Dexie store.
      *
      * @template T - The type of the value to be cached.

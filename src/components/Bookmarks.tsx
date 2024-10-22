@@ -53,17 +53,9 @@ export default function BookmarksPage() {
     // Fetch bookmarks function
     const fetchBookmarks = async (page: number) => {
         setIsLoading(true);
-        const user_data = localStorage.getItem("accountInfo"); // Get user data from localStorage
-        if (!user_data) {
-            setError("No user data found. Please log in.");
-            setIsLoading(false);
-            return;
-        }
 
         try {
-            const response = await fetch(
-                `/api/bookmarks?page=${page}&user_data=${encodeURIComponent(user_data)}`,
-            );
+            const response = await fetch(`/api/bookmarks?page=${page}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch bookmarks.");
             }
@@ -221,8 +213,6 @@ export default function BookmarksPage() {
                     const bookmarkSlice = firstPageIds.slice(i, i + j);
                     const cacheSlice = cacheIds.slice(0, j);
 
-                    //console.log("Comparing", bookmarkSlice, cacheSlice);
-
                     if (numberArraysEqual(bookmarkSlice, cacheSlice)) {
                         console.log("Cache hit");
                         matchFound = true;
@@ -254,43 +244,26 @@ export default function BookmarksPage() {
         }
 
         await db.setCache(db.bookmarkCache, "firstPage", bookmarkFirstPage);
-        const user_data = localStorage.getItem("accountInfo");
 
-        if (user_data && typeof window !== "undefined" && !workerRef.current) {
-            const bookmarkToast = new Toast("Processing bookmarks...", "info", {
-                autoClose: false,
-            });
+        const bookmarkToast = new Toast("Processing bookmarks...", "info", {
+            autoClose: false,
+        });
 
-            workerRef.current = new Worker("/workers/eventSourceWorker.js");
-            workerRef.current.postMessage({ userData: user_data });
-            console.log("Worker initialized.");
-
-            workerRef.current.onmessage = (e) => {
-                const { type, data, message, details } = e.data;
-
-                if (type === "bookmark") {
-                    // Push new bookmark data to the queue
-                    messageQueue.current.push(data);
-
-                    // Clear the previous batch timeout and set a new one
-                    if (batchTimeout.current)
-                        clearTimeout(batchTimeout.current);
-                    batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
-                } else if (type === "error") {
-                    console.error("Worker error:", message, details);
-                    workerRef.current?.terminate();
-                    bookmarkToast.close();
-                    new Toast("Error processing bookmarks.", "error");
-                } else if (type === "finished") {
-                    console.log("Worker has finished processing.");
-                    processBatch(); // Process any remaining bookmarks
-                    workerRef.current?.terminate();
-                    setWorkerFinished(true);
-                    new Toast("Bookmarks processed.", "success");
-                    bookmarkToast.close();
-                }
-            };
+        const allResponse = await fetch(`/api/bookmarks/all`);
+        if (!allResponse.ok) {
+            bookmarkToast.close();
+            new Toast("Failed to fetch bookmarks.", "error");
         }
+        const allData = await allResponse.json();
+
+        allData.bookmarks.forEach((bookmark: Bookmark) => {
+            updateBookmark(bookmark);
+        });
+
+        setAllBookmarks(allData.bookmarks);
+        setWorkerFinished(true);
+        new Toast("Bookmarks processed.", "success");
+        bookmarkToast.close();
     };
 
     const handlePageChange = useCallback(

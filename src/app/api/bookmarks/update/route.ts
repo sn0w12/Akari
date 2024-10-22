@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_UPDATE_URL = "https://user.mngusr.com/bookmark_update";
 
@@ -10,14 +12,23 @@ interface BookmarkUpdateRequest {
 
 export async function POST(request: Request): Promise<Response> {
     try {
-        const { user_data, story_data, chapter_data }: BookmarkUpdateRequest =
+        const { story_data, chapter_data }: BookmarkUpdateRequest =
             await request.json();
+        const cookieStore = cookies();
+        const user_data = getUserData(cookieStore);
 
-        if (!user_data || !story_data || !chapter_data) {
+        if (!user_data) {
+            return NextResponse.json(
+                { result: "error", data: "User data is required" },
+                { status: 401 },
+            );
+        }
+
+        if (!story_data || !chapter_data) {
             return NextResponse.json(
                 {
                     result: "error",
-                    data: "Missing user_data, story_data, or chapter_data",
+                    data: "Missing story_data, or chapter_data",
                 },
                 { status: 400 },
             );
