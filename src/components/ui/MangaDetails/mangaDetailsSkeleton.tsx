@@ -12,14 +12,14 @@ export default function MangaDetailsSkeleton() {
             <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center">
                     <Skeleton
-                        className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg min-w-full"
+                        className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg lg:min-w-full"
                         style={{ width: "300px", height: "460px" }}
                     />
                 </div>
 
                 <Card className="p-6 flex flex-col justify-between flex-grow">
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
-                        <Skeleton className="h-8 w-3/4" />
+                        <Skeleton className="h-8 w-3/4 lg:w-1/2" />
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row">
                             <Skeleton className="h-10 w-10 rounded" />
                             <Skeleton className="h-10 w-10 rounded" />
@@ -35,7 +35,7 @@ export default function MangaDetailsSkeleton() {
                                         className="text-lg mb-2 flex items-center"
                                     >
                                         {label}:
-                                        <Skeleton className="h-6 w-32 ml-2" />
+                                        <Skeleton className="h-6 w-32 ml-2 rounded-full" />
                                     </div>
                                 ))}
                             </div>
@@ -54,7 +54,7 @@ export default function MangaDetailsSkeleton() {
                                     </div>
                                 </div>
                                 <div className="mt-4 lg:mb-4 flex-grow h-full">
-                                    <Skeleton className="h-8 w-full h-full rounded-xl" />
+                                    <Skeleton className="hidden lg:flex w-full h-full min-h-16 rounded-xl" />
                                 </div>
                             </div>
                             <div className="flex flex-col xl:flex-row gap-4 mt-auto">
@@ -64,7 +64,7 @@ export default function MangaDetailsSkeleton() {
                         </div>
                         <div className="lg:w-1/2 flex-grow">
                             <Card className="w-full h-full max-h-96 p-4 overflow-y-auto">
-                                <Skeleton className="h-full w-full" />
+                                <Skeleton className="h-48 lg:h-full w-full" />
                             </Card>
                         </div>
                     </div>
