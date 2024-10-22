@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { debounce } from "lodash";
 import Image from "next/image";
+import HomeSkeleton from "./ui/Home/HomeSkeleton";
 
 interface Manga {
     id: string;
@@ -115,15 +115,87 @@ export default function MangaReaderHome() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             {/* Main Content */}
-            <main className="container mx-auto px-4 py-8">
-                <div style={{ display: currentPage === 1 ? "" : "None" }}>
-                    <h2 className="text-3xl font-bold mb-6">Popular Manga</h2>
-                    {isLoading && <CenteredSpinner />}
-                    {error && <p className="text-red-500">{error}</p>}
-                    {!isLoading && !error && (
+            {isLoading && <>{HomeSkeleton(currentPage)}</>}
+            {!isLoading && !error && (
+                <>
+                    <main className="container mx-auto px-4 py-8">
+                        <div
+                            style={{ display: currentPage === 1 ? "" : "None" }}
+                        >
+                            <h2 className="text-3xl font-bold mb-6">
+                                Popular Manga
+                            </h2>
+                            {error && <p className="text-red-500">{error}</p>}
+                            <>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                                    {paginatedPopularList.map((manga) => (
+                                        <Link
+                                            href={`/manga/${manga.id}`}
+                                            key={manga.id}
+                                            className="block"
+                                        >
+                                            <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
+                                                <CardContent className="p-0">
+                                                    <Image
+                                                        src={manga.image}
+                                                        alt={manga.title}
+                                                        width={250}
+                                                        height={350}
+                                                        className="w-full h-auto object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
+                                                            <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                                {manga.title}
+                                                            </h3>
+                                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                                Chapter:{" "}
+                                                                {manga.chapter}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        </Link>
+                                    ))}
+                                </div>
+
+                                {/* Pagination Controls for Popular Releases */}
+                                <div className="flex justify-between items-center mt-6 px-4 py-4 border-t border-b">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handlePopularPreviousPage}
+                                        disabled={currentPopularPage === 1}
+                                    >
+                                        Previous
+                                    </Button>
+                                    <span>
+                                        Page {currentPopularPage} of{" "}
+                                        {totalPopularPages}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handlePopularNextPage}
+                                        disabled={
+                                            currentPopularPage ===
+                                            totalPopularPages
+                                        }
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </>
+                        </div>
+
+                        {error && <p className="text-red-500">{error}</p>}
                         <>
+                            <h2
+                                className={`text-3xl font-bold mb-6 ${currentPage === 1 ? "mt-6" : ""}`}
+                            >
+                                Latest Releases
+                            </h2>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                                {paginatedPopularList.map((manga) => (
+                                {mangaList.map((manga) => (
                                     <Link
                                         href={`/manga/${manga.id}`}
                                         key={manga.id}
@@ -144,8 +216,26 @@ export default function MangaReaderHome() {
                                                             {manga.title}
                                                         </h3>
                                                         <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                            {`Author${
+                                                                manga.author.split(
+                                                                    ",",
+                                                                ).length > 1
+                                                                    ? "s"
+                                                                    : ""
+                                                            }: `}
+                                                            {manga.author
+                                                                .split(",")
+                                                                .map((author) =>
+                                                                    author.trim(),
+                                                                )
+                                                                .join(" | ")}
+                                                        </p>
+                                                        <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
                                                             Chapter:{" "}
                                                             {manga.chapter}
+                                                        </p>
+                                                        <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                            Views: {manga.views}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -154,101 +244,16 @@ export default function MangaReaderHome() {
                                     </Link>
                                 ))}
                             </div>
-
-                            {/* Pagination Controls for Popular Releases */}
-                            <div className="flex justify-between items-center mt-6 px-4 py-4 border-t border-b">
-                                <Button
-                                    variant="outline"
-                                    onClick={handlePopularPreviousPage}
-                                    disabled={currentPopularPage === 1}
-                                >
-                                    Previous
-                                </Button>
-                                <span>
-                                    Page {currentPopularPage} of{" "}
-                                    {totalPopularPages}
-                                </span>
-                                <Button
-                                    variant="outline"
-                                    onClick={handlePopularNextPage}
-                                    disabled={
-                                        currentPopularPage === totalPopularPages
-                                    }
-                                >
-                                    Next
-                                </Button>
-                            </div>
                         </>
-                    )}
-                </div>
-
-                <h2
-                    className={`text-3xl font-bold mb-6 ${
-                        currentPage === 1 ? "mt-6" : ""
-                    }`}
-                >
-                    Latest Releases
-                </h2>
-                {isLoading && <CenteredSpinner />}
-                {error && <p className="text-red-500">{error}</p>}
-                {!isLoading && !error && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                        {mangaList.map((manga) => (
-                            <Link
-                                href={`/manga/${manga.id}`}
-                                key={manga.id}
-                                className="block"
-                            >
-                                <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
-                                    <CardContent className="p-0">
-                                        <Image
-                                            src={manga.image}
-                                            alt={manga.title}
-                                            width={250}
-                                            height={350}
-                                            className="w-full h-auto object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                            <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
-                                                <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                    {manga.title}
-                                                </h3>
-                                                <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                    {`Author${
-                                                        manga.author.split(",")
-                                                            .length > 1
-                                                            ? "s"
-                                                            : ""
-                                                    }: `}
-                                                    {manga.author
-                                                        .split(",")
-                                                        .map((author) =>
-                                                            author.trim(),
-                                                        )
-                                                        .join(" | ")}
-                                                </p>
-                                                <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                    Chapter: {manga.chapter}
-                                                </p>
-                                                <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                    Views: {manga.views}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </main>
-
-            {/* Footer for pagination */}
-            <PaginationElement
-                currentPage={currentPage}
-                totalPages={totalPages}
-                handlePageChange={updateUrl}
-            />
+                    </main>
+                    {/* Footer for pagination */}
+                    <PaginationElement
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        handlePageChange={updateUrl}
+                    />
+                </>
+            )}
         </div>
     );
 }
