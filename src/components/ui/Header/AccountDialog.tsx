@@ -37,8 +37,11 @@ export default function LoginDialog() {
         id: number;
     }
 
-    // Check if the user_acc cookie exists in localStorage and parse it
     useEffect(() => {
+        // Clear old cookies and localStorage data (temporary)
+        localStorage.removeItem("accountInfo");
+        localStorage.removeItem("user_acc");
+
         const accountName = localStorage.getItem("accountName");
         if (accountName) {
             try {
