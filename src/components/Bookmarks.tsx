@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Fuse from "fuse.js";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
@@ -23,6 +22,7 @@ import MobileBookmarkCard from "./ui/Bookmarks/MobileBookmarkCard";
 import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
 import { fetchMalData, syncMal } from "@/lib/malSync";
+import BookmarksSkeleton from "./ui/Bookmarks/bookmarksSkeleton";
 
 const fuseOptions = {
     keys: ["name"], // The fields to search in your data
@@ -394,7 +394,7 @@ export default function BookmarksPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto px-4 pt-6 pb-8">
-                {isLoading && <CenteredSpinner />}
+                {isLoading && <BookmarksSkeleton />}
                 {error && <p className="text-red-500">{error}</p>}
                 {!isLoading && !error && (
                     <>
