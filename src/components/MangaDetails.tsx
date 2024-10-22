@@ -19,6 +19,7 @@ import db from "@/lib/db";
 import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
 import { checkIfBookmarked } from "@/lib/bookmarks";
+import { Skeleton } from "@/components/ui/skeleton";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     const user_data = localStorage.getItem("accountInfo");
@@ -116,6 +117,7 @@ const formatChapterDate = (date: string) => {
 export function MangaDetailsComponent({ id }: { id: string }) {
     const [manga, setManga] = useState<Manga | null>(null);
     const [image, setImage] = useState<string>("");
+    const [imageLoaded, setImageLoaded] = useState(false);
     const [lastRead, setLastRead] = useState<string>("");
     const [bmData, setBmData] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -252,6 +254,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         <main className="container mx-auto px-4 py-8">
             <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center">
+                    {!imageLoaded && (
+                        <Skeleton className="rounded-lg shadow-lg max-h-[512px] object-cover h-auto xl:h-full max-w-lg min-w-full" />
+                    )}
                     <EnhancedImage
                         src={image}
                         alt={manga.name}
@@ -260,6 +265,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         width={300}
                         height={512}
                         priority={true}
+                        onLoad={() => setImageLoaded(true)}
                     />
                 </div>
 
