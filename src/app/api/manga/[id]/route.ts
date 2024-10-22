@@ -1,6 +1,6 @@
 import axios from "axios";
 import { CookieJar } from "tough-cookie";
-import { HttpCookieAgent, HttpsCookieAgent } from "http-cookie-agent/http";
+import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 
 interface UserData {
@@ -57,14 +57,17 @@ export async function GET(
             const url = `${baseUrl}/${id}`;
 
             if (userData.user_name && userData.user_data) {
-                jar.setCookieSync(`user_acc=${JSON.stringify(userData)}`, url);
+                await jar.setCookie(
+                    `user_acc=${JSON.stringify(userData)}`,
+                    "https://chapmanganato.to",
+                );
+                await jar.setCookie(
+                    `user_acc=${JSON.stringify(userData)}`,
+                    "https://manganato.com",
+                );
             }
 
-            const instance = axios.create({
-                httpAgent: new HttpCookieAgent({ cookies: { jar } }),
-                httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
-            });
-
+            const instance = wrapper(axios.create({ jar }));
             const response = await instance.get(url, {
                 headers: {
                     "User-Agent":
@@ -202,35 +205,9 @@ export async function GET(
             };
         };
 
-        let mangaDetails = await fetchMangaDetails("https://chapmanganato.to");
-        const oldMangaDetails = mangaDetails;
-
-        if (!mangaDetails.storyData) {
-            console.log(
-                "glbStoryData not found on chapmanganato.to, retrying with manganato.com",
-            );
-            mangaDetails = await fetchMangaDetails("https://manganato.com");
-        }
-
-        const hasMoreInfo = (
-            oldDetails: MangaDetails,
-            newDetails: MangaDetails,
-        ) => {
-            for (const key in oldDetails) {
-                if (
-                    oldDetails[key as keyof MangaDetails] &&
-                    !newDetails[key as keyof MangaDetails]
-                ) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        if (hasMoreInfo(oldMangaDetails, mangaDetails)) {
-            mangaDetails = oldMangaDetails;
-        }
-
+        const mangaDetails = await fetchMangaDetails(
+            "https://chapmanganato.to",
+        );
         return new Response(JSON.stringify(mangaDetails), {
             status: 200,
             headers: { "Content-Type": "application/json" },
