@@ -47,7 +47,6 @@ export async function GET(
         user_image: "https://user.manganelo.com/avt.png",
         user_data: searchParams.get("user_data"),
     };
-    console.log(JSON.stringify(userData));
 
     try {
         const jar = new CookieJar();
