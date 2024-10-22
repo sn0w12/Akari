@@ -3,7 +3,6 @@ import axios from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 import * as cheerio from "cheerio";
-import { head } from "lodash";
 
 export async function POST(request: NextRequest) {
     try {

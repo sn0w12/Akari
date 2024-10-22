@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,8 +25,8 @@ import { fetchMalData, syncMal } from "@/lib/malSync";
 import BookmarksSkeleton from "./ui/Bookmarks/bookmarksSkeleton";
 
 const fuseOptions = {
-    keys: ["name"], // The fields to search in your data
-    includeScore: false, // Optional: include the score in the results
+    keys: ["name"],
+    includeScore: false,
     threshold: 0.4, // Adjust the fuzziness (0.0 = exact match, 1.0 = match all)
 };
 
@@ -42,9 +42,6 @@ export default function BookmarksPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
-    const workerRef = useRef<Worker | null>(null);
-    const batchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const messageQueue = useRef<Bookmark[]>([]);
 
     useEffect(() => {
         document.title = "Bookmarks";
@@ -162,16 +159,6 @@ export default function BookmarksPage() {
             }
         }
     }
-
-    const processBatch = () => {
-        if (messageQueue.current.length > 0) {
-            messageQueue.current.forEach((bookmark) => {
-                updateBookmark(bookmark);
-            });
-            // Clear the queue
-            messageQueue.current = [];
-        }
-    };
 
     const initWorker = async (bookmarkFirstPage: Bookmark[], page: number) => {
         if (page !== 1) {

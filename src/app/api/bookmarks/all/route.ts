@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
 import { Bookmark } from "@/app/api/interfaces";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
