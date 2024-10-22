@@ -35,7 +35,7 @@ export default function MangaDetailsSkeleton() {
                                         className="text-lg mb-2 flex items-center"
                                     >
                                         {label}:
-                                        <Skeleton className="h-6 w-32 ml-2 rounded-full" />
+                                        <Skeleton className="h-[22px] w-32 ml-2 rounded-full" />
                                     </div>
                                 ))}
                             </div>
