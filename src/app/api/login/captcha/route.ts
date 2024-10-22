@@ -12,8 +12,10 @@ export async function GET() {
         const client = wrapper(axios.create({ jar }));
         await jar.removeAllCookies();
 
+        // Add a unique query parameter to the URL to force a new session
+        const uniqueParam = `timestamp=${Date.now()}`;
         const loginPageResponse = await client.get(
-            "https://user.manganelo.com/login?l=manganato&re_l=login",
+            `https://user.manganelo.com/login?l=manganato&re_l=login&${uniqueParam}`,
             {
                 withCredentials: true,
                 headers: {

@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Combo } from "@/components/ui/combo";
-import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import PaginationElement from "@/components/ui/paginationElement";
 import { debounce } from "lodash";
 import Image from "next/image";
+import GenreSkeleton from "./ui/Genre/GenreSkeleton";
 
 interface Manga {
     id: string;
@@ -134,7 +134,7 @@ export default function GenrePage({ params }: PageProps) {
                         ]}
                     />
                 </div>
-                {isLoading && <CenteredSpinner />}
+                {isLoading && <GenreSkeleton />}
                 {error && <p className="text-red-500">{error}</p>}
                 {!isLoading && !error && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
