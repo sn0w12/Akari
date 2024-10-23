@@ -10,6 +10,7 @@ import PaginationElement from "@/components/ui/paginationElement";
 import { debounce } from "lodash";
 import Image from "next/image";
 import HomeSkeleton from "./ui/Home/HomeSkeleton";
+import ErrorComponent from "./ui/error";
 
 interface Manga {
     id: string;
@@ -125,7 +126,7 @@ export default function MangaReaderHome() {
                             <h2 className="text-3xl font-bold mb-6">
                                 Popular Manga
                             </h2>
-                            {error && <p className="text-red-500">{error}</p>}
+                            {error && <ErrorComponent message={error} />}
                             <>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                                     {paginatedPopularList.map((manga) => (
@@ -187,7 +188,7 @@ export default function MangaReaderHome() {
                             </>
                         </div>
 
-                        {error && <p className="text-red-500">{error}</p>}
+                        {error && <ErrorComponent message={error} />}
                         <>
                             <h2
                                 className={`text-3xl font-bold mb-6 ${currentPage === 1 ? "mt-6" : ""}`}

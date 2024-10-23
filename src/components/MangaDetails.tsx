@@ -20,6 +20,7 @@ import EnhancedImage from "./ui/enhancedImage";
 import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Skeleton } from "@/components/ui/skeleton";
 import MangaDetailsSkeleton from "./ui/MangaDetails/mangaDetailsSkeleton";
+import ErrorComponent from "./ui/error";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     try {
@@ -220,16 +221,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
     );
 
     if (isLoading) return <MangaDetailsSkeleton />;
-    if (error)
-        return (
-            <div className="container mx-auto px-4 py-8 text-red-500">
-                {error}
-            </div>
-        );
-    if (!manga)
-        return (
-            <div className="container mx-auto px-4 py-8">Manga not found</div>
-        );
+    if (error) return <ErrorComponent message={error} />;
+    if (!manga) return <ErrorComponent message="Manga not found" />;
 
     return (
         <main className="container mx-auto px-4 py-8">

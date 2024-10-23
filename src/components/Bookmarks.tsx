@@ -23,6 +23,7 @@ import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import BookmarksSkeleton from "./ui/Bookmarks/bookmarksSkeleton";
+import ErrorComponent from "./ui/error";
 
 const fuseOptions = {
     keys: ["name"],
@@ -355,7 +356,7 @@ export default function BookmarksPage() {
         <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto px-4 pt-6 pb-8">
                 {isLoading && <BookmarksSkeleton />}
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <ErrorComponent message={error} />}
                 {!isLoading && !error && (
                     <>
                         <div className="relative mb-6">

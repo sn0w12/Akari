@@ -11,6 +11,7 @@ import { debounce } from "lodash";
 import nextBase64 from "next-base64";
 import Image from "next/image";
 import AuthorSkeleton from "./ui/Author/AuthorSkeleton";
+import ErrorComponent from "./ui/error";
 
 interface Manga {
     id: string;
@@ -147,7 +148,7 @@ export default function AuthorPage({ params }: PageProps) {
                     />
                 </div>
                 {isLoading && <AuthorSkeleton />}
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <ErrorComponent message={error} />}
                 {!isLoading && !error && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                         {mangaList.map((manga) => (
