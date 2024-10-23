@@ -54,19 +54,16 @@ export default function LoginDialog() {
         }
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         // Manganato
         localStorage.removeItem("accountInfo"); // Legacy
         localStorage.removeItem("accountName");
         localStorage.removeItem("user_acc"); // Legacy
-        Cookies.remove("user_acc");
         setUsername(""); // Reset username to trigger the login view again
         setSavedUsername("");
         fetchCaptcha(); // Fetch a new CAPTCHA when logging out
 
         // MyAnimeList
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
         localStorage.removeItem("mal_user");
         setMalUser(null);
         setIsMalAuth(false);
@@ -76,6 +73,7 @@ export default function LoginDialog() {
         db.clearCache(db.mangaCache);
         db.clearCache(db.hqMangaCache);
 
+        await fetch("/api/logout");
         window.location.reload();
     };
 
