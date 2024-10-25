@@ -29,7 +29,7 @@ export default function EndOfManga({
 
     return (
         <Card
-            className={`w-full max-w-[600px] mx-auto my-8 aspect-[3/4] ${className}`.trim()}
+            className={`flex flex-col w-full h-[90vh] max-w-[600px] mx-auto my-8 ${className}`.trim()}
             style={style}
         >
             <CardHeader>
@@ -37,7 +37,7 @@ export default function EndOfManga({
                     {title}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center h-full space-y-6 text-center px-4">
+            <CardContent className="flex flex-col items-center justify-center flex-grow space-y-6 text-center px-4">
                 <div className="text-xl md:text-2xl font-semibold text-primary">
                     You&apos;ve reached the end!
                 </div>
