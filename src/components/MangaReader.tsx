@@ -274,7 +274,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                     />
                 </div>
                 <div
-                    className={`opacity-100 sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"}`}
+                    className={`opacity-100 sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${chapterData.images.length !== currentPage ? "block" : "hidden md:block"}`}
                 >
                     <PageProgress
                         currentPage={currentPage}
