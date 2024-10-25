@@ -27,37 +27,39 @@ function pluralizeTimeAgo(input: string): string {
     return trimmedInput;
 }
 
-// Function to fetch bookmarks for a single page from the external API
-async function fetchBookmarks(user_data: string, page: number, url: string) {
-    // Function to fetch based on output type
-    async function fetchData(out_type: string) {
-        const data = new URLSearchParams();
-        data.append("user_data", user_data);
-        data.append("bm_page", page.toString());
-        data.append("bm_source", "manganato");
-        data.append("out_type", out_type); // Dynamic output type (json or html)
+async function fetchData(
+    user_data: string,
+    page: number,
+    url: string,
+    out_type: string,
+) {
+    const data = new URLSearchParams();
+    data.append("user_data", user_data);
+    data.append("bm_page", page.toString());
+    data.append("bm_source", "manganato");
+    data.append("out_type", out_type);
 
-        const response = await fetch(url, {
-            method: "POST",
-            body: data.toString(),
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-        });
+    const response = await fetch(url, {
+        method: "POST",
+        body: data.toString(),
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+    });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error ${response.status}: ${errorText}`);
-        }
-
-        return out_type === "json" ? response.json() : response.text();
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error ${response.status}: ${errorText}`);
     }
 
+    return out_type === "json" ? response.json() : response.text();
+}
+
+async function fetchBookmarks(user_data: string, page: number, url: string) {
     try {
-        // Fetch both JSON and HTML in parallel
         const [jsonResponse, htmlResponse] = await Promise.all([
-            fetchData("json"), // Fetch JSON response
-            fetchData("html"), // Fetch HTML response
+            fetchData(user_data, page, url, "json"),
+            fetchData(user_data, page, url, "html"),
         ]);
         return { jsonResponse, htmlResponse };
     } catch (error) {
@@ -67,10 +69,61 @@ async function fetchBookmarks(user_data: string, page: number, url: string) {
     }
 }
 
-// Named export for GET requests (fetch a specific page of bookmarks)
+function extractBmData(
+    onClickAttr: string,
+    noteId: string,
+): string | undefined {
+    const match = onClickAttr.match(/fun_bookmark_delete\('([^']+)'/);
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        console.log(`Could not extract bm_data for noteid ${noteId}`);
+        return undefined;
+    }
+}
+
+function processBookmarks(
+    jsonResult: { result: string; data: Bookmark[] },
+    htmlResult: string,
+) {
+    const html = JSON.parse(htmlResult);
+    const $ = cheerio.load(html.data);
+
+    for (const item of jsonResult.data) {
+        const noteId = item.noteid;
+        const className = `bm-it-${noteId}`;
+        item.chapterlastdateupdate = pluralizeTimeAgo(
+            item.chapterlastdateupdate,
+        );
+
+        const element = $(`.${className}`);
+        if (!element.length) {
+            console.log(`Element not found for noteid ${noteId}`);
+            continue;
+        }
+
+        const removeButton = element.find(".btn-remove");
+        if (!removeButton.length) {
+            console.log(`Remove button not found for noteid ${noteId}`);
+            continue;
+        }
+
+        const onClickAttr = removeButton.attr("onclick");
+        if (!onClickAttr) {
+            console.log(`No onclick attribute found for noteid ${noteId}`);
+            continue;
+        }
+
+        const bmData = extractBmData(onClickAttr, noteId);
+        if (bmData) {
+            item["bm_data"] = bmData;
+        }
+    }
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not provided
+    const page = parseInt(searchParams.get("page") || "1", 10);
 
     const cookieStore = cookies();
     const user_data = getUserData(cookieStore);
@@ -82,9 +135,8 @@ export async function GET(request: Request) {
         );
     }
 
-    const url = BOOKMARK_SERVER_URL_1;
-
     try {
+        const url = BOOKMARK_SERVER_URL_1;
         const { jsonResponse: jsonResult, htmlResponse: htmlResult } =
             await fetchBookmarks(user_data, page, url);
 
@@ -98,56 +150,8 @@ export async function GET(request: Request) {
             );
         }
 
-        // Load the static HTML into cheerio
-        const html = JSON.parse(htmlResult);
-        //console.log(html.data)
-        const $ = cheerio.load(html.data);
+        processBookmarks(jsonResult, htmlResult);
 
-        // Iterate through the JSON data
-        jsonResult.data.forEach((item: Bookmark) => {
-            const noteId = item.noteid;
-            const className = `bm-it-${noteId}`;
-            const pluralizedTime = pluralizeTimeAgo(item.chapterlastdateupdate);
-            item.chapterlastdateupdate = pluralizedTime;
-
-            // Find the element in the HTML by class name using cheerio
-            const element = $(`.${className}`);
-
-            if (element.length > 0) {
-                // Find the `a` tag with class 'btn-remove' inside the element
-                const removeButton = element.find(".btn-remove");
-
-                if (removeButton.length > 0) {
-                    // Get the `onclick` attribute value
-                    const onClickAttr = removeButton.attr("onclick");
-
-                    if (onClickAttr) {
-                        // Use regex to extract the first argument from fun_bookmark_delete
-                        const match = onClickAttr.match(
-                            /fun_bookmark_delete\('([^']+)'/,
-                        );
-
-                        if (match && match[1]) {
-                            item["bm_data"] = match[1];
-                        } else {
-                            console.log(
-                                `Could not extract string from onclick for noteid ${noteId}`,
-                            );
-                        }
-                    } else {
-                        console.log(
-                            `No onclick attribute found for noteid ${noteId}`,
-                        );
-                    }
-                } else {
-                    console.log(`Remove button not found for noteid ${noteId}`);
-                }
-            } else {
-                console.log(`Element not found for noteid ${noteId}`);
-            }
-        });
-
-        // Return the fetched data and current page information
         return NextResponse.json(
             {
                 page,
