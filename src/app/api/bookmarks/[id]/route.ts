@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_LIST_URL = "https://user.mngusr.com/bookmark_get_list_idstory";
 
@@ -41,8 +43,8 @@ export async function GET(
     { params }: { params: { id: string } },
 ) {
     const { id: mangaId } = params;
-    const url = new URL(req.url);
-    const user_data = url.searchParams.get("user_data"); // Get user_data from query params
+    const cookieStore = cookies();
+    const user_data = getUserData(cookieStore);
 
     if (!user_data) {
         return NextResponse.json(

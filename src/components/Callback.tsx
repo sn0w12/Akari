@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import Cookies from "js-cookie";
+import ErrorComponent from "./ui/error";
 
 const CallbackPage = () => {
     const router = useRouter();
@@ -71,7 +72,7 @@ const CallbackPage = () => {
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
             <Card className="p-6 space-y-4 text-center">
                 {errorMessage ? (
-                    <p className="text-red-700">Error: {errorMessage}</p>
+                    <ErrorComponent message={errorMessage} />
                 ) : (
                     <p
                         className={`${

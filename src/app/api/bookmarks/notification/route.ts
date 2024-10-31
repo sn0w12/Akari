@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_NOTIFICATION_URL =
     "https://user.mngusr.com/bookmark_get_notification";
 
 // API handler to check if a manga is bookmarked
-export async function GET(req: Request) {
-    const url = new URL(req.url);
-    const user_data = url.searchParams.get("user_data"); // Get user_data from query params
+export async function GET() {
+    const cookieStore = cookies();
+    const user_data = getUserData(cookieStore);
 
     if (!user_data) {
         return NextResponse.json(
             { message: "User data is required" },
-            { status: 400 },
+            { status: 401 },
         );
     }
 

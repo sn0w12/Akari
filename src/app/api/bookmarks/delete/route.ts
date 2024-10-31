@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getUserData } from "@/lib/mangaNato";
 
 const BOOKMARK_DELETE_URL = "https://user.mngusr.com/bookmark_delete";
 
@@ -9,8 +11,9 @@ interface BookmarkDeleteRequest {
 
 export async function POST(request: Request): Promise<Response> {
     try {
-        const { user_data, bm_data }: BookmarkDeleteRequest =
-            await request.json();
+        const { bm_data }: BookmarkDeleteRequest = await request.json();
+        const cookieStore = cookies();
+        const user_data = getUserData(cookieStore);
 
         if (!user_data || !bm_data) {
             return NextResponse.json(

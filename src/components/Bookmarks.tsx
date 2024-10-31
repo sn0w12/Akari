@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,10 +23,11 @@ import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import BookmarksSkeleton from "./ui/Bookmarks/bookmarksSkeleton";
+import ErrorComponent from "./ui/error";
 
 const fuseOptions = {
-    keys: ["name"], // The fields to search in your data
-    includeScore: false, // Optional: include the score in the results
+    keys: ["name"],
+    includeScore: false,
     threshold: 0.4, // Adjust the fuzziness (0.0 = exact match, 1.0 = match all)
 };
 
@@ -42,9 +43,6 @@ export default function BookmarksPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
-    const workerRef = useRef<Worker | null>(null);
-    const batchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const messageQueue = useRef<Bookmark[]>([]);
 
     useEffect(() => {
         document.title = "Bookmarks";
@@ -53,17 +51,9 @@ export default function BookmarksPage() {
     // Fetch bookmarks function
     const fetchBookmarks = async (page: number) => {
         setIsLoading(true);
-        const user_data = localStorage.getItem("accountInfo"); // Get user data from localStorage
-        if (!user_data) {
-            setError("No user data found. Please log in.");
-            setIsLoading(false);
-            return;
-        }
 
         try {
-            const response = await fetch(
-                `/api/bookmarks?page=${page}&user_data=${encodeURIComponent(user_data)}`,
-            );
+            const response = await fetch(`/api/bookmarks?page=${page}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch bookmarks.");
             }
@@ -171,16 +161,6 @@ export default function BookmarksPage() {
         }
     }
 
-    const processBatch = () => {
-        if (messageQueue.current.length > 0) {
-            messageQueue.current.forEach((bookmark) => {
-                updateBookmark(bookmark);
-            });
-            // Clear the queue
-            messageQueue.current = [];
-        }
-    };
-
     const initWorker = async (bookmarkFirstPage: Bookmark[], page: number) => {
         if (page !== 1) {
             const bookmarkCache = (await db.getAllCacheValues(
@@ -221,8 +201,6 @@ export default function BookmarksPage() {
                     const bookmarkSlice = firstPageIds.slice(i, i + j);
                     const cacheSlice = cacheIds.slice(0, j);
 
-                    //console.log("Comparing", bookmarkSlice, cacheSlice);
-
                     if (numberArraysEqual(bookmarkSlice, cacheSlice)) {
                         console.log("Cache hit");
                         matchFound = true;
@@ -254,43 +232,26 @@ export default function BookmarksPage() {
         }
 
         await db.setCache(db.bookmarkCache, "firstPage", bookmarkFirstPage);
-        const user_data = localStorage.getItem("accountInfo");
 
-        if (user_data && typeof window !== "undefined" && !workerRef.current) {
-            const bookmarkToast = new Toast("Processing bookmarks...", "info", {
-                autoClose: false,
-            });
+        const bookmarkToast = new Toast("Processing bookmarks...", "info", {
+            autoClose: false,
+        });
 
-            workerRef.current = new Worker("/workers/eventSourceWorker.js");
-            workerRef.current.postMessage({ userData: user_data });
-            console.log("Worker initialized.");
-
-            workerRef.current.onmessage = (e) => {
-                const { type, data, message, details } = e.data;
-
-                if (type === "bookmark") {
-                    // Push new bookmark data to the queue
-                    messageQueue.current.push(data);
-
-                    // Clear the previous batch timeout and set a new one
-                    if (batchTimeout.current)
-                        clearTimeout(batchTimeout.current);
-                    batchTimeout.current = setTimeout(processBatch, 1000); // Process every 1 second
-                } else if (type === "error") {
-                    console.error("Worker error:", message, details);
-                    workerRef.current?.terminate();
-                    bookmarkToast.close();
-                    new Toast("Error processing bookmarks.", "error");
-                } else if (type === "finished") {
-                    console.log("Worker has finished processing.");
-                    processBatch(); // Process any remaining bookmarks
-                    workerRef.current?.terminate();
-                    setWorkerFinished(true);
-                    new Toast("Bookmarks processed.", "success");
-                    bookmarkToast.close();
-                }
-            };
+        const allResponse = await fetch(`/api/bookmarks/all`);
+        if (!allResponse.ok) {
+            bookmarkToast.close();
+            new Toast("Failed to fetch bookmarks.", "error");
         }
+        const allData = await allResponse.json();
+
+        allData.bookmarks.forEach((bookmark: Bookmark) => {
+            updateBookmark(bookmark);
+        });
+
+        setAllBookmarks(allData.bookmarks);
+        setWorkerFinished(true);
+        new Toast("Bookmarks processed.", "success");
+        bookmarkToast.close();
     };
 
     const handlePageChange = useCallback(
@@ -395,7 +356,7 @@ export default function BookmarksPage() {
         <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto px-4 pt-6 pb-8">
                 {isLoading && <BookmarksSkeleton />}
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <ErrorComponent message={error} />}
                 {!isLoading && !error && (
                     <>
                         <div className="relative mb-6">

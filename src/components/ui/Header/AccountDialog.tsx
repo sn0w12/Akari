@@ -16,25 +16,20 @@ import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
 import Image from "next/image";
+import db from "@/lib/db";
 
 export default function LoginDialog() {
     const [username, setUsername] = useState("");
+    const [savedUsername, setSavedUsername] = useState("");
     const [password, setPassword] = useState("");
     const [captcha, setCaptcha] = useState("");
     const [captchaUrl, setCaptchaUrl] = useState("");
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
-    const [userData, setUserData] = useState<UserData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [authUrl, setAuthUrl] = useState<string | null>(null);
     const [isMalAuth, setIsMalAuth] = useState<boolean>(false);
     const [malUser, setMalUser] = useState<MalUser | null>(null);
-
-    interface UserData {
-        user_name: string;
-        user_data: string;
-        user_image: string;
-    }
 
     interface MalUser {
         name: string;
@@ -42,37 +37,44 @@ export default function LoginDialog() {
         id: number;
     }
 
-    // Check if the user_acc cookie exists in localStorage and parse it
     useEffect(() => {
-        const userAccCookie = localStorage.getItem("user_acc");
-        if (userAccCookie) {
+        // Clear old cookies and localStorage data (temporary)
+        localStorage.removeItem("accountInfo");
+        localStorage.removeItem("user_acc");
+
+        const accountName = localStorage.getItem("accountName");
+        if (accountName) {
             try {
                 // Decode and parse the user_acc cookie value
-                const decodedCookie = decodeURIComponent(userAccCookie);
-                const parsedData = JSON.parse(decodedCookie);
-
-                // Set the user's name and data from the parsed user_acc cookie
-                setUserData(parsedData);
+                const decodedAccountName = decodeURIComponent(accountName);
+                setSavedUsername(decodedAccountName);
             } catch (error) {
                 console.error("Failed to parse user_acc cookie:", error);
             }
         }
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         // Manganato
-        localStorage.removeItem("accountInfo");
+        localStorage.removeItem("accountInfo"); // Legacy
         localStorage.removeItem("accountName");
-        localStorage.removeItem("user_acc");
-        setUserData(null); // Reset userData to trigger the login view again
+        localStorage.removeItem("user_acc"); // Legacy
+        setUsername(""); // Reset username to trigger the login view again
+        setSavedUsername("");
         fetchCaptcha(); // Fetch a new CAPTCHA when logging out
 
         // MyAnimeList
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
         localStorage.removeItem("mal_user");
         setMalUser(null);
         setIsMalAuth(false);
+
+        // Clear Caches
+        db.clearCache(db.bookmarkCache);
+        db.clearCache(db.mangaCache);
+        db.clearCache(db.hqMangaCache);
+
+        await fetch("/api/logout");
+        window.location.reload();
     };
 
     // Fetch CAPTCHA when opening the dialog
@@ -114,14 +116,10 @@ export default function LoginDialog() {
 
             const data = await response.json();
             if (data.userAccCookie) {
-                localStorage.setItem("user_acc", data.userAccCookie);
-                console.log("user_acc cookie saved:", data.userAccCookie);
-
                 // Decode and parse the user_acc cookie value to update user data
                 const parsedData = JSON.parse(data.userAccCookie);
-                localStorage.setItem("accountInfo", parsedData.user_data);
                 localStorage.setItem("accountName", parsedData.user_name);
-                setUserData(parsedData);
+                setSavedUsername(parsedData.user_name);
 
                 window.location.reload();
             } else {
@@ -170,7 +168,7 @@ export default function LoginDialog() {
     };
 
     // If user data exists, display the user's name and user data, otherwise show the login dialog
-    if (userData) {
+    if (savedUsername) {
         return (
             <Dialog>
                 <DialogTrigger asChild>
@@ -185,7 +183,7 @@ export default function LoginDialog() {
                     <div className="flex items-center space-x-4 mb-4 border-t">
                         <div className="mt-4 w-full">
                             <h2 className="text-xl font-bold">
-                                {userData.user_name}
+                                {savedUsername}
                             </h2>
                             <p className="mt-2">Logged In With Manganato</p>
 

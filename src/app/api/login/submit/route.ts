@@ -123,7 +123,14 @@ export async function POST(request: NextRequest) {
             const userAccValue = userAccCookie.split(";")[0].split("=")[1];
             const decodedUserAcc = decodeURIComponent(userAccValue);
 
-            return NextResponse.json({ userAccCookie: decodedUserAcc });
+            const response = NextResponse.json({
+                userAccCookie: decodedUserAcc,
+            });
+            response.headers.set(
+                "Set-Cookie",
+                `user_acc=${decodedUserAcc}; Path=/; HttpOnly; Secure; Max-Age=${365 * 24 * 60 * 60 * 1000 * 5}; SameSite=Strict`,
+            );
+            return response;
         } else {
             return NextResponse.json(
                 { error: "Invalid credentials or CAPTCHA" },

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import Spinner from "@/components/ui/spinners/puffLoader";
@@ -12,10 +14,10 @@ interface BookmarkButtonProps {
     bookmark: (
         storyData: string,
         isBookmarked: boolean,
-        setIsBookmarked: (state: boolean) => void,
+        setIsBookmarked: (state: boolean | null) => void,
     ) => void;
     removeBookmark: (setIsBookmarked: (state: boolean) => void) => void;
-    setIsBookmarked: (state: boolean) => void;
+    setIsBookmarked: (state: boolean | null) => void;
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
@@ -25,7 +27,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     removeBookmark,
     setIsBookmarked,
 }) => {
-    const [hovered, setHovered] = useState(false); // Track hover state for tooltip behavior
+    const [hovered, setHovered] = useState(false);
 
     const handleBookmarkClick = () => {
         if (isBookmarked !== null) {
@@ -40,39 +42,57 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const buttonContent =
         isBookmarked === null ? (
             <Spinner size={30} />
-        ) : isBookmarked ? (
-            <>
-                <Bookmark className="mr-2 h-4 w-4" />
-                {hovered ? "Remove Bookmark" : "Bookmarked"}
-            </>
         ) : (
-            <>
-                <Bookmark className="mr-2 h-4 w-4" /> Bookmark
-            </>
+            <div className="relative w-full h-full flex items-center justify-center">
+                <Bookmark
+                    className={`transition-all duration-300 ease-in-out ${
+                        isBookmarked && hovered
+                            ? "-translate-x-7"
+                            : "translate-x-0"
+                    }`}
+                />
+                <span
+                    className={`absolute transition-all duration-300 ease-in-out -translate-x-5 ${
+                        isBookmarked && hovered ? "opacity-100" : "opacity-0"
+                    }`}
+                >
+                    Remove
+                </span>
+                <span
+                    className={`ml-2 transition-all duration-300 ease-in-out ${
+                        isBookmarked && hovered
+                            ? "translate-x-7"
+                            : "translate-x-0"
+                    }`}
+                >
+                    Bookmark
+                </span>
+            </div>
         );
 
-    const buttonClass = `w-full flex items-center justify-center ${
+    const buttonClass = `w-full relative overflow-hidden ${
         isBookmarked
-            ? "bg-green-500 text-white hover:bg-green-600"
-            : "hover:bg-gray-100 hover:text-background"
+            ? "bg-green-500 text-white hover:bg-red-600"
+            : "hover:bg-green-500"
     }`;
 
+    const button = (
+        <Button
+            variant={isBookmarked ? "default" : "outline"}
+            size="lg"
+            className={buttonClass}
+            disabled={isBookmarked === undefined}
+            onClick={handleBookmarkClick}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+        >
+            {buttonContent}
+        </Button>
+    );
+
     return isBookmarked ? (
-        // Wrap in ConfirmDialog if already bookmarked
         <ConfirmDialog
-            triggerButton={
-                <Button
-                    variant="default"
-                    size="lg"
-                    className={`${buttonClass} hover:bg-red-600`} // Change to red on hover if bookmarked
-                    disabled={isBookmarked === null}
-                    onClick={handleBookmarkClick}
-                    onMouseEnter={() => setHovered(true)} // Track hover state
-                    onMouseLeave={() => setHovered(false)}
-                >
-                    {buttonContent}
-                </Button>
-            }
+            triggerButton={button}
             title="Confirm Bookmark Removal"
             message="Are you sure you want to remove this bookmark?"
             confirmLabel="Remove"
@@ -81,16 +101,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             onConfirm={handleRemoveBookmark}
         />
     ) : (
-        // Regular button if not bookmarked
-        <Button
-            variant="outline"
-            size="lg"
-            className={buttonClass}
-            disabled={isBookmarked === null}
-            onClick={handleBookmarkClick}
-        >
-            {buttonContent}
-        </Button>
+        button
     );
 };
 

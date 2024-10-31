@@ -2,13 +2,7 @@ import axios from "axios";
 import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
-
-interface UserData {
-    user_version: string;
-    user_name: string | null;
-    user_image: string;
-    user_data: string | null;
-}
+import { cookies } from "next/headers";
 
 interface Chapter {
     id: string;
@@ -40,13 +34,8 @@ export async function GET(
     { params }: { params: { id: string } },
 ): Promise<Response> {
     const id = params.id;
-    const { searchParams } = new URL(req.url);
-    const userData: UserData = {
-        user_version: "2.3",
-        user_name: searchParams.get("user_name"),
-        user_image: "https://user.manganelo.com/avt.png",
-        user_data: searchParams.get("user_data"),
-    };
+    const cookieStore = cookies();
+    const userAcc = cookieStore.get("user_acc")?.value || null;
 
     try {
         const jar = new CookieJar();
@@ -56,13 +45,13 @@ export async function GET(
         ): Promise<MangaDetails> => {
             const url = `${baseUrl}/${id}`;
 
-            if (userData.user_name && userData.user_data) {
+            if (userAcc) {
                 await jar.setCookie(
-                    `user_acc=${JSON.stringify(userData)}`,
+                    `user_acc=${userAcc}`,
                     "https://chapmanganato.to",
                 );
                 await jar.setCookie(
-                    `user_acc=${JSON.stringify(userData)}`,
+                    `user_acc=${userAcc}`,
                     "https://manganato.com",
                 );
             }

@@ -71,18 +71,6 @@ const useTheme = () => {
     return { theme, toggleTheme };
 };
 
-// Hook to manage account information input
-const useAccountInfo = () => {
-    const [accountInfo, setAccountInfo] = useState<string>("");
-
-    useEffect(() => {
-        const storedAccountInfo = localStorage.getItem("accountInfo") || "";
-        setAccountInfo(storedAccountInfo);
-    }, []);
-
-    return { accountInfo, setAccountInfo };
-};
-
 // Hook to manage settings
 const useSettings = () => {
     const [settings, setSettings] = useState<SettingsInterface>(() => {
@@ -113,7 +101,6 @@ export function HeaderComponent() {
     const [showPopup, setShowPopup] = useState(false);
     const [notification, setNotification] = useState("");
     const { theme, toggleTheme } = useTheme();
-    const { accountInfo } = useAccountInfo();
     const { settings, setSettings } = useSettings();
     const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -226,15 +213,19 @@ export function HeaderComponent() {
 
     const fetchNotification = useCallback(async () => {
         try {
-            const res = await fetch(
-                `/api/bookmarks/notification?user_data=${accountInfo}`,
-            );
+            const res = await fetch(`/api/bookmarks/notification`);
+
+            if (!res.ok) {
+                setNotification("");
+                return;
+            }
+
             const data = await res.json();
             setNotification(data);
         } catch (error) {
             console.error("Error fetching search results:", error);
         }
-    }, [accountInfo]);
+    }, []);
 
     const debouncedFetchNotification = useCallback(
         debounce(fetchNotification, 10),
@@ -242,15 +233,13 @@ export function HeaderComponent() {
     );
 
     useEffect(() => {
-        if (accountInfo) {
-            debouncedFetchNotification();
-        }
+        debouncedFetchNotification();
 
         // Cleanup to cancel the debounced function when the component unmounts or dependencies change
         return () => {
             debouncedFetchNotification.cancel();
         };
-    }, [accountInfo, debouncedFetchNotification]);
+    }, [debouncedFetchNotification]);
 
     return (
         <header className="sticky top-0 z-50 bg-background border-b">
@@ -366,12 +355,18 @@ export function HeaderComponent() {
                             </DialogContent>
                         </Dialog>
 
-                        <Link href="/bookmarks">
+                        <Link
+                            href="/bookmarks"
+                            className={
+                                !notification ? "pointer-events-none" : ""
+                            }
+                        >
                             <div className="relative group">
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     className="group-hover:bg-accent"
+                                    disabled={!notification}
                                 >
                                     <Bookmark className="h-5 w-5" />
                                 </Button>

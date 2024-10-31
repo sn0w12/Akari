@@ -61,16 +61,7 @@ export function getButtonInfo(bookmark: Bookmark) {
 }
 
 export async function checkIfBookmarked(mangaId: string) {
-    const user_data = localStorage.getItem("accountInfo");
-
-    if (!user_data) {
-        console.error("User data not found");
-        return false;
-    }
-
-    const response = await fetch(
-        `/api/bookmarks/${mangaId}?user_data=${encodeURIComponent(user_data)}`,
-    );
+    const response = await fetch(`/api/bookmarks/${mangaId}`);
     const data = await response.json();
     return data.isBookmarked;
 }
