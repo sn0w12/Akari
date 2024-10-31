@@ -25,10 +25,13 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     const [isStripMode, setIsStripMode] = useState<boolean | undefined>(
         undefined,
     );
+    const [firstImageLoaded, setFirstImageLoaded] = useState<boolean>(false);
     const [timeElapsed, setTimeElapsed] = useState(0);
     const router = useRouter();
     const { id, subId } = useParams();
     const bookmarkUpdatedRef = useRef(false);
+    const longImageCountRef = useRef(0);
+    const imageCountRef = useRef(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -58,10 +61,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     // Detect if the majority of images have a long aspect ratio
     useEffect(() => {
         if (chapterData && chapterData.images.length > 0) {
-            const maxImagesToCheck = 5; // Limit the number of images to check
-            const imagesToCheck = chapterData.images.slice(0, maxImagesToCheck);
-
-            const checkSelectedImages = async () => {
+            const checkStripModeCache = async () => {
                 // Fetch strip mode cache from Dexie (asynchronous operation)
                 const mangaCache =
                     (await db.getCache(
@@ -77,46 +77,53 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                     setIsStripMode(false);
                     return;
                 }
-
-                // If not cached, calculate the strip mode based on image dimensions
-                let longImageCount = 0;
-                const dimensionPromises = imagesToCheck.map(async (img) => {
-                    try {
-                        const response = await fetch(
-                            `/api/get-image-dimensions?imageUrl=${encodeURIComponent(img)}`,
-                        );
-                        const { width, height } = await response.json();
-                        const aspectRatio = height / width;
-                        if (aspectRatio > 2) {
-                            longImageCount += 1;
-                        }
-                    } catch (error) {
-                        console.error(
-                            `Failed to get dimensions for image ${img}:`,
-                            error,
-                        );
-                    }
-                });
-
-                await Promise.all(dimensionPromises);
-
-                // Determine if strip mode should be enabled and cache the result
-                const isStripMode = longImageCount > imagesToCheck.length / 2;
-                setIsStripMode(isStripMode);
-
-                // Update the cache with the new value
-                mangaCache.is_strip = isStripMode;
-                await db.updateCache(
-                    db.hqMangaCache,
-                    chapterData.parentId,
-                    mangaCache,
-                );
             };
 
             // Call the async function inside useEffect
-            checkSelectedImages();
+            checkStripModeCache();
         }
     }, [chapterData]);
+
+    const handleImageLoad = async (
+        event: React.SyntheticEvent<HTMLImageElement>,
+        index: number,
+    ) => {
+        if (index === 0) setFirstImageLoaded(true);
+        if (isStripMode !== undefined) return;
+
+        const imageCutoff = Math.floor(chapterData!.images.length / 2);
+
+        const imgElement = event.currentTarget;
+        const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
+        imageCountRef.current += 1;
+        if (aspectRatio > 2) {
+            longImageCountRef.current += 1;
+        }
+
+        const updateCache = async (isStrip: boolean) => {
+            // Update the cache with the new value
+            const mangaCache =
+                (await db.getCache(db.hqMangaCache, chapterData!.parentId)) ??
+                ({} as HqMangaCacheItem);
+            mangaCache.is_strip = isStrip;
+            await db.updateCache(
+                db.hqMangaCache,
+                chapterData!.parentId,
+                mangaCache,
+            );
+        };
+
+        if (
+            longImageCountRef.current == 5 ||
+            longImageCountRef.current > imageCutoff
+        ) {
+            setIsStripMode(true);
+            updateCache(true);
+        } else if (imageCountRef.current === imageCutoff) {
+            setIsStripMode(false);
+            updateCache(false);
+        }
+    };
 
     // Fetch the chapter data
     const fetchChapter = useCallback(async () => {
@@ -162,8 +169,6 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
         const formattedChapter = chapterData.chapter
             .toLowerCase()
             .replaceAll(" ", "-");
-
-        console.log(nextChapterParts);
 
         if (currentPage < chapterData.images.length - 1) {
             setCurrentPage((prev) => prev + 1);
@@ -215,80 +220,92 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
         }
     };
 
-    if (!chapterData || isStripMode === undefined) {
+    if (!chapterData) {
         return <MangaReaderSkeleton />;
     }
 
     // Render "strip" mode for long images
     if (isStripMode) {
         return (
-            <div>
-                <div
-                    id="reader"
-                    className="flex flex-col items-center bg-transparent"
-                >
-                    {chapterData.images.map((image, index) => (
-                        <Image
-                            key={index}
-                            src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
-                            alt={`${chapterData.title} - ${chapterData.chapter} Page ${
-                                index + 1
-                            }`}
-                            width={700}
-                            height={1080}
-                            className="object-contain w-128 z-20 relative"
-                            loading="eager"
-                            priority={index < 3}
-                        />
-                    ))}
+            <>
+                <div className={`${firstImageLoaded ? "hidden" : ""}`}>
+                    <MangaReaderSkeleton />
                 </div>
-                <MangaFooter chapterData={chapterData} />
-            </div>
+                <div className={`${firstImageLoaded ? "" : "hidden"}`}>
+                    <div
+                        id="reader"
+                        className="flex flex-col items-center bg-transparent"
+                    >
+                        {chapterData.images.map((image, index) => (
+                            <Image
+                                key={index}
+                                src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                                alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
+                                width={700}
+                                height={1080}
+                                className="object-contain w-128 z-20 relative"
+                                loading="eager"
+                                priority={index < 3}
+                                onLoad={(e) => handleImageLoad(e, index)}
+                            />
+                        ))}
+                    </div>
+                    <MangaFooter chapterData={chapterData} />
+                </div>
+            </>
         );
     }
 
     // Normal mode (single image navigation)
     return (
-        <div className="overflow-x-hidden">
+        <>
+            <div className={`${firstImageLoaded ? "hidden" : ""}`}>
+                <MangaReaderSkeleton />
+            </div>
             <div
-                className="flex flex-col justify-center items-center h-dvh w-screen bg-transparent"
-                onClick={handleClick}
+                className={`${firstImageLoaded ? "" : "hidden"} overflow-x-hidden`}
             >
-                <div id="reader" className="relative max-h-dvh w-auto">
-                    {chapterData.images.map((image, index) => (
-                        <Image
-                            key={index}
-                            src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
-                            alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
-                            width={700}
-                            height={1080}
-                            loading="eager"
-                            priority={index === 1}
-                            className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                <div
+                    className="flex flex-col justify-center items-center h-dvh w-screen bg-transparent"
+                    onClick={handleClick}
+                >
+                    <div id="reader" className="relative max-h-dvh w-auto">
+                        {chapterData.images.map((image, index) => (
+                            <Image
+                                key={index}
+                                src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                                alt={`${chapterData.title} - ${chapterData.chapter} Page ${index + 1}`}
+                                width={700}
+                                height={1080}
+                                loading="eager"
+                                priority={index === 1}
+                                className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
+                                onLoad={(e) => handleImageLoad(e, index)}
+                            />
+                        ))}
+                        <EndOfManga
+                            title={chapterData.title}
+                            identifier={chapterData.parentId}
+                            className={`${chapterData.images.length !== currentPage ? "hidden" : ""}`}
                         />
-                    ))}
-                    <EndOfManga
-                        title={chapterData.title}
-                        identifier={chapterData.parentId}
-                        className={`${chapterData.images.length !== currentPage ? "hidden" : ""}`}
-                    />
+                    </div>
+                    <div
+                        className={`${isStripMode !== undefined ? "opacity-100" : "opacity-0"} sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${chapterData.images.length !== currentPage ? "block" : "hidden md:block"}`}
+                    >
+                        <PageProgress
+                            currentPage={currentPage}
+                            totalPages={chapterData.images.length}
+                            setCurrentPage={setCurrentPage}
+                            isFooterVisible={isFooterVisible}
+                        />
+                    </div>
                 </div>
                 <div
-                    className={`opacity-100 sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${chapterData.images.length !== currentPage ? "block" : "hidden md:block"}`}
+                    className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapterData.images.length ? "hidden" : ""}`}
                 >
-                    <PageProgress
-                        currentPage={currentPage}
-                        totalPages={chapterData.images.length}
-                        setCurrentPage={setCurrentPage}
-                        isFooterVisible={isFooterVisible}
-                    />
+                    <MangaFooter chapterData={chapterData} />
                 </div>
             </div>
-            <div
-                className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapterData.images.length ? "hidden" : ""}`}
-            >
-                <MangaFooter chapterData={chapterData} />
-            </div>
-        </div>
+        </>
     );
 }
