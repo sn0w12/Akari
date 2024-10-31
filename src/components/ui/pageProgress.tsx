@@ -25,7 +25,7 @@ export default function PageProgress({
 
     function getBottomOffset() {
         if (!isFooterVisible) {
-            return "2rem";
+            return "1rem";
         }
 
         if (window.innerWidth <= 650) {
