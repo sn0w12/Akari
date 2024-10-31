@@ -110,7 +110,7 @@ export function HeaderComponent() {
             description: "Slows down first load on manga detail pages.",
             type: "checkbox",
             value: settings.fetchMalImage,
-            default: true,
+            default: defaultSettings.fetchMalImage,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -124,7 +124,7 @@ export function HeaderComponent() {
             label: "Use Toasts",
             type: "checkbox",
             value: settings.useToast,
-            default: true,
+            default: defaultSettings.useToast,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -139,7 +139,7 @@ export function HeaderComponent() {
             description: "Such as manga detail pages cover image.",
             type: "checkbox",
             value: settings.fancyAnimations,
-            default: true,
+            default: defaultSettings.fancyAnimations,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -157,7 +157,7 @@ export function HeaderComponent() {
                 { label: "Server 2", value: "2" },
             ],
             value: settings.mangaServer,
-            default: "1",
+            default: defaultSettings.mangaServer,
             onChange: (value: SettingValue) => {
                 if (typeof value === "string") {
                     setSettings((prevSettings) => ({
