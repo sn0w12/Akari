@@ -84,6 +84,25 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
         }
     }, [chapterData]);
 
+    async function setReaderMode(isStrip: boolean) {
+        setIsStripMode(isStrip);
+        const mangaCache =
+            (await db.getCache(db.hqMangaCache, chapterData!.parentId)) ??
+            ({} as HqMangaCacheItem);
+        mangaCache.is_strip = isStrip;
+        await db.updateCache(
+            db.hqMangaCache,
+            chapterData!.parentId,
+            mangaCache,
+        );
+    }
+
+    async function toggleReaderMode() {
+        if (isStripMode !== undefined) {
+            setReaderMode(!isStripMode);
+        }
+    }
+
     const handleImageLoad = async (
         event: React.SyntheticEvent<HTMLImageElement>,
         index: number,
@@ -100,28 +119,13 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
             longImageCountRef.current += 1;
         }
 
-        const updateCache = async (isStrip: boolean) => {
-            // Update the cache with the new value
-            const mangaCache =
-                (await db.getCache(db.hqMangaCache, chapterData!.parentId)) ??
-                ({} as HqMangaCacheItem);
-            mangaCache.is_strip = isStrip;
-            await db.updateCache(
-                db.hqMangaCache,
-                chapterData!.parentId,
-                mangaCache,
-            );
-        };
-
         if (
             longImageCountRef.current == 5 ||
             longImageCountRef.current > imageCutoff
         ) {
-            setIsStripMode(true);
-            updateCache(true);
+            setReaderMode(true);
         } else if (imageCountRef.current === imageCutoff) {
-            setIsStripMode(false);
-            updateCache(false);
+            setReaderMode(false);
         }
     };
 
@@ -250,7 +254,10 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                             />
                         ))}
                     </div>
-                    <MangaFooter chapterData={chapterData} />
+                    <MangaFooter
+                        chapterData={chapterData}
+                        toggleReaderMode={toggleReaderMode}
+                    />
                 </div>
             </>
         );
@@ -303,7 +310,10 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
                 <div
                     className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapterData.images.length ? "hidden" : ""}`}
                 >
-                    <MangaFooter chapterData={chapterData} />
+                    <MangaFooter
+                        chapterData={chapterData}
+                        toggleReaderMode={toggleReaderMode}
+                    />
                 </div>
             </div>
         </>
