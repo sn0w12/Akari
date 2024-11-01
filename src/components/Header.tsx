@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -191,7 +191,7 @@ export function HeaderComponent() {
                 setSearchResults([]);
                 setShowPopup(false);
             }
-        }, 500), // 500ms debounce delay
+        }, 300), // 300ms debounce delay
         [],
     );
 
@@ -211,21 +211,24 @@ export function HeaderComponent() {
         }
     };
 
-    const fetchNotification = useCallback(async () => {
-        try {
-            const res = await fetch(`/api/bookmarks/notification`);
+    const fetchNotification = useMemo(
+        () => async () => {
+            try {
+                const res = await fetch(`/api/bookmarks/notification`);
 
-            if (!res.ok) {
-                setNotification("");
-                return;
+                if (!res.ok) {
+                    setNotification("");
+                    return;
+                }
+
+                const data = await res.json();
+                setNotification(data);
+            } catch (error) {
+                console.error("Error fetching search results:", error);
             }
-
-            const data = await res.json();
-            setNotification(data);
-        } catch (error) {
-            console.error("Error fetching search results:", error);
-        }
-    }, []);
+        },
+        [],
+    );
 
     const debouncedFetchNotification = useCallback(
         debounce(fetchNotification, 10),
