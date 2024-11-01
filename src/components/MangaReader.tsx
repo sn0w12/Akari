@@ -133,21 +133,32 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     const fetchChapter = useCallback(async () => {
         const server = getSetting("mangaServer");
 
-        const response = await fetch(
-            `/api/manga/${id}/${subId}?server=${server}`,
-        );
-        const data = await response.json();
-        const uniqueChapters: Chapter[] = Array.from(
-            new Map<string, Chapter>(
-                data.chapters.map((item: { value: string; label: string }) => [
-                    item.value,
-                    item,
-                ]),
-            ).values(),
-        );
-        data.chapters = uniqueChapters;
-        setChapterData(data);
-        document.title = `${data.title} - ${data.chapter}`;
+        try {
+            const response = await fetch(
+                `/api/manga/${id}/${subId}?server=${server}`,
+            );
+            if (!response.ok) {
+                throw new Error(
+                    `Network response was not ok: ${response.statusText}`,
+                );
+            }
+            const data = await response.json();
+            const uniqueChapters: Chapter[] = Array.from(
+                new Map<string, Chapter>(
+                    data.chapters.map(
+                        (item: { value: string; label: string }) => [
+                            item.value,
+                            item,
+                        ],
+                    ),
+                ).values(),
+            );
+            data.chapters = uniqueChapters;
+            setChapterData(data);
+            document.title = `${data.title} - ${data.chapter}`;
+        } catch (error) {
+            console.error("Failed to fetch chapter data:", error);
+        }
     }, [id, subId]);
 
     const debouncedFetchChapter = useCallback(debounce(fetchChapter, 10), [
