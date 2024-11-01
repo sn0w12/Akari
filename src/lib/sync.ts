@@ -11,12 +11,18 @@ export async function syncAllServices(data: Chapter) {
     let success = true;
 
     const cachedManga = await db.getCache(db.mangaCache, data.parentId);
+    let mangaId;
     if (!cachedManga) {
-        console.error("Manga not found in cache");
-        return;
+        const response: Response = await fetch(`/api/manga/${data.parentId}`);
+        const responseData = await response.json();
+        mangaId = responseData.mangaId;
+
+        db.updateCache(db.mangaCache, data.parentId, { id: mangaId });
+    } else {
+        mangaId = cachedManga.id;
     }
 
-    const isBookmarked = await checkIfBookmarked(cachedManga.id);
+    const isBookmarked = await checkIfBookmarked(mangaId);
     if (!isBookmarked) {
         return;
     }
