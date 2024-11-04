@@ -48,6 +48,11 @@ export async function GET() {
             );
         }
 
+        console.log(
+            `https://user.manganelo.com/login?l=manganato&re_l=login&${uniqueParam}\n`,
+            captchaUrl,
+        );
+
         // Step 3: Return both the CAPTCHA URL and the session cookie to the client
         return NextResponse.json({
             captchaUrl,
