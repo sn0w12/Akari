@@ -1,7 +1,8 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import NodeCache from "node-cache";
 
-export const dynamic = "force-dynamic";
+const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 
 interface Manga {
     id: string;
@@ -16,15 +17,19 @@ interface Manga {
     author?: string;
 }
 
-interface MetaData {
-    totalStories: number;
-    totalPages: number;
-}
-
 export async function GET(req: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(req.url);
         const page: string = searchParams.get("page") || "1";
+        const cacheKey = `mangaList_${page}`;
+
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            return new Response(JSON.stringify(cachedData), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         // Construct the URL with the page number
         const url = `https://manganato.com/genre-all/${page}`;
@@ -101,20 +106,17 @@ export async function GET(req: Request): Promise<Response> {
             });
         });
 
-        return new Response(
-            JSON.stringify({
-                mangaList,
-                popular,
-                metaData: {
-                    totalStories,
-                    totalPages,
-                } as MetaData,
-            }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            },
-        );
+        const result = {
+            mangaList,
+            popular,
+            metaData: { totalStories, totalPages },
+        };
+        cache.set(cacheKey, result);
+
+        return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     } catch (error) {
         console.error(error);
         return new Response(

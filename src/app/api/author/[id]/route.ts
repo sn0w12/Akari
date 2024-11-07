@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour
 
 interface Manga {
     id: string;
@@ -15,11 +18,6 @@ interface Manga {
     author?: string;
 }
 
-interface MetaData {
-    totalStories: number;
-    totalPages: number;
-}
-
 export async function GET(
     request: Request,
     { params }: { params: { id: string } },
@@ -29,6 +27,15 @@ export async function GET(
         const authorId = params.id;
         const orderBy = searchParams.get("orderBy") || "";
         const page = searchParams.get("page") || "1";
+        const cacheKey = `author_${authorId}_${orderBy}_${page}`;
+
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            return new Response(JSON.stringify(cachedData), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         if (!authorId) {
             return NextResponse.json(
@@ -86,20 +93,16 @@ export async function GET(
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
 
-        // Return the HTML or processed data
-        return new Response(
-            JSON.stringify({
-                mangaList,
-                metaData: {
-                    totalStories,
-                    totalPages,
-                } as MetaData,
-            }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            },
-        );
+        const result = {
+            mangaList,
+            metaData: { totalStories, totalPages },
+        };
+        cache.set(cacheKey, result);
+
+        return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     } catch (error) {
         console.error("Error fetching author search results:", error);
         return NextResponse.json(

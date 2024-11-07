@@ -3,6 +3,9 @@ import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
 
 interface Chapter {
     id: string;
@@ -36,6 +39,16 @@ export async function GET(
     const id = params.id;
     const cookieStore = cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
+    const cacheKey = `mangaDetails_${id}`;
+
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+        console.log("Returning cached data");
+        return new Response(JSON.stringify(cachedData), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 
     try {
         const jar = new CookieJar();
@@ -197,6 +210,10 @@ export async function GET(
         const mangaDetails = await fetchMangaDetails(
             "https://chapmanganato.to",
         );
+        if (mangaDetails.storyData) {
+            cache.set(cacheKey, mangaDetails);
+        }
+
         return new Response(JSON.stringify(mangaDetails), {
             status: 200,
             headers: { "Content-Type": "application/json" },
