@@ -21,6 +21,7 @@ import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Skeleton } from "@/components/ui/skeleton";
 import MangaDetailsSkeleton from "./ui/MangaDetails/mangaDetailsSkeleton";
 import ErrorComponent from "./ui/error";
+import Toast from "@/lib/toastWrapper";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     try {
@@ -220,6 +221,32 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         currentPage * chaptersPerPage,
     );
 
+    const navigateToLastRead = () => {
+        if (!lastRead || !manga) {
+            new Toast("No previous reading history found", "error");
+            return;
+        }
+        const chapterIndex = sortedChapters?.findIndex(
+            (chapter) => chapter.id === lastRead,
+        );
+
+        if (chapterIndex === -1 || chapterIndex === undefined) {
+            new Toast("Last read chapter not found", "error");
+            return;
+        }
+
+        const pageNumber = Math.floor(chapterIndex / chaptersPerPage) + 1;
+        setCurrentPage(pageNumber);
+
+        setTimeout(() => {
+            const chapterElement = document.getElementById(lastRead);
+            chapterElement?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }, 100);
+    };
+
     if (isLoading) return <MangaDetailsSkeleton />;
     if (error) return <ErrorComponent message={error} />;
     if (!manga) return <ErrorComponent message="Manga not found" />;
@@ -394,10 +421,15 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             {/* Remaining content */}
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
-                <Button variant="outline" onClick={toggleSortOrder}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={navigateToLastRead}>
+                        Find Latest Read
+                    </Button>
+                    <Button variant="outline" onClick={toggleSortOrder}>
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
@@ -405,6 +437,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     <Link
                         href={`${window.location.pathname}/${chapter.id}`}
                         key={chapter.id}
+                        id={chapter.id}
                     >
                         <Card
                             className={`h-full transition-colors ${

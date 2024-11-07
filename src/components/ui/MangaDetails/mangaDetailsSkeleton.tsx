@@ -73,10 +73,15 @@ export default function MangaDetailsSkeleton() {
 
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
-                <Button variant="outline" disabled={true}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Sort Ascending
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" disabled={true}>
+                        Find Latest Read
+                    </Button>
+                    <Button variant="outline" disabled={true}>
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Sort Ascending
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
