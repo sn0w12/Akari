@@ -4,6 +4,7 @@ import Fuse from "fuse.js";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
+export const dynamic = "force-dynamic";
 
 interface Manga {
     id: string;

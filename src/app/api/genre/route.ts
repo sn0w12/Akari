@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
+export const dynamic = "force-dynamic";
 
 interface Manga {
     id: string;

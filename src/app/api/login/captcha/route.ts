@@ -5,6 +5,7 @@ import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
 export const fetchCache = "force-no-store";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
@@ -47,11 +48,6 @@ export async function GET() {
                 { status: 400 },
             );
         }
-
-        console.log(
-            `https://user.manganelo.com/login?l=manganato&re_l=login&${uniqueParam}\n`,
-            captchaUrl,
-        );
 
         // Step 3: Return both the CAPTCHA URL and the session cookie to the client
         return NextResponse.json({
