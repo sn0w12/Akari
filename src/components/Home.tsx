@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import ErrorComponent from "./ui/error";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import { getBaseUrl } from "@/app/api/baseUrl";
+import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
 
 interface Manga {
@@ -29,18 +29,11 @@ interface MangaListResponse {
 }
 
 async function getMangaData(page: number): Promise<MangaListResponse> {
-    const baseUrl = getBaseUrl();
+    const baseUrl = getProductionUrl();
     const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
 
-    console.log("Fetching manga data from", url);
     const res = await fetch(url, {
         next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-
-    console.log({
-        status: res.status,
-        statusText: res.statusText,
-        headers: Object.fromEntries(res.headers.entries()),
     });
 
     if (!res.ok) {
