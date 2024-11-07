@@ -1,7 +1,9 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import Fuse from "fuse.js";
+import NodeCache from "node-cache";
 
+const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
 export const dynamic = "force-dynamic";
 
 interface Manga {
@@ -20,6 +22,15 @@ export async function GET(req: Request): Promise<Response> {
         const { searchParams } = new URL(req.url);
         const query: string = searchParams.get("search") || ""; // Get search query
         const page: string = searchParams.get("page") || "1";
+        const cacheKey = `search_${query}_${page}`;
+
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            return new Response(JSON.stringify(cachedData), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         // Construct the URL with the page number
         const url = `https://manganato.com/search/story/${query}?page=${page}`;
@@ -67,6 +78,7 @@ export async function GET(req: Request): Promise<Response> {
 
         const searchResults = fuse.search(query.replace("_", " "));
         mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
+        cache.set(cacheKey, mangaList);
 
         return new Response(
             JSON.stringify({

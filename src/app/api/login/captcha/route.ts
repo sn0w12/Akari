@@ -5,6 +5,7 @@ import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
 export const fetchCache = "force-no-store";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {

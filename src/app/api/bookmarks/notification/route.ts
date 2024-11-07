@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 
 const BOOKMARK_NOTIFICATION_URL =
     "https://user.mngusr.com/bookmark_get_notification";
@@ -15,6 +18,15 @@ export async function GET() {
             { message: "User data is required" },
             { status: 401 },
         );
+    }
+
+    const cacheKey = `bookmark_notification_${user_data}`;
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+        return new Response(JSON.stringify(cachedData), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 
     try {
@@ -41,6 +53,7 @@ export async function GET() {
         }
 
         const unreadBookmarks = data.data;
+        cache.set(cacheKey, unreadBookmarks);
         return NextResponse.json(unreadBookmarks);
     } catch (error) {
         console.error(error);

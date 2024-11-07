@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -110,7 +110,7 @@ export function HeaderComponent() {
             description: "Slows down first load on manga detail pages.",
             type: "checkbox",
             value: settings.fetchMalImage,
-            default: true,
+            default: defaultSettings.fetchMalImage,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -124,7 +124,7 @@ export function HeaderComponent() {
             label: "Use Toasts",
             type: "checkbox",
             value: settings.useToast,
-            default: true,
+            default: defaultSettings.useToast,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -139,7 +139,7 @@ export function HeaderComponent() {
             description: "Such as manga detail pages cover image.",
             type: "checkbox",
             value: settings.fancyAnimations,
-            default: true,
+            default: defaultSettings.fancyAnimations,
             onChange: (value: SettingValue) => {
                 if (typeof value === "boolean") {
                     setSettings((prevSettings) => ({
@@ -157,7 +157,7 @@ export function HeaderComponent() {
                 { label: "Server 2", value: "2" },
             ],
             value: settings.mangaServer,
-            default: "1",
+            default: defaultSettings.mangaServer,
             onChange: (value: SettingValue) => {
                 if (typeof value === "string") {
                     setSettings((prevSettings) => ({
@@ -191,7 +191,7 @@ export function HeaderComponent() {
                 setSearchResults([]);
                 setShowPopup(false);
             }
-        }, 500), // 500ms debounce delay
+        }, 300), // 300ms debounce delay
         [],
     );
 
@@ -211,21 +211,24 @@ export function HeaderComponent() {
         }
     };
 
-    const fetchNotification = useCallback(async () => {
-        try {
-            const res = await fetch(`/api/bookmarks/notification`);
+    const fetchNotification = useMemo(
+        () => async () => {
+            try {
+                const res = await fetch(`/api/bookmarks/notification`);
 
-            if (!res.ok) {
-                setNotification("");
-                return;
+                if (!res.ok) {
+                    setNotification("");
+                    return;
+                }
+
+                const data = await res.json();
+                setNotification(data);
+            } catch (error) {
+                console.error("Error fetching search results:", error);
             }
-
-            const data = await res.json();
-            setNotification(data);
-        } catch (error) {
-            console.error("Error fetching search results:", error);
-        }
-    }, []);
+        },
+        [],
+    );
 
     const debouncedFetchNotification = useCallback(
         debounce(fetchNotification, 10),

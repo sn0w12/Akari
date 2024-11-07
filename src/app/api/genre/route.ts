@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import NodeCache from "node-cache";
 
+const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
 
 interface Manga {
@@ -15,11 +17,6 @@ interface Manga {
     views?: string;
     date?: string;
     author?: string;
-}
-
-interface MetaData {
-    totalStories: number;
-    totalPages: number;
 }
 
 // Genre map to convert genre names to their respective IDs
@@ -86,6 +83,16 @@ export async function GET(request: Request): Promise<Response> {
         // Convert genre names to their corresponding IDs
         const includeGenres = getGenreIds(includeGenresParam);
         const excludeGenres = getGenreIds(excludeGenresParam);
+
+        const cacheKey = `genre_${includeGenres.join("_")}_${excludeGenres.join("_")}_${orderBy}_${page}`;
+
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            return new Response(JSON.stringify(cachedData), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         if (includeGenres.length === 0) {
             return NextResponse.json(
@@ -154,20 +161,16 @@ export async function GET(request: Request): Promise<Response> {
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
 
-        // Return the HTML or processed data
-        return new Response(
-            JSON.stringify({
-                mangaList,
-                metaData: {
-                    totalStories,
-                    totalPages,
-                } as MetaData,
-            }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            },
-        );
+        const result = {
+            mangaList,
+            metaData: { totalStories, totalPages },
+        };
+        cache.set(cacheKey, result);
+
+        return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     } catch (error) {
         console.error("Error fetching genre search results:", error);
         return NextResponse.json(

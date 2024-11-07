@@ -120,73 +120,90 @@ export default function MangaReaderHome() {
             {!isLoading && !error && (
                 <>
                     <main className="container mx-auto px-4 py-8">
-                        <div
-                            style={{ display: currentPage === 1 ? "" : "None" }}
-                        >
-                            <h2 className="text-3xl font-bold mb-6">
-                                Popular Manga
-                            </h2>
-                            {error && <ErrorComponent message={error} />}
-                            <>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                                    {paginatedPopularList.map((manga) => (
-                                        <Link
-                                            href={`/manga/${manga.id}`}
-                                            key={manga.id}
-                                            className="block"
-                                        >
-                                            <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
-                                                <CardContent className="p-0">
-                                                    <Image
-                                                        src={manga.image}
-                                                        alt={manga.title}
-                                                        width={250}
-                                                        height={350}
-                                                        className="w-full h-auto object-cover"
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
-                                                            <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                                {manga.title}
-                                                            </h3>
-                                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                                Chapter:{" "}
-                                                                {manga.chapter}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        </Link>
-                                    ))}
-                                </div>
+                        {currentPage === 1 && (
+                            <div>
+                                <h2 className="text-3xl font-bold mb-6">
+                                    Popular Manga
+                                </h2>
+                                {error && <ErrorComponent message={error} />}
+                                <>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                                        {paginatedPopularList.map(
+                                            (manga, index) => (
+                                                <Link
+                                                    href={`/manga/${manga.id}`}
+                                                    key={manga.id}
+                                                    className="block"
+                                                >
+                                                    <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
+                                                        <CardContent className="p-0">
+                                                            <Image
+                                                                loading={
+                                                                    index *
+                                                                        currentPopularPage <
+                                                                    12
+                                                                        ? "eager"
+                                                                        : "lazy"
+                                                                }
+                                                                src={
+                                                                    manga.image
+                                                                }
+                                                                alt={
+                                                                    manga.title
+                                                                }
+                                                                width={250}
+                                                                height={350}
+                                                                className="w-full h-auto object-cover"
+                                                            />
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                                <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
+                                                                    <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                                        {
+                                                                            manga.title
+                                                                        }
+                                                                    </h3>
+                                                                    <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                                                        Chapter:{" "}
+                                                                        {
+                                                                            manga.chapter
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Link>
+                                            ),
+                                        )}
+                                    </div>
 
-                                {/* Pagination Controls for Popular Releases */}
-                                <div className="flex justify-between items-center mt-6 px-4 py-4 border-t border-b">
-                                    <Button
-                                        variant="outline"
-                                        onClick={handlePopularPreviousPage}
-                                        disabled={currentPopularPage === 1}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <span>
-                                        Page {currentPopularPage} of{" "}
-                                        {totalPopularPages}
-                                    </span>
-                                    <Button
-                                        variant="outline"
-                                        onClick={handlePopularNextPage}
-                                        disabled={
-                                            currentPopularPage ===
-                                            totalPopularPages
-                                        }
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </>
-                        </div>
+                                    {/* Pagination Controls for Popular Releases */}
+                                    <div className="flex justify-between items-center mt-6 px-4 py-4 border-t border-b">
+                                        <Button
+                                            variant="outline"
+                                            onClick={handlePopularPreviousPage}
+                                            disabled={currentPopularPage === 1}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <span>
+                                            Page {currentPopularPage} of{" "}
+                                            {totalPopularPages}
+                                        </span>
+                                        <Button
+                                            variant="outline"
+                                            onClick={handlePopularNextPage}
+                                            disabled={
+                                                currentPopularPage ===
+                                                totalPopularPages
+                                            }
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </>
+                            </div>
+                        )}
 
                         {error && <ErrorComponent message={error} />}
                         <>

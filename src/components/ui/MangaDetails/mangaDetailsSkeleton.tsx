@@ -13,7 +13,7 @@ export default function MangaDetailsSkeleton() {
                 <div className="flex flex-shrink-0 justify-center">
                     <Skeleton
                         className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg lg:min-w-full"
-                        style={{ width: "300px", height: "460px" }}
+                        style={{ width: "400px", height: "600px" }}
                     />
                 </div>
 
@@ -26,7 +26,7 @@ export default function MangaDetailsSkeleton() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow">
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow overflow-hidden">
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div>
                                 {details.map((label, index) => (
@@ -62,8 +62,8 @@ export default function MangaDetailsSkeleton() {
                                 <Skeleton className="h-10 w-full xl:w-1/2" />
                             </div>
                         </div>
-                        <div className="lg:w-1/2 flex-grow">
-                            <Card className="w-full h-full max-h-96 p-4 overflow-y-auto">
+                        <div className="lg:w-1/2 flex-grow h-full">
+                            <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
                                 <Skeleton className="h-48 lg:h-full w-full" />
                             </Card>
                         </div>
@@ -73,10 +73,15 @@ export default function MangaDetailsSkeleton() {
 
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
-                <Button variant="outline" disabled={true}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Sort Ascending
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" disabled={true}>
+                        Find Latest Read
+                    </Button>
+                    <Button variant="outline" disabled={true}>
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Sort Ascending
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">

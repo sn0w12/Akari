@@ -10,27 +10,28 @@
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It uses manganato as a backend, leveraging its content while allowing users to manage and retain their bookmarks from the site directly within the application.
+Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
 
 # Features
 
--   **MyAnimeList Syncing:** Akari has built in MAL syncing.
+-   **MyAnimeList Syncing:** Built-in synchronization with MyAnimeList (MAL).
 -   **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
 -   **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
 -   **All Manganato Features:** All normal manganato features are available.
 -   **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
--   **Search Through Bookmarks:** Search through all your bookmarks to find the manga you are looking for.
+-   **Search Bookmarks:** Quickly find manga by searching through your bookmarks.
 
 # Settings
 
--   **Fetch MAL Image:** Uses the public `jikan` api to try and find the manga on `MyAnimeList` to get a better cover for it. Can be wrong, specially for smaller titles.
--   **Use Toasts:** Turns on or off the notification toasts.
+-   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better cover images from MyAnimeList.
+-   **Use Toasts:** Enable or disable notification toasts.
+-   **Fancy Animations:** Toggle advanced animations for a richer experience.
 
 # Getting Started
 
-## Usage
+## Online Usage
 
-Either go to the [Website](https://akari-psi.vercel.app/) or host it yourself, see the Installation header.
+Visit the [Akari Website](https://akari-psi.vercel.app/) to start reading manga instantly.
 
 If you have a [Manganato](https://manganato.com/) account, press the account button in the top right and sign in to your account as normal.
 
@@ -59,14 +60,18 @@ After you've been logged in, you can use it as you normally would.
 
 </details>
 
-## Prerequisites
+## Local Installation
+
+If you prefer to run Akari locally, follow these steps.
+
+### Prerequisites
 
 Before running Akari, make sure you have the following installed:
 
 -   [Node.js](https://nodejs.org/) (v14 or later)
 -   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
-## Installation
+### Installation
 
 1. Clone the repository:
 
@@ -87,7 +92,7 @@ or
 yarn install
 ```
 
-## Running the Development Server
+### Running the Development Server
 
 To start the development server, run:
 
@@ -103,7 +108,7 @@ yarn dev
 
 Open http://localhost:3000 in your browser to see the application.
 
-## Production Build
+### Production Build
 
 To build the app for production:
 
@@ -119,7 +124,7 @@ yarn build
 yarn start
 ```
 
-### DMCA disclaimer
+## DMCA disclaimer
 
 The developers of this application do not have any affiliation with the content available in the app.
 It collects content from sources that are freely available through any web browser

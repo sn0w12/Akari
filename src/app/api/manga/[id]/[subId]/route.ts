@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
-
 import { Chapter } from "@/app/api/interfaces";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
 
 export async function GET(
     req: Request,
@@ -14,6 +16,15 @@ export async function GET(
     const server = searchParams.get("server") || "1";
     const cookieStore = cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
+    const cacheKey = `manga_${id}_${subId}_${server}`;
+
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+        return new Response(JSON.stringify(cachedData), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 
     try {
         // Fetch the HTML content of the page
@@ -109,6 +120,10 @@ export async function GET(
             storyData: glbStoryData,
             chapterData: glbChapterData,
         };
+
+        if (responseData.storyData && responseData.chapterData) {
+            cache.set(cacheKey, responseData);
+        }
 
         return NextResponse.json(responseData);
     } catch (error) {

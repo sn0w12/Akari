@@ -21,6 +21,7 @@ import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Skeleton } from "@/components/ui/skeleton";
 import MangaDetailsSkeleton from "./ui/MangaDetails/mangaDetailsSkeleton";
 import ErrorComponent from "./ui/error";
+import Toast from "@/lib/toastWrapper";
 
 async function fetchManga(id: string): Promise<Manga | null> {
     try {
@@ -220,31 +221,57 @@ export function MangaDetailsComponent({ id }: { id: string }) {
         currentPage * chaptersPerPage,
     );
 
+    const navigateToLastRead = () => {
+        if (!lastRead || !manga) {
+            new Toast("No previous reading history found", "error");
+            return;
+        }
+        const chapterIndex = sortedChapters?.findIndex(
+            (chapter) => chapter.id === lastRead,
+        );
+
+        if (chapterIndex === -1 || chapterIndex === undefined) {
+            new Toast("Last read chapter not found", "error");
+            return;
+        }
+
+        const pageNumber = Math.floor(chapterIndex / chaptersPerPage) + 1;
+        setCurrentPage(pageNumber);
+
+        setTimeout(() => {
+            const chapterElement = document.getElementById(lastRead);
+            chapterElement?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }, 100);
+    };
+
     if (isLoading) return <MangaDetailsSkeleton />;
     if (error) return <ErrorComponent message={error} />;
     if (!manga) return <ErrorComponent message="Manga not found" />;
 
     return (
         <main className="container mx-auto px-4 py-8">
-            <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
+            <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center">
                     {!imageLoaded && (
-                        <Skeleton className="rounded-lg shadow-lg max-h-[460px] object-cover h-auto xl:h-full max-w-lg min-w-full" />
+                        <Skeleton className="rounded-lg shadow-lg max-h-[600px] object-cover h-auto xl:h-full max-w-lg min-w-full" />
                     )}
                     <EnhancedImage
                         src={image}
                         alt={manga.name}
-                        className="rounded-lg shadow-lg object-cover h-auto xl:h-full max-w-lg min-w-full"
+                        className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
-                        width={300}
-                        height={460}
+                        width={400}
+                        height={600}
                         priority={true}
                         onLoad={() => setImageLoaded(true)}
                     />
                 </div>
 
                 {/* Card with flex layout to lock title and buttons */}
-                <Card className="p-6 flex flex-col justify-between flex-grow">
+                <Card className="p-6 flex flex-col justify-between flex-grow lg:max-h-[600px]">
                     {/* Title stays at the top */}
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
                         <h1 className="text-3xl font-bold">{manga.name}</h1>
@@ -285,7 +312,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     </div>
 
                     {/* Middle section grows as needed */}
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow">
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div>
@@ -382,8 +409,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
 
                         {/* Right section for the description */}
-                        <div className="lg:w-1/2 flex-grow">
-                            <Card className="w-full h-full max-h-96 p-4 overflow-y-auto">
+                        <div className="lg:w-1/2 flex-grow h-full">
+                            <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
                                 <p>{manga.description}</p>
                             </Card>
                         </div>
@@ -394,10 +421,15 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             {/* Remaining content */}
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
-                <Button variant="outline" onClick={toggleSortOrder}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={navigateToLastRead}>
+                        Find Latest Read
+                    </Button>
+                    <Button variant="outline" onClick={toggleSortOrder}>
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
@@ -405,6 +437,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     <Link
                         href={`${window.location.pathname}/${chapter.id}`}
                         key={chapter.id}
+                        id={chapter.id}
                     >
                         <Card
                             className={`h-full transition-colors ${
