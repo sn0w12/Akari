@@ -9,7 +9,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Fuse from "fuse.js";
 import React from "react";
-import PaginationElement from "@/components/ui/paginationElement";
+import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import Image from "next/image";

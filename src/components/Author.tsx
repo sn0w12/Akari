@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Combo } from "@/components/ui/combo";
 import React from "react";
-import PaginationElement from "@/components/ui/paginationElement";
+import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import { debounce } from "lodash";
 import nextBase64 from "next-base64";
 import Image from "next/image";

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown } from "lucide-react";
-import PaginationElement from "@/components/ui/paginationElement";
+import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import { Manga } from "@/app/api/interfaces";
 import React from "react";
 import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";
