@@ -44,6 +44,7 @@ export default function BookmarksPage() {
     const [searchResults, setSearchResults] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
     const [isHoveringResults, setIsHoveringResults] = useState(false);
+    const [isHoveringSearchButton, setIsHoveringSearchButton] = useState(false);
 
     useEffect(() => {
         document.title = "Bookmarks";
@@ -433,16 +434,39 @@ export default function BookmarksPage() {
                                             <Link
                                                 href={`/manga/${result.link.split("/").pop()}`}
                                                 key={result.id}
-                                                className="block p-2 hover:bg-accent flex items-center rounded-lg"
+                                                className={`block p-2 ${isHoveringSearchButton ? "" : "hover:bg-accent"} flex items-center rounded-lg`}
                                             >
-                                                <Image
-                                                    src={result.image}
-                                                    alt={result.name}
-                                                    width={300}
-                                                    height={450}
-                                                    className="max-h-24 w-auto rounded mr-2"
-                                                />
-                                                {result.name}
+                                                <div className="flex items-center justify-between w-full">
+                                                    <div className="flex items-center">
+                                                        <Image
+                                                            src={result.image}
+                                                            alt={result.name}
+                                                            width={300}
+                                                            height={450}
+                                                            className="max-h-24 w-auto rounded mr-2"
+                                                        />
+                                                        {result.name}
+                                                    </div>
+                                                    <Link
+                                                        href={`/manga/${result.link.split("/").pop()}/${result.last_read}`}
+                                                    >
+                                                        <Button
+                                                            className="z-20"
+                                                            onMouseEnter={() => {
+                                                                setIsHoveringSearchButton(
+                                                                    true,
+                                                                );
+                                                            }}
+                                                            onMouseLeave={() => {
+                                                                setIsHoveringSearchButton(
+                                                                    false,
+                                                                );
+                                                            }}
+                                                        >
+                                                            Continue Reading
+                                                        </Button>
+                                                    </Link>
+                                                </div>
                                             </Link>
                                         ))}
                                     </CardContent>
