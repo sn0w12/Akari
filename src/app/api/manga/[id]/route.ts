@@ -43,7 +43,6 @@ export async function GET(
 
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-        console.log("Returning cached data");
         return new Response(JSON.stringify(cachedData), {
             status: 200,
             headers: { "Content-Type": "application/json" },
