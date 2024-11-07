@@ -1,4 +1,3 @@
-// next.config.js
 module.exports = {
     images: {
         remotePatterns: [
@@ -28,15 +27,5 @@ module.exports = {
             },
         ],
         unoptimized: true,
-    },
-    webpack: (config, { isServer }) => {
-        // Ignore source maps for production
-        if (!isServer) {
-            config.module.rules.push({
-                test: /\.map$/,
-                use: "ignore-loader",
-            });
-        }
-        return config;
     },
 };
