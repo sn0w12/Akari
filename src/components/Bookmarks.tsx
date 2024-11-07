@@ -43,6 +43,7 @@ export default function BookmarksPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
+    const [isHoveringResults, setIsHoveringResults] = useState(false);
 
     useEffect(() => {
         document.title = "Bookmarks";
@@ -402,13 +403,31 @@ export default function BookmarksPage() {
                                         onChange={(e) =>
                                             handleSearch(e.target.value)
                                         }
+                                        onBlur={() => {
+                                            if (!isHoveringResults) {
+                                                setSearchResults([]);
+                                            }
+                                        }}
+                                        onFocus={() => {
+                                            if (searchQuery) {
+                                                handleSearch(searchQuery);
+                                            }
+                                        }}
                                         className="no-cancel"
                                     />
                                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 </div>
                             </div>
                             {searchResults.length > 0 && (
-                                <Card className="absolute z-10 w-full mt-1">
+                                <Card
+                                    className="absolute z-10 w-full mt-1"
+                                    onMouseEnter={() =>
+                                        setIsHoveringResults(true)
+                                    }
+                                    onMouseLeave={() =>
+                                        setIsHoveringResults(false)
+                                    }
+                                >
                                     <CardContent className="p-2 max-h-[60vh] overflow-y-scroll">
                                         {searchResults.map((result) => (
                                             <Link
