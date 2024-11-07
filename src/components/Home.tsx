@@ -29,15 +29,30 @@ interface MangaListResponse {
 }
 
 async function getMangaData(page: number): Promise<MangaListResponse> {
-    const res = await fetch(
-        `${getBaseUrl()}/api/manga-list/latest?page=${page}`,
-        {
-            next: { revalidate: 60 }, // Cache for 60 seconds
-        },
-    );
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
+
+    console.log("Fetching manga data from", url);
+    const res = await fetch(url, {
+        next: { revalidate: 60 }, // Cache for 60 seconds
+    });
+
+    console.log({
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+    });
 
     if (!res.ok) {
-        throw new Error("Failed to fetch manga data");
+        const errorText = await res.text();
+        console.error("Fetch error details:", {
+            error: errorText,
+            status: res.status,
+            url,
+        });
+        throw new Error(
+            `Failed to fetch manga data: ${res.status} ${res.statusText}`,
+        );
     }
 
     return res.json();
