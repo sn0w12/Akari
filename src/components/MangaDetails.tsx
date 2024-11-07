@@ -419,13 +419,21 @@ export function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             {/* Remaining content */}
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={navigateToLastRead}>
+                    <Button
+                        variant="outline"
+                        className="flex-grow sm:flex-grow-0"
+                        onClick={navigateToLastRead}
+                    >
                         Find Latest Read
                     </Button>
-                    <Button variant="outline" onClick={toggleSortOrder}>
+                    <Button
+                        variant="outline"
+                        className="flex-grow sm:flex-grow-0"
+                        onClick={toggleSortOrder}
+                    >
                         <ArrowUpDown className="mr-2 h-4 w-4" />
                         Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
                     </Button>
