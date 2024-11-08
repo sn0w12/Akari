@@ -46,9 +46,17 @@ export async function fetchMalData(
     for (let attempt = 0; attempt <= retryCount; attempt++) {
         try {
             const malSyncResponse = await fetch(
-                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(
-                    identifier,
-                )}`,
+                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(identifier)}`,
+                {
+                    headers: {
+                        "User-Agent":
+                            "Mozilla/5.0 (compatible; YourApp/1.0; +https://yourapp.vercel.app)",
+                        Accept: "application/json",
+                        Origin: getProductionUrl(),
+                    },
+                    // Add timeout to prevent hanging requests
+                    signal: AbortSignal.timeout(10000),
+                },
             );
 
             if (malSyncResponse.status === 429 && attempt < retryCount) {
