@@ -18,6 +18,7 @@ async function getHqData(malSyncData: MalSync) {
         `${getProductionUrl()}/api/manga/${service}/${id}`,
     );
     if (!response.ok) {
+        console.error(`Failed to fetch data for ${service} ID ${id}`);
         return null;
     }
     const data = await response.json();
@@ -58,6 +59,9 @@ export async function fetchMalData(
             }
 
             if (!malSyncResponse.ok) {
+                console.error(
+                    `Failed to fetch MAL data for ${identifier}: ${malSyncResponse.status}`,
+                );
                 return null;
             }
 
