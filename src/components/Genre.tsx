@@ -126,6 +126,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={totalPages}
+                searchParams={[{ key: "sort", value: currentSort }]}
             />
         </div>
     );

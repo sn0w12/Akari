@@ -142,6 +142,7 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={totalPages}
+                searchParams={[{ key: "sort", value: currentSort }]}
             />
         </div>
     );

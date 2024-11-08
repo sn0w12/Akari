@@ -12,16 +12,29 @@ import { PaginationDialog } from "./PaginationDialog";
 interface PaginationElementProps {
     currentPage: number;
     totalPages: number;
+    searchParams?: { key: string; value: string }[];
 }
 
 export function PaginationElement({
     currentPage,
     totalPages,
+    searchParams = [],
 }: PaginationElementProps) {
+    const createPageUrl = (page: number) => {
+        return (
+            `?page=${page}` +
+            searchParams.map((param) => `&${param.key}=${param.value}`).join("")
+        );
+    };
+
     return (
         <Pagination className="mb-6 flex items-center justify-center">
             <PaginationContent className="flex items-center">
-                <Link href={`?page=${currentPage - 1}`} passHref legacyBehavior>
+                <Link
+                    href={createPageUrl(currentPage - 1)}
+                    passHref
+                    legacyBehavior
+                >
                     <PaginationPrevious
                         className={`w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center ${
                             currentPage === 1
@@ -34,7 +47,11 @@ export function PaginationElement({
                 {currentPage > 2 && (
                     <>
                         <PaginationItem>
-                            <Link href="?page=1" passHref legacyBehavior>
+                            <Link
+                                href={createPageUrl(1)}
+                                passHref
+                                legacyBehavior
+                            >
                                 <PaginationLink className="cursor-pointer">
                                     1
                                 </PaginationLink>
@@ -54,7 +71,7 @@ export function PaginationElement({
                         return (
                             <PaginationItem key={i}>
                                 <Link
-                                    href={`?page=${i + 1}`}
+                                    href={createPageUrl(i + 1)}
                                     passHref
                                     legacyBehavior
                                 >
@@ -81,7 +98,7 @@ export function PaginationElement({
                         </PaginationItem>
                         <PaginationItem>
                             <Link
-                                href={`?page=${totalPages}`}
+                                href={createPageUrl(totalPages)}
                                 passHref
                                 legacyBehavior
                             >
@@ -93,7 +110,11 @@ export function PaginationElement({
                     </>
                 )}
 
-                <Link href={`?page=${currentPage + 1}`} passHref legacyBehavior>
+                <Link
+                    href={createPageUrl(currentPage + 1)}
+                    passHref
+                    legacyBehavior
+                >
                     <PaginationNext
                         className={`w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${
                             currentPage === totalPages
