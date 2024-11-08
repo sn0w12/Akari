@@ -79,9 +79,6 @@ export async function fetchMalData(
             if (!malSyncResponse.ok) {
                 const errorText = await malSyncResponse.text();
                 console.error(`Access forbidden to MAL Sync API:`, {
-                    sent: malSyncResponse.headers,
-                    url: malSyncResponse.url,
-                    status: malSyncResponse.status,
                     errorMessage: errorText,
                     statusText: malSyncResponse.statusText,
                 });
