@@ -80,7 +80,7 @@ export async function GET(
     try {
         const { searchParams } = new URL(request.url);
         const authorId = params.id;
-        const orderBy = searchParams.get("orderBy") || "";
+        const orderBy = searchParams.get("orderBy") || "latest";
         const page = searchParams.get("page") || "1";
         const cacheKey = `author_${authorId}_${orderBy}_${page}`;
 
