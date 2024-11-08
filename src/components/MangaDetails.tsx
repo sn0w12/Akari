@@ -10,12 +10,11 @@ import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";
 import Buttons from "./ui/MangaDetails/Buttons";
 import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
-import { getProductionUrl } from "@/app/api/baseUrl";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
 import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
 
 async function getMangaDetails(id: string) {
-    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
+    const response = await fetch(`/api/manga/${id}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch manga");
