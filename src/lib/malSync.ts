@@ -47,26 +47,6 @@ export async function fetchMalData(
         try {
             const malSyncResponse = await fetch(
                 `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(identifier)}`,
-                {
-                    headers: {
-                        "User-Agent":
-                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
-                        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                        "Accept-Encoding": "gzip, deflate, br, zstd",
-                        "Accept-Language": "en-US,en;q=0.5",
-                        Connection: "keep-alive",
-                        Host: "api.malsync.moe",
-                        "Sec-Fetch-Dest": "document",
-                        "Sec-Fetch-Mode": "navigate",
-                        "Sec-Fetch-Site": "none",
-                        "Sec-Fetch-User": "?1",
-                        "Sec-GPC": "1",
-                        TE: "trailers",
-                        "Upgrade-Insecure-Requests": "1",
-                        Priority: "u=0, i",
-                    },
-                    signal: AbortSignal.timeout(10000),
-                },
             );
 
             if (malSyncResponse.status === 429 && attempt < retryCount) {
@@ -77,18 +57,7 @@ export async function fetchMalData(
             }
 
             if (!malSyncResponse.ok) {
-                const buffer = await malSyncResponse.arrayBuffer();
-                const decoder = new TextDecoder("utf-8");
-                const decodedText = decoder.decode(buffer);
-
-                console.error(`Access forbidden to MAL Sync API:`, {
-                    errorMessage: decodedText,
-                    statusText: malSyncResponse.statusText,
-                    contentType: malSyncResponse.headers.get("content-type"),
-                    contentEncoding:
-                        malSyncResponse.headers.get("content-encoding"),
-                    status: malSyncResponse.status,
-                });
+                console.error(`Access forbidden to MAL Sync API:`);
                 return null;
             }
 
