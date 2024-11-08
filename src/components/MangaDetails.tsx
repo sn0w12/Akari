@@ -59,10 +59,9 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-export async function MangaDetailsComponent({ id }: { id: string }) {
+export function MangaDetailsComponent({ id }: { id: string }) {
     const [manga, setManga] = useState<any>(null);
     const [malData, setMalData] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -75,15 +74,13 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 setMalData(malResult);
             } catch (error) {
                 console.error("Error fetching manga details:", error);
-            } finally {
-                setIsLoading(false);
             }
         };
 
         fetchData();
     }, [id]);
 
-    if (isLoading || !manga) {
+    if (!manga) {
         return <MangaDetailsSkeleton />;
     }
 
@@ -93,11 +90,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={
-                            malData?.imageUrl
-                                ? malData.imageUrl
-                                : manga.imageUrl
-                        }
+                        src={malData?.imageUrl ?? manga.imageUrl}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
