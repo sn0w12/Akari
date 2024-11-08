@@ -9,34 +9,59 @@ import React from "react";
 import { Manga } from "@/app/api/interfaces";
 
 interface BookmarkButtonProps {
-    isBookmarked: boolean | null;
     manga: Manga;
-    bookmark: (
-        storyData: string,
-        isBookmarked: boolean,
-        setIsBookmarked: (state: boolean | null) => void,
-    ) => void;
-    removeBookmark: (setIsBookmarked: (state: boolean) => void) => void;
-    setIsBookmarked: (state: boolean | null) => void;
+    isBookmarked: boolean | null;
+    bmData: string;
+}
+
+async function bookmark(storyData: string, isBookmarked: boolean) {
+    if (isBookmarked) {
+        return;
+    }
+
+    const response = await fetch("/api/bookmarks/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            story_data: storyData,
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+async function removeBookmark(bmData: string) {
+    const response = await fetch("/api/bookmarks/delete", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            bm_data: bmData,
+        }),
+    });
+    const data = await response.json();
+    return data;
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
-    isBookmarked,
     manga,
-    bookmark,
-    removeBookmark,
-    setIsBookmarked,
+    isBookmarked,
+    bmData,
 }) => {
     const [hovered, setHovered] = useState(false);
 
     const handleBookmarkClick = () => {
         if (isBookmarked !== null) {
-            bookmark(manga.storyData, isBookmarked, setIsBookmarked);
+            bookmark(manga.storyData, isBookmarked);
         }
     };
 
     const handleRemoveBookmark = () => {
-        removeBookmark(setIsBookmarked);
+        removeBookmark(bmData);
     };
 
     const buttonContent =
