@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
+import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
 
 async function getMangaDetails(id: string) {
     const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
@@ -58,10 +60,32 @@ const formatDate = (date: string) => {
 };
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
-    const [manga, malData] = await Promise.all([
-        getMangaDetails(id),
-        fetchMalData(id),
-    ]);
+    const [manga, setManga] = useState<any>(null);
+    const [malData, setMalData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [mangaData, malResult] = await Promise.all([
+                    getMangaDetails(id),
+                    fetchMalData(id),
+                ]);
+                setManga(mangaData);
+                setMalData(malResult);
+            } catch (error) {
+                console.error("Error fetching manga details:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+
+    if (isLoading || !manga) {
+        return <MangaDetailsSkeleton />;
+    }
 
     return (
         <main className="container mx-auto px-4 py-8">
