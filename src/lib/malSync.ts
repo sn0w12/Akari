@@ -1,7 +1,6 @@
 import db from "@/lib/db";
 import { MalSync } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
-import { getProductionUrl } from "@/app/api/baseUrl";
 
 async function getHqData(malSyncData: MalSync) {
     let service;
@@ -14,9 +13,7 @@ async function getHqData(malSyncData: MalSync) {
         id = malSyncData.aniId;
     } else return null;
 
-    const response = await fetch(
-        `${getProductionUrl()}/api/manga/${service}/${id}`,
-    );
+    const response = await fetch(`/api/manga/${service}/${id}`);
     if (!response.ok) {
         console.error(`Failed to fetch data for ${service} ID ${id}`);
         return null;
