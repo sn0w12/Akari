@@ -77,10 +77,17 @@ export async function fetchMalData(
             }
 
             if (!malSyncResponse.ok) {
-                const errorText = await malSyncResponse.text();
+                const buffer = await malSyncResponse.arrayBuffer();
+                const decoder = new TextDecoder("utf-8");
+                const decodedText = decoder.decode(buffer);
+
                 console.error(`Access forbidden to MAL Sync API:`, {
-                    errorMessage: errorText,
+                    errorMessage: decodedText,
                     statusText: malSyncResponse.statusText,
+                    contentType: malSyncResponse.headers.get("content-type"),
+                    contentEncoding:
+                        malSyncResponse.headers.get("content-encoding"),
+                    status: malSyncResponse.status,
                 });
                 return null;
             }
