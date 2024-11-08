@@ -81,7 +81,7 @@ export default function PageProgress({
         >
             <div
                 ref={containerRef}
-                className="relative p-1 rounded-lg border border-primary/30 bg-background w-full lg:w-[30px] h-[30px] lg:h-[80vh]"
+                className="relative p-1 rounded-lg border border-primary/30 bg-background w-full lg:w-[30px] h-[30px] lg:h-[75vh]"
             >
                 <div
                     className="absolute left-1 top-1 lg:top-1 right-1 lg:right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-md"
