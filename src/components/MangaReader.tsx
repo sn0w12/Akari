@@ -235,7 +235,7 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
         }
     };
 
-    if (!chapterData || !firstImageLoaded) {
+    if (!chapterData) {
         return <MangaReaderSkeleton />;
     }
 
@@ -243,6 +243,9 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     if (isStripMode) {
         return (
             <>
+                <div className={`${firstImageLoaded ? "hidden" : ""}`}>
+                    <MangaReaderSkeleton />
+                </div>
                 <div className={`${firstImageLoaded ? "" : "hidden"}`}>
                     <div
                         id="reader"
@@ -274,6 +277,9 @@ export default function ChapterReader({ isFooterVisible }: ChapterReaderProps) {
     // Normal mode (single image navigation)
     return (
         <>
+            <div className={`${firstImageLoaded ? "hidden" : ""}`}>
+                <MangaReaderSkeleton />
+            </div>
             <div
                 className={`${firstImageLoaded ? "" : "hidden"} overflow-x-hidden`}
             >
