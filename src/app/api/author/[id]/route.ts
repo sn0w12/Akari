@@ -12,11 +12,65 @@ interface Manga {
     title: string;
     chapter: string;
     chapterUrl: string | undefined;
-    description?: string;
-    rating?: string;
-    views?: string;
-    date?: string;
-    author?: string;
+    description: string;
+    rating: string;
+    views: string;
+    date: number;
+    author: string;
+}
+
+function parseDateString(dateStr: string | undefined): number {
+    if (!dateStr) return 0;
+
+    // Handle relative dates (e.g. "2 hours ago")
+    if (dateStr.includes("ago")) {
+        const num = parseInt(dateStr);
+        if (dateStr.includes("hour")) {
+            return Date.now() - num * 60 * 60 * 1000;
+        } else if (dateStr.includes("day")) {
+            return Date.now() - num * 24 * 60 * 60 * 1000;
+        }
+    }
+
+    // Handle "Updated : Nov 08,2024 - 18:51" format
+    if (dateStr.includes("Updated")) {
+        const [_, cleanDate, minutes] = dateStr.split(":"); // "Nov 08,2024 - 18:51"
+        const [datePart, timePart] = cleanDate.split("-").map((s) => s.trim());
+        const [month, day, year] = datePart.split(/[\s,]+/);
+        const [hours] = timePart.split(":");
+
+        console.log(cleanDate, { month, day, year, hours, minutes });
+
+        const date = new Date(
+            parseInt(year),
+            getMonthNumber(month),
+            parseInt(day),
+            parseInt(hours),
+            parseInt(minutes),
+        );
+        return date.getTime();
+    }
+
+    // Fallback to regular date parsing
+    return Date.parse(dateStr);
+}
+
+function getMonthNumber(month: string): number {
+    const months: { [key: string]: number } = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        Jun: 5,
+        Jul: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11,
+    };
+    return months[month] || 0;
 }
 
 export async function GET(
@@ -75,6 +129,8 @@ export async function GET(
                 if (i === 1) views = $(timeElement).text();
             });
 
+            if (!date || !views) return;
+
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
                 image: imageUrl,
@@ -83,10 +139,17 @@ export async function GET(
                 chapterUrl: chapterUrl,
                 rating: rating,
                 author: author,
-                date: date,
-                views: views?.replace("View : ", ""),
+                date: parseDateString(date),
+                views: views.replace("View : ", ""),
+                description: "",
             });
         });
+
+        if (orderBy === "latest") {
+            mangaList.sort((a, b) => {
+                return b.date - a.date;
+            });
+        }
 
         const totalStories: number = mangaList.length;
         const lastPageElement = $("a.page-last");
