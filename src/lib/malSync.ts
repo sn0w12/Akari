@@ -50,11 +50,12 @@ export async function fetchMalData(
                 {
                     headers: {
                         "User-Agent":
-                            "Mozilla/5.0 (compatible; YourApp/1.0; +https://yourapp.vercel.app)",
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
                         Accept: "application/json",
+                        "Accept-Language": "en-US,en;q=0.9",
                         Origin: getProductionUrl(),
+                        Referer: getProductionUrl(),
                     },
-                    // Add timeout to prevent hanging requests
                     signal: AbortSignal.timeout(10000),
                 },
             );
@@ -67,9 +68,11 @@ export async function fetchMalData(
             }
 
             if (!malSyncResponse.ok) {
-                console.error(
-                    `Failed to fetch MAL data for ${identifier}: ${malSyncResponse.status}`,
-                );
+                console.error(`Access forbidden to MAL Sync API. Headers:`, {
+                    sent: malSyncResponse.headers,
+                    url: malSyncResponse.url,
+                    status: malSyncResponse.status,
+                });
                 return null;
             }
 
