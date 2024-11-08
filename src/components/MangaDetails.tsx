@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -12,13 +13,7 @@ import { getProductionUrl } from "@/app/api/baseUrl";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
 
 async function getMangaDetails(id: string) {
-    const cookieStore = cookies();
-    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`, {
-        headers: {
-            Cookie: cookieStore.toString(),
-        },
-        cache: "no-store",
-    });
+    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch manga");
@@ -65,7 +60,7 @@ const formatDate = (date: string) => {
 export async function MangaDetailsComponent({ id }: { id: string }) {
     const [manga, malData] = await Promise.all([
         getMangaDetails(id),
-        fetchMalData(id, true, 3, 3000, false),
+        fetchMalData(id),
     ]);
 
     return (
