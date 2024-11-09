@@ -15,6 +15,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ConfirmDialog from "@/components/ui/confirmDialog";
+import { Button } from "@/components/ui/button";
 
 export type SettingValue = string | boolean | string[];
 export type SettingType =
@@ -25,7 +27,8 @@ export type SettingType =
     | "number"
     | "textarea"
     | "select"
-    | "radio";
+    | "radio"
+    | "button";
 
 interface BaseSetting {
     label: string;
@@ -67,12 +70,21 @@ interface RadioSetting extends BaseSetting {
     default: string;
 }
 
+interface ButtonSetting extends BaseSetting {
+    type: "button";
+    label: string;
+    confirmation?: string;
+    confirmPositive?: boolean;
+    onClick: () => void;
+}
+
 export type Setting =
     | CheckboxSetting
     | TextSetting
     | TextareaSetting
     | SelectSetting
-    | RadioSetting;
+    | RadioSetting
+    | ButtonSetting;
 
 export interface SettingsMap {
     [key: string]: Setting;
@@ -96,6 +108,8 @@ function getSettingValue(setting: Setting): SettingValue {
                 (setting as BaseSetting).value ??
                 (setting as BaseSetting).default
             );
+        case "button":
+            return "";
         default:
             const _exhaustiveCheck: never = setting;
             return _exhaustiveCheck as never;
@@ -256,6 +270,28 @@ function renderInput(key: string, setting: Setting) {
                         </div>
                     ))}
                 </RadioGroup>
+            );
+        case "button":
+            if (!setting.confirmation) {
+                return (
+                    <Button
+                        onClick={() => (setting as ButtonSetting).onClick()}
+                    >
+                        {setting.label}
+                    </Button>
+                );
+            }
+
+            return (
+                <ConfirmDialog
+                    triggerButton={
+                        <Button>{(setting as ButtonSetting).label}</Button>
+                    }
+                    title="Confirm"
+                    message={(setting as ButtonSetting).confirmation ?? ""}
+                    confirmColor={`${setting.confirmPositive ? "bg-green-600 border-green-500 hover:bg-green-500" : "bg-red-600 border-red-500 hover:bg-red-500"}`}
+                    onConfirm={() => (setting as ButtonSetting).onClick()}
+                />
             );
         default:
             return null;

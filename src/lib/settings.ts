@@ -4,6 +4,7 @@ import {
     Setting,
 } from "@/components/ui/Header/Settings";
 import React from "react";
+import db from "./db";
 
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
@@ -66,11 +67,32 @@ export const notificationSettings = {
     },
 };
 
-const allSettings = [generalSettings, mangaSettings, notificationSettings];
+export const cacheSettings = {
+    label: "Cache",
+    clearCache: {
+        label: "Clear Cache",
+        type: "button",
+        confirmation: "Are you sure you want to clear the cache?",
+        onClick: () => {
+            db.clearCache(db.bookmarkCache);
+            db.clearCache(db.mangaCache);
+            db.clearCache(db.hqMangaCache);
+            window.location.reload();
+        },
+    },
+};
+
+const allSettings = [
+    generalSettings,
+    mangaSettings,
+    notificationSettings,
+    cacheSettings,
+];
 const settings = {
     ...generalSettings,
     ...mangaSettings,
     ...notificationSettings,
+    ...cacheSettings,
 };
 
 type SettingMap = (typeof allSettings)[number];
@@ -80,7 +102,7 @@ const getDefaultSettings = (): SettingsInterface => {
     for (const key in settings) {
         if (key === "label") continue;
         const setting = settings[key as keyof typeof settings];
-        if (typeof setting !== "string") {
+        if (typeof setting !== "string" && "default" in setting) {
             defaults[key] = setting.default;
         }
     }
