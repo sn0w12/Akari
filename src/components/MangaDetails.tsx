@@ -232,7 +232,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         <div className="lg:w-1/2 flex-grow h-full">
                             <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
                                 <p>
-                                    {malData.description ?? manga.description}
+                                    {malData?.description ?? manga.description}
                                 </p>
                             </Card>
                         </div>
