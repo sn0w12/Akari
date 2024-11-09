@@ -149,23 +149,22 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     Authors:
                                     {manga.authors.map(
                                         (author: string, index: number) => (
-                                            <Badge
-                                                key={index}
-                                                withShadow={true}
-                                                className="bg-primary text-secondary ml-2"
-                                                shadowClassName="ml-2 mt-[5px]"
+                                            <Link
+                                                href={`/author/${encodeURIComponent(
+                                                    manga.author_urls[index]
+                                                        ?.split("/")
+                                                        .pop() || "",
+                                                )}`}
                                             >
-                                                <Link
-                                                    href={`/author/${encodeURIComponent(
-                                                        manga.author_urls[index]
-                                                            ?.split("/")
-                                                            .pop() || "",
-                                                    )}`}
-                                                    className="hover:underline"
+                                                <Badge
+                                                    key={index}
+                                                    withShadow={true}
+                                                    className="bg-primary text-secondary ml-2 hover:bg-gray-300"
+                                                    shadowClassName="ml-2 mt-[5px]"
                                                 >
                                                     {author}
-                                                </Link>
-                                            </Badge>
+                                                </Badge>
+                                            </Link>
                                         ),
                                     )}
                                 </div>
@@ -181,7 +180,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">
                                     Updated:
-                                    <Badge className="ml-2">
+                                    <Badge className="ml-2 hover:bg-gray-300">
                                         {formatDate(manga.updated)}
                                     </Badge>
                                 </div>
