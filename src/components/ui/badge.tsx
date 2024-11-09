@@ -15,6 +15,7 @@ const badgeVariants = cva(
                 destructive:
                     "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
                 outline: "text-foreground",
+                shadow: "relative hover:translate-y-[-2px] transition-transform duration-200",
             },
         },
         defaultVariants: {
@@ -25,9 +26,43 @@ const badgeVariants = cva(
 
 export interface BadgeProps
     extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof badgeVariants> {}
+        VariantProps<typeof badgeVariants> {
+    withShadow?: boolean;
+    shadowClassName?: string;
+}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({
+    className,
+    variant,
+    withShadow = false,
+    shadowClassName,
+    ...props
+}: BadgeProps) {
+    if (withShadow) {
+        return (
+            <div className="relative inline-block group">
+                <div
+                    className={cn(
+                        badgeVariants({ variant }),
+                        "relative z-10 hover:bg-primary",
+                        className,
+                    )}
+                    {...props}
+                />
+                <div
+                    className={cn(
+                        badgeVariants({ variant }),
+                        "bg-accent-color text-accent-color absolute top-0 left-0 z-0 scale-95",
+                        "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:scale-100",
+                        "transition-all duration-200",
+                        shadowClassName ?? className,
+                    )}
+                    {...props}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className={cn(badgeVariants({ variant }), className)} {...props} />
     );

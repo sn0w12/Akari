@@ -26,13 +26,13 @@ async function getMangaDetails(id: string) {
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
         case "ongoing":
-            return "bg-green-500";
+            return "bg-green-500 hover:bg-green-600";
         case "completed":
-            return "bg-blue-500";
+            return "bg-blue-500 hover:bg-blue-600";
         case "hiatus":
-            return "bg-yellow-500";
+            return "bg-yellow-500 hover:bg-yellow-600";
         default:
-            return "bg-gray-500";
+            return "bg-gray-500 hover:bg-gray-600";
     }
 };
 
@@ -41,15 +41,16 @@ const getViewsColor = (views: string) => {
         parseFloat(views.replace(/K|M/, "")) *
         (views.includes("M") ? 1_000_000 : 1_000);
 
-    if (viewsNum < 100_000) return { bg: "bg-orange-500", text: "text-white" };
+    if (viewsNum < 100_000)
+        return { bg: "bg-orange-500 hover:bg-orange-600", text: "text-white" };
     else if (viewsNum < 1_000_000)
-        return { bg: "bg-yellow-500", text: "text-black" };
+        return { bg: "bg-yellow-500 hover:bg-yellow-600", text: "text-black" };
     else if (viewsNum < 10_000_000)
-        return { bg: "bg-teal-500", text: "text-white" };
+        return { bg: "bg-teal-500 hover:bg-teal-600", text: "text-white" };
     else if (viewsNum < 100_000_000)
-        return { bg: "bg-violet-500", text: "text-white" };
+        return { bg: "bg-violet-500 hover:bg-violet-600", text: "text-white" };
 
-    return { bg: "bg-green-500", text: "text-white" };
+    return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
 const formatDate = (date: string) => {
@@ -152,7 +153,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                         (author: string, index: number) => (
                                             <Badge
                                                 key={index}
+                                                withShadow={true}
                                                 className="bg-primary text-secondary ml-2"
+                                                shadowClassName="ml-2 mt-[5px]"
                                             >
                                                 <Link
                                                     href={`/author/${encodeURIComponent(
@@ -180,7 +183,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">
                                     Updated:
-                                    <Badge className="bg-gray-200 text-gray-800 ml-2">
+                                    <Badge className="ml-2">
                                         {formatDate(manga.updated)}
                                     </Badge>
                                 </div>
@@ -209,8 +212,10 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                                 )}`}
                                             >
                                                 <Badge
-                                                    variant="outline"
+                                                    variant="secondary"
+                                                    withShadow={true}
                                                     className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
+                                                    shadowClassName="mt-[3px]"
                                                 >
                                                     {genre}
                                                 </Badge>
