@@ -1,4 +1,9 @@
-import { defaultSettings, SettingsInterface } from "@/components/Header";
+import {
+    SettingValue,
+    SettingsMap,
+    SettingType,
+    Setting,
+} from "@/components/ui/Header/Settings";
 import React from "react";
 
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
@@ -7,6 +12,61 @@ export interface SettingsChangeEvent {
     value: any;
     previousValue: any;
 }
+
+type DefaultValueType<T> = T extends { default: infer D } ? D : never;
+
+export type SettingsInterface = {
+    [K in keyof typeof settings]: DefaultValueType<(typeof settings)[K]>;
+};
+
+const settings = {
+    fetchMalImage: {
+        label: "Fetch MAL Data",
+        description: "Slows down first load on manga detail pages.",
+        type: "checkbox",
+        default: true,
+    },
+    useToast: {
+        label: "Use Toasts",
+        type: "checkbox",
+        default: true,
+    },
+    fancyAnimations: {
+        label: "Fancy Animations",
+        description: "Such as manga detail pages cover image.",
+        type: "checkbox",
+        default: true,
+    },
+    mangaServer: {
+        label: "Manga Server",
+        type: "select",
+        options: [
+            { label: "Server 1", value: "1" },
+            { label: "Server 2", value: "2" },
+        ],
+        default: "1",
+        onChange: () => {
+            if (window.location.pathname.includes("/chapter")) {
+                window.location.reload();
+            }
+        },
+    },
+    showPageProgress: {
+        label: "Show Page Progress",
+        type: "checkbox",
+        default: true,
+    },
+};
+
+const getDefaultSettings = (): SettingsInterface => {
+    const defaults: Record<string, any> = {};
+    for (const key in settings) {
+        defaults[key] = settings[key as keyof typeof settings].default;
+    }
+    return defaults as SettingsInterface;
+};
+
+export const defaultSettings = getDefaultSettings();
 
 /**
  * Dispatches a custom event when a setting is changed.
@@ -83,3 +143,38 @@ export function getSetting(key: keyof SettingsInterface) {
     }
     return null;
 }
+
+/**
+ * Creates a map of settings with handlers to update the settings.
+ *
+ * @param currentSettings - The current settings object.
+ * @param setSettings - A function to update the settings.
+ * @returns A map of settings with their current values and change handlers.
+ */
+export const createSettingsMap = (
+    currentSettings: SettingsInterface,
+    setSettings: (newSettings: SettingsInterface) => void,
+): SettingsMap => {
+    const createHandler =
+        (
+            key: keyof SettingsInterface,
+            customHandler?: (value: SettingValue) => void,
+        ) =>
+        (value: SettingValue) => {
+            setSettings({ ...currentSettings, [key]: value });
+            customHandler?.(value);
+        };
+
+    const returnSettings: SettingsMap = {};
+    for (const [key, definition] of Object.entries(settings)) {
+        const keyName = key as keyof SettingsInterface;
+        const setting = definition as Setting;
+        const onChange = createHandler(keyName, setting.onChange);
+        returnSettings[key] = {
+            ...setting,
+            value: currentSettings[keyName],
+            onChange,
+        } as Setting;
+    }
+    return returnSettings;
+};

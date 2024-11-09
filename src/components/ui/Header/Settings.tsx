@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export type SettingValue = string | boolean | string[];
+export type SettingType = "checkbox" | "text" | "password" | "email" | "number" | "textarea" | "select" | "radio";
 
 interface BaseSetting {
     label: string;
@@ -57,7 +58,7 @@ interface RadioSetting extends BaseSetting {
     default: string;
 }
 
-type Setting =
+export type Setting =
     | CheckboxSetting
     | TextSetting
     | TextareaSetting
