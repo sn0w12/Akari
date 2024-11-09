@@ -8,8 +8,8 @@ import React from "react";
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
     key: keyof SettingsInterface;
-    value: any;
-    previousValue: any;
+    value: SettingValue;
+    previousValue: SettingValue;
 }
 
 type DefaultValueType<T> = T extends { default: infer D } ? D : never;
@@ -58,7 +58,7 @@ const settings = {
 };
 
 const getDefaultSettings = (): SettingsInterface => {
-    const defaults: Record<string, any> = {};
+    const defaults: Record<string, unknown> = {};
     for (const key in settings) {
         defaults[key] = settings[key as keyof typeof settings].default;
     }
@@ -79,7 +79,7 @@ export const defaultSettings = getDefaultSettings();
  * dispatchSettingsChange('darkMode', true);
  * ```
  */
-export function dispatchSettingsChange<T>(
+export function dispatchSettingsChange<T extends SettingValue>(
     key: keyof SettingsInterface,
     value: T,
     previousValue: T,
