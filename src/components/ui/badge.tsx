@@ -54,7 +54,7 @@ function Badge({
                         badgeVariants({ variant }),
                         "bg-accent-color text-accent-color absolute top-0 left-0 z-0 scale-95",
                         "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:scale-100",
-                        "transition-all duration-200",
+                        "transition-all duration-200 pointer-events-none",
                         shadowClassName ?? className,
                     )}
                     {...props}
