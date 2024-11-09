@@ -119,7 +119,6 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
                                         height={40}
-                                        quality={100}
                                     />
                                 </a>
                             )}
@@ -135,7 +134,6 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
                                         height={40}
-                                        quality={100}
                                     />
                                 </a>
                             )}
