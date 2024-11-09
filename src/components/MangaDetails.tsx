@@ -106,7 +106,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     {/* Title stays at the top */}
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
                         <h1 className="text-3xl font-bold">{manga.name}</h1>
-                        <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row">
+                        <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
                             {malData?.aniUrl && (
                                 <a
                                     href={malData.aniUrl}
