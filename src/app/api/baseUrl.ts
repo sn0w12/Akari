@@ -10,3 +10,12 @@ export function getBaseUrl() {
         return "http://localhost:3000";
     }
 }
+
+export function getProductionUrl() {
+    const vercelEnv = process.env.VERCEL_ENV;
+    if (vercelEnv) {
+        return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+    } else {
+        return "http://localhost:3000";
+    }
+}

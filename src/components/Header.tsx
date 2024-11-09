@@ -19,6 +19,12 @@ import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
 import Image from "next/image";
+import {
+    dispatchSettingsChange,
+    SettingsInterface,
+    defaultSettings,
+    createAllSettingsMaps,
+} from "@/lib/settings";
 
 interface Manga {
     id: string;
@@ -29,20 +35,6 @@ interface Manga {
     rating: string;
     author: string;
 }
-
-export interface SettingsInterface {
-    fetchMalImage: boolean;
-    useToast: boolean;
-    fancyAnimations: boolean;
-    mangaServer: string;
-}
-
-export const defaultSettings: SettingsInterface = {
-    fetchMalImage: true,
-    useToast: true,
-    fancyAnimations: true,
-    mangaServer: "1",
-};
 
 // Custom hook for managing theme
 const useTheme = () => {
@@ -73,19 +65,46 @@ const useTheme = () => {
 
 // Hook to manage settings
 const useSettings = () => {
-    const [settings, setSettings] = useState<SettingsInterface>(() => {
-        // Initialize from localStorage or return default values
+    const [settings, setSettingsState] = useState<SettingsInterface>(() => {
         if (typeof window !== "undefined") {
             const storedSettings = localStorage.getItem("settings");
             return storedSettings
                 ? JSON.parse(storedSettings)
                 : defaultSettings;
         }
-        return defaultSettings; // Default settings in case window is not defined
+        return defaultSettings;
     });
 
+    const setSettings = useCallback(
+        (
+            newSettings:
+                | SettingsInterface
+                | ((prev: SettingsInterface) => SettingsInterface),
+        ) => {
+            setSettingsState((prevSettings) => {
+                const nextSettings =
+                    typeof newSettings === "function"
+                        ? newSettings(prevSettings)
+                        : newSettings;
+
+                // Dispatch events for each changed setting
+                Object.keys(nextSettings).forEach((key) => {
+                    const typedKey = key as keyof SettingsInterface;
+                    const newValue = nextSettings[typedKey];
+                    const oldValue = prevSettings[typedKey];
+
+                    if (oldValue !== newValue) {
+                        dispatchSettingsChange(typedKey, newValue, oldValue);
+                    }
+                });
+
+                return nextSettings;
+            });
+        },
+        [],
+    );
+
     useEffect(() => {
-        // Only set localStorage if we're in a browser environment
         if (typeof window !== "undefined") {
             localStorage.setItem("settings", JSON.stringify(settings));
         }
@@ -103,71 +122,7 @@ export function HeaderComponent() {
     const { theme, toggleTheme } = useTheme();
     const { settings, setSettings } = useSettings();
     const popupRef = useRef<HTMLDivElement | null>(null);
-
-    const settingsMap: SettingsMap = {
-        fetchMalImage: {
-            label: "Fetch MAL Data",
-            description: "Slows down first load on manga detail pages.",
-            type: "checkbox",
-            value: settings.fetchMalImage,
-            default: defaultSettings.fetchMalImage,
-            onChange: (value: SettingValue) => {
-                if (typeof value === "boolean") {
-                    setSettings((prevSettings) => ({
-                        ...prevSettings,
-                        fetchMalImage: value,
-                    }));
-                }
-            },
-        },
-        useToast: {
-            label: "Use Toasts",
-            type: "checkbox",
-            value: settings.useToast,
-            default: defaultSettings.useToast,
-            onChange: (value: SettingValue) => {
-                if (typeof value === "boolean") {
-                    setSettings((prevSettings) => ({
-                        ...prevSettings,
-                        useToast: value,
-                    }));
-                }
-            },
-        },
-        fancyAnimations: {
-            label: "Fancy Animations",
-            description: "Such as manga detail pages cover image.",
-            type: "checkbox",
-            value: settings.fancyAnimations,
-            default: defaultSettings.fancyAnimations,
-            onChange: (value: SettingValue) => {
-                if (typeof value === "boolean") {
-                    setSettings((prevSettings) => ({
-                        ...prevSettings,
-                        fancyAnimations: value,
-                    }));
-                }
-            },
-        },
-        mangaServer: {
-            label: "Manga Server",
-            type: "select",
-            options: [
-                { label: "Server 1", value: "1" },
-                { label: "Server 2", value: "2" },
-            ],
-            value: settings.mangaServer,
-            default: defaultSettings.mangaServer,
-            onChange: (value: SettingValue) => {
-                if (typeof value === "string") {
-                    setSettings((prevSettings) => ({
-                        ...prevSettings,
-                        mangaServer: value,
-                    }));
-                }
-            },
-        },
-    };
+    const settingsMap = createAllSettingsMaps(settings, setSettings);
 
     // Debounce function for fetching search results
     const debouncedFetchResults = useCallback(
@@ -396,7 +351,7 @@ export function HeaderComponent() {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <SettingsForm settingsMap={settingsMap} />
+                                <SettingsForm settingsTabs={settingsMap} />
                             </DialogContent>
                         </Dialog>
 

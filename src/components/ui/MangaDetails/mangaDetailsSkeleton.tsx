@@ -20,9 +20,9 @@ export default function MangaDetailsSkeleton() {
                 <Card className="p-6 flex flex-col justify-between flex-grow">
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
                         <Skeleton className="h-8 w-3/4 lg:w-1/2" />
-                        <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row">
-                            <Skeleton className="h-10 w-10 rounded" />
-                            <Skeleton className="h-10 w-10 rounded" />
+                        <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
+                            <Skeleton className="h-10 w-10 ml-2 rounded" />
+                            <Skeleton className="h-10 w-10 ml-2 rounded" />
                         </div>
                     </div>
 

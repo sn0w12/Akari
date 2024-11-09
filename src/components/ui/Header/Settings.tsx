@@ -14,8 +14,21 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ConfirmDialog from "@/components/ui/confirmDialog";
+import { Button } from "@/components/ui/button";
 
 export type SettingValue = string | boolean | string[];
+export type SettingType =
+    | "checkbox"
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "textarea"
+    | "select"
+    | "radio"
+    | "button";
 
 interface BaseSetting {
     label: string;
@@ -57,44 +70,117 @@ interface RadioSetting extends BaseSetting {
     default: string;
 }
 
-type Setting =
+interface ButtonSetting extends BaseSetting {
+    type: "button";
+    label: string;
+    confirmation?: string;
+    confirmPositive?: boolean;
+    onClick: () => void;
+}
+
+export type Setting =
     | CheckboxSetting
     | TextSetting
     | TextareaSetting
     | SelectSetting
-    | RadioSetting;
+    | RadioSetting
+    | ButtonSetting;
 
 export interface SettingsMap {
     [key: string]: Setting;
 }
 
-function SettingsForm({ settingsMap }: { settingsMap: SettingsMap }) {
+function getSettingValue(setting: Setting): SettingValue {
+    switch (setting.type) {
+        case "checkbox":
+            return (
+                (setting as CheckboxSetting).value ??
+                (setting as CheckboxSetting).default
+            );
+        case "text":
+        case "password":
+        case "email":
+        case "number":
+        case "textarea":
+        case "select":
+        case "radio":
+            return (
+                (setting as BaseSetting).value ??
+                (setting as BaseSetting).default
+            );
+        case "button":
+            return "";
+        default:
+            const _exhaustiveCheck: never = setting;
+            return _exhaustiveCheck as never;
+    }
+}
+
+interface SettingsFormProps {
+    settingsTabs: Record<string, SettingsMap>;
+}
+
+function SettingsForm({ settingsTabs }: SettingsFormProps) {
+    const defaultTab = Object.keys(settingsTabs)[0];
+
     return (
         <>
             <DialogHeader className="border-b pb-4">
                 <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
-            <CardContent className="space-y-6">
-                {Object.entries(settingsMap).map(([key, setting]) => (
-                    <div key={key} className="flex flex-col space-y-2">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <Label
-                                    htmlFor={key}
-                                    className="text-sm font-medium"
-                                >
-                                    {setting.label}
-                                </Label>
-                                {setting.description && (
-                                    <p className="text-sm text-muted-foreground">
-                                        {setting.description}
-                                    </p>
+            <CardContent className="min-h-[400px]">
+                <Tabs defaultValue={defaultTab} className="w-full">
+                    <TabsList
+                        className="grid w-full"
+                        style={{
+                            gridTemplateColumns: `repeat(${Object.keys(settingsTabs).length}, 1fr)`,
+                        }}
+                    >
+                        {Object.keys(settingsTabs).map((tabKey) => (
+                            <TabsTrigger key={tabKey} value={tabKey}>
+                                {tabKey}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+
+                    {Object.entries(settingsTabs).map(
+                        ([tabKey, settingsMap]) => (
+                            <TabsContent
+                                key={tabKey}
+                                value={tabKey}
+                                className="space-y-6"
+                            >
+                                {Object.entries(settingsMap).map(
+                                    ([key, setting]) => (
+                                        <div
+                                            key={key}
+                                            className="flex flex-col space-y-2"
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <Label
+                                                        htmlFor={key}
+                                                        className="text-sm font-medium"
+                                                    >
+                                                        {setting.label}
+                                                    </Label>
+                                                    {setting.description && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                setting.description
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                {renderInput(key, setting)}
+                                            </div>
+                                        </div>
+                                    ),
                                 )}
-                            </div>
-                            {renderInput(key, setting)}
-                        </div>
-                    </div>
-                ))}
+                            </TabsContent>
+                        ),
+                    )}
+                </Tabs>
             </CardContent>
         </>
     );
@@ -106,8 +192,10 @@ function renderInput(key: string, setting: Setting) {
             return (
                 <Switch
                     id={key}
-                    checked={setting.value}
-                    onCheckedChange={setting.onChange}
+                    checked={getSettingValue(setting) as boolean}
+                    onCheckedChange={(value) => {
+                        setting.onChange(value);
+                    }}
                 />
             );
         case "text":
@@ -118,8 +206,10 @@ function renderInput(key: string, setting: Setting) {
                 <Input
                     id={key}
                     type={setting.type}
-                    value={setting.value as string}
-                    onChange={(e) => setting.onChange(e.target.value)}
+                    value={getSettingValue(setting) as string}
+                    onChange={(e) => {
+                        setting.onChange(e.target.value);
+                    }}
                     className="max-w-xs"
                 />
             );
@@ -127,18 +217,22 @@ function renderInput(key: string, setting: Setting) {
             return (
                 <Textarea
                     id={key}
-                    value={setting.value as string}
+                    value={getSettingValue(setting) as string}
                     onChange={(e: {
                         target: { value: string | boolean | string[] };
-                    }) => setting.onChange(e.target.value)}
+                    }) => {
+                        setting.onChange(e.target.value);
+                    }}
                     className="max-w-xs"
                 />
             );
         case "select":
             return (
                 <Select
-                    value={setting.value as string}
-                    onValueChange={setting.onChange}
+                    value={getSettingValue(setting) as string}
+                    onValueChange={(value) => {
+                        setting.onChange(value);
+                    }}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select an option" />
@@ -155,8 +249,10 @@ function renderInput(key: string, setting: Setting) {
         case "radio":
             return (
                 <RadioGroup
-                    value={setting.value as string}
-                    onValueChange={setting.onChange}
+                    value={getSettingValue(setting) as string}
+                    onValueChange={(value) => {
+                        setting.onChange(value);
+                    }}
                     className="flex flex-col space-y-1"
                 >
                     {setting.options.map((option) => (
@@ -174,6 +270,28 @@ function renderInput(key: string, setting: Setting) {
                         </div>
                     ))}
                 </RadioGroup>
+            );
+        case "button":
+            if (!setting.confirmation) {
+                return (
+                    <Button
+                        onClick={() => (setting as ButtonSetting).onClick()}
+                    >
+                        {setting.label}
+                    </Button>
+                );
+            }
+
+            return (
+                <ConfirmDialog
+                    triggerButton={
+                        <Button>{(setting as ButtonSetting).label}</Button>
+                    }
+                    title="Confirm"
+                    message={(setting as ButtonSetting).confirmation ?? ""}
+                    confirmColor={`${setting.confirmPositive ? "bg-green-600 border-green-500 hover:bg-green-500" : "bg-red-600 border-red-500 hover:bg-red-500"}`}
+                    onConfirm={() => (setting as ButtonSetting).onClick()}
+                />
             );
         default:
             return null;

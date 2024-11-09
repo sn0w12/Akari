@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import { getBaseUrl } from "../../baseUrl";
 
-const BATCH_SIZE = 5; // Adjust batch size as needed
+export const maxDuration = 20;
+const BATCH_SIZE = 10;
 
 export async function GET() {
     const cookieStore = cookies();
@@ -66,7 +67,6 @@ export async function GET() {
             const batchResults = await Promise.all(batchPromises);
             allBookmarks.push(...batchResults.flat());
         }
-
         return NextResponse.json({ bookmarks: allBookmarks }, { status: 200 });
     } catch (error) {
         return NextResponse.json(

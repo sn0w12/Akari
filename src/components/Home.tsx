@@ -1,10 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { SortSelect } from "./ui/SortSelect";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
+import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import { getProductionUrl } from "@/app/api/baseUrl";
+import { PopularManga } from "./ui/Home/PopularManga";
 
 interface Manga {
     id: string;
@@ -28,56 +28,63 @@ interface MangaListResponse {
     };
 }
 
-interface PageProps {
-    params: { id: string };
-    searchParams: { page?: string; sort?: string };
-}
+async function getMangaData(page: number): Promise<MangaListResponse> {
+    const baseUrl = getProductionUrl();
+    const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
 
-async function getMangaList(genreId: string, page: number, sort: string) {
-    try {
-        const response = await fetch(
-            `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,
-            { cache: "no-store" },
+    const res = await fetch(url, {
+        next: { revalidate: 60 }, // Cache for 60 seconds
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Fetch error details:", {
+            error: errorText,
+            status: res.status,
+            url,
+        });
+        throw new Error(
+            `Failed to fetch manga data: ${res.status} ${res.statusText}`,
         );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch manga list");
-        }
-
-        return (await response.json()) as MangaListResponse;
-    } catch (error) {
-        throw new Error(`Error fetching manga list: ${error}`);
     }
+
+    return res.json();
 }
 
-export default async function GenrePage({ params, searchParams }: PageProps) {
+export default async function MangaReaderHome({
+    searchParams,
+}: {
+    searchParams: { page: string };
+}) {
     const currentPage = Number(searchParams.page) || 1;
-    const currentSort = searchParams.sort || "latest";
 
-    let mangaList: Manga[] = [];
-    let totalPages = 1;
-    let error = null;
-
+    let mangaData: MangaListResponse;
     try {
-        const data = await getMangaList(params.id, currentPage, currentSort);
-        mangaList = data.mangaList;
-        totalPages = data.metaData.totalPages;
-    } catch (err) {
-        error = `${err}`;
+        mangaData = await getMangaData(currentPage);
+    } catch (error) {
+        return <ErrorComponent message="Failed to load manga data" />;
     }
+
+    const { mangaList, popular, metaData } = mangaData;
+    const totalPages = metaData.totalPages;
 
     return (
         <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto px-4 py-8">
-                <div className="flex gap-4">
-                    <h2 className={`text-3xl font-bold mb-6`}>
-                        {params.id.replaceAll("_", " ")}
-                    </h2>
-                    <SortSelect currentSort={currentSort} />
-                </div>
+                {currentPage === 1 && (
+                    <div>
+                        <h2 className="text-3xl font-bold mb-6">
+                            Popular Manga
+                        </h2>
+                        <PopularManga mangas={popular.slice(0, -1)} />
+                    </div>
+                )}
 
-                {error && <ErrorComponent message={error} />}
-
+                <h2
+                    className={`text-3xl font-bold mb-6 ${currentPage === 1 ? "mt-6" : ""}`}
+                >
+                    Latest Releases
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {mangaList.map((manga) => (
                         <Link
@@ -95,11 +102,11 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                                         className="w-full h-auto object-cover"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
-                                            <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                            <h3 className="font-bold text-sm mb-1">
                                                 {manga.title}
                                             </h3>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                            <p className="text-xs">
                                                 {`Author${manga.author.split(",").length > 1 ? "s" : ""}: `}
                                                 {manga.author
                                                     .split(",")
@@ -108,10 +115,10 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                                                     )
                                                     .join(" | ")}
                                             </p>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                            <p className="text-xs">
                                                 Chapter: {manga.chapter}
                                             </p>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                            <p className="text-xs">
                                                 Views: {manga.views}
                                             </p>
                                         </div>
@@ -122,11 +129,9 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                     ))}
                 </div>
             </main>
-
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={totalPages}
-                searchParams={[{ key: "sort", value: currentSort }]}
             />
         </div>
     );

@@ -1,79 +1,38 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown } from "lucide-react";
-import PaginationElement from "@/components/ui/paginationElement";
-import { Manga } from "@/app/api/interfaces";
 import React from "react";
 import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";
-import BookmarkButton from "./ui/MangaDetails/bookmarkButton";
-import ReadingButton from "./ui/MangaDetails/readingButton";
-import { debounce } from "lodash";
-import db from "@/lib/db";
+import Buttons from "./ui/MangaDetails/Buttons";
 import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
-import { checkIfBookmarked } from "@/lib/bookmarks";
-import { Skeleton } from "@/components/ui/skeleton";
-import MangaDetailsSkeleton from "./ui/MangaDetails/mangaDetailsSkeleton";
-import ErrorComponent from "./ui/error";
-import Toast from "@/lib/toastWrapper";
+import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
+import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
 
-async function fetchManga(id: string): Promise<Manga | null> {
-    try {
-        const response = await fetch(`/api/manga/${id}`);
-        if (!response.ok) {
-            return null;
-        }
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
+async function getMangaDetails(id: string) {
+    const response = await fetch(`/api/manga/${id}`);
 
-async function bookmark(
-    storyData: string,
-    isBookmarked: boolean,
-    setIsBookmarked: (value: boolean | null) => void,
-) {
-    if (isBookmarked) {
-        return;
+    if (!response.ok) {
+        throw new Error("Failed to fetch manga");
     }
 
-    const response = await fetch("/api/bookmarks/add", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            story_data: storyData,
-        }),
-    });
-
-    const data = await response.json();
-
-    if (data.result === "ok") {
-        setIsBookmarked(true);
-    } else {
-        setIsBookmarked(false);
-    }
+    return response.json();
 }
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
         case "ongoing":
-            return "bg-green-500";
+            return "bg-green-500 hover:bg-green-600";
         case "completed":
-            return "bg-blue-500";
+            return "bg-blue-500 hover:bg-blue-600";
         case "hiatus":
-            return "bg-yellow-500";
+            return "bg-yellow-500 hover:bg-yellow-600";
         default:
-            return "bg-gray-500";
+            return "bg-gray-500 hover:bg-gray-600";
     }
 };
 
@@ -82,15 +41,16 @@ const getViewsColor = (views: string) => {
         parseFloat(views.replace(/K|M/, "")) *
         (views.includes("M") ? 1_000_000 : 1_000);
 
-    if (viewsNum < 100_000) return { bg: "bg-orange-500", text: "text-white" };
+    if (viewsNum < 100_000)
+        return { bg: "bg-orange-500 hover:bg-orange-600", text: "text-white" };
     else if (viewsNum < 1_000_000)
-        return { bg: "bg-yellow-500", text: "text-black" };
+        return { bg: "bg-yellow-500 hover:bg-yellow-600", text: "text-black" };
     else if (viewsNum < 10_000_000)
-        return { bg: "bg-teal-500", text: "text-white" };
+        return { bg: "bg-teal-500 hover:bg-teal-600", text: "text-white" };
     else if (viewsNum < 100_000_000)
-        return { bg: "bg-violet-500", text: "text-white" };
+        return { bg: "bg-violet-500 hover:bg-violet-600", text: "text-white" };
 
-    return { bg: "bg-green-500", text: "text-white" };
+    return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
 const formatDate = (date: string) => {
@@ -99,174 +59,45 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-const formatChapterDate = (date: string) => {
-    const dateArray = date.split(",");
-    return `${dateArray[0]}, ${dateArray[1].split(" ").shift()}`;
-};
-
 export function MangaDetailsComponent({ id }: { id: string }) {
-    const [manga, setManga] = useState<Manga | null>(null);
-    const [image, setImage] = useState<string>("");
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const [lastRead, setLastRead] = useState<string>("");
-    const [bmData, setBmData] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
-    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [malLink, setMalLink] = useState<string | null>(null);
-    const [aniLink, setAniLink] = useState<string | null>(null);
-    const chaptersPerPage = 24;
-
-    async function removeBookmark(setIsBookmarked: (value: boolean) => void) {
-        const response = await fetch("/api/bookmarks/delete", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                bm_data: bmData,
-            }),
-        });
-        const data = await response.json();
-        if (data.result === "ok") {
-            setIsBookmarked(false);
-        }
-    }
-
-    const loadManga = useCallback(async () => {
-        setIsLoading(true);
-        const settings = JSON.parse(localStorage.getItem("settings") || "{}");
-        const [data, cachedData, malData] = await Promise.all([
-            fetchManga(id),
-            db.getCache(db.mangaCache, id),
-            fetchMalData(id),
-        ]);
-
-        if (cachedData) {
-            console.log(cachedData);
-            setBmData(cachedData.bm_data);
-            setLastRead(cachedData.last_read);
-        } else if (data) {
-            db.updateCache(db.mangaCache, id, { id: data.mangaId });
-        }
-
-        if (data && data.mangaId) {
-            setManga(data);
-            setImage(data.imageUrl);
-            document.title = data?.name;
-
-            if (malData && settings.fetchMalImage) {
-                setMalLink(malData.malUrl);
-                setAniLink(malData.aniUrl);
-                setImage(malData.imageUrl);
-            }
-
-            setIsLoading(false);
-            setIsBookmarked(await checkIfBookmarked(data.mangaId));
-        } else {
-            setError("Failed to load manga details");
-            setIsLoading(false);
-        }
-    }, [id]);
-
-    const debouncedLoadManga = useCallback(debounce(loadManga, 10), [
-        loadManga,
-    ]);
+    const [manga, setManga] = useState<any>(null);
+    const [malData, setMalData] = useState<any>(null);
 
     useEffect(() => {
-        if (!manga) {
-            debouncedLoadManga();
-        }
-
-        // Cleanup debounce on unmount
-        return () => {
-            debouncedLoadManga.cancel();
+        const fetchData = async () => {
+            try {
+                const [mangaData, malResult] = await Promise.all([
+                    getMangaDetails(id),
+                    fetchMalData(id),
+                ]);
+                setManga(mangaData);
+                setMalData(malResult);
+                document.title = mangaData?.name;
+            } catch (error) {
+                console.error("Error fetching manga details:", error);
+            }
         };
-    }, [debouncedLoadManga, manga]);
 
-    const toggleSortOrder = () => {
-        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-        setCurrentPage(1);
-    };
+        fetchData();
+    }, [id]);
 
-    const sortedChapters = manga?.chapterList
-        .filter((chapter, index, self) => {
-            const ids = self.map((ch) => ch.id);
-            return ids.indexOf(chapter.id) === index;
-        })
-        .slice()
-        .sort((a, b) => {
-            const extractChapterNumber = (name: string) => {
-                const match = name
-                    .replace("-", ".")
-                    .match(/[Cc]hapter\s(\d+)(\.\d+)?/);
-                return match ? parseFloat(match[1] + (match[2] || "")) : 0;
-            };
-
-            const chapterA = extractChapterNumber(a.name);
-            const chapterB = extractChapterNumber(b.name);
-
-            return sortOrder === "asc"
-                ? chapterA - chapterB
-                : chapterB - chapterA;
-        });
-
-    const totalPages = sortedChapters
-        ? Math.ceil(sortedChapters.length / chaptersPerPage)
-        : 0;
-    const currentChapters = sortedChapters?.slice(
-        (currentPage - 1) * chaptersPerPage,
-        currentPage * chaptersPerPage,
-    );
-
-    const navigateToLastRead = () => {
-        if (!lastRead || !manga) {
-            new Toast("No previous reading history found", "error");
-            return;
-        }
-        const chapterIndex = sortedChapters?.findIndex(
-            (chapter) => chapter.id === lastRead,
-        );
-
-        if (chapterIndex === -1 || chapterIndex === undefined) {
-            new Toast("Last read chapter not found", "error");
-            return;
-        }
-
-        const pageNumber = Math.floor(chapterIndex / chaptersPerPage) + 1;
-        setCurrentPage(pageNumber);
-
-        setTimeout(() => {
-            const chapterElement = document.getElementById(lastRead);
-            chapterElement?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-            });
-        }, 100);
-    };
-
-    if (isLoading) return <MangaDetailsSkeleton />;
-    if (error) return <ErrorComponent message={error} />;
-    if (!manga) return <ErrorComponent message="Manga not found" />;
+    if (!manga) {
+        return <MangaDetailsSkeleton />;
+    }
 
     return (
         <main className="container mx-auto px-4 py-8">
             <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
+                {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
-                    {!imageLoaded && (
-                        <Skeleton className="rounded-lg shadow-lg max-h-[600px] object-cover h-auto xl:h-full max-w-lg min-w-full" />
-                    )}
                     <EnhancedImage
-                        src={image}
+                        src={malData?.imageUrl ?? manga.imageUrl}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
                         width={400}
                         height={600}
                         priority={true}
-                        onLoad={() => setImageLoaded(true)}
                     />
                 </div>
 
@@ -275,36 +106,34 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     {/* Title stays at the top */}
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
                         <h1 className="text-3xl font-bold">{manga.name}</h1>
-                        <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row">
-                            {aniLink && (
+                        <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
+                            {malData?.aniUrl && (
                                 <a
-                                    href={aniLink}
+                                    href={malData.aniUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <Image
-                                        src="/img/AniList-logo.png"
+                                        src="/img/AniList-logo.webp"
                                         alt="AniList Logo"
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
                                         height={40}
-                                        quality={100}
                                     />
                                 </a>
                             )}
-                            {malLink && (
+                            {malData?.malUrl && (
                                 <a
-                                    href={malLink}
+                                    href={malData.malUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <Image
-                                        src="/img/MAL-logo.png"
+                                        src="/img/MAL-logo.webp"
                                         alt="MyAnimeList Logo"
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
                                         height={40}
-                                        quality={100}
                                     />
                                 </a>
                             )}
@@ -318,23 +147,26 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                             <div>
                                 <div className="text-lg mb-2">
                                     Authors:
-                                    {manga.authors.map((author, index) => (
-                                        <Badge
-                                            key={index}
-                                            className="bg-primary text-secondary ml-2"
-                                        >
+                                    {manga.authors.map(
+                                        (author: string, index: number) => (
                                             <Link
                                                 href={`/author/${encodeURIComponent(
                                                     manga.author_urls[index]
                                                         ?.split("/")
                                                         .pop() || "",
                                                 )}`}
-                                                className="hover:underline"
                                             >
-                                                {author}
+                                                <Badge
+                                                    key={index}
+                                                    withShadow={true}
+                                                    className="bg-primary text-secondary ml-2 hover:bg-gray-300"
+                                                    shadowClassName="ml-2 mt-[5px]"
+                                                >
+                                                    {author}
+                                                </Badge>
                                             </Link>
-                                        </Badge>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">
                                     Status:
@@ -348,7 +180,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">
                                     Updated:
-                                    <Badge className="bg-gray-200 text-gray-800 ml-2">
+                                    <Badge className="ml-2 hover:bg-gray-300">
                                         {formatDate(manga.updated)}
                                     </Badge>
                                 </div>
@@ -369,7 +201,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                         Genres:
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {manga.genres.map((genre) => (
+                                        {manga.genres.map((genre: string) => (
                                             <Link
                                                 key={genre}
                                                 href={`/genre/${encodeURIComponent(
@@ -377,8 +209,10 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                                 )}`}
                                             >
                                                 <Badge
-                                                    variant="outline"
+                                                    variant="secondary"
+                                                    withShadow={true}
                                                     className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
+                                                    shadowClassName="mt-[3px]"
                                                 >
                                                     {genre}
                                                 </Badge>
@@ -392,102 +226,21 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                             </div>
 
                             {/* Bookmark and Start Reading Buttons */}
-                            <div className="flex flex-col xl:flex-row gap-4 mt-auto">
-                                {/* Toggle bookmark button based on bookmark status */}
-                                <BookmarkButton
-                                    isBookmarked={isBookmarked}
-                                    manga={manga}
-                                    bookmark={bookmark}
-                                    removeBookmark={removeBookmark}
-                                    setIsBookmarked={setIsBookmarked}
-                                />
-                                <ReadingButton
-                                    manga={manga}
-                                    lastRead={lastRead}
-                                />
-                            </div>
+                            <Buttons manga={manga} />
                         </div>
-
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full">
                             <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
-                                <p>{manga.description}</p>
+                                <p>
+                                    {malData.description ?? manga.description}
+                                </p>
                             </Card>
                         </div>
                     </div>
                 </Card>
             </div>
 
-            {/* Remaining content */}
-            <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Chapters</h2>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={navigateToLastRead}>
-                        Find Latest Read
-                    </Button>
-                    <Button variant="outline" onClick={toggleSortOrder}>
-                        <ArrowUpDown className="mr-2 h-4 w-4" />
-                        Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
-                    </Button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-                {currentChapters?.map((chapter) => (
-                    <Link
-                        href={`${window.location.pathname}/${chapter.id}`}
-                        key={chapter.id}
-                        id={chapter.id}
-                    >
-                        <Card
-                            className={`h-full transition-colors ${
-                                chapter.id === lastRead
-                                    ? "bg-green-500 hover:bg-green-400"
-                                    : "hover:bg-accent"
-                            }`}
-                        >
-                            <CardContent className="p-4">
-                                <h3
-                                    className={`font-semibold mb-2 line-clamp-2 ${
-                                        chapter.id === lastRead
-                                            ? "text-zinc-950"
-                                            : ""
-                                    }`}
-                                >
-                                    {chapter.name}
-                                </h3>
-                                <p
-                                    className={`text-sm text-muted-foreground ${
-                                        chapter.id === lastRead
-                                            ? "text-zinc-900"
-                                            : ""
-                                    }`}
-                                >
-                                    Views: {chapter.view}
-                                </p>
-                                <p
-                                    className={`text-sm text-muted-foreground ${
-                                        chapter.id === lastRead
-                                            ? "text-zinc-900"
-                                            : ""
-                                    }`}
-                                >
-                                    Released:{" "}
-                                    {formatChapterDate(chapter.createdAt)}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
-
-            {totalPages > 1 && (
-                <PaginationElement
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    handlePageChange={setCurrentPage}
-                />
-            )}
+            <ChaptersSection manga={manga} />
         </main>
     );
 }

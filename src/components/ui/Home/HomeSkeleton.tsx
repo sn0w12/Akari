@@ -2,11 +2,11 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import PaginationElement from "../paginationElement";
+import { PaginationElement } from "../Pagination/ServerPaginationElement";
 
 const imgSize = "w-full h-auto aspect-[8.5/12] xl:h-[260px] 2xl:h-[340px]";
 
-export default function HomeSkeleton(currentPage: number) {
+export default function HomeSkeleton({ currentPage }: { currentPage: number }) {
     return (
         <>
             <main className="container mx-auto px-4 py-8">
@@ -63,7 +63,6 @@ export default function HomeSkeleton(currentPage: number) {
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={currentPage}
-                handlePageChange={() => {}}
             />
         </>
     );

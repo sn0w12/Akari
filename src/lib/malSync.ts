@@ -15,6 +15,7 @@ async function getHqData(malSyncData: MalSync) {
 
     const response = await fetch(`/api/manga/${service}/${id}`);
     if (!response.ok) {
+        console.error(`Failed to fetch data for ${service} ID ${id}`);
         return null;
     }
     const data = await response.json();
@@ -26,10 +27,13 @@ export async function fetchMalData(
     overWrite: boolean = false,
     retryCount: number = 3, // Maximum number of retries
     retryDelay: number = 2000, // Delay between retries in milliseconds (2 seconds)
+    useCache: boolean = true,
 ) {
-    const cachedManga = await db.getCache(db.hqMangaCache, identifier);
-    if (cachedManga && cachedManga.score) {
-        return cachedManga;
+    if (useCache) {
+        const cachedManga = await db.getCache(db.hqMangaCache, identifier);
+        if (cachedManga && cachedManga.score) {
+            return cachedManga;
+        }
     }
 
     if (!getSetting("fetchMalImage") && !overWrite) {
@@ -39,9 +43,7 @@ export async function fetchMalData(
     for (let attempt = 0; attempt <= retryCount; attempt++) {
         try {
             const malSyncResponse = await fetch(
-                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(
-                    identifier,
-                )}`,
+                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(identifier)}`,
             );
 
             if (malSyncResponse.status === 429 && attempt < retryCount) {
@@ -52,6 +54,7 @@ export async function fetchMalData(
             }
 
             if (!malSyncResponse.ok) {
+                console.error(`Access forbidden to MAL Sync API:`);
                 return null;
             }
 
@@ -71,8 +74,13 @@ export async function fetchMalData(
             if (malSyncResponseData.aniUrl) {
                 data["aniUrl"] = malSyncResponseData.aniUrl;
             }
+            data.description = data.description
+                .replace("[Written by MAL Rewrite]", "")
+                .trim();
 
-            await db.updateCache(db.hqMangaCache, identifier, data);
+            if (useCache) {
+                await db.updateCache(db.hqMangaCache, identifier, data);
+            }
             return data;
         } catch (error) {
             console.error(error);
