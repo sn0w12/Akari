@@ -68,6 +68,30 @@ export interface SettingsMap {
     [key: string]: Setting;
 }
 
+function getSettingValue(setting: Setting): SettingValue {
+    switch (setting.type) {
+        case "checkbox":
+            return (
+                (setting as CheckboxSetting).value ??
+                (setting as CheckboxSetting).default
+            );
+        case "text":
+        case "password":
+        case "email":
+        case "number":
+        case "textarea":
+        case "select":
+        case "radio":
+            return (
+                (setting as BaseSetting).value ??
+                (setting as BaseSetting).default
+            );
+        default:
+            const _exhaustiveCheck: never = setting;
+            return _exhaustiveCheck as never;
+    }
+}
+
 function SettingsForm({ settingsMap }: { settingsMap: SettingsMap }) {
     return (
         <>
@@ -106,8 +130,10 @@ function renderInput(key: string, setting: Setting) {
             return (
                 <Switch
                     id={key}
-                    checked={setting.value}
-                    onCheckedChange={setting.onChange}
+                    checked={getSettingValue(setting) as boolean}
+                    onCheckedChange={(value) => {
+                        setting.onChange(value);
+                    }}
                 />
             );
         case "text":
@@ -118,8 +144,10 @@ function renderInput(key: string, setting: Setting) {
                 <Input
                     id={key}
                     type={setting.type}
-                    value={setting.value as string}
-                    onChange={(e) => setting.onChange(e.target.value)}
+                    value={getSettingValue(setting) as string}
+                    onChange={(e) => {
+                        setting.onChange(e.target.value);
+                    }}
                     className="max-w-xs"
                 />
             );
@@ -127,18 +155,22 @@ function renderInput(key: string, setting: Setting) {
             return (
                 <Textarea
                     id={key}
-                    value={setting.value as string}
+                    value={getSettingValue(setting) as string}
                     onChange={(e: {
                         target: { value: string | boolean | string[] };
-                    }) => setting.onChange(e.target.value)}
+                    }) => {
+                        setting.onChange(e.target.value);
+                    }}
                     className="max-w-xs"
                 />
             );
         case "select":
             return (
                 <Select
-                    value={setting.value as string}
-                    onValueChange={setting.onChange}
+                    value={getSettingValue(setting) as string}
+                    onValueChange={(value) => {
+                        setting.onChange(value);
+                    }}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select an option" />
@@ -155,8 +187,10 @@ function renderInput(key: string, setting: Setting) {
         case "radio":
             return (
                 <RadioGroup
-                    value={setting.value as string}
-                    onValueChange={setting.onChange}
+                    value={getSettingValue(setting) as string}
+                    onValueChange={(value) => {
+                        setting.onChange(value);
+                    }}
                     className="flex flex-col space-y-1"
                 >
                     {setting.options.map((option) => (

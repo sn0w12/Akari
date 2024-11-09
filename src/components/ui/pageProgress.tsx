@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
+import { getSetting, useSettingsChange } from "@/lib/settings";
 
 interface PageProgressProps {
     currentPage: number;
@@ -17,6 +20,14 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
+    const [isVisible, setIsVisible] = useState(getSetting("showPageProgress"));
+
+    // Listen for settings changes
+    useSettingsChange((event) => {
+        if (event.detail.key === "showPageProgress") {
+            setIsVisible(event.detail.value);
+        }
+    });
 
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -73,7 +84,7 @@ export default function PageProgress({
 
     return (
         <div
-            className={`transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
+            className={`${isVisible ? "" : "hidden"} transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
             style={
                 window.innerWidth <= cutoff ? { bottom: getBottomOffset() } : {}
             }
@@ -81,7 +92,7 @@ export default function PageProgress({
         >
             <div
                 ref={containerRef}
-                className="relative p-1 rounded-lg border border-primary/30 bg-background w-full lg:w-[30px] h-[30px] lg:h-[75vh]"
+                className="transition-all relative p-1 rounded-lg border border-primary/30 bg-background w-full h-[30px] lg:w-[30px] lg:hover:w-[60px] lg:h-[75vh]"
             >
                 <div
                     className="absolute left-1 top-1 lg:top-1 right-1 lg:right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-md"

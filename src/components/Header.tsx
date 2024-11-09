@@ -19,6 +19,7 @@ import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
 import Image from "next/image";
+import { dispatchSettingsChange } from "@/lib/settings";
 
 interface Manga {
     id: string;
@@ -35,6 +36,7 @@ export interface SettingsInterface {
     useToast: boolean;
     fancyAnimations: boolean;
     mangaServer: string;
+    showPageProgress: boolean;
 }
 
 export const defaultSettings: SettingsInterface = {
@@ -42,6 +44,7 @@ export const defaultSettings: SettingsInterface = {
     useToast: true,
     fancyAnimations: true,
     mangaServer: "1",
+    showPageProgress: true,
 };
 
 // Custom hook for managing theme
@@ -73,19 +76,46 @@ const useTheme = () => {
 
 // Hook to manage settings
 const useSettings = () => {
-    const [settings, setSettings] = useState<SettingsInterface>(() => {
-        // Initialize from localStorage or return default values
+    const [settings, setSettingsState] = useState<SettingsInterface>(() => {
         if (typeof window !== "undefined") {
             const storedSettings = localStorage.getItem("settings");
             return storedSettings
                 ? JSON.parse(storedSettings)
                 : defaultSettings;
         }
-        return defaultSettings; // Default settings in case window is not defined
+        return defaultSettings;
     });
 
+    const setSettings = useCallback(
+        (
+            newSettings:
+                | SettingsInterface
+                | ((prev: SettingsInterface) => SettingsInterface),
+        ) => {
+            setSettingsState((prevSettings) => {
+                const nextSettings =
+                    typeof newSettings === "function"
+                        ? newSettings(prevSettings)
+                        : newSettings;
+
+                // Dispatch events for each changed setting
+                Object.keys(nextSettings).forEach((key) => {
+                    const typedKey = key as keyof SettingsInterface;
+                    const newValue = nextSettings[typedKey];
+                    const oldValue = prevSettings[typedKey];
+
+                    if (oldValue !== newValue) {
+                        dispatchSettingsChange(typedKey, newValue, oldValue);
+                    }
+                });
+
+                return nextSettings;
+            });
+        },
+        [],
+    );
+
     useEffect(() => {
-        // Only set localStorage if we're in a browser environment
         if (typeof window !== "undefined") {
             localStorage.setItem("settings", JSON.stringify(settings));
         }
@@ -163,6 +193,20 @@ export function HeaderComponent() {
                     setSettings((prevSettings) => ({
                         ...prevSettings,
                         mangaServer: value,
+                    }));
+                }
+            },
+        },
+        showPageProgress: {
+            label: "Show Page Progress",
+            type: "checkbox",
+            value: settings.showPageProgress,
+            default: defaultSettings.showPageProgress,
+            onChange: (value: SettingValue) => {
+                if (typeof value === "boolean") {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        showPageProgress: value,
                     }));
                 }
             },
