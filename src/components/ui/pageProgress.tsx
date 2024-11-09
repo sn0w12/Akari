@@ -25,7 +25,9 @@ export default function PageProgress({
     // Listen for settings changes
     useSettingsChange((event) => {
         if (event.detail.key === "showPageProgress") {
-            setIsVisible(event.detail.value);
+            setTimeout(() => {
+                setIsVisible(event.detail.value);
+            }, 0);
         }
     });
 
