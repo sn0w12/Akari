@@ -21,9 +21,9 @@ import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
 import Image from "next/image";
 import {
     dispatchSettingsChange,
-    createSettingsMap,
     SettingsInterface,
     defaultSettings,
+    createAllSettingsMaps,
 } from "@/lib/settings";
 
 interface Manga {
@@ -122,7 +122,7 @@ export function HeaderComponent() {
     const { theme, toggleTheme } = useTheme();
     const { settings, setSettings } = useSettings();
     const popupRef = useRef<HTMLDivElement | null>(null);
-    const settingsMap = createSettingsMap(settings, setSettings);
+    const settingsMap = createAllSettingsMaps(settings, setSettings);
 
     // Debounce function for fetching search results
     const debouncedFetchResults = useCallback(
@@ -351,7 +351,7 @@ export function HeaderComponent() {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <SettingsForm settingsMap={settingsMap} />
+                                <SettingsForm settingsTabs={settingsMap} />
                             </DialogContent>
                         </Dialog>
 

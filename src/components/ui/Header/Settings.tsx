@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type SettingValue = string | boolean | string[];
 export type SettingType =
@@ -101,33 +102,71 @@ function getSettingValue(setting: Setting): SettingValue {
     }
 }
 
-function SettingsForm({ settingsMap }: { settingsMap: SettingsMap }) {
+interface SettingsFormProps {
+    settingsTabs: Record<string, SettingsMap>;
+}
+
+function SettingsForm({ settingsTabs }: SettingsFormProps) {
+    const defaultTab = Object.keys(settingsTabs)[0];
+
     return (
         <>
             <DialogHeader className="border-b pb-4">
                 <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
-            <CardContent className="space-y-6">
-                {Object.entries(settingsMap).map(([key, setting]) => (
-                    <div key={key} className="flex flex-col space-y-2">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <Label
-                                    htmlFor={key}
-                                    className="text-sm font-medium"
-                                >
-                                    {setting.label}
-                                </Label>
-                                {setting.description && (
-                                    <p className="text-sm text-muted-foreground">
-                                        {setting.description}
-                                    </p>
+            <CardContent className="min-h-[400px]">
+                <Tabs defaultValue={defaultTab} className="w-full">
+                    <TabsList
+                        className="grid w-full"
+                        style={{
+                            gridTemplateColumns: `repeat(${Object.keys(settingsTabs).length}, 1fr)`,
+                        }}
+                    >
+                        {Object.keys(settingsTabs).map((tabKey) => (
+                            <TabsTrigger key={tabKey} value={tabKey}>
+                                {tabKey}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+
+                    {Object.entries(settingsTabs).map(
+                        ([tabKey, settingsMap]) => (
+                            <TabsContent
+                                key={tabKey}
+                                value={tabKey}
+                                className="space-y-6"
+                            >
+                                {Object.entries(settingsMap).map(
+                                    ([key, setting]) => (
+                                        <div
+                                            key={key}
+                                            className="flex flex-col space-y-2"
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <Label
+                                                        htmlFor={key}
+                                                        className="text-sm font-medium"
+                                                    >
+                                                        {setting.label}
+                                                    </Label>
+                                                    {setting.description && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                setting.description
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                {renderInput(key, setting)}
+                                            </div>
+                                        </div>
+                                    ),
                                 )}
-                            </div>
-                            {renderInput(key, setting)}
-                        </div>
-                    </div>
-                ))}
+                            </TabsContent>
+                        ),
+                    )}
+                </Tabs>
             </CardContent>
         </>
     );

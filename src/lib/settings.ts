@@ -18,15 +18,11 @@ export type SettingsInterface = {
     [K in keyof typeof settings]: DefaultValueType<(typeof settings)[K]>;
 };
 
-const settings = {
+export const generalSettings = {
+    label: "General",
     fetchMalImage: {
         label: "Fetch MAL Data",
         description: "Slows down first load on manga detail pages.",
-        type: "checkbox",
-        default: true,
-    },
-    useToast: {
-        label: "Use Toasts",
         type: "checkbox",
         default: true,
     },
@@ -36,6 +32,10 @@ const settings = {
         type: "checkbox",
         default: true,
     },
+};
+
+export const mangaSettings = {
+    label: "Manga",
     mangaServer: {
         label: "Manga Server",
         type: "select",
@@ -57,10 +57,32 @@ const settings = {
     },
 };
 
+export const notificationSettings = {
+    label: "Notifications",
+    useToast: {
+        label: "Use Toasts",
+        type: "checkbox",
+        default: true,
+    },
+};
+
+const allSettings = [generalSettings, mangaSettings, notificationSettings];
+const settings = {
+    ...generalSettings,
+    ...mangaSettings,
+    ...notificationSettings,
+};
+
+type SettingMap = (typeof allSettings)[number];
+
 const getDefaultSettings = (): SettingsInterface => {
     const defaults: Record<string, unknown> = {};
     for (const key in settings) {
-        defaults[key] = settings[key as keyof typeof settings].default;
+        if (key === "label") continue;
+        const setting = settings[key as keyof typeof settings];
+        if (typeof setting !== "string") {
+            defaults[key] = setting.default;
+        }
     }
     return defaults as SettingsInterface;
 };
@@ -151,6 +173,7 @@ export function getSetting(key: keyof SettingsInterface) {
  * @returns A map of settings with their current values and change handlers.
  */
 export const createSettingsMap = (
+    settingsMap: SettingMap,
     currentSettings: SettingsInterface,
     setSettings: (newSettings: SettingsInterface) => void,
 ): SettingsMap => {
@@ -165,7 +188,7 @@ export const createSettingsMap = (
         };
 
     const returnSettings: SettingsMap = {};
-    for (const [key, definition] of Object.entries(settings)) {
+    for (const [key, definition] of Object.entries(settingsMap)) {
         const keyName = key as keyof SettingsInterface;
         const setting = definition as Setting;
         const onChange = createHandler(keyName, setting.onChange);
@@ -176,4 +199,20 @@ export const createSettingsMap = (
         } as Setting;
     }
     return returnSettings;
+};
+
+export const createAllSettingsMaps = (
+    currentSettings: SettingsInterface,
+    setSettings: (newSettings: SettingsInterface) => void,
+) => {
+    let settingsMap: Record<string, SettingsMap> = {};
+    allSettings.forEach((setting) => {
+        settingsMap[setting.label] = createSettingsMap(
+            setting,
+            currentSettings,
+            setSettings,
+        );
+    });
+
+    return settingsMap;
 };
