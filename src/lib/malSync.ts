@@ -74,6 +74,9 @@ export async function fetchMalData(
             if (malSyncResponseData.aniUrl) {
                 data["aniUrl"] = malSyncResponseData.aniUrl;
             }
+            data.description = data.description
+                .replace("[Written by MAL Rewrite]", "")
+                .trim();
 
             if (useCache) {
                 await db.updateCache(db.hqMangaCache, identifier, data);
