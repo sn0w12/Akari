@@ -151,6 +151,7 @@ export function useSettingsChange(
 
 /**
  * Retrieves a specific setting value from local storage.
+ *
  * @param key - The setting key to retrieve from the settings object
  * @returns The value of the specified setting key if found in localStorage, the default value if the key exists in defaultSettings, or null if neither exists or if running server-side
  */
@@ -168,6 +169,7 @@ export function getSetting(key: keyof SettingsInterface) {
 /**
  * Creates a map of settings with handlers to update the settings.
  *
+ * @param settingsMap - The settings map object.
  * @param currentSettings - The current settings object.
  * @param setSettings - A function to update the settings.
  * @returns A map of settings with their current values and change handlers.
@@ -201,6 +203,13 @@ export const createSettingsMap = (
     return returnSettings;
 };
 
+/**
+ * Creates a map of settings with their corresponding handlers and values.
+ *
+ * @param currentSettings - The current state of all settings
+ * @param setSettings - A function to update the settings state
+ * @returns A record object mapping setting labels to their respective SettingsMap objects
+ */
 export const createAllSettingsMaps = (
     currentSettings: SettingsInterface,
     setSettings: (newSettings: SettingsInterface) => void,
