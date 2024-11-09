@@ -114,7 +114,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     rel="noopener noreferrer"
                                 >
                                     <Image
-                                        src="/img/AniList-logo.png"
+                                        src="/img/AniList-logo.webp"
                                         alt="AniList Logo"
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
@@ -130,7 +130,7 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     rel="noopener noreferrer"
                                 >
                                     <Image
-                                        src="/img/MAL-logo.png"
+                                        src="/img/MAL-logo.webp"
                                         alt="MyAnimeList Logo"
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
