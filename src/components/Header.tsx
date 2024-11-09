@@ -194,6 +194,10 @@ export function HeaderComponent() {
                         ...prevSettings,
                         mangaServer: value,
                     }));
+
+                    if (window.location.pathname.includes("/chapter")) {
+                        window.location.reload();
+                    }
                 }
             },
         },
