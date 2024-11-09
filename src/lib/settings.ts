@@ -1,7 +1,6 @@
 import {
     SettingValue,
     SettingsMap,
-    SettingType,
     Setting,
 } from "@/components/ui/Header/Settings";
 import React from "react";
