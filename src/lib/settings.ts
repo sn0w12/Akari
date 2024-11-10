@@ -117,6 +117,7 @@ export const defaultSettings = getDefaultSettings();
  *
  * @param key - The settings key to be changed
  * @param value - The new value for the setting
+ * @param previousValue - The previous value of the setting
  *
  * @example
  * ```ts
