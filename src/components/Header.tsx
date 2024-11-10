@@ -232,6 +232,9 @@ export function HeaderComponent() {
                                             <Link
                                                 href={`/manga/${result.id}`}
                                                 key={result.id}
+                                                onClick={() =>
+                                                    setShowPopup(false)
+                                                }
                                                 className="block p-2 hover:bg-accent flex items-center rounded-lg"
                                             >
                                                 <Image
