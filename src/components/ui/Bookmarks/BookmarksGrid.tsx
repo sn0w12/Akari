@@ -41,8 +41,8 @@ export default function BookmarksGrid({
 
         if (data.result === "ok") {
             // Update the bookmarks state to remove the deleted bookmark
-            bookmarks = bookmarks.filter(
-                (bookmark) => bookmark.noteid !== noteid,
+            setUpdatedBookmarks((prev) =>
+                prev.filter((bookmark) => bookmark.noteid !== noteid),
             );
         }
     }
@@ -82,7 +82,7 @@ export default function BookmarksGrid({
         };
 
         init();
-    }, []);
+    }, [page]);
 
     return (
         <>
