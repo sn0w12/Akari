@@ -13,6 +13,13 @@ import EnhancedImage from "./ui/enhancedImage";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
 import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
 import { HqMangaCacheItem, MangaDetails } from "@/app/api/interfaces";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 async function getMangaDetails(id: string) {
     const response = await fetch(`/api/manga/${id}`);
@@ -106,7 +113,33 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                 <Card className="p-6 flex flex-col justify-between flex-grow lg:max-h-[600px]">
                     {/* Title stays at the top */}
                     <div className="flex items-center justify-between mb-4 border-b pb-2">
-                        <h1 className="text-3xl font-bold">{manga.name}</h1>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-3xl font-bold">{manga.name}</h1>
+                            {manga.alternativeNames &&
+                                manga.alternativeNames.length > 0 && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <InfoIcon className="w-5 h-5" />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <div className="flex flex-wrap gap-2 max-w-96 w-auto">
+                                                    {manga.alternativeNames.map(
+                                                        (mangaName, index) => (
+                                                            <p
+                                                                className="max-w-xs bg-accent px-1 rounded"
+                                                                key={index}
+                                                            >
+                                                                {mangaName}
+                                                            </p>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
+                        </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
                             {malData?.aniUrl && (
                                 <a
