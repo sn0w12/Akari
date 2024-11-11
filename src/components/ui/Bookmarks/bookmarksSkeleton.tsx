@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 function desktopCard(index: number) {
     return (
         <Card
-            key={index}
+            key={`desktop-${index}`}
             className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full"
         >
             <div className="w-40 h-full mb-0 shrink-0">
@@ -38,7 +38,7 @@ function desktopCard(index: number) {
 function mobileCard(index: number) {
     return (
         <Card
-            key={index}
+            key={`mobile-${index}`}
             className="flex md:hidden flex-col items-start shadow-lg bg-card border border-border rounded-lg"
         >
             <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
@@ -101,7 +101,7 @@ export default function BookmarksSkeleton() {
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
                 {[...Array(24)].map((_, index) => (
-                    <React.Fragment key={index}>
+                    <React.Fragment key={`cards-${index}`}>
                         {desktopCard(index)}
                         {mobileCard(index)}
                     </React.Fragment>
