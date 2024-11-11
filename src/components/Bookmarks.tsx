@@ -8,10 +8,28 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
+        // Get headers safely
+        let headersList: { [key: string]: string } = {};
+        try {
+            const headerEntries = Array.from((await headers()).entries());
+            headersList = headerEntries.reduce(
+                (acc: { [key: string]: string }, [key, value]) => {
+                    acc[key] = value;
+                    return acc;
+                },
+                {} as { [key: string]: string },
+            );
+        } catch (headerError) {
+            console.log("Could not get headers:", headerError);
+        }
+
         const response = await fetch(
             `${getProductionUrl()}/api/bookmarks?page=${page}`,
             {
-                headers: await headers(),
+                headers: {
+                    "Content-Type": "application/json",
+                    ...headersList,
+                },
             },
         );
         if (!response.ok) {
