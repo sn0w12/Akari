@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
-import { Search, Bookmark, Moon, Sun, Settings } from "lucide-react";
+import { Search, Bookmark, Settings } from "lucide-react";
 import {
     Dialog,
     DialogContent,
