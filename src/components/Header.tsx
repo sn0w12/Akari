@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
-import { Search, Bookmark, Settings } from "lucide-react";
+import { Search, Bookmark } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -17,14 +17,8 @@ import {
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
-import SettingsForm from "./ui/Header/Settings";
 import Image from "next/image";
-import {
-    dispatchSettingsChange,
-    SettingsInterface,
-    defaultSettings,
-    createAllSettingsMaps,
-} from "@/lib/settings";
+import SettingsDialog from "./ui/Header/SettingsDialog";
 import ThemeToggle from "./ui/Header/ThemeToggle";
 
 interface Manga {
@@ -37,65 +31,13 @@ interface Manga {
     author: string;
 }
 
-// Hook to manage settings
-const useSettings = () => {
-    const [settings, setSettingsState] = useState<SettingsInterface>(() => {
-        if (typeof window !== "undefined") {
-            const storedSettings = localStorage.getItem("settings");
-            return storedSettings
-                ? JSON.parse(storedSettings)
-                : defaultSettings;
-        }
-        return defaultSettings;
-    });
-
-    const setSettings = useCallback(
-        (
-            newSettings:
-                | SettingsInterface
-                | ((prev: SettingsInterface) => SettingsInterface),
-        ) => {
-            setSettingsState((prevSettings) => {
-                const nextSettings =
-                    typeof newSettings === "function"
-                        ? newSettings(prevSettings)
-                        : newSettings;
-
-                // Dispatch events for each changed setting
-                Object.keys(nextSettings).forEach((key) => {
-                    const typedKey = key as keyof SettingsInterface;
-                    const newValue = nextSettings[typedKey];
-                    const oldValue = prevSettings[typedKey];
-
-                    if (oldValue !== newValue) {
-                        dispatchSettingsChange(typedKey, newValue, oldValue);
-                    }
-                });
-
-                return nextSettings;
-            });
-        },
-        [],
-    );
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("settings", JSON.stringify(settings));
-        }
-    }, [settings]);
-
-    return { settings, setSettings };
-};
-
 export function HeaderComponent() {
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [notification, setNotification] = useState("");
-    const { settings, setSettings } = useSettings();
     const popupRef = useRef<HTMLDivElement | null>(null);
-    const settingsMap = createAllSettingsMaps(settings, setSettings);
 
     // Debounce function for fetching search results
     const debouncedFetchResults = useCallback(
@@ -320,16 +262,7 @@ export function HeaderComponent() {
                         <LoginDialog />
 
                         {/* Settings Dialog */}
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Settings className="h-5 w-5" />
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <SettingsForm settingsTabs={settingsMap} />
-                            </DialogContent>
-                        </Dialog>
+                        <SettingsDialog />
 
                         {/* Theme Toggle Button */}
                         <ThemeToggle />
