@@ -11,6 +11,12 @@ import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -54,32 +60,49 @@ export function HeaderComponent() {
                     <SearchBar />
                     <div className="flex gap-4">
                         <SearchButton />
-                        <Link
-                            href="/bookmarks"
-                            className={
-                                !notification ? "pointer-events-none" : ""
-                            }
-                        >
-                            <div className="relative group">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="group-hover:bg-accent"
-                                    disabled={!notification}
-                                >
-                                    <Bookmark className="h-5 w-5" />
-                                </Button>
-                                {/* Badge element */}
-                                {notification && (
-                                    <span
-                                        className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
-                                        style={{ bottom: "0", right: "0" }}
+                        {notification ? (
+                            <Link
+                                href="/bookmarks"
+                                className={
+                                    !notification ? "pointer-events-none" : ""
+                                }
+                            >
+                                <div className="relative group">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="group-hover:bg-accent"
+                                        disabled={!notification}
                                     >
-                                        {notification}
-                                    </span>
-                                )}
-                            </div>
-                        </Link>
+                                        <Bookmark className="h-5 w-5" />
+                                    </Button>
+                                    {/* Badge element */}
+                                    {notification && (
+                                        <span
+                                            className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
+                                            style={{ bottom: "0", right: "0" }}
+                                        >
+                                            {notification}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                        ) : (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <div className="w-10 h-10 flex items-center justify-center">
+                                            <Bookmark className="h-5 w-5 text-primary/50" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p className="text-center text-base">
+                                            Please log in to view your bookmarks
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
 
                         {/* Account Information Dialog */}
                         <LoginDialog />
