@@ -39,6 +39,17 @@ export interface MangaDetails {
     chapterList: DetailsChapter[];
 }
 
+export interface SmallManga {
+    id: string;
+    image: string;
+    title: string;
+    chapter: string;
+    chapterUrl: string;
+    rating: string;
+    author: string;
+    views: string;
+}
+
 export interface MangaCacheItem {
     name: string;
     link: string;

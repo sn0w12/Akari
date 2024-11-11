@@ -1,118 +1,43 @@
-"use client";
-
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { debounce } from "lodash";
-import { Search, Bookmark } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
+import { Bookmark } from "lucide-react";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
-import Image from "next/image";
 import SettingsDialog from "./ui/Header/SettingsDialog";
 import ThemeToggle from "./ui/Header/ThemeToggle";
+import SearchBar from "./ui/Header/Search/SearchBar";
+import SearchButton from "./ui/Header/Search/SearchButton";
+import { getProductionUrl } from "@/app/api/baseUrl";
+import { headers } from "next/headers";
 
-interface Manga {
-    id: string;
-    image: string;
-    title: string;
-    chapter: string;
-    chapterUrl: string;
-    rating: string;
-    author: string;
+async function fetchNotification() {
+    try {
+        const res = await fetch(
+            `${getProductionUrl()}/api/bookmarks/notification`,
+            {
+                headers: await headers(),
+            },
+        );
+
+        if (!res.ok) {
+            return "";
+        }
+
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+        return "";
+    }
 }
 
-export function HeaderComponent() {
-    const [searchText, setSearchText] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
-    const [isSearchLoading, setIsSearchLoading] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
-    const [notification, setNotification] = useState("");
-    const popupRef = useRef<HTMLDivElement | null>(null);
-
-    // Debounce function for fetching search results
-    const debouncedFetchResults = useCallback(
-        debounce(async (query) => {
-            if (query) {
-                setIsSearchLoading(true);
-                setShowPopup(true);
-                try {
-                    const res = await fetch(
-                        `/api/search?search=${query.replaceAll(" ", "_")}`,
-                    );
-                    const data = await res.json();
-                    const firstFiveResults = data.mangaList.slice(0, 5);
-                    setSearchResults(firstFiveResults);
-                } catch (error) {
-                    console.error("Error fetching search results:", error);
-                } finally {
-                    setIsSearchLoading(false);
-                }
-            } else {
-                setSearchResults([]);
-                setShowPopup(false);
-            }
-        }, 300), // 300ms debounce delay
-        [],
-    );
-
-    // Handle search input changes
-    const handleSearchInputChange = (e: { target: { value: string } }) => {
-        const query = e.target.value;
-        setSearchText(query);
-        debouncedFetchResults(query);
-    };
-
-    const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        if (
-            popupRef.current &&
-            !popupRef.current.contains(e.relatedTarget as Node)
-        ) {
-            setShowPopup(false);
-        }
-    };
-
-    const fetchNotification = useMemo(
-        () => async () => {
-            try {
-                const res = await fetch(`/api/bookmarks/notification`);
-
-                if (!res.ok) {
-                    setNotification("");
-                    return;
-                }
-
-                const data = await res.json();
-                setNotification(data);
-            } catch (error) {
-                console.error("Error fetching search results:", error);
-            }
-        },
-        [],
-    );
-
-    const debouncedFetchNotification = useCallback(
-        debounce(fetchNotification, 10),
-        [fetchNotification],
-    );
-
-    useEffect(() => {
-        debouncedFetchNotification();
-
-        // Cleanup to cancel the debounced function when the component unmounts or dependencies change
-        return () => {
-            debouncedFetchNotification.cancel();
-        };
-    }, [debouncedFetchNotification]);
+export async function HeaderComponent() {
+    let notification = "";
+    try {
+        notification = await fetchNotification();
+    } catch (error) {
+        console.error("Error fetching notification:", error);
+    }
 
     return (
         <header className="sticky top-0 z-50 bg-background border-b">
@@ -122,115 +47,9 @@ export function HeaderComponent() {
                 </Link>
 
                 <div className="flex items-center space-x-4 flex-grow justify-end">
-                    <div className="relative xl:w-128 lg:w-96 lg:grow-0 ml-6 w-auto flex-grow">
-                        <Input
-                            type="search"
-                            placeholder="Search manga..."
-                            value={searchText}
-                            onChange={handleSearchInputChange}
-                            onBlur={handleInputBlur}
-                            onFocus={() =>
-                                searchResults.length > 0 && setShowPopup(true)
-                            }
-                            className="w-full hidden sm:block"
-                        />
-                        {showPopup && (
-                            <Card
-                                ref={popupRef}
-                                className="hidden absolute p-2 z-10 mt-1 m-auto sm:w-full sm:block"
-                            >
-                                <CardContent className="p-2">
-                                    {isSearchLoading ? (
-                                        <CenteredSpinner />
-                                    ) : searchResults.length > 0 ? (
-                                        searchResults.map((result: Manga) => (
-                                            <Link
-                                                href={`/manga/${result.id}`}
-                                                key={result.id}
-                                                onClick={() =>
-                                                    setShowPopup(false)
-                                                }
-                                                className="block p-2 hover:bg-accent flex items-center rounded-lg"
-                                            >
-                                                <Image
-                                                    src={result.image}
-                                                    alt={result.title}
-                                                    className="max-h-24 w-auto rounded mr-2"
-                                                    height={100}
-                                                    width={70}
-                                                />
-                                                {result.title}
-                                            </Link>
-                                        ))
-                                    ) : (
-                                        <div className="text-center text-muted-foreground p-4">
-                                            No Results
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
+                    <SearchBar />
                     <div className="flex gap-4">
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="sm:hidden"
-                                >
-                                    <Search className="h-5 w-5" />
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="">
-                                <DialogHeader>
-                                    <DialogTitle>Search</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex flex-col space-y-4 border-t">
-                                    <div className="flex items-center justify-start gap-2">
-                                        <Input
-                                            type="search"
-                                            placeholder="Search manga..."
-                                            value={searchText}
-                                            onChange={handleSearchInputChange}
-                                            onBlur={handleInputBlur}
-                                            onFocus={() =>
-                                                searchResults.length > 0 &&
-                                                setShowPopup(true)
-                                            }
-                                            className="w-full block sm:hidden mt-4"
-                                        />
-                                    </div>
-                                    {isSearchLoading ? (
-                                        <CenteredSpinner />
-                                    ) : searchResults.length > 0 ? (
-                                        searchResults
-                                            .slice(0, 3)
-                                            .map((result: Manga) => (
-                                                <Link
-                                                    href={`/manga/${result.id}`}
-                                                    key={result.id}
-                                                    className="block p-2 hover:bg-accent flex items-center rounded-lg border"
-                                                >
-                                                    <Image
-                                                        src={result.image}
-                                                        alt={result.title}
-                                                        className="max-h-24 w-auto rounded mr-2"
-                                                        height={100}
-                                                        width={70}
-                                                    />
-                                                    {result.title}
-                                                </Link>
-                                            ))
-                                    ) : (
-                                        <div className="text-center text-muted-foreground p-4">
-                                            No Results
-                                        </div>
-                                    )}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-
+                        <SearchButton />
                         <Link
                             href="/bookmarks"
                             className={

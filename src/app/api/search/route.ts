@@ -2,20 +2,10 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import Fuse from "fuse.js";
 import NodeCache from "node-cache";
+import { SmallManga } from "../interfaces";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
 export const dynamic = "force-dynamic";
-
-interface Manga {
-    id: string;
-    image: string | undefined;
-    title: string;
-    chapter: string;
-    chapterUrl: string | undefined;
-    rating: string;
-    author: string;
-    views: string;
-}
 
 export async function GET(req: Request): Promise<Response> {
     try {
@@ -37,7 +27,7 @@ export async function GET(req: Request): Promise<Response> {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
 
-        let mangaList: Manga[] = [];
+        let mangaList: SmallManga[] = [];
 
         // Scrape the manga list from the website
         $(".search-story-item").each((index, element) => {
@@ -57,6 +47,19 @@ export async function GET(req: Request): Promise<Response> {
             $(".item-time").each((i, timeElement) => {
                 if (i === 0) views = $(timeElement).text();
             });
+
+            if (
+                !imageUrl ||
+                !title ||
+                !mangaUrl ||
+                !latestChapter ||
+                !chapterUrl ||
+                !rating ||
+                !author ||
+                !views
+            ) {
+                return;
+            }
 
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
