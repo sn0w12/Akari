@@ -15,7 +15,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
     } = getButtonInfo(bookmark);
 
     return (
-        <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg">
+        <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg md:hidden">
             <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
                 <div className="mb-4">
                     <div className="flex items-center gap-2">

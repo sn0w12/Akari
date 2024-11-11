@@ -17,7 +17,7 @@ const DesktopBookmarkCard: React.FC<{
     } = getButtonInfo(bookmark);
 
     return (
-        <Card className="flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
+        <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
             <div className="w-40 h-full mb-0 shrink-0">
                 <a
                     href={`/manga/${mangaIdentifier}`}
