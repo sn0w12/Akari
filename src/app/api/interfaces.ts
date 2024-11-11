@@ -27,6 +27,7 @@ export interface MangaDetails {
     storyData: string | null;
     imageUrl: string;
     name: string;
+    alternativeNames: string[];
     authors: string[];
     author_urls: string[];
     status: string;

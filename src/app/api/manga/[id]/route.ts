@@ -61,6 +61,14 @@ export async function GET(
             const identifier = url.split("/").pop() || "";
             const imageUrl = $(".story-info-left .info-image img").attr("src");
             const name = $(".story-info-right h1").text();
+            const alternativeNames = $(
+                ".variations-tableInfo .info-alternative",
+            )
+                .closest("tr")
+                .find("td.table-value")
+                .text()
+                .trim()
+                .split("; ");
             const authors: string[] = [];
             const author_urls: string[] = [];
             $(".variations-tableInfo .info-author")
@@ -179,6 +187,7 @@ export async function GET(
                 storyData: glbStoryData,
                 imageUrl,
                 name,
+                alternativeNames,
                 authors,
                 author_urls,
                 status,
