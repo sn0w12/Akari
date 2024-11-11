@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
-import { Manga } from "@/app/api/interfaces";
+import { MangaDetails } from "@/app/api/interfaces";
 
 interface ReadingButtonProps {
-    manga: Manga;
+    manga: MangaDetails;
     lastRead: string;
 }
 

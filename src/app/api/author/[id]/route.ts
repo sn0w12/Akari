@@ -34,12 +34,10 @@ function parseDateString(dateStr: string | undefined): number {
 
     // Handle "Updated : Nov 08,2024 - 18:51" format
     if (dateStr.includes("Updated")) {
-        const [_, cleanDate, minutes] = dateStr.split(":"); // "Nov 08,2024 - 18:51"
+        const [, cleanDate, minutes] = dateStr.split(":"); // "Nov 08,2024 - 18:51"
         const [datePart, timePart] = cleanDate.split("-").map((s) => s.trim());
         const [month, day, year] = datePart.split(/[\s,]+/);
         const [hours] = timePart.split(":");
-
-        console.log(cleanDate, { month, day, year, hours, minutes });
 
         const date = new Date(
             parseInt(year),
@@ -75,8 +73,9 @@ function getMonthNumber(month: string): number {
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } },
+    props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    const params = await props.params;
     try {
         const { searchParams } = new URL(request.url);
         const authorId = params.id;

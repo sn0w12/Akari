@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } },
+    props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    const params = await props.params;
     const id = params.id;
     const apiEndpoint = `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(id) || ""}`;
 

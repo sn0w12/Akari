@@ -62,7 +62,9 @@ export default async function MangaReaderHome({
     try {
         mangaData = await getMangaData(currentPage);
     } catch (error) {
-        return <ErrorComponent message="Failed to load manga data" />;
+        return (
+            <ErrorComponent message={`Failed to load manga data: ${error}`} />
+        );
     }
 
     const { mangaList, popular, metaData } = mangaData;

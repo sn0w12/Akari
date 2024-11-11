@@ -6,10 +6,10 @@ import Spinner from "@/components/ui/spinners/puffLoader";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import { useState } from "react";
 import React from "react";
-import { Manga } from "@/app/api/interfaces";
+import { MangaDetails } from "@/app/api/interfaces";
 
 interface BookmarkButtonProps {
-    manga: Manga;
+    manga: MangaDetails;
     isBookmarked: boolean | null;
     bmData: string;
 }
@@ -55,7 +55,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const [hovered, setHovered] = useState(false);
 
     const handleBookmarkClick = () => {
-        if (isBookmarked !== null) {
+        if (isBookmarked !== null && manga.storyData) {
             bookmark(manga.storyData, isBookmarked);
         }
     };

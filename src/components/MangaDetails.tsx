@@ -12,6 +12,7 @@ import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
 import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
+import { HqMangaCacheItem, MangaDetails } from "@/app/api/interfaces";
 
 async function getMangaDetails(id: string) {
     const response = await fetch(`/api/manga/${id}`);
@@ -60,8 +61,8 @@ const formatDate = (date: string) => {
 };
 
 export function MangaDetailsComponent({ id }: { id: string }) {
-    const [manga, setManga] = useState<any>(null);
-    const [malData, setMalData] = useState<any>(null);
+    const [manga, setManga] = useState<MangaDetails | null>(null);
+    const [malData, setMalData] = useState<HqMangaCacheItem | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -155,9 +156,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                                         ?.split("/")
                                                         .pop() || "",
                                                 )}`}
+                                                key={index}
                                             >
                                                 <Badge
-                                                    key={index}
                                                     withShadow={true}
                                                     className="bg-primary text-secondary ml-2 hover:bg-gray-300"
                                                     shadowClassName="ml-2 mt-[5px]"

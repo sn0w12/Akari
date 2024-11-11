@@ -9,12 +9,13 @@ const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string; subId: string } },
+    props: { params: Promise<{ id: string; subId: string }> },
 ): Promise<Response> {
+    const params = await props.params;
     const { id, subId } = params;
     const { searchParams } = new URL(req.url);
     const server = searchParams.get("server") || "1";
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
     const cacheKey = `manga_${id}_${subId}_${server}`;
 

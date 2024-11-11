@@ -17,7 +17,7 @@ import {
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
-import SettingsForm, { SettingsMap, SettingValue } from "./ui/Header/Settings";
+import SettingsForm from "./ui/Header/Settings";
 import Image from "next/image";
 import {
     dispatchSettingsChange,

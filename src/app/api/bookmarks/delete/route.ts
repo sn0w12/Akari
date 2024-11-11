@@ -12,7 +12,7 @@ interface BookmarkDeleteRequest {
 export async function POST(request: Request): Promise<Response> {
     try {
         const { bm_data }: BookmarkDeleteRequest = await request.json();
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const user_data = getUserData(cookieStore);
 
         if (!user_data || !bm_data) {

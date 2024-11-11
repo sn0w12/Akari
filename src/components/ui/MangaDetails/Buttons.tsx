@@ -1,6 +1,6 @@
 "use client";
 
-import { Manga } from "@/app/api/interfaces";
+import { MangaDetails } from "@/app/api/interfaces";
 import BookmarkButton from "./bookmarkButton";
 import ReadingButton from "./readingButton";
 import { useState, useCallback, useEffect } from "react";
@@ -11,7 +11,7 @@ import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Skeleton } from "../skeleton";
 
 interface ButtonsProps {
-    manga: Manga;
+    manga: MangaDetails;
 }
 
 export default function Buttons({ manga }: ButtonsProps) {
@@ -22,6 +22,10 @@ export default function Buttons({ manga }: ButtonsProps) {
     const id = manga.identifier;
 
     const loadManga = useCallback(async () => {
+        if (!manga.mangaId) {
+            return;
+        }
+
         setIsLoading(true);
         const [cachedData, isBookmarked] = await Promise.all([
             db.getCache(db.mangaCache, id),

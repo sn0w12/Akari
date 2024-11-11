@@ -8,11 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import db from "@/lib/db";
 import { debounce } from "lodash";
-import { Manga } from "@/app/api/interfaces";
+import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 
 interface ChaptersSectionProps {
-    manga: Manga;
+    manga: MangaDetails;
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
@@ -27,7 +27,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
 
         if (cachedData) {
             setLastRead(cachedData.last_read);
-        } else {
+        } else if (manga.mangaId) {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
         }
     }, [id]);

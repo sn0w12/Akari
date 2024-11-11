@@ -237,7 +237,7 @@ export const createAllSettingsMaps = (
     currentSettings: SettingsInterface,
     setSettings: (newSettings: SettingsInterface) => void,
 ) => {
-    let settingsMap: Record<string, SettingsMap> = {};
+    const settingsMap: Record<string, SettingsMap> = {};
     allSettings.forEach((setting) => {
         settingsMap[setting.label] = createSettingsMap(
             setting,

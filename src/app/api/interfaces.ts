@@ -21,6 +21,23 @@ export interface Manga {
     }[];
 }
 
+export interface MangaDetails {
+    mangaId: string | null;
+    identifier: string;
+    storyData: string | null;
+    imageUrl: string;
+    name: string;
+    authors: string[];
+    author_urls: string[];
+    status: string;
+    updated: string;
+    view: string;
+    score: number;
+    genres: string[];
+    description: string;
+    chapterList: DetailsChapter[];
+}
+
 export interface MangaCacheItem {
     name: string;
     link: string;
@@ -30,6 +47,14 @@ export interface MangaCacheItem {
     last_update: string;
     bm_data: string;
     id: string;
+}
+
+export interface DetailsChapter {
+    id: string;
+    path: string;
+    name: string;
+    view: string;
+    createdAt: string;
 }
 
 export interface HqMangaCacheItem {

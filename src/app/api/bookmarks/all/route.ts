@@ -8,7 +8,7 @@ export const maxDuration = 20;
 const BATCH_SIZE = 10;
 
 export async function GET() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const user_data = getUserData(cookieStore);
 
     if (!user_data) {
