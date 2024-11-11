@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 // Utility function to get the user's theme
 const getUserTheme = (): "light" | "dark" => {
-    return (localStorage.getItem("theme") as "dark") || "light";
+    return (localStorage.getItem("theme") as "dark") || "dark";
 };
 
 class Toast {
