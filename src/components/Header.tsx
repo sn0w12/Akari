@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
@@ -7,37 +9,39 @@ import SettingsDialog from "./ui/Header/SettingsDialog";
 import ThemeToggle from "./ui/Header/ThemeToggle";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
-import { getProductionUrl } from "@/app/api/baseUrl";
-import { headers } from "next/headers";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { debounce } from "lodash";
 
-async function fetchNotification() {
-    try {
-        const res = await fetch(
-            `${getProductionUrl()}/api/bookmarks/notification`,
-            {
-                headers: await headers(),
-            },
-        );
+export function HeaderComponent() {
+    const [notification, setNotification] = useState<string>("");
 
-        if (!res.ok) {
-            return "";
-        }
+    const fetchNotification = useMemo(
+        () => async () => {
+            try {
+                const res = await fetch(`/api/bookmarks/notification`);
 
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching search results:", error);
-        return "";
-    }
-}
+                if (!res.ok) {
+                    setNotification("");
+                    return;
+                }
 
-export async function HeaderComponent() {
-    let notification = "";
-    try {
-        notification = await fetchNotification();
-    } catch (error) {
-        console.error("Error fetching notification:", error);
-    }
+                const data = await res.json();
+                setNotification(data);
+            } catch (error) {
+                console.error("Error fetching search results:", error);
+            }
+        },
+        [],
+    );
+
+    const debouncedFetchNotification = useCallback(
+        debounce(fetchNotification, 10),
+        [fetchNotification],
+    );
+
+    useEffect(() => {
+        debouncedFetchNotification();
+    }, [debouncedFetchNotification]);
 
     return (
         <header className="sticky top-0 z-50 bg-background border-b">
