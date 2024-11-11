@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "@/app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -24,28 +25,21 @@ export default function MangaReaderLayout({
     return (
         <html lang="en">
             <head>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-              (function() {
-                const storedTheme = localStorage.getItem('theme') || 'light';
-                if (storedTheme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              })();
-            `,
-                    }}
-                />
                 <Analytics />
                 <SpeedInsights />
             </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                {children}
-                <ToastContainer />
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                    <ToastContainer />
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -25,6 +25,7 @@ import {
     defaultSettings,
     createAllSettingsMaps,
 } from "@/lib/settings";
+import ThemeToggle from "./ui/Header/ThemeToggle";
 
 interface Manga {
     id: string;
@@ -35,33 +36,6 @@ interface Manga {
     rating: string;
     author: string;
 }
-
-// Custom hook for managing theme
-const useTheme = () => {
-    const [theme, setTheme] = useState<string | null>(null);
-
-    useEffect(() => {
-        const storedTheme = localStorage.getItem("theme") || "light";
-        setTheme(storedTheme);
-        document.documentElement.classList.toggle(
-            "dark",
-            storedTheme === "dark",
-        );
-    }, []);
-
-    useEffect(() => {
-        if (theme) {
-            document.documentElement.classList.toggle("dark", theme === "dark");
-            localStorage.setItem("theme", theme);
-        }
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-    };
-
-    return { theme, toggleTheme };
-};
 
 // Hook to manage settings
 const useSettings = () => {
@@ -119,7 +93,6 @@ export function HeaderComponent() {
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [notification, setNotification] = useState("");
-    const { theme, toggleTheme } = useTheme();
     const { settings, setSettings } = useSettings();
     const popupRef = useRef<HTMLDivElement | null>(null);
     const settingsMap = createAllSettingsMaps(settings, setSettings);
@@ -359,17 +332,7 @@ export function HeaderComponent() {
                         </Dialog>
 
                         {/* Theme Toggle Button */}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleTheme}
-                        >
-                            {theme === "light" ? (
-                                <Moon className="h-5 w-5" />
-                            ) : (
-                                <Sun className="h-5 w-5" />
-                            )}
-                        </Button>
+                        <ThemeToggle />
                     </div>
                 </div>
             </div>
