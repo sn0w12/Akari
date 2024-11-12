@@ -67,6 +67,13 @@ export default function BookmarksBody({
             "firstPage",
         )) as Bookmark[];
 
+        if (bookmarkFirstPage.length === 0) {
+            new Toast("No bookmarks found.", "info");
+            setAllBookmarks([]);
+            setWorkerFinished(true);
+            return;
+        }
+
         // Check if the first page of bookmarks has changed
         if (
             cachedFirstPage &&
