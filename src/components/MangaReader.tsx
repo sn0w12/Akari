@@ -50,7 +50,12 @@ async function fetchChapter(id: string, subId: string) {
 }
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
-    const chapterData = await fetchChapter(id, subId);
+    let chapterData: Chapter | undefined;
+    try {
+        chapterData = await fetchChapter(id, subId);
+    } catch (error) {
+        console.error("Error fetching chapter data:", error);
+    }
 
     if (!chapterData) {
         return <MangaReaderSkeleton />;
