@@ -21,6 +21,18 @@ export default function PageProgress({
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
     const [isVisible, setIsVisible] = useState(getSetting("showPageProgress"));
+    const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        setWindowWidth(window.innerWidth);
+
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Listen for settings changes
     useSettingsChange((event) => {
@@ -41,7 +53,7 @@ export default function PageProgress({
             return "1rem";
         }
 
-        if (window.innerWidth <= 650) {
+        if (typeof window !== "undefined" && windowWidth <= 650) {
             return "12rem";
         } else {
             return "8rem";
@@ -52,7 +64,7 @@ export default function PageProgress({
         const updateBackgroundStyle = () => {
             if (containerRef.current) {
                 const offset = 3;
-                const isVertical = window.innerWidth >= cutoff;
+                const isVertical = windowWidth >= cutoff;
                 const buttons = containerRef.current.querySelectorAll("button");
                 const targetButton = buttons[currentPage];
 
@@ -87,9 +99,7 @@ export default function PageProgress({
     return (
         <div
             className={`${isVisible ? "" : "hidden"} transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
-            style={
-                window.innerWidth <= cutoff ? { bottom: getBottomOffset() } : {}
-            }
+            style={windowWidth <= cutoff ? { bottom: getBottomOffset() } : {}}
             onClick={(e) => e.stopPropagation()}
         >
             <div
