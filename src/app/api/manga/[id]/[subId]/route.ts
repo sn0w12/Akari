@@ -13,10 +13,9 @@ export async function GET(
 ): Promise<Response> {
     const params = await props.params;
     const { id, subId } = params;
-    const { searchParams } = new URL(req.url);
-    const server = searchParams.get("server") || "1";
     const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
+    const server = cookieStore.get(`manga_server`)?.value || "1";
     const cacheKey = `manga_${id}_${subId}_${server}`;
 
     const cachedData = cache.get(cacheKey);
@@ -126,7 +125,13 @@ export async function GET(
             cache.set(cacheKey, responseData);
         }
 
-        return NextResponse.json(responseData);
+        const mangaResponse = NextResponse.json(responseData);
+        mangaResponse.cookies.set("manga_server", server, {
+            maxAge: 31536000,
+            path: "/",
+        });
+
+        return mangaResponse;
     } catch (error) {
         console.error("Error fetching manga chapter:", error);
         return NextResponse.json(

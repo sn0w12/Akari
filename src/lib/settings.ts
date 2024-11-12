@@ -45,7 +45,8 @@ export const mangaSettings = {
             { label: "Server 2", value: "2" },
         ],
         default: "1",
-        onChange: () => {
+        onChange: (value: string) => {
+            document.cookie = `manga_server=${value}; max-age=31556926`;
             if (window.location.pathname.includes("/chapter")) {
                 window.location.reload();
             }
