@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import { Chapter } from "@/app/api/interfaces";
 import NodeCache from "node-cache";
+import { badImages } from "@/lib/badImages";
 
 const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
 
@@ -106,6 +107,45 @@ export async function GET(
                 }
             }
         });
+
+        // Load and check first and last images
+        if (images.length > 0) {
+            try {
+                const [firstImageResponse, lastImageResponse] =
+                    await Promise.all([
+                        axios.get(images[0], {
+                            responseType: "arraybuffer",
+                            headers: {
+                                Referer: "https://manganato.com",
+                                "User-Agent": "Mozilla/5.0",
+                            },
+                        }),
+                        axios.get(images[images.length - 1], {
+                            responseType: "arraybuffer",
+                            headers: {
+                                Referer: "https://manganato.com",
+                                "User-Agent": "Mozilla/5.0",
+                            },
+                        }),
+                    ]);
+
+                const firstImageBase64 = Buffer.from(
+                    firstImageResponse.data,
+                ).toString("base64");
+                const lastImageBase64 = Buffer.from(
+                    lastImageResponse.data,
+                ).toString("base64");
+
+                if (badImages.includes(firstImageBase64)) {
+                    images.shift();
+                }
+                if (badImages.includes(lastImageBase64)) {
+                    images.pop();
+                }
+            } catch (error) {
+                console.error("Error checking images:", error);
+            }
+        }
 
         // Return the response as JSON
         const responseData: Chapter = {
