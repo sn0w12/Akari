@@ -66,6 +66,18 @@ export default function BookmarksBody({
             db.bookmarkCache,
             "firstPage",
         )) as Bookmark[];
+        const cachedTime = (await db.getCache(
+            db.bookmarkCache,
+            "time",
+        )) as number;
+        if (cachedTime && Date.now() - cachedTime < 1800000) {
+            const bookmarkCache = (await db.getAllCacheValues(
+                db.mangaCache,
+            )) as MangaCacheItem[];
+            setAllBookmarks(bookmarkCache);
+            setWorkerFinished(true);
+            return;
+        }
 
         if (bookmarkFirstPage.length === 0) {
             new Toast("No bookmarks found.", "info");
@@ -130,6 +142,7 @@ export default function BookmarksBody({
         }
 
         await db.setCache(db.bookmarkCache, "firstPage", bookmarkFirstPage);
+        await db.setCache(db.bookmarkCache, "time", Date.now());
 
         const bookmarkToast = new Toast("Processing bookmarks...", "info", {
             autoClose: false,
