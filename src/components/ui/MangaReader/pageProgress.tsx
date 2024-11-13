@@ -20,8 +20,14 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
+    const [mounted, setMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(getSetting("showPageProgress"));
     const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        setMounted(true);
+        setIsVisible(getSetting("showPageProgress")); // Set after mount
+    }, []);
 
     useEffect(() => {
         setWindowWidth(window.innerWidth);
@@ -96,9 +102,9 @@ export default function PageProgress({
             window.removeEventListener("resize", updateBackgroundStyle);
     }, [currentPage, totalPages]);
 
-    return (
+    return mounted ? (
         <div
-            className={`${isVisible ? "" : "hidden"} transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
+            className={`${isVisible ? "flex" : "hidden"} transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
             style={windowWidth <= cutoff ? { bottom: getBottomOffset() } : {}}
             onClick={(e) => e.stopPropagation()}
         >
@@ -126,5 +132,5 @@ export default function PageProgress({
                 </div>
             </div>
         </div>
-    );
+    ) : null;
 }
