@@ -7,6 +7,7 @@ import ConfirmDialog from "@/components/ui/confirmDialog";
 import { useState } from "react";
 import React from "react";
 import { MangaDetails } from "@/app/api/interfaces";
+import Toast from "@/lib/toastWrapper";
 
 interface BookmarkButtonProps {
     manga: MangaDetails;
@@ -53,39 +54,66 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     bmData,
 }) => {
     const [hovered, setHovered] = useState(false);
+    const [isStateBookmarked, setIsStateBookmarked] = useState<boolean | null>(
+        isBookmarked,
+    );
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleBookmarkClick = () => {
-        if (isBookmarked !== null && manga.storyData) {
-            bookmark(manga.storyData, isBookmarked);
+    const handleBookmarkClick = async () => {
+        if (isStateBookmarked !== null && manga.storyData) {
+            setIsLoading(true);
+            try {
+                const data = await bookmark(manga.storyData, isStateBookmarked);
+                setIsLoading(false);
+                console.log(data);
+
+                if (data) {
+                    setIsStateBookmarked(!isStateBookmarked);
+                }
+            } catch (error) {
+                console.error("Failed to bookmark:", error);
+            }
         }
     };
 
-    const handleRemoveBookmark = () => {
-        removeBookmark(bmData);
+    const handleRemoveBookmark = async () => {
+        const data = await removeBookmark(bmData);
+        if (data.result === "error") {
+            new Toast(
+                "Failed to remove bookmark.\nPlease find the manga in your bookmarks first.",
+                "error",
+            );
+            return false;
+        }
+
+        setIsStateBookmarked(false);
+        return true;
     };
 
     const buttonContent =
-        isBookmarked === null ? (
+        isStateBookmarked === null || isLoading ? (
             <Spinner size={30} />
         ) : (
             <div className="relative w-full h-full flex items-center justify-center">
                 <Bookmark
                     className={`transition-all duration-300 ease-in-out ${
-                        isBookmarked && hovered
+                        isStateBookmarked && hovered
                             ? "-translate-x-7"
                             : "translate-x-0"
                     }`}
                 />
                 <span
                     className={`absolute transition-all duration-300 ease-in-out -translate-x-5 ${
-                        isBookmarked && hovered ? "opacity-100" : "opacity-0"
+                        isStateBookmarked && hovered
+                            ? "opacity-100"
+                            : "opacity-0"
                     }`}
                 >
                     Remove
                 </span>
                 <span
                     className={`ml-2 transition-all duration-300 ease-in-out ${
-                        isBookmarked && hovered
+                        isStateBookmarked && hovered
                             ? "translate-x-7"
                             : "translate-x-0"
                     }`}
@@ -96,17 +124,17 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         );
 
     const buttonClass = `w-full relative overflow-hidden ${
-        isBookmarked
+        isStateBookmarked
             ? "bg-green-500 text-white hover:bg-red-600"
             : "hover:bg-green-500"
     }`;
 
     const button = (
         <Button
-            variant={isBookmarked ? "default" : "outline"}
+            variant={isStateBookmarked ? "default" : "outline"}
             size="lg"
             className={buttonClass}
-            disabled={isBookmarked === undefined}
+            disabled={isStateBookmarked === undefined}
             onClick={handleBookmarkClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
@@ -115,7 +143,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         </Button>
     );
 
-    return isBookmarked ? (
+    return isStateBookmarked ? (
         <ConfirmDialog
             triggerButton={button}
             title="Confirm Bookmark Removal"
