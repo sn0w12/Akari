@@ -10,6 +10,7 @@ import db from "@/lib/db";
 import { debounce } from "lodash";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
+import { DetailsChapter } from "@/app/api/interfaces";
 
 interface ChaptersSectionProps {
     manga: MangaDetails;
@@ -18,6 +19,7 @@ interface ChaptersSectionProps {
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortedChapters, setSortedChapters] = useState<DetailsChapter[]>([]);
     const [lastRead, setLastRead] = useState<string>("");
     const chaptersPerPage = 24;
     const id = manga.identifier;
@@ -45,10 +47,25 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         };
     }, [debouncedLoadManga, manga]);
 
-    const sortedChapters = manga?.chapterList.filter((chapter, index, self) => {
-        const ids = self.map((ch) => ch.id);
-        return ids.indexOf(chapter.id) === index;
-    });
+    const getSortedChapters = () => {
+        const uniqueChapters = manga?.chapterList.filter(
+            (chapter, index, self) => {
+                const ids = self.map((ch) => ch.id);
+                return ids.indexOf(chapter.id) === index;
+            },
+        );
+
+        return [...uniqueChapters].sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+        });
+    };
+
+    useEffect(() => {
+        const sortedChapters = getSortedChapters();
+        setSortedChapters(sortedChapters);
+    }, [sortOrder]);
 
     const navigateToLastRead = () => {
         if (!lastRead || !manga) {
