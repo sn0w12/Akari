@@ -54,11 +54,19 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                 return ids.indexOf(chapter.id) === index;
             },
         );
+        console.log(uniqueChapters);
 
         return [...uniqueChapters].sort((a, b) => {
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+            // Extract numbers from chapter IDs using regex
+            const extractNumber = (str: string) => {
+                const match = str.match(/\d+\.?\d*/);
+                return match ? parseFloat(match[0]) : 0;
+            };
+
+            // Use the extracted numbers for comparison
+            const numA = extractNumber(a.id);
+            const numB = extractNumber(b.id);
+            return sortOrder === "asc" ? numA - numB : numB - numA;
         });
     };
 
