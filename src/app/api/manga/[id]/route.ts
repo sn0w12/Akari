@@ -164,12 +164,12 @@ export async function GET(
                     const storyDataMatch = scriptContent.match(
                         /glb_story_data\s*=\s*'([^']+)'/,
                     );
-                    const postidMatch = scriptContent.match(
-                        /\$postid\s*=\s*'(\d+)'/,
+                    const postidMatches = scriptContent.matchAll(
+                        /\$postid\s*=\s*('|")(\d+)('|")/gm,
                     );
-
-                    if (postidMatch) {
-                        mangaId = postidMatch[1];
+                    const firstMatch = [...postidMatches][0];
+                    if (firstMatch) {
+                        mangaId = firstMatch[2]; // Gets the group containing digits
                     }
                     if (storyDataMatch) {
                         glbStoryData = storyDataMatch[1];
