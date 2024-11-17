@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, CSSProperties } from "react";
+import React, { useState, useRef, CSSProperties, type JSX } from "react";
 import Image, { ImageProps } from "next/image";
 import { getSetting } from "@/lib/settings";
 
@@ -28,7 +28,7 @@ interface EffectConfig {
     dynamicStyles?: (
         isHovered: boolean,
         event: React.MouseEvent<HTMLDivElement> | null,
-        containerRef: React.RefObject<HTMLDivElement>,
+        containerRef: React.RefObject<HTMLDivElement | null>,
     ) => CSSProperties;
 }
 

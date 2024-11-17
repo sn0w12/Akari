@@ -40,10 +40,11 @@ async function isMangaBookmarked(user_data: string, mangaId: string) {
 // API handler to check if a manga is bookmarked
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } },
+    props: { params: Promise<{ id: string }> },
 ) {
+    const params = await props.params;
     const { id: mangaId } = params;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const user_data = getUserData(cookieStore);
 
     if (!user_data) {

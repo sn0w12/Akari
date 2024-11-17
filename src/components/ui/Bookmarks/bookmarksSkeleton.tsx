@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 function desktopCard(index: number) {
     return (
         <Card
-            key={index}
+            key={`desktop-${index}`}
             className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full"
         >
             <div className="w-40 h-full mb-0 shrink-0">
@@ -38,7 +38,7 @@ function desktopCard(index: number) {
 function mobileCard(index: number) {
     return (
         <Card
-            key={index}
+            key={`mobile-${index}`}
             className="flex md:hidden flex-col items-start shadow-lg bg-card border border-border rounded-lg"
         >
             <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
@@ -65,48 +65,52 @@ function mobileCard(index: number) {
 
 export default function BookmarksSkeleton() {
     return (
-        <>
-            <div className="relative mb-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        className={
-                            "w-auto md:h-auto flex items-center justify-center"
-                        }
-                        disabled={true}
-                    >
-                        Export Bookmarks
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        className={
-                            "w-auto md:h-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500"
-                        }
-                        disabled={true}
-                    >
-                        Sync Bookmarks
-                    </Button>
-                    <div className="relative w-full">
-                        <Input
-                            type="search"
-                            placeholder={"Loading bookmarks, please wait..."}
+        <div className="min-h-screen bg-background text-foreground">
+            <main className="container mx-auto px-4 pt-6 pb-8">
+                <div className="relative mb-6">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className={
+                                "w-auto md:h-auto flex items-center justify-center"
+                            }
                             disabled={true}
-                            className="no-cancel"
-                        />
-                        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        >
+                            Export Bookmarks
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className={
+                                "w-auto md:h-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500"
+                            }
+                            disabled={true}
+                        >
+                            Sync Bookmarks
+                        </Button>
+                        <div className="relative w-full">
+                            <Input
+                                type="search"
+                                placeholder={
+                                    "Loading bookmarks, please wait..."
+                                }
+                                disabled={true}
+                                className="no-cancel"
+                            />
+                            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
-                {[...Array(24)].map((_, index) => (
-                    <React.Fragment key={index}>
-                        {desktopCard(index)}
-                        {mobileCard(index)}
-                    </React.Fragment>
-                ))}
-            </div>
-        </>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
+                    {[...Array(24)].map((_, index) => (
+                        <React.Fragment key={`cards-${index}`}>
+                            {desktopCard(index)}
+                            {mobileCard(index)}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </main>
+        </div>
     );
 }

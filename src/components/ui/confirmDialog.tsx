@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Dialog,
     DialogTrigger,
@@ -6,7 +8,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import Spinner from "@/components/ui/spinners/puffLoader";
 
 interface ConfirmDialogProps {
     triggerButton: ReactNode; // The button or element to trigger the dialog
@@ -27,8 +30,20 @@ const ConfirmDialog = ({
     cancelLabel = "Cancel",
     onConfirm,
 }: ConfirmDialogProps) => {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleConfirm = async () => {
+        setLoading(true);
+        const result = await Promise.resolve(onConfirm());
+        if (result === undefined || result === true) {
+            setOpen(false);
+        }
+        setLoading(false);
+    };
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {/* Ensure triggerButton is a single element */}
                 {triggerButton}
@@ -46,10 +61,10 @@ const ConfirmDialog = ({
                     </DialogTrigger>
                     <Button
                         variant="outline"
-                        onClick={onConfirm}
+                        onClick={handleConfirm}
                         className={`w-full ${confirmColor}`}
                     >
-                        {confirmLabel}
+                        {loading ? <Spinner size={30} /> : confirmLabel}
                     </Button>
                 </div>
             </DialogContent>

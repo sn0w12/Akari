@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { MangaDetailsComponent } from "@/components/MangaDetails";
 
 interface PageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }
 
-export default function SearchPage({ params }: PageProps) {
+export default async function SearchPage(props: PageProps) {
+    const params = await props.params;
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Suspense

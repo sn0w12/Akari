@@ -22,12 +22,14 @@ interface PaginationElementProps {
     currentPage: number;
     totalPages: number;
     handlePageChange: (page: number) => void;
+    className?: string;
 }
 
 export default function PaginationElement({
     currentPage,
     totalPages,
     handlePageChange,
+    className,
 }: PaginationElementProps) {
     const [inputPage, setInputPage] = useState(currentPage);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,7 +47,9 @@ export default function PaginationElement({
     };
 
     return (
-        <Pagination className="mb-6 flex items-center justify-center">
+        <Pagination
+            className={`mb-6 flex items-center justify-center ${className}`}
+        >
             <PaginationContent className="flex items-center">
                 <PaginationPrevious
                     onClick={() =>

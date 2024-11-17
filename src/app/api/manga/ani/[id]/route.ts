@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } },
+    props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    const params = await props.params;
     const query = `
     query ExampleQuery($mediaId: Int!) {
       Media(id: $mediaId) {

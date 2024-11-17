@@ -10,7 +10,7 @@ const BOOKMARK_NOTIFICATION_URL =
 
 // API handler to check if a manga is bookmarked
 export async function GET() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const user_data = getUserData(cookieStore);
 
     if (!user_data) {

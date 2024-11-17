@@ -4,40 +4,17 @@ import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import NodeCache from "node-cache";
+import { MangaDetails, DetailsChapter } from "../../interfaces";
 
 const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
 
-interface Chapter {
-    id: string;
-    path: string;
-    name: string;
-    view: string;
-    createdAt: string | undefined;
-}
-
-interface MangaDetails {
-    mangaId: string | null;
-    identifier: string;
-    storyData: string | null;
-    imageUrl: string | undefined;
-    name: string;
-    authors: string[];
-    author_urls: string[];
-    status: string;
-    updated: string;
-    view: string;
-    score: number;
-    genres: string[];
-    description: string;
-    chapterList: Chapter[];
-}
-
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } },
+    props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    const params = await props.params;
     const id = params.id;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
     const cacheKey = `mangaDetails_${id}`;
 
@@ -84,6 +61,14 @@ export async function GET(
             const identifier = url.split("/").pop() || "";
             const imageUrl = $(".story-info-left .info-image img").attr("src");
             const name = $(".story-info-right h1").text();
+            const alternativeNames = $(
+                ".variations-tableInfo .info-alternative",
+            )
+                .closest("tr")
+                .find("td.table-value")
+                .text()
+                .trim()
+                .split("; ");
             const authors: string[] = [];
             const author_urls: string[] = [];
             $(".variations-tableInfo .info-author")
@@ -134,7 +119,7 @@ export async function GET(
                 .text()
                 .trim();
 
-            const chapterList: Chapter[] = [];
+            const chapterList: DetailsChapter[] = [];
             $(".panel-story-chapter-list .row-content-chapter li").each(
                 (index, element) => {
                     const chapterElement = $(element);
@@ -152,6 +137,10 @@ export async function GET(
                     const chapterTime = chapterElement
                         .find(".chapter-time")
                         .attr("title");
+
+                    if (!chapterTime) {
+                        return;
+                    }
 
                     chapterList.push({
                         id: chapterUrl?.split("/").pop() || "",
@@ -175,12 +164,12 @@ export async function GET(
                     const storyDataMatch = scriptContent.match(
                         /glb_story_data\s*=\s*'([^']+)'/,
                     );
-                    const postidMatch = scriptContent.match(
-                        /\$postid\s*=\s*'(\d+)'/,
+                    const postidMatches = scriptContent.matchAll(
+                        /\$postid\s*=\s*('|")(\d+)('|")/gm,
                     );
-
-                    if (postidMatch) {
-                        mangaId = postidMatch[1];
+                    const firstMatch = [...postidMatches][0];
+                    if (firstMatch) {
+                        mangaId = firstMatch[2]; // Gets the group containing digits
                     }
                     if (storyDataMatch) {
                         glbStoryData = storyDataMatch[1];
@@ -188,12 +177,17 @@ export async function GET(
                 }
             });
 
+            if (!imageUrl) {
+                throw new Error("Failed to fetch manga details");
+            }
+
             return {
                 mangaId,
                 identifier,
                 storyData: glbStoryData,
                 imageUrl,
                 name,
+                alternativeNames,
                 authors,
                 author_urls,
                 status,

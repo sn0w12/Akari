@@ -45,7 +45,8 @@ export const mangaSettings = {
             { label: "Server 2", value: "2" },
         ],
         default: "1",
-        onChange: () => {
+        onChange: (value: string) => {
+            document.cookie = `manga_server=${value}; max-age=31556926`;
             if (window.location.pathname.includes("/chapter")) {
                 window.location.reload();
             }
@@ -117,6 +118,7 @@ export const defaultSettings = getDefaultSettings();
  *
  * @param key - The settings key to be changed
  * @param value - The new value for the setting
+ * @param previousValue - The previous value of the setting
  *
  * @example
  * ```ts
@@ -236,7 +238,7 @@ export const createAllSettingsMaps = (
     currentSettings: SettingsInterface,
     setSettings: (newSettings: SettingsInterface) => void,
 ) => {
-    let settingsMap: Record<string, SettingsMap> = {};
+    const settingsMap: Record<string, SettingsMap> = {};
     allSettings.forEach((setting) => {
         settingsMap[setting.label] = createSettingsMap(
             setting,

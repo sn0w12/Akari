@@ -8,16 +8,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import db from "@/lib/db";
 import { debounce } from "lodash";
-import { Manga } from "@/app/api/interfaces";
+import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
+import { DetailsChapter } from "@/app/api/interfaces";
 
 interface ChaptersSectionProps {
-    manga: Manga;
+    manga: MangaDetails;
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortedChapters, setSortedChapters] = useState<DetailsChapter[]>([]);
     const [lastRead, setLastRead] = useState<string>("");
     const chaptersPerPage = 24;
     const id = manga.identifier;
@@ -27,7 +29,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
 
         if (cachedData) {
             setLastRead(cachedData.last_read);
-        } else {
+        } else if (manga.mangaId) {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
         }
     }, [id]);
@@ -45,10 +47,33 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         };
     }, [debouncedLoadManga, manga]);
 
-    const sortedChapters = manga?.chapterList.filter((chapter, index, self) => {
-        const ids = self.map((ch) => ch.id);
-        return ids.indexOf(chapter.id) === index;
-    });
+    const getSortedChapters = () => {
+        const uniqueChapters = manga?.chapterList.filter(
+            (chapter, index, self) => {
+                const ids = self.map((ch) => ch.id);
+                return ids.indexOf(chapter.id) === index;
+            },
+        );
+        console.log(uniqueChapters);
+
+        return [...uniqueChapters].sort((a, b) => {
+            // Extract numbers from chapter IDs using regex
+            const extractNumber = (str: string) => {
+                const match = str.match(/\d+\.?\d*/);
+                return match ? parseFloat(match[0]) : 0;
+            };
+
+            // Use the extracted numbers for comparison
+            const numA = extractNumber(a.id);
+            const numB = extractNumber(b.id);
+            return sortOrder === "asc" ? numA - numB : numB - numA;
+        });
+    };
+
+    useEffect(() => {
+        const sortedChapters = getSortedChapters();
+        setSortedChapters(sortedChapters);
+    }, [sortOrder]);
 
     const navigateToLastRead = () => {
         if (!lastRead || !manga) {

@@ -28,4 +28,7 @@ module.exports = {
         ],
         unoptimized: true,
     },
+    experimental: {
+        reactCompiler: true,
+    },
 };

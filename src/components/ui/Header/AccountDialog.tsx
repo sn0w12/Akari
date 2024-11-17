@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
     Dialog,
@@ -17,6 +19,7 @@ import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
 import Image from "next/image";
 import db from "@/lib/db";
+import { Skeleton } from "../skeleton";
 
 export default function LoginDialog() {
     const [username, setUsername] = useState("");
@@ -61,7 +64,6 @@ export default function LoginDialog() {
         localStorage.removeItem("user_acc"); // Legacy
         setUsername(""); // Reset username to trigger the login view again
         setSavedUsername("");
-        fetchCaptcha(); // Fetch a new CAPTCHA when logging out
 
         // MyAnimeList
         localStorage.removeItem("mal_user");
@@ -275,32 +277,38 @@ export default function LoginDialog() {
                                 />
 
                                 {/* CAPTCHA Field */}
-                                {!captchaUrl && <CenteredSpinner />}
-                                {captchaUrl && (
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="block text-sm font-medium mb-2">
-                                            CAPTCHA
-                                        </label>
-                                        <div className="flex items-center w-full">
-                                            <Image
-                                                src={`/api/image-proxy?imageUrl=${captchaUrl}`}
-                                                alt="CAPTCHA"
-                                                className="mr-2 w-auto h-full"
-                                                width={100}
-                                                height={45}
-                                            />
-                                            <Input
-                                                type="text"
-                                                placeholder="Enter CAPTCHA..."
-                                                className="w-full"
-                                                value={captcha}
-                                                onChange={(e) =>
-                                                    setCaptcha(e.target.value)
-                                                }
-                                            />
-                                        </div>
+                                <div className="mt-4 flex flex-col">
+                                    <label className="block text-sm font-medium mb-2">
+                                        CAPTCHA
+                                    </label>
+                                    <div className="flex items-center w-full">
+                                        {!captchaUrl ? (
+                                            <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
+                                                <Skeleton className="w-full h-full" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
+                                                <Image
+                                                    src={`/api/image-proxy?imageUrl=${captchaUrl}`}
+                                                    loading="eager"
+                                                    alt="CAPTCHA"
+                                                    className="max-w-full max-h-full object-contain"
+                                                    width={100}
+                                                    height={45}
+                                                />
+                                            </div>
+                                        )}
+                                        <Input
+                                            type="text"
+                                            placeholder="Enter CAPTCHA..."
+                                            className="w-full"
+                                            value={captcha}
+                                            onChange={(e) =>
+                                                setCaptcha(e.target.value)
+                                            }
+                                        />
                                     </div>
-                                )}
+                                </div>
 
                                 {/* Submit Button */}
                                 <Button

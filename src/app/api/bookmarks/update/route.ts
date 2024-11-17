@@ -14,7 +14,7 @@ export async function POST(request: Request): Promise<Response> {
     try {
         const { story_data, chapter_data }: BookmarkUpdateRequest =
             await request.json();
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const user_data = getUserData(cookieStore);
 
         if (!user_data) {
