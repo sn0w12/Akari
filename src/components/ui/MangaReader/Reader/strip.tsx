@@ -39,7 +39,7 @@ export default function StripReader({
             syncAllServices(chapter);
             bookmarkUpdatedRef.current = true;
         }
-    }, [chapter]);
+    }, [timeElapsed, chapter]);
 
     return (
         <div>

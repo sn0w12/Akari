@@ -8,7 +8,6 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        // Get headers safely
         let headersList: { [key: string]: string } = {};
         try {
             const headerEntries = Array.from((await headers()).entries());
@@ -20,7 +19,7 @@ async function fetchBookmarks(page: number) {
                 {} as { [key: string]: string },
             );
         } catch (headerError) {
-            console.log("Could not get headers:", headerError);
+            console.error("Could not get headers:", headerError);
         }
 
         const response = await fetch(
@@ -30,15 +29,28 @@ async function fetchBookmarks(page: number) {
                     "Content-Type": "application/json",
                     ...headersList,
                 },
+                signal: AbortSignal.timeout(10000),
             },
         );
+
         if (!response.ok) {
-            throw new Error("Failed to fetch bookmarks.");
+            throw new Error(
+                `Failed to fetch bookmarks: ${response.statusText}`,
+            );
         }
+
         const data = await response.json();
+        if (!data?.bookmarks) {
+            throw new Error("Invalid bookmark data received");
+        }
+
         return data;
     } catch (err) {
-        console.log(err);
+        console.error("Error fetching bookmarks:", err);
+        return {
+            bookmarks: [],
+            totalPages: 1,
+        };
     }
 }
 

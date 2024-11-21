@@ -28,6 +28,7 @@ export default function PageReader({
     const [currentPage, setCurrentPage] = useState(0);
     const bookmarkUpdatedRef = useRef(false);
     const router = useRouter();
+    const hasPrefetchedRef = useRef(false);
 
     useEffect(() => {
         if (!chapter || bookmarkUpdatedRef.current) return;
@@ -40,6 +41,20 @@ export default function PageReader({
             bookmarkUpdatedRef.current = true;
         }
     }, [chapter, currentPage]);
+
+    useEffect(() => {
+        if (!chapter?.nextChapter || hasPrefetchedRef.current) return;
+
+        const threshold = Math.min(
+            Math.floor(chapter.images.length * 0.75),
+            chapter.images.length - 3,
+        );
+
+        if (currentPage >= threshold) {
+            router.prefetch(`/manga/${chapter.nextChapter}`);
+            hasPrefetchedRef.current = true;
+        }
+    }, [chapter, currentPage, router]);
 
     const nextPage = useCallback(() => {
         if (!chapter) return;

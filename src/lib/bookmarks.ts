@@ -36,11 +36,10 @@ export function getButtonInfo(bookmark: Bookmark) {
     let buttonColor = "bg-indigo-600 hover:bg-indigo-700";
 
     if (bookmark.up_to_date && bookmark.up_to_date === true) {
-        continueReading = bookmark.link_chapter_last;
-
         if (bookmark.chapterlastnumber === bookmark.chapter_numbernow) {
             continueReadingText = `Latest Chapter - Chapter ${bookmark.chapterlastnumber}`;
             buttonColor = "bg-green-600 hover:bg-green-700";
+            continueReading = bookmark.link_chapter_last;
         } else if (
             compareVersions(
                 bookmark.chapterlastnumber,
@@ -49,6 +48,7 @@ export function getButtonInfo(bookmark: Bookmark) {
         ) {
             continueReadingText = `New Chapter - Chapter ${bookmark.chapterlastnumber}`;
             buttonColor = "bg-cyan-600 hover:bg-cyan-700";
+            continueReading = bookmark.link_chapter_last;
         }
     }
 
