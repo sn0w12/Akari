@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
@@ -26,7 +25,6 @@ export default function BookmarksGrid({
     page,
     totalPages,
 }: BookmarksGridProps) {
-    const router = useRouter();
     const [updatedBookmarks, setUpdatedBookmarks] = useState<Bookmark[]>([]);
 
     async function removeBookmark(bm_data: string, noteid: string) {
@@ -61,13 +59,6 @@ export default function BookmarksGrid({
         const data = await response.json();
         return await syncAllServices(data);
     }
-
-    const handlePageChange = useCallback(
-        (page: number) => {
-            router.push(`/bookmarks?page=${page}`);
-        },
-        [router],
-    );
 
     const updateBookmarks = async (bookmarks: Bookmark[]) => {
         await Promise.all(
