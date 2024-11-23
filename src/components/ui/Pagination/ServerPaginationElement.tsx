@@ -13,12 +13,14 @@ interface PaginationElementProps {
     currentPage: number;
     totalPages: number;
     searchParams?: { key: string; value: string }[];
+    className?: string;
 }
 
 export function PaginationElement({
     currentPage,
     totalPages,
     searchParams = [],
+    className,
 }: PaginationElementProps) {
     const createPageUrl = (page: number) => {
         return (
@@ -28,7 +30,9 @@ export function PaginationElement({
     };
 
     return (
-        <Pagination className="mb-6 flex items-center justify-center">
+        <Pagination
+            className={`mb-6 flex items-center justify-center ${className}`}
+        >
             <PaginationContent className="flex items-center">
                 <Link
                     href={createPageUrl(currentPage - 1)}

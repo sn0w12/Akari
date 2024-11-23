@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
+import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import { X, Check } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import { Bookmark } from "@/app/api/interfaces";
@@ -159,7 +159,6 @@ export default function BookmarksGrid({
             <PaginationElement
                 currentPage={page}
                 totalPages={totalPages}
-                handlePageChange={handlePageChange}
                 className="mt-6 mb-0"
             />
         </>
