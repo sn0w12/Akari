@@ -1,6 +1,10 @@
-import { cookies } from "next/headers";
+"use client";
+
 import { getProductionUrl } from "@/app/api/baseUrl";
 import BookmarksBody from "./ui/Bookmarks/BookmarksBody";
+import { useEffect, useState } from "react";
+import { Bookmark } from "@/app/api/interfaces";
+import BookmarksSkeleton from "@/components/ui/Bookmarks/bookmarksSkeleton";
 
 interface BookmarksPageProps {
     page: number;
@@ -8,17 +12,11 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        const cookieStore = await cookies();
-
         const response = await fetch(
             `${getProductionUrl()}/api/bookmarks?page=${page}`,
             {
                 headers: {
                     "Content-Type": "application/json",
-                    Cookie: cookieStore
-                        .getAll()
-                        .map((cookie) => `${cookie.name}=${cookie.value}`)
-                        .join("; "),
                 },
                 signal: AbortSignal.timeout(10000),
             },
@@ -55,11 +53,28 @@ async function fetchBookmarks(page: number) {
     }
 }
 
-export default async function BookmarksPage({ page }: BookmarksPageProps) {
-    const data = await fetchBookmarks(page);
-    const bookmarks = data?.bookmarks || [];
-    const totalPages = data?.totalPages || 1;
-    const error = data?.error || "";
+export default function BookmarksPage({ page }: BookmarksPageProps) {
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [error, setError] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadBookmarks = async () => {
+            setIsLoading(true);
+            const data = await fetchBookmarks(page);
+            setBookmarks(data?.bookmarks || []);
+            setTotalPages(data?.totalPages || 1);
+            setError(data?.error || "");
+            setIsLoading(false);
+        };
+
+        loadBookmarks();
+    }, [page]);
+
+    if (isLoading) {
+        return <BookmarksSkeleton />;
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground">
