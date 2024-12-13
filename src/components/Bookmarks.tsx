@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import BookmarksBody from "./ui/Bookmarks/BookmarksBody";
 
@@ -8,26 +8,17 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        let headersList: { [key: string]: string } = {};
-        try {
-            const headerEntries = Array.from((await headers()).entries());
-            headersList = headerEntries.reduce(
-                (acc: { [key: string]: string }, [key, value]) => {
-                    acc[key] = value;
-                    return acc;
-                },
-                {} as { [key: string]: string },
-            );
-        } catch (headerError) {
-            console.error("Could not get headers:", headerError);
-        }
+        const cookieStore = await cookies();
 
         const response = await fetch(
             `${getProductionUrl()}/api/bookmarks?page=${page}`,
             {
                 headers: {
                     "Content-Type": "application/json",
-                    ...headersList,
+                    Cookie: cookieStore
+                        .getAll()
+                        .map((cookie) => `${cookie.name}=${cookie.value}`)
+                        .join("; "),
                 },
                 signal: AbortSignal.timeout(10000),
             },
