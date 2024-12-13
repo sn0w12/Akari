@@ -1,6 +1,5 @@
 "use client";
 
-import { getBaseUrl } from "@/app/api/baseUrl";
 import BookmarksBody from "./ui/Bookmarks/BookmarksBody";
 import { useEffect, useState } from "react";
 import { Bookmark } from "@/app/api/interfaces";
@@ -12,15 +11,12 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        const response = await fetch(
-            `${getBaseUrl()}/api/bookmarks?page=${page}`,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                signal: AbortSignal.timeout(10000),
+        const response = await fetch(`/api/bookmarks?page=${page}`, {
+            headers: {
+                "Content-Type": "application/json",
             },
-        );
+            signal: AbortSignal.timeout(10000),
+        });
 
         const responseText = await response.text();
         let data;
