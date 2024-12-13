@@ -1,17 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
-import { X } from "lucide-react";
+import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
+import { X, Check } from "lucide-react";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import { Bookmark } from "@/app/api/interfaces";
 import DesktopBookmarkCard from "./DesktopBookmarkCard";
 import MobileBookmarkCard from "./MobileBookmarkCard";
 import { getHqImage } from "@/lib/utils";
 import db from "@/lib/db";
+import { getProductionUrl } from "@/app/api/baseUrl";
+import { syncAllServices } from "@/lib/sync";
 
 interface BookmarksGridProps {
     bookmarks: Bookmark[];
@@ -24,7 +25,6 @@ export default function BookmarksGrid({
     page,
     totalPages,
 }: BookmarksGridProps) {
-    const router = useRouter();
     const [updatedBookmarks, setUpdatedBookmarks] = useState<Bookmark[]>([]);
 
     async function removeBookmark(bm_data: string, noteid: string) {
@@ -47,12 +47,18 @@ export default function BookmarksGrid({
         }
     }
 
-    const handlePageChange = useCallback(
-        (page: number) => {
-            router.push(`/bookmarks?page=${page}`);
-        },
-        [router],
-    );
+    async function updateBookmark(id: string, subId: string) {
+        const response = await fetch(
+            `${getProductionUrl()}/api/manga/${id}/${subId}`,
+        );
+        if (!response.ok) {
+            throw new Error(
+                `Network response was not ok: ${response.statusText}`,
+            );
+        }
+        const data = await response.json();
+        return await syncAllServices(data);
+    }
 
     const updateBookmarks = async (bookmarks: Bookmark[]) => {
         await Promise.all(
@@ -112,6 +118,30 @@ export default function BookmarksGrid({
                                 )
                             }
                         />
+                        <ConfirmDialog
+                            triggerButton={
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-8 md:right-14 bg-green-600 text-accent hover:text-green-600 focus:outline-none"
+                                >
+                                    <Check className="h-5 w-5" />
+                                </Button>
+                            }
+                            title="Mark as read"
+                            message="Are you sure you want to mark the latest chapter as read?"
+                            confirmLabel="Confirm"
+                            confirmColor="bg-green-600 border-green-500 hover:bg-green-500"
+                            cancelLabel="Cancel"
+                            onConfirm={() =>
+                                updateBookmark(
+                                    bookmark.link_story?.split("/").pop() || "",
+                                    bookmark.link_chapter_last
+                                        .split("/")
+                                        .pop() || "",
+                                )
+                            }
+                        />
                         <DesktopBookmarkCard bookmark={bookmark} />
                         <MobileBookmarkCard bookmark={bookmark} />
                     </div>
@@ -120,7 +150,6 @@ export default function BookmarksGrid({
             <PaginationElement
                 currentPage={page}
                 totalPages={totalPages}
-                handlePageChange={handlePageChange}
                 className="mt-6 mb-0"
             />
         </>

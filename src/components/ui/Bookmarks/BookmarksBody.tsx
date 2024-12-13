@@ -14,12 +14,14 @@ interface BookmarksBodyProps {
     bookmarks: Bookmark[];
     page: number;
     totalPages: number;
+    error: string;
 }
 
 export default function BookmarksBody({
     bookmarks,
     page,
     totalPages,
+    error = "",
 }: BookmarksBodyProps) {
     const [allBookmarks, setAllBookmarks] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
@@ -80,7 +82,11 @@ export default function BookmarksBody({
         }
 
         if (bookmarkFirstPage.length === 0) {
-            new Toast("No bookmarks found.", "info");
+            if (error) {
+                new Toast(error, "error");
+            } else {
+                new Toast("No bookmarks found.", "info");
+            }
             setAllBookmarks([]);
             setWorkerFinished(true);
             return;

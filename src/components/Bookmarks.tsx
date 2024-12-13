@@ -33,15 +33,13 @@ async function fetchBookmarks(page: number) {
             },
         );
 
-        if (!response.ok) {
-            throw new Error(
-                `Failed to fetch bookmarks: ${response.statusText}`,
-            );
-        }
-
         const data = await response.json();
-        if (!data?.bookmarks) {
-            throw new Error("Invalid bookmark data received");
+        if (data.message) {
+            return {
+                bookmarks: [],
+                error: data.message,
+                totalPages: 1,
+            };
         }
 
         return data;
@@ -58,6 +56,7 @@ export default async function BookmarksPage({ page }: BookmarksPageProps) {
     const data = await fetchBookmarks(page);
     const bookmarks = data?.bookmarks || [];
     const totalPages = data?.totalPages || 1;
+    const error = data?.error || "";
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -66,6 +65,7 @@ export default async function BookmarksPage({ page }: BookmarksPageProps) {
                     bookmarks={bookmarks}
                     page={page}
                     totalPages={totalPages}
+                    error={error}
                 />
             </main>
         </div>

@@ -36,7 +36,7 @@ const DesktopBookmarkCard: React.FC<{
             <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
                 <div className="mb-4">
                     <Link href={`/manga/${mangaIdentifier}`}>
-                        <h3 className="font-bold text-2xl mb-2 hover:underline text-left">
+                        <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
                     </Link>
