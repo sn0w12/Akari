@@ -33,7 +33,19 @@ async function fetchBookmarks(page: number) {
             },
         );
 
-        const data = await response.json();
+        const responseText = await response.text();
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (jsonError) {
+            console.error("Could not parse JSON:", jsonError);
+            return {
+                bookmarks: [],
+                error: "Invalid JSON response",
+                totalPages: 1,
+            };
+        }
+
         if (data.message) {
             return {
                 bookmarks: [],
