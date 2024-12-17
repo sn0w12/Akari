@@ -35,6 +35,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 ## Notifications
 
 -   **Use Toasts:** Enable or disable notification toasts.
+-   **Login Toasts:** Show warnings when you aren't logged in to a service (MAL).
 
 ## Cache
 
