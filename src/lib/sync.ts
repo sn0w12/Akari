@@ -33,8 +33,16 @@ export async function syncAllServices(data: Chapter) {
 
     results.forEach((result) => {
         if (result.status === "rejected") {
-            console.error(`Failed to sync with handler:`, result.reason);
-            success = false; // If any handler fails, mark success as false
+            const error = result.reason;
+            if (error instanceof Response && error.status === 401) {
+                // For unauthorized errors, show a warning but don't mark as failure
+                new Toast("Not logged in to one or more services", "warning", {
+                    autoClose: 3000,
+                });
+            } else {
+                console.error(`Failed to sync with handler:`, error);
+                success = false;
+            }
         }
     });
 
@@ -74,7 +82,7 @@ async function updateBookmark(data: Chapter) {
     });
 
     if (!response.ok) {
-        throw new Error("Failed to update bookmark");
+        throw response; // Throw the response object instead of creating a new Error
     }
 }
 

@@ -94,12 +94,12 @@ export async function fetchMalData(
 }
 
 export async function syncMal(id: string, num_chapters_read: string) {
-    const maxRetries = 1; // Number of retries
-    const retryDelay = 200000; // Delay before retrying (in milliseconds)
+    const maxRetries = 1;
+    const retryDelay = 200000;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-            const result = await fetch("/api/mal/me/mangalist", {
+            const response = await fetch("/api/mal/me/mangalist", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -110,41 +110,18 @@ export async function syncMal(id: string, num_chapters_read: string) {
                 }),
             });
 
-            if (result.ok) {
-                return await result.json(); // Return the response if successful
+            if (!response.ok) {
+                throw response; // Throw the response object directly
             }
 
-            // Get the error message from the response, if available
-            const errorDetails = await result.json().catch(() => ({}));
-            const errorMessage =
-                errorDetails.message || "No additional error message provided";
-
-            // Log the error
-            console.warn(`Attempt ${attempt + 1} failed: ${errorMessage}.`);
-
-            // If it's the last attempt, return the error message
-            if (attempt === maxRetries) {
-                return {
-                    success: false,
-                    error: `Failed to update MAL: ${errorMessage} (Status: ${result.status})`,
-                };
-            }
-
-            // Wait before retrying
-            console.warn(`Retrying in ${retryDelay / 1000}s...`);
-            await new Promise((resolve) => setTimeout(resolve, retryDelay)); // Wait before retrying
+            return await response.json();
         } catch (error) {
-            // Return the error if an exception occurs
-            return {
-                success: false,
-                error: `Unexpected error: ${(error as Error).message}`,
-            };
+            if (attempt < maxRetries) {
+                console.warn(`Retrying in ${retryDelay / 1000}s...`);
+                await new Promise((resolve) => setTimeout(resolve, retryDelay));
+                continue;
+            }
+            throw error; // Throw the error to be handled by syncAllServices
         }
     }
-
-    // This point should not be reached, but just in case:
-    return {
-        success: false,
-        error: "Failed to update MAL after multiple attempts.",
-    };
 }

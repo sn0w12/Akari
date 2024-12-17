@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
         return NextResponse.json(
             { error: "Failed to get access token" },
-            { status: 500 },
+            { status: 401 },
         );
     }
 
