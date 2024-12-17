@@ -15,17 +15,30 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 # Features
 
 -   **MyAnimeList Syncing:** Built-in synchronization with MyAnimeList (MAL).
--   **Seamless Manga Reading Experience:** Enjoy reading your favorite manga with a smooth interface.
--   **Bookmark Integration:** All your bookmarks are synced and saved, allowing you to pick up where you left off, using the Manganato bookmark system.
+-   **Bookmark Integration:** All your bookmarks are synced and saved with your current manganato bookmarks.
 -   **All Manganato Features:** All normal manganato features are available.
 -   **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
 -   **Search Bookmarks:** Quickly find manga by searching through your bookmarks.
 
 # Settings
 
--   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better cover images from MyAnimeList.
--   **Use Toasts:** Enable or disable notification toasts.
+## General
+
+-   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList.
 -   **Fancy Animations:** Toggle advanced animations for a richer experience.
+
+## Manga
+
+-   **Manga Server:** Chooses the manga server to fetch from.
+-   **Show Page Progress:** Enables or disables the progress bar.
+
+## Notifications
+
+-   **Use Toasts:** Enable or disable notification toasts.
+
+## Cache
+
+-   **Clear Cache:** Clears all caches.
 
 # Getting Started
 
@@ -124,7 +137,7 @@ yarn build
 yarn start
 ```
 
-## DMCA disclaimer
+# DMCA disclaimer
 
 The developers of this application do not have any affiliation with the content available in the app.
 It collects content from sources that are freely available through any web browser
