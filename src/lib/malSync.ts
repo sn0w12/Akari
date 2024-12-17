@@ -93,7 +93,11 @@ export async function fetchMalData(
     }
 }
 
-export async function syncMal(id: string, num_chapters_read: string) {
+export async function syncMal(
+    id: string,
+    num_chapters_read: string,
+    retry: boolean = true,
+) {
     const maxRetries = 1;
     const retryDelay = 200000;
 
@@ -116,7 +120,7 @@ export async function syncMal(id: string, num_chapters_read: string) {
 
             return await response.json();
         } catch (error) {
-            if (attempt < maxRetries) {
+            if (attempt < maxRetries && retry) {
                 console.warn(`Retrying in ${retryDelay / 1000}s...`);
                 await new Promise((resolve) => setTimeout(resolve, retryDelay));
                 continue;

@@ -5,6 +5,7 @@ import db from "./db";
 import { checkIfBookmarked } from "./bookmarks";
 
 type SyncHandler = (data: Chapter) => Promise<void>;
+const services = ["mangaNato", "MAL"];
 
 export async function syncAllServices(data: Chapter) {
     const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
@@ -31,20 +32,25 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data)),
     );
 
-    results.forEach((result) => {
+    let unAuthorizedServices: string[] = [];
+    results.forEach((result, index) => {
+        console.log(result);
         if (result.status === "rejected") {
             const error = result.reason;
             if (error instanceof Response && error.status === 401) {
-                // For unauthorized errors, show a warning but don't mark as failure
-                new Toast("Not logged in to one or more services", "warning", {
-                    autoClose: 3000,
-                });
+                unAuthorizedServices.push(services[index]);
             } else {
                 console.error(`Failed to sync with handler:`, error);
                 success = false;
             }
         }
     });
+    if (unAuthorizedServices.length > 0) {
+        new Toast(
+            `Not logged in to services: ${unAuthorizedServices.join(", ")}`,
+            "warning",
+        );
+    }
 
     // Display a toast notification after all sync handlers are done
     if (success) {
@@ -96,5 +102,5 @@ async function syncBookmark(data: Chapter) {
     const malData = await fetchMalData(data.parentId, true);
     if (!malData || !malData.malUrl) return;
 
-    await syncMal(malData.malUrl.split("/").pop(), chapterNumber);
+    await syncMal(malData.malUrl.split("/").pop(), chapterNumber, false);
 }
