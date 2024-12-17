@@ -8,6 +8,7 @@ import { useState } from "react";
 import React from "react";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
+import db from "@/lib/db";
 
 interface BookmarkButtonProps {
     manga: MangaDetails;
@@ -15,11 +16,12 @@ interface BookmarkButtonProps {
     bmData: string;
 }
 
-async function bookmark(storyData: string, isBookmarked: boolean) {
+async function bookmark(manga: MangaDetails, isBookmarked: boolean) {
     if (isBookmarked) {
         return;
     }
 
+    const storyData = manga.storyData;
     const response = await fetch("/api/bookmarks/add", {
         method: "POST",
         headers: {
@@ -39,7 +41,32 @@ async function bookmark(storyData: string, isBookmarked: boolean) {
         new Toast("Bookmark added.", "success");
     }
 
-    return data;
+    const firstChapterId = manga.chapterList[manga.chapterList.length - 1].id;
+    const firstChapter = await fetch(
+        `/api/manga/${manga.identifier}/${firstChapterId}`,
+    );
+    const firstChapterData = await firstChapter.json();
+
+    const updateResponse = await fetch("/api/bookmarks/update", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            story_data: storyData,
+            chapter_data: firstChapterData.chapterData,
+        }),
+    });
+    const updateData = await updateResponse.json();
+    if (updateData.result === "error") {
+        new Toast("Failed to update bookmark.", "error");
+        return;
+    }
+    db.updateCache(db.mangaCache, manga.identifier, {
+        last_read: firstChapterId,
+    });
+
+    return updateData;
 }
 
 async function findBookmarkData(
@@ -118,7 +145,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         if (isStateBookmarked !== null && manga.storyData) {
             setIsLoading(true);
             try {
-                const data = await bookmark(manga.storyData, isStateBookmarked);
+                const data = await bookmark(manga, isStateBookmarked);
                 setIsLoading(false);
 
                 if (data) {
