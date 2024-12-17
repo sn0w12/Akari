@@ -77,6 +77,13 @@ export default function LoginDialog() {
         window.location.reload();
     };
 
+    const handleMalLogout = async () => {
+        localStorage.removeItem("mal_user");
+        setMalUser(null);
+        await fetch("/api/logout/mal");
+        window.location.reload();
+    };
+
     // Fetch CAPTCHA when opening the dialog
     const fetchCaptcha = async () => {
         if (captchaUrl && ciSessionCookie) {
@@ -208,11 +215,31 @@ export default function LoginDialog() {
                                 </a>
                             )}
                             {malUser && (
-                                <div className="mt-4">
-                                    <h2 className="text-xl font-bold">
-                                        {malUser.name}
-                                    </h2>
-                                    <p className="mt-2">Logged In With Mal</p>
+                                <div className="mt-4 flex items-center space-x-4 justify-between">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-xl font-bold">
+                                            {malUser.name}
+                                        </h2>
+                                        <p className="mt-2">
+                                            Logged In With Mal
+                                        </p>
+                                    </div>
+                                    <ConfirmDialog
+                                        triggerButton={
+                                            <Button
+                                                variant="outline"
+                                                className="mt-2 bg-red-500 hover:bg-red-400"
+                                            >
+                                                Logout MAL
+                                            </Button>
+                                        }
+                                        title="Confirm Logout"
+                                        message="Are you sure you want to logout from myanimelist?"
+                                        confirmLabel="Logout"
+                                        confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+                                        cancelLabel="Cancel"
+                                        onConfirm={handleMalLogout}
+                                    />
                                 </div>
                             )}
                             {/* Logout Button */}
@@ -226,7 +253,7 @@ export default function LoginDialog() {
                                     </Button>
                                 }
                                 title="Confirm Logout"
-                                message="Are you sure you want to logout?"
+                                message="Are you sure you want to logout from all accounts?"
                                 confirmLabel="Logout"
                                 confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
                                 cancelLabel="Cancel"
