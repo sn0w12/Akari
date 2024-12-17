@@ -66,6 +66,12 @@ export const notificationSettings = {
         type: "checkbox",
         default: true,
     },
+    loginToasts: {
+        label: "Login Toasts",
+        description: "Show warnings when you aren't logged in to a service.",
+        type: "checkbox",
+        default: true,
+    },
 };
 
 export const cacheSettings = {

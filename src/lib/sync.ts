@@ -3,9 +3,10 @@ import Toast from "@/lib/toastWrapper";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import db from "./db";
 import { checkIfBookmarked } from "./bookmarks";
+import { getSetting } from "./settings";
 
 type SyncHandler = (data: Chapter) => Promise<void>;
-const services = ["mangaNato", "MAL"];
+const services = ["MangaNato", "MAL"];
 
 export async function syncAllServices(data: Chapter) {
     const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
@@ -32,9 +33,9 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data)),
     );
 
+    let authorizedServices: string[] = [];
     let unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
-        console.log(result);
         if (result.status === "rejected") {
             const error = result.reason;
             if (error instanceof Response && error.status === 401) {
@@ -43,13 +44,17 @@ export async function syncAllServices(data: Chapter) {
                 console.error(`Failed to sync with handler:`, error);
                 success = false;
             }
+        } else {
+            authorizedServices.push(services[index]);
         }
     });
     if (unAuthorizedServices.length > 0) {
-        new Toast(
-            `Not logged in to services: ${unAuthorizedServices.join(", ")}`,
-            "warning",
-        );
+        if (getSetting("loginToasts")) {
+            new Toast(
+                `Not logged in to services: ${unAuthorizedServices.join(", ")}`,
+                "warning",
+            );
+        }
     }
 
     // Display a toast notification after all sync handlers are done
@@ -62,7 +67,7 @@ export async function syncAllServices(data: Chapter) {
         });
 
         new Toast(
-            "Bookmark updated successfully across all services!",
+            `Bookmark updated successfully on: ${authorizedServices.join(", ")}`,
             "success",
             {
                 autoClose: 1000,
