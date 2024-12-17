@@ -31,10 +31,54 @@ async function bookmark(storyData: string, isBookmarked: boolean) {
     });
 
     const data = await response.json();
+
+    if (data.result === "error") {
+        new Toast("Failed to bookmark.", "error");
+        return;
+    } else if (data.result === "ok") {
+        new Toast("Bookmark added.", "success");
+    }
+
     return data;
 }
 
-async function removeBookmark(bmData: string) {
+async function findBookmarkData(
+    identifier: string,
+    page = 1,
+): Promise<string | null> {
+    const response = await fetch(`/api/bookmarks?page=${page}`);
+    const data = await response.json();
+
+    if (!data.bookmarks || data.result === "error") {
+        return null;
+    }
+
+    const bookmark = data.bookmarks.find((bm: any) =>
+        bm.link_story.includes(identifier),
+    );
+
+    if (bookmark) {
+        return bookmark.bm_data;
+    }
+
+    if (page < data.totalPages) {
+        return findBookmarkData(identifier, page + 1);
+    }
+
+    return null;
+}
+
+async function removeBookmark(bmData: string, manga: MangaDetails) {
+    if (!bmData) {
+        // Try to find the bookmark data if not provided
+        const foundBmData = await findBookmarkData(manga.identifier);
+        if (!foundBmData) {
+            new Toast("Could not find bookmark data", "error");
+            return false;
+        }
+        bmData = foundBmData;
+    }
+
     const response = await fetch("/api/bookmarks/delete", {
         method: "POST",
         headers: {
@@ -45,6 +89,17 @@ async function removeBookmark(bmData: string) {
         }),
     });
     const data = await response.json();
+
+    if (data.result === "error") {
+        new Toast(
+            "Failed to remove bookmark.\nPlease find the manga in your bookmarks first.",
+            "error",
+        );
+        return false;
+    } else if (data.result === "ok") {
+        new Toast("Bookmark removed.", "success");
+    }
+
     return data;
 }
 
@@ -65,7 +120,6 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             try {
                 const data = await bookmark(manga.storyData, isStateBookmarked);
                 setIsLoading(false);
-                console.log(data);
 
                 if (data) {
                     setIsStateBookmarked(!isStateBookmarked);
@@ -77,15 +131,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     };
 
     const handleRemoveBookmark = async () => {
-        const data = await removeBookmark(bmData);
-        if (data.result === "error") {
-            new Toast(
-                "Failed to remove bookmark.\nPlease find the manga in your bookmarks first.",
-                "error",
-            );
-            return false;
-        }
-
+        await removeBookmark(bmData, manga);
         setIsStateBookmarked(false);
         return true;
     };
