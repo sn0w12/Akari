@@ -56,6 +56,11 @@ const formatDate = (date: string) => {
 
 async function getMangaData(id: string) {
     const response = await fetch(`${getBaseUrl()}/api/manga/${id}`);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch manga data");
+    }
+
     return response.json();
 }
 
