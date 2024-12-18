@@ -67,10 +67,6 @@ async function getMangaData(id: string) {
 export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await getMangaData(id);
 
-    if (!manga) {
-        return <MangaDetailsSkeleton />;
-    }
-
     return (
         <main className="container mx-auto px-4 py-8">
             <UpdateManga manga={manga} />

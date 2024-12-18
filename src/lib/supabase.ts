@@ -38,6 +38,7 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
 
 export async function getMangaFromSupabase(identifier: string) {
     try {
+        console.log(`Fetching manga data for identifier: ${identifier}`);
         const { data, error } = await supabasePublic
             .from("manga")
             .select("*")
@@ -45,9 +46,11 @@ export async function getMangaFromSupabase(identifier: string) {
             .single();
 
         if (error) {
-            throw new Error("Error fetching from Supabase:", error);
+            console.error("Supabase error details:", error);
+            throw new Error(`Error fetching from Supabase: ${error.message}`);
         }
 
+        console.log(`Supabase data received:`, data);
         return transformMangaData(data);
     } catch (e) {
         console.error("Unexpected error in getMangaFromSupabase:", e);
