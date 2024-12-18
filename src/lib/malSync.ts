@@ -114,7 +114,7 @@ export async function fetchMalData(
             }
 
             if (useCache) {
-                //await db.updateCache(db.hqMangaCache, identifier, data);
+                await db.updateCache(db.hqMangaCache, identifier, data);
             }
             updateMalSync(identifier, data);
             return data;

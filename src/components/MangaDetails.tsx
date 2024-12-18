@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -8,11 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import React from "react";
 import ScoreDisplay from "@/components/ui/MangaDetails/scoreDisplay";
 import Buttons from "./ui/MangaDetails/Buttons";
-import { fetchMalData } from "@/lib/malSync";
 import EnhancedImage from "./ui/enhancedImage";
 import { ChaptersSection } from "./ui/MangaDetails/ChaptersSection";
 import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
-import { HqMangaCacheItem, MangaDetails } from "@/app/api/interfaces";
 import {
     Tooltip,
     TooltipContent,
@@ -20,16 +15,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-
-async function getMangaDetails(id: string) {
-    const response = await fetch(`/api/manga/${id}`);
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch manga");
-    }
-
-    return response.json();
-}
+import { getProductionUrl } from "@/app/api/baseUrl";
+import { UpdateManga } from "./ui/MangaDetails/updateManga";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -67,31 +54,18 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-export function MangaDetailsComponent({ id }: { id: string }) {
-    const [manga, setManga] = useState<MangaDetails | null>(null);
-    const [malData, setMalData] = useState<HqMangaCacheItem | null>(null);
+async function getMangaData(id: string) {
+    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [mangaData, malResult] = await Promise.all([
-                    getMangaDetails(id),
-                    fetchMalData(id),
-                ]);
-                setManga(mangaData);
-                document.title = mangaData?.name;
-                if (mangaData.malData) {
-                    setMalData(mangaData.malData);
-                } else {
-                    setMalData(malResult);
-                }
-            } catch (error) {
-                console.error("Error fetching manga details:", error);
-            }
-        };
+    if (!response.ok) {
+        throw new Error("Failed to fetch MAL data");
+    }
 
-        fetchData();
-    }, [id]);
+    return response.json();
+}
+
+export async function MangaDetailsComponent({ id }: { id: string }) {
+    const manga = await getMangaData(id);
 
     if (!manga) {
         return <MangaDetailsSkeleton />;
@@ -99,11 +73,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
 
     return (
         <main className="container mx-auto px-4 py-8">
+            <UpdateManga manga={manga} />
             <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={malData?.imageUrl ?? manga.imageUrl}
+                        src={manga.malData?.imageUrl ?? manga.imageUrl}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
@@ -129,7 +104,10 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                             <TooltipContent>
                                                 <div className="flex flex-wrap gap-2 max-w-96 w-auto">
                                                     {manga.alternativeNames.map(
-                                                        (mangaName, index) => (
+                                                        (
+                                                            mangaName: string,
+                                                            index: number,
+                                                        ) => (
                                                             <p
                                                                 className="max-w-xs bg-accent px-1 rounded"
                                                                 key={index}
@@ -145,9 +123,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                 )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
-                            {malData?.aniUrl && (
+                            {manga.malData?.aniUrl && (
                                 <a
-                                    href={malData.aniUrl}
+                                    href={manga.malData.aniUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -160,9 +138,9 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                                     />
                                 </a>
                             )}
-                            {malData?.malUrl && (
+                            {manga.malData?.malUrl && (
                                 <a
-                                    href={malData.malUrl}
+                                    href={manga.malData.malUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -270,7 +248,8 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                         <div className="lg:w-1/2 flex-grow h-full">
                             <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
                                 <p>
-                                    {malData?.description ?? manga.description}
+                                    {manga.malData?.description ??
+                                        manga.description}
                                 </p>
                             </Card>
                         </div>
