@@ -207,6 +207,9 @@ export async function GET(
             getMangaFromSupabase(id),
         ]);
         mangaDetails.malData = malData;
+        if (mangaDetails.malData?.description == "") {
+            mangaDetails.malData.description = mangaDetails.description;
+        }
         if (mangaDetails.storyData) {
             cache.set(cacheKey, mangaDetails);
         }
