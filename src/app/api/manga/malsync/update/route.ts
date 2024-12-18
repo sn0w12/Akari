@@ -15,7 +15,10 @@ const mangaSchema = z.object({
         smallImageUrl: z.string().url(),
         url: z.string().url(),
         score: z.number(),
-        description: z.string(),
+        description: z
+            .string()
+            .nullable()
+            .transform((val) => val || ""),
         malUrl: z.string().url().optional(),
         aniUrl: z.string().url().optional(),
     }),
