@@ -37,6 +37,7 @@ export interface MangaDetails {
     genres: string[];
     description: string;
     chapterList: DetailsChapter[];
+    malData: HqMangaCacheItem | null;
 }
 
 export interface SmallManga {

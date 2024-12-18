@@ -5,6 +5,7 @@ import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import NodeCache from "node-cache";
 import { MangaDetails, DetailsChapter } from "../../interfaces";
+import { getMangaFromSupabase } from "@/lib/supabase";
 
 const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
 
@@ -197,12 +198,19 @@ export async function GET(
                 genres,
                 description,
                 chapterList,
+                malData: null,
             };
         };
 
-        const mangaDetails = await fetchMangaDetails(
-            "https://chapmanganato.to",
-        );
+        const [mangaDetails, malData] = await Promise.all([
+            fetchMangaDetails("https://chapmanganato.to"),
+            getMangaFromSupabase(id),
+        ]);
+
+        mangaDetails.malData = malData;
+        if (mangaDetails.malData?.description == "") {
+            mangaDetails.malData.description = mangaDetails.description;
+        }
         if (mangaDetails.storyData) {
             cache.set(cacheKey, mangaDetails);
         }

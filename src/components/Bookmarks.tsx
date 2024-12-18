@@ -1,6 +1,9 @@
-import { headers } from "next/headers";
-import { getProductionUrl } from "@/app/api/baseUrl";
+"use client";
+
 import BookmarksBody from "./ui/Bookmarks/BookmarksBody";
+import { useEffect, useState } from "react";
+import { Bookmark } from "@/app/api/interfaces";
+import BookmarksSkeleton from "@/components/ui/Bookmarks/bookmarksSkeleton";
 
 interface BookmarksPageProps {
     page: number;
@@ -8,32 +11,26 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        let headersList: { [key: string]: string } = {};
+        const response = await fetch(`/api/bookmarks?page=${page}`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            signal: AbortSignal.timeout(10000),
+        });
+
+        const responseText = await response.text();
+        let data;
         try {
-            const headerEntries = Array.from((await headers()).entries());
-            headersList = headerEntries.reduce(
-                (acc: { [key: string]: string }, [key, value]) => {
-                    acc[key] = value;
-                    return acc;
-                },
-                {} as { [key: string]: string },
-            );
-        } catch (headerError) {
-            console.error("Could not get headers:", headerError);
+            data = JSON.parse(responseText);
+        } catch (jsonError) {
+            console.error("Could not parse JSON:", jsonError);
+            return {
+                bookmarks: [],
+                error: "Invalid JSON response",
+                totalPages: 1,
+            };
         }
 
-        const response = await fetch(
-            `${getProductionUrl()}/api/bookmarks?page=${page}`,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...headersList,
-                },
-                signal: AbortSignal.timeout(10000),
-            },
-        );
-
-        const data = await response.json();
         if (data.message) {
             return {
                 bookmarks: [],
@@ -52,11 +49,28 @@ async function fetchBookmarks(page: number) {
     }
 }
 
-export default async function BookmarksPage({ page }: BookmarksPageProps) {
-    const data = await fetchBookmarks(page);
-    const bookmarks = data?.bookmarks || [];
-    const totalPages = data?.totalPages || 1;
-    const error = data?.error || "";
+export default function BookmarksPage({ page }: BookmarksPageProps) {
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [error, setError] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadBookmarks = async () => {
+            setIsLoading(true);
+            const data = await fetchBookmarks(page);
+            setBookmarks(data?.bookmarks || []);
+            setTotalPages(data?.totalPages || 1);
+            setError(data?.error || "");
+            setIsLoading(false);
+        };
+
+        loadBookmarks();
+    }, [page]);
+
+    if (isLoading) {
+        return <BookmarksSkeleton />;
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground">

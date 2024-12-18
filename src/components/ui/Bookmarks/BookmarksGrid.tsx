@@ -48,9 +48,7 @@ export default function BookmarksGrid({
     }
 
     async function updateBookmark(id: string, subId: string) {
-        const response = await fetch(
-            `${getProductionUrl()}/api/manga/${id}/${subId}`,
-        );
+        const response = await fetch(`/api/manga/${id}/${subId}`);
         if (!response.ok) {
             throw new Error(
                 `Network response was not ok: ${response.statusText}`,

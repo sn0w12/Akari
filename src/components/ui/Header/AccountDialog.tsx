@@ -31,7 +31,6 @@ export default function LoginDialog() {
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [authUrl, setAuthUrl] = useState<string | null>(null);
-    const [isMalAuth, setIsMalAuth] = useState<boolean>(false);
     const [malUser, setMalUser] = useState<MalUser | null>(null);
 
     interface MalUser {
@@ -68,7 +67,6 @@ export default function LoginDialog() {
         // MyAnimeList
         localStorage.removeItem("mal_user");
         setMalUser(null);
-        setIsMalAuth(false);
 
         // Clear Caches
         db.clearCache(db.bookmarkCache);
@@ -76,6 +74,13 @@ export default function LoginDialog() {
         db.clearCache(db.hqMangaCache);
 
         await fetch("/api/logout");
+        window.location.reload();
+    };
+
+    const handleMalLogout = async () => {
+        localStorage.removeItem("mal_user");
+        setMalUser(null);
+        await fetch("/api/logout/mal");
         window.location.reload();
     };
 
@@ -134,31 +139,41 @@ export default function LoginDialog() {
         setIsLoading(false);
     };
 
+    async function isMalValid() {
+        const response = await fetch("/api/mal/isLoggedIn");
+        const data = await response.json();
+        return data.result === "ok";
+    }
+
     useEffect(() => {
-        const malUser = JSON.parse(localStorage.getItem("mal_user") || "{}");
-        if (malUser.name) {
-            setMalUser(malUser);
-            setIsMalAuth(true);
-            return;
-        } else {
-            setIsMalAuth(false);
-        }
+        const checkMalAuth = async () => {
+            const malUser = JSON.parse(
+                localStorage.getItem("mal_user") || "{}",
+            );
+            if (malUser.name && (await isMalValid())) {
+                setMalUser(malUser);
+                return;
+            }
 
-        const codeVerifier = generateCodeVerifier();
-        const codeChallenge = generateCodeChallenge(codeVerifier);
-        const clientId = process.env.NEXT_PUBLIC_CLIENT_ID!;
+            const codeVerifier = generateCodeVerifier();
+            const codeChallenge = generateCodeChallenge(codeVerifier);
+            const clientId = process.env.NEXT_PUBLIC_CLIENT_ID!;
 
-        // Store the codeVerifier in a cookie
-        Cookies.set("pkce_code_verifier", codeVerifier, { sameSite: "strict" });
+            Cookies.set("pkce_code_verifier", codeVerifier, {
+                sameSite: "strict",
+            });
 
-        const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
-        url.searchParams.append("response_type", "code");
-        url.searchParams.append("client_id", clientId);
-        url.searchParams.append("code_challenge", codeChallenge);
-        url.searchParams.append("code_challenge_method", "plain");
-        url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
+            const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
+            url.searchParams.append("response_type", "code");
+            url.searchParams.append("client_id", clientId);
+            url.searchParams.append("code_challenge", codeChallenge);
+            url.searchParams.append("code_challenge_method", "plain");
+            url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
 
-        setAuthUrl(url.toString());
+            setAuthUrl(url.toString());
+        };
+
+        checkMalAuth();
     }, []);
 
     const handleOpenChange = (
@@ -189,7 +204,7 @@ export default function LoginDialog() {
                             </h2>
                             <p className="mt-2">Logged In With Manganato</p>
 
-                            {authUrl && !isMalAuth && (
+                            {authUrl && !malUser && (
                                 <a href={authUrl}>
                                     <Button
                                         variant="outline"
@@ -199,12 +214,32 @@ export default function LoginDialog() {
                                     </Button>
                                 </a>
                             )}
-                            {isMalAuth && malUser && (
-                                <div className="mt-4">
-                                    <h2 className="text-xl font-bold">
-                                        {malUser.name}
-                                    </h2>
-                                    <p className="mt-2">Logged In With Mal</p>
+                            {malUser && (
+                                <div className="mt-4 flex items-center space-x-4 justify-between">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-xl font-bold">
+                                            {malUser.name}
+                                        </h2>
+                                        <p className="mt-2">
+                                            Logged In With Mal
+                                        </p>
+                                    </div>
+                                    <ConfirmDialog
+                                        triggerButton={
+                                            <Button
+                                                variant="outline"
+                                                className="mt-2 bg-red-500 hover:bg-red-400"
+                                            >
+                                                Logout MAL
+                                            </Button>
+                                        }
+                                        title="Confirm Logout"
+                                        message="Are you sure you want to logout from myanimelist?"
+                                        confirmLabel="Logout"
+                                        confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+                                        cancelLabel="Cancel"
+                                        onConfirm={handleMalLogout}
+                                    />
                                 </div>
                             )}
                             {/* Logout Button */}
@@ -218,7 +253,7 @@ export default function LoginDialog() {
                                     </Button>
                                 }
                                 title="Confirm Logout"
-                                message="Are you sure you want to logout?"
+                                message="Are you sure you want to logout from all accounts?"
                                 confirmLabel="Logout"
                                 confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
                                 cancelLabel="Cancel"

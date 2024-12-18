@@ -3,8 +3,10 @@ import Toast from "@/lib/toastWrapper";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import db from "./db";
 import { checkIfBookmarked } from "./bookmarks";
+import { getSetting } from "./settings";
 
 type SyncHandler = (data: Chapter) => Promise<void>;
+const services = ["MangaNato", "MAL"];
 
 export async function syncAllServices(data: Chapter) {
     const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
@@ -31,12 +33,29 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data)),
     );
 
-    results.forEach((result) => {
+    let authorizedServices: string[] = [];
+    let unAuthorizedServices: string[] = [];
+    results.forEach((result, index) => {
         if (result.status === "rejected") {
-            console.error(`Failed to sync with handler:`, result.reason);
-            success = false; // If any handler fails, mark success as false
+            const error = result.reason;
+            if (error instanceof Response && error.status === 401) {
+                unAuthorizedServices.push(services[index]);
+            } else {
+                console.error(`Failed to sync with handler:`, error);
+                success = false;
+            }
+        } else {
+            authorizedServices.push(services[index]);
         }
     });
+    if (unAuthorizedServices.length > 0) {
+        if (getSetting("loginToasts")) {
+            new Toast(
+                `Not logged in to services: ${unAuthorizedServices.join(", ")}`,
+                "warning",
+            );
+        }
+    }
 
     // Display a toast notification after all sync handlers are done
     if (success) {
@@ -48,7 +67,7 @@ export async function syncAllServices(data: Chapter) {
         });
 
         new Toast(
-            "Bookmark updated successfully across all services!",
+            `Bookmark updated successfully on: ${authorizedServices.join(", ")}`,
             "success",
             {
                 autoClose: 1000,
@@ -74,7 +93,7 @@ async function updateBookmark(data: Chapter) {
     });
 
     if (!response.ok) {
-        throw new Error("Failed to update bookmark");
+        throw response; // Throw the response object instead of creating a new Error
     }
 }
 
@@ -88,5 +107,5 @@ async function syncBookmark(data: Chapter) {
     const malData = await fetchMalData(data.parentId, true);
     if (!malData || !malData.malUrl) return;
 
-    await syncMal(malData.malUrl.split("/").pop(), chapterNumber);
+    await syncMal(malData.malUrl.split("/").pop(), chapterNumber, false);
 }

@@ -66,6 +66,12 @@ export const notificationSettings = {
         type: "checkbox",
         default: true,
     },
+    loginToasts: {
+        label: "Login Toasts",
+        description: "Show warnings when you aren't logged in to a service.",
+        type: "checkbox",
+        default: true,
+    },
 };
 
 export const cacheSettings = {
@@ -89,12 +95,23 @@ const allSettings = [
     notificationSettings,
     cacheSettings,
 ];
-const settings = {
-    ...generalSettings,
-    ...mangaSettings,
-    ...notificationSettings,
-    ...cacheSettings,
-};
+type ExcludeLabel<T> = Omit<T, "label">;
+type MergeSettings<T extends readonly unknown[]> = ExcludeLabel<
+    UnionToIntersection<T[number]>
+>;
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+    k: infer I,
+) => void
+    ? I
+    : never;
+
+const settings: MergeSettings<typeof allSettings> = Object.assign(
+    {},
+    ...allSettings.map((settingGroup) => {
+        const { label, ...rest } = settingGroup;
+        return rest;
+    }),
+);
 
 type SettingMap = (typeof allSettings)[number];
 
