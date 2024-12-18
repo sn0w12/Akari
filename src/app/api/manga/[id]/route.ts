@@ -20,14 +20,12 @@ export async function GET(
     const cacheKey = `mangaDetails_${id}`;
 
     const cachedData = cache.get(cacheKey);
-    /*
     if (cachedData) {
         return new Response(JSON.stringify(cachedData), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
     }
-    */
 
     try {
         const jar = new CookieJar();

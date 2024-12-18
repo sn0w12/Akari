@@ -15,7 +15,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { getProductionUrl } from "@/app/api/baseUrl";
+import { getBaseUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 
 const getStatusColor = (status: string) => {
@@ -55,7 +55,7 @@ const formatDate = (date: string) => {
 };
 
 async function getMangaData(id: string) {
-    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
+    const response = await fetch(`${getBaseUrl()}/api/manga/${id}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch MAL data");
