@@ -34,9 +34,8 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
 }
 
 export async function getMangaFromSupabase(identifier: string) {
-    const client = supabaseAdmin ?? supabasePublic;
     try {
-        const { data, error } = await client
+        const { data, error } = await supabasePublic
             .from("manga")
             .select("*")
             .eq("identifier", identifier)
@@ -44,10 +43,12 @@ export async function getMangaFromSupabase(identifier: string) {
 
         if (error) {
             console.error("Supabase error details:", error);
+            return null;
         }
 
         return transformMangaData(data);
     } catch (e) {
+        console.error("Supabase query error:", e);
         return null;
     }
 }
