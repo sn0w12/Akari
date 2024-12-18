@@ -1,14 +1,40 @@
+import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
+}
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Public client for reading
 export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey);
 
-// Admin client for writing (only use server-side)
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+// Only initialize admin client if service key is available
+export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+    : null;
+
+function transformMangaData(data: any): HqMangaCacheItem | null {
+    if (!data) return null;
+    return {
+        titles: data.titles,
+        imageUrl: data.image_url,
+        smallImageUrl: data.small_image_url,
+        url: data.url,
+        score: data.score,
+        description: data.description,
+        malUrl: data.mal_url,
+        aniUrl: data.ani_url,
+        up_to_date: undefined,
+        is_strip: undefined,
+    };
+}
 
 export async function getMangaFromSupabase(identifier: string) {
     const { data, error } = await supabasePublic
@@ -21,10 +47,15 @@ export async function getMangaFromSupabase(identifier: string) {
         console.error("Error fetching from Supabase:", error);
         return null;
     }
-    return data;
+    return transformMangaData(data);
 }
 
 export async function saveMangaToSupabase(identifier: string, mangaData: any) {
+    if (!supabaseAdmin) {
+        throw new Error(
+            "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
+        );
+    }
     const { data, error } = await supabaseAdmin
         .from("manga")
         .upsert([

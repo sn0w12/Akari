@@ -79,8 +79,12 @@ export function MangaDetailsComponent({ id }: { id: string }) {
                     fetchMalData(id),
                 ]);
                 setManga(mangaData);
-                setMalData(malResult);
                 document.title = mangaData?.name;
+                if (mangaData.malData) {
+                    setMalData(mangaData.malData);
+                } else {
+                    setMalData(malResult);
+                }
             } catch (error) {
                 console.error("Error fetching manga details:", error);
             }
