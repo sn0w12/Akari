@@ -204,13 +204,10 @@ export async function GET(
 
         const [mangaDetails, malData] = await Promise.all([
             fetchMangaDetails("https://chapmanganato.to"),
-            getMangaFromSupabase(id).catch(error => {
-                console.error("Error fetching MAL data:", error);
-                return null;
+            getMangaFromSupabase(id).catch((error) => {
+                throw new Error("Error fetching MAL data:", error);
             }),
         ]);
-
-        console.log('MAL data fetched:', malData ? 'Found' : 'Not found');
 
         mangaDetails.malData = malData;
         if (mangaDetails.malData?.description == "") {
