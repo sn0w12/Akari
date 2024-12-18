@@ -15,11 +15,6 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // Public client for reading
 export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey);
 
-// Only initialize admin client if service key is available
-export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
-    : null;
-
 function transformMangaData(data: any): HqMangaCacheItem | null {
     if (!data) return null;
     return {
@@ -38,7 +33,6 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
 
 export async function getMangaFromSupabase(identifier: string) {
     try {
-        console.log(`Fetching manga data for identifier: ${identifier}`);
         const { data, error } = await supabasePublic
             .from("manga")
             .select("*")
@@ -50,15 +44,16 @@ export async function getMangaFromSupabase(identifier: string) {
             throw new Error(`Error fetching from Supabase: ${error.message}`);
         }
 
-        console.log(`Supabase data received:`, data);
         return transformMangaData(data);
     } catch (e) {
-        console.error("Unexpected error in getMangaFromSupabase:", e);
         return null;
     }
 }
 
 export async function saveMangaToSupabase(identifier: string, mangaData: any) {
+    const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+        ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+        : null;
     if (!supabaseAdmin) {
         throw new Error(
             "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
