@@ -66,7 +66,7 @@ async function getMangaData(id: string) {
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await getMangaData(id);
-    console.log(manga);
+    console.log(manga.malData);
 
     if (!manga) {
         return <MangaDetailsSkeleton />;
