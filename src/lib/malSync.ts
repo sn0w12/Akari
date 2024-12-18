@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import { MalSync } from "@/app/api/interfaces";
+import { HqMangaCacheItem, MalSync } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
 
 async function getHqData(malSyncData: MalSync) {
@@ -20,6 +20,39 @@ async function getHqData(malSyncData: MalSync) {
     }
     const data = await response.json();
     return data;
+}
+
+export async function updateMalSync(
+    identifier: string,
+    data: HqMangaCacheItem,
+) {
+    if (window.location.hostname === "localhost") {
+        console.log("Skipping MAL Sync update on localhost");
+        return null;
+    }
+    try {
+        const response = await fetch("/api/manga/malsync/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                identifier,
+                mangaData: data,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.error("Error updating MAL Sync:", error);
+    }
+    return null;
 }
 
 export async function fetchMalData(
@@ -81,8 +114,9 @@ export async function fetchMalData(
             }
 
             if (useCache) {
-                await db.updateCache(db.hqMangaCache, identifier, data);
+                //await db.updateCache(db.hqMangaCache, identifier, data);
             }
+            updateMalSync(identifier, data);
             return data;
         } catch (error) {
             console.error(error);
