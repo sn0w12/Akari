@@ -37,17 +37,32 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
 }
 
 export async function getMangaFromSupabase(identifier: string) {
-    const { data, error } = await supabasePublic
-        .from("manga")
-        .select("*")
-        .eq("identifier", identifier)
-        .single();
+    try {
+        console.log("Fetching manga from Supabase:", identifier);
+        console.log("Using URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
-    if (error) {
-        console.error("Error fetching from Supabase:", error);
+        const { data, error } = await supabasePublic
+            .from("manga")
+            .select("*")
+            .eq("identifier", identifier)
+            .single();
+
+        if (error) {
+            console.error("Error fetching from Supabase:", error);
+            console.error("Error details:", {
+                code: error.code,
+                message: error.message,
+                details: error.details,
+            });
+            return null;
+        }
+
+        console.log("Supabase response data:", data ? "Found" : "Not found");
+        return transformMangaData(data);
+    } catch (e) {
+        console.error("Unexpected error in getMangaFromSupabase:", e);
         return null;
     }
-    return transformMangaData(data);
 }
 
 export async function saveMangaToSupabase(identifier: string, mangaData: any) {
