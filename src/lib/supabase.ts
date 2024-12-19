@@ -53,6 +53,25 @@ export async function getMangaFromSupabase(identifier: string) {
     }
 }
 
+export async function getMangaArrayFromSupabase(identifiers: string[]) {
+    try {
+        const { data, error } = await supabasePublic
+            .from("manga")
+            .select("*")
+            .in("identifier", identifiers);
+
+        if (error) {
+            console.error("Supabase error details:", error);
+            return [];
+        }
+
+        return data.map((item) => transformMangaData(item)).filter(Boolean);
+    } catch (e) {
+        console.error("Supabase query error:", e);
+        return [];
+    }
+}
+
 export async function saveMangaToSupabase(identifier: string, mangaData: any) {
     if (!supabaseAdmin) {
         throw new Error(
