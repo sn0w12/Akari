@@ -23,6 +23,9 @@ const DesktopBookmarkCard: React.FC<{
     const prefetchMangaData = () => {
         router.prefetch(`/manga/${mangaIdentifier}`);
     };
+    const prefetchChapterData = (link: string) => {
+        router.prefetch(`/manga/${mangaIdentifier}/${link.split("/").pop()}`);
+    };
 
     return (
         <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
@@ -57,6 +60,9 @@ const DesktopBookmarkCard: React.FC<{
                         href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                         rel="noopener noreferrer"
                         className="block mt-4"
+                        onMouseEnter={() =>
+                            prefetchChapterData(continueReading)
+                        }
                     >
                         <Button
                             className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
@@ -65,7 +71,11 @@ const DesktopBookmarkCard: React.FC<{
                         </Button>
                     </Link>
                 </div>
-                {LatestChapterInfo({ bookmark, colors: buttonColor })}
+                {LatestChapterInfo({
+                    bookmark,
+                    colors: buttonColor,
+                    prefetchChapterData,
+                })}
             </CardContent>
         </Card>
     );
