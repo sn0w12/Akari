@@ -70,6 +70,8 @@ export async function GET(req: Request): Promise<Response> {
                 rating: rating,
                 author: author,
                 views: views,
+                description: "",
+                date: "",
             });
         });
 
