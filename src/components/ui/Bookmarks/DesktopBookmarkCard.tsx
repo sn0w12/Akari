@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,12 +12,17 @@ import { getButtonInfo } from "@/lib/bookmarks";
 const DesktopBookmarkCard: React.FC<{
     bookmark: Bookmark;
 }> = ({ bookmark }) => {
+    const router = useRouter();
     const {
         mangaIdentifier,
         continueReading,
         continueReadingText,
         buttonColor,
     } = getButtonInfo(bookmark);
+
+    const prefetchMangaData = () => {
+        router.prefetch(`/manga/${mangaIdentifier}`);
+    };
 
     return (
         <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
@@ -35,7 +43,10 @@ const DesktopBookmarkCard: React.FC<{
             </div>
             <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
                 <div className="mb-4">
-                    <Link href={`/manga/${mangaIdentifier}`}>
+                    <Link
+                        href={`/manga/${mangaIdentifier}`}
+                        onMouseEnter={prefetchMangaData}
+                    >
                         <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
