@@ -11,7 +11,6 @@ import DesktopBookmarkCard from "./DesktopBookmarkCard";
 import MobileBookmarkCard from "./MobileBookmarkCard";
 import { getHqImage } from "@/lib/utils";
 import db from "@/lib/db";
-import { getProductionUrl } from "@/app/api/baseUrl";
 import { syncAllServices } from "@/lib/sync";
 
 interface BookmarksGridProps {
