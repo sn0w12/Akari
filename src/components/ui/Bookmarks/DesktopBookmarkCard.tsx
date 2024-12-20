@@ -53,7 +53,7 @@ const DesktopBookmarkCard: React.FC<{
                         </h3>
                     </Link>
                     {/* Continue Reading Button */}
-                    <a
+                    <Link
                         href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                         rel="noopener noreferrer"
                         className="block mt-4"
@@ -63,7 +63,7 @@ const DesktopBookmarkCard: React.FC<{
                         >
                             {continueReadingText}
                         </Button>
-                    </a>
+                    </Link>
                 </div>
                 {LatestChapterInfo({ bookmark, colors: buttonColor })}
             </CardContent>
