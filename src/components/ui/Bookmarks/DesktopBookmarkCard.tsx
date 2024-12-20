@@ -27,10 +27,11 @@ const DesktopBookmarkCard: React.FC<{
     return (
         <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
             <div className="w-40 h-full mb-0 shrink-0">
-                <a
+                <Link
                     href={`/manga/${mangaIdentifier}`}
                     rel="noopener noreferrer"
                     className="block"
+                    onMouseEnter={prefetchMangaData}
                 >
                     <Image
                         src={bookmark.image}
@@ -39,7 +40,7 @@ const DesktopBookmarkCard: React.FC<{
                         height={450}
                         className="w-full h-auto object-cover rounded"
                     />
-                </a>
+                </Link>
             </div>
             <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
                 <div className="mb-4">
