@@ -20,6 +20,7 @@ const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
 function transformMangaData(data: any): HqMangaCacheItem | null {
     if (!data) return null;
     return {
+        identifier: data.identifier,
         titles: data.titles,
         imageUrl: data.image_url,
         smallImageUrl: data.small_image_url,

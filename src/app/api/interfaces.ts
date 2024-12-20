@@ -71,6 +71,7 @@ export interface DetailsChapter {
 }
 
 export interface HqMangaCacheItem {
+    identifier: string;
     aniUrl: string;
     malUrl: string;
     description: string;
