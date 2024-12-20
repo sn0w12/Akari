@@ -44,10 +44,12 @@ export interface SmallManga {
     id: string;
     image: string;
     title: string;
+    description: string;
     chapter: string;
     chapterUrl: string;
     rating: string;
     author: string;
+    date: string | number;
     views: string;
 }
 

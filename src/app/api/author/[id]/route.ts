@@ -2,22 +2,11 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
+import { replaceImages } from "@/lib/mangaNato";
+import { SmallManga } from "../../interfaces";
 
 const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour
 export const dynamic = "force-dynamic";
-
-interface Manga {
-    id: string;
-    image: string | undefined;
-    title: string;
-    chapter: string;
-    chapterUrl: string | undefined;
-    description: string;
-    rating: string;
-    views: string;
-    date: number;
-    author: string;
-}
 
 function parseDateString(dateStr: string | undefined): number {
     if (!dateStr) return 0;
@@ -105,7 +94,7 @@ export async function GET(
         const { data } = await axios.get(searchUrl);
         const $ = cheerio.load(data);
 
-        const mangaList: Manga[] = [];
+        const mangaList: SmallManga[] = [];
 
         // Loop through each .content-genres-item div and extract the relevant information
         $(".search-story-item").each((index, element) => {
@@ -132,10 +121,10 @@ export async function GET(
 
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl,
+                image: imageUrl || "",
                 title: title,
                 chapter: latestChapter,
-                chapterUrl: chapterUrl,
+                chapterUrl: chapterUrl || "",
                 rating: rating,
                 author: author,
                 date: parseDateString(date),
@@ -146,7 +135,7 @@ export async function GET(
 
         if (orderBy === "latest") {
             mangaList.sort((a, b) => {
-                return b.date - a.date;
+                return Number(b.date) - Number(a.date);
             });
         }
 
@@ -155,6 +144,8 @@ export async function GET(
         const totalPages: number = lastPageElement.length
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
+
+        await replaceImages(mangaList);
 
         const result = {
             mangaList,
