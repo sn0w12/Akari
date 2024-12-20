@@ -13,9 +13,7 @@ export default async function Bookmarks(props: BookmarksProps) {
     const searchParams = await props.searchParams;
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <Suspense>
-                <BookmarksPage page={Number(searchParams.page) || 1} />
-            </Suspense>
+            <BookmarksPage page={Number(searchParams.page) || 1} />
         </div>
     );
 }
