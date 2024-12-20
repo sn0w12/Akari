@@ -5,22 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-interface Manga {
-    id: string;
-    image: string;
-    title: string;
-    chapter: string;
-    chapterUrl: string;
-    description: string;
-    rating: string;
-    views: string;
-    date: string;
-    author: string;
-}
+import { SmallManga } from "@/app/api/interfaces";
 
 interface PopularMangaProps {
-    mangas: Manga[];
+    mangas: SmallManga[];
 }
 
 export function PopularManga({ mangas }: PopularMangaProps) {

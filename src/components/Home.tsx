@@ -5,23 +5,11 @@ import ErrorComponent from "./ui/error";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
-
-interface Manga {
-    id: string;
-    image: string;
-    title: string;
-    chapter: string;
-    chapterUrl: string;
-    description: string;
-    rating: string;
-    views: string;
-    date: string;
-    author: string;
-}
+import { SmallManga } from "@/app/api/interfaces";
 
 interface MangaListResponse {
-    mangaList: Manga[];
-    popular: Manga[];
+    mangaList: SmallManga[];
+    popular: SmallManga[];
     metaData: {
         totalStories: number;
         totalPages: number;
