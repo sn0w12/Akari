@@ -38,6 +38,7 @@ export function PaginationElement({
                     href={createPageUrl(currentPage - 1)}
                     passHref
                     legacyBehavior
+                    prefetch={true}
                 >
                     <PaginationPrevious
                         className={`w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center ${
@@ -55,6 +56,7 @@ export function PaginationElement({
                                 href={createPageUrl(1)}
                                 passHref
                                 legacyBehavior
+                                prefetch={true}
                             >
                                 <PaginationLink className="cursor-pointer">
                                     1
@@ -78,6 +80,7 @@ export function PaginationElement({
                                     href={createPageUrl(i + 1)}
                                     passHref
                                     legacyBehavior
+                                    prefetch={true}
                                 >
                                     <PaginationLink
                                         isActive={currentPage === i + 1}
@@ -105,6 +108,7 @@ export function PaginationElement({
                                 href={createPageUrl(totalPages)}
                                 passHref
                                 legacyBehavior
+                                prefetch={true}
                             >
                                 <PaginationLink className="cursor-pointer">
                                     {totalPages}
@@ -118,6 +122,7 @@ export function PaginationElement({
                     href={createPageUrl(currentPage + 1)}
                     passHref
                     legacyBehavior
+                    prefetch={true}
                 >
                     <PaginationNext
                         className={`w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${
