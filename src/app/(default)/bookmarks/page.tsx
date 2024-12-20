@@ -1,6 +1,4 @@
 import BookmarksPage from "@/components/Bookmarks";
-import { Suspense } from "react";
-import BookmarksSkeleton from "@/components/ui/Bookmarks/bookmarksSkeleton";
 
 interface BookmarksProps {
     searchParams: Promise<{
