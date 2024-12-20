@@ -81,6 +81,7 @@ export default async function MangaReaderHome({
                             href={`/manga/${manga.id}`}
                             key={manga.id}
                             className="block"
+                            prefetch={true}
                         >
                             <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
                                 <CardContent className="p-0">
