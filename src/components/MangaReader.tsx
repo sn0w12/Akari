@@ -3,6 +3,7 @@ import MangaReaderSkeleton from "./ui/MangaReader/mangaReaderSkeleton";
 import Reader from "./ui/MangaReader/reader";
 import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
+import ErrorComponent from "./ui/error";
 
 interface ChapterReaderProps {
     id: string;
@@ -51,14 +52,16 @@ async function fetchChapter(id: string, subId: string) {
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
     let chapterData: Chapter | undefined;
+    let errorMessage = "";
     try {
         chapterData = await fetchChapter(id, subId);
     } catch (error) {
+        errorMessage = String(error);
         console.error("Error fetching chapter data:", error);
     }
 
     if (!chapterData) {
-        return <MangaReaderSkeleton />;
+        return <ErrorComponent message={errorMessage} />;
     }
 
     return <Reader chapter={chapterData} />;
