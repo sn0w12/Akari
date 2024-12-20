@@ -1,27 +1,13 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { SortSelect } from "./ui/SortSelect";
-import Link from "next/link";
-import Image from "next/image";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
-
-interface Manga {
-    id: string;
-    image: string;
-    title: string;
-    chapter: string;
-    chapterUrl: string;
-    description: string;
-    rating: string;
-    views: string;
-    date: string;
-    author: string;
-}
+import { MangaCard } from "./ui/Home/MangaCard";
+import { SmallManga } from "@/app/api/interfaces";
 
 interface MangaListResponse {
-    mangaList: Manga[];
-    popular: Manga[];
+    mangaList: SmallManga[];
+    popular: SmallManga[];
     metaData: {
         totalStories: number;
         totalPages: number;
@@ -54,7 +40,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     const currentPage = Number(searchParams.page) || 1;
     const currentSort = searchParams.sort || "latest";
 
-    let mangaList: Manga[] = [];
+    let mangaList: SmallManga[] = [];
     let totalPages = 1;
     let error = null;
 
@@ -80,45 +66,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {mangaList.map((manga) => (
-                        <Link
-                            href={`/manga/${manga.id}`}
-                            key={manga.id}
-                            className="block"
-                        >
-                            <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
-                                <CardContent className="p-0">
-                                    <Image
-                                        src={manga.image}
-                                        alt={manga.title}
-                                        width={250}
-                                        height={350}
-                                        className="w-full h-auto object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
-                                            <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                {manga.title}
-                                            </h3>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                {`Author${manga.author.split(",").length > 1 ? "s" : ""}: `}
-                                                {manga.author
-                                                    .split(",")
-                                                    .map((author) =>
-                                                        author.trim(),
-                                                    )
-                                                    .join(" | ")}
-                                            </p>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                Chapter: {manga.chapter}
-                                            </p>
-                                            <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                                Views: {manga.views}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
+                        <MangaCard key={manga.id} manga={manga} />
                     ))}
                 </div>
             </main>
