@@ -82,7 +82,7 @@ If you prefer to run Akari locally, follow these steps.
 
 Before running Akari, make sure you have the following installed:
 
--   [Node.js](https://nodejs.org/) (v14 or later)
+-   [Node.js](https://nodejs.org/)
 -   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ### Installation
@@ -96,14 +96,10 @@ cd manga-reader
 
 2. Install dependencies:
 
+If you are using yarn, replace npm with yarn.
+
 ```bash
 npm install
-```
-
-or
-
-```bash
-yarn install
 ```
 
 ### Running the Development Server
@@ -112,12 +108,6 @@ To start the development server, run:
 
 ```bash
 npm run dev
-```
-
-or
-
-```bash
-yarn dev
 ```
 
 Open http://localhost:3000 in your browser to see the application.
@@ -129,13 +119,6 @@ To build the app for production:
 ```bash
 npm run build
 npm run start
-```
-
-or
-
-```bash
-yarn build
-yarn start
 ```
 
 # DMCA disclaimer
