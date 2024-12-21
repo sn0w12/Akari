@@ -35,6 +35,7 @@ interface EffectConfig {
         isHovered: boolean,
         event: React.MouseEvent<HTMLDivElement> | null,
         containerRef: React.RefObject<HTMLDivElement | null>,
+        tiltValues?: { tiltX: number; tiltY: number },
     ) => CSSProperties;
 }
 
@@ -109,19 +110,19 @@ const effectConfigs: Record<HoverEffect, EffectConfig> = {
     },
     "dynamic-tilt": {
         containerClass:
-            "transition-transform duration-300 ease-out transform-gpu",
+            "transition-transform duration-300 ease-out transform-gpu will-change-transform",
         imageClass: "",
-        dynamicStyles: (isHovered, event, containerRef) => {
-            if (!isHovered || !event || !containerRef.current) return {};
-            const { left, top, width, height } =
-                containerRef.current.getBoundingClientRect();
-            const x = (event.clientX - left) / width;
-            const y = (event.clientY - top) / height;
-            const tiltX = (y - 0.5) * -20;
-            const tiltY = (x - 0.5) * 20;
+        dynamicStyles: (isHovered, event, containerRef, tiltValues) => {
+            if (!isHovered || !event || !containerRef.current || !tiltValues)
+                return {};
+
+            // Throttle calculations using rAF
             return {
-                transform: `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.05, 1.05, 1.05)`,
-                transition: "transform 0.1s ease",
+                transform: `perspective(1000px) rotateX(${tiltValues.tiltX}deg) rotateY(${tiltValues.tiltY}deg) scale3d(1.05, 1.05, 1.05)`,
+                transition: "none", // Remove transition for smoother updates
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                willChange: "transform",
             };
         },
     },
@@ -155,6 +156,8 @@ export default function EnhancedImage({
     const [mouseEvent, setMouseEvent] =
         useState<React.MouseEvent<HTMLDivElement> | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [tiltValues, setTiltValues] = useState({ tiltX: 0, tiltY: 0 });
+    const rafId = useRef<number | undefined>(undefined);
     const [fancyAnimationsEnabled, setFancyAnimationsEnabled] = useState(false);
     useEffect(() => {
         setFancyAnimationsEnabled(getSetting("fancyAnimations"));
@@ -168,12 +171,36 @@ export default function EnhancedImage({
         setIsHovered(false);
         setMouseEvent(null);
     };
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>
-        setMouseEvent(e);
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+
+        if (rafId.current) {
+            cancelAnimationFrame(rafId.current);
+        }
+
+        rafId.current = requestAnimationFrame(() => {
+            const { left, top, width, height } =
+                containerRef.current!.getBoundingClientRect();
+            const x = (e.clientX - left) / width;
+            const y = (e.clientY - top) / height;
+            const tiltX = (y - 0.5) * -20;
+            const tiltY = (x - 0.5) * 20;
+
+            setTiltValues({ tiltX, tiltY });
+            setMouseEvent(e);
+        });
+    };
+    useEffect(() => {
+        return () => {
+            if (rafId.current) {
+                cancelAnimationFrame(rafId.current);
+            }
+        };
+    }, []);
 
     const containerStyle =
         dynamicStyles && fancyAnimationsEnabled
-            ? dynamicStyles(isHovered, mouseEvent, containerRef)
+            ? dynamicStyles(isHovered, mouseEvent, containerRef, tiltValues)
             : {};
 
     const imageClassName = [
