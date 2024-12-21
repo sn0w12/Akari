@@ -1,8 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { MangaDetails } from "@/app/api/interfaces";
 
 interface ReadingButtonProps {
@@ -11,6 +12,7 @@ interface ReadingButtonProps {
 }
 
 const ReadingButton: React.FC<ReadingButtonProps> = ({ manga, lastRead }) => {
+    const router = useRouter();
     const getLinkText = () => {
         if (lastRead) {
             if (lastRead === manga.chapterList[0].id) {
@@ -20,6 +22,10 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga, lastRead }) => {
         } else {
             return "Start Reading";
         }
+    };
+
+    const preloadChapter = (chapterId: string) => {
+        router.prefetch(`${window.location.pathname}/${chapterId}`);
     };
 
     const text = getLinkText();
@@ -34,6 +40,10 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga, lastRead }) => {
     const link = lastRead
         ? lastRead
         : manga.chapterList[manga.chapterList.length - 1].id;
+
+    useEffect(() => {
+        preloadChapter(link);
+    }, [link]);
 
     return (
         <Button

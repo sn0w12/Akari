@@ -54,7 +54,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                 return ids.indexOf(chapter.id) === index;
             },
         );
-        console.log(uniqueChapters);
 
         return [...uniqueChapters].sort((a, b) => {
             // Extract numbers from chapter IDs using regex

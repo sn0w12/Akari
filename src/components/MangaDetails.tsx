@@ -119,7 +119,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
                             {manga.malData?.aniUrl && (
-                                <a
+                                <Link
                                     href={manga.malData.aniUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -131,10 +131,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                         width={40}
                                         height={40}
                                     />
-                                </a>
+                                </Link>
                             )}
                             {manga.malData?.malUrl && (
-                                <a
+                                <Link
                                     href={manga.malData.malUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -146,7 +146,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                         width={40}
                                         height={40}
                                     />
-                                </a>
+                                </Link>
                             )}
                         </div>
                     </div>
