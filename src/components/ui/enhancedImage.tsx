@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useRef, CSSProperties, type JSX } from "react";
+import React, {
+    useState,
+    useRef,
+    CSSProperties,
+    type JSX,
+    useEffect,
+} from "react";
 import Image, { ImageProps } from "next/image";
 import { getSetting } from "@/lib/settings";
 
@@ -149,11 +155,13 @@ export default function EnhancedImage({
     const [mouseEvent, setMouseEvent] =
         useState<React.MouseEvent<HTMLDivElement> | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [fancyAnimationsEnabled, setFancyAnimationsEnabled] = useState(false);
+    useEffect(() => {
+        setFancyAnimationsEnabled(getSetting("fancyAnimations"));
+    }, []);
 
     const { containerClass, imageClass, dynamicStyles } =
         effectConfigs[hoverEffect];
-
-    const fancyAnimationsEnabled = getSetting("fancyAnimations");
 
     const handleMouseEnter = () => setIsHovered(true);
     const handleMouseLeave = () => {
@@ -168,6 +176,14 @@ export default function EnhancedImage({
             ? dynamicStyles(isHovered, mouseEvent, containerRef)
             : {};
 
+    const imageClassName = [
+        fancyAnimationsEnabled ? "transition-all duration-300 ease-in-out" : "",
+        imageClass,
+        className,
+    ]
+        .filter(Boolean)
+        .join(" ");
+
     return (
         <div
             ref={containerRef}
@@ -177,11 +193,7 @@ export default function EnhancedImage({
             onMouseMove={handleMouseMove}
             style={containerStyle}
         >
-            <Image
-                className={`${fancyAnimationsEnabled ? "transition-all duration-300 ease-in-out" : ""} ${imageClass} ${className}`}
-                alt={alt}
-                {...props}
-            />
+            <Image className={imageClassName} alt={alt} {...props} />
             {hoverEffect === "glitch" && fancyAnimationsEnabled && (
                 <style jsx global>{`
                     @keyframes glitch {
