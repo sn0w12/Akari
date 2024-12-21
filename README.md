@@ -24,7 +24,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## General
 
--   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList.
+-   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList to put into the database.
 -   **Fancy Animations:** Toggle advanced animations for a richer experience.
 
 ## Manga
