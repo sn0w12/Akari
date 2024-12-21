@@ -12,34 +12,68 @@
 
 Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
 
+## Table of Contents
+
+-   [Features](#features)
+-   [Settings](#settings)
+-   [Getting Started](#getting-started)
+    -   [Online Usage](#online-usage)
+    -   [Local Installation](#local-installation)
+
 # Features
 
--   **MyAnimeList Syncing:** Built-in synchronization with MyAnimeList (MAL).
--   **Bookmark Integration:** All your bookmarks are synced and saved with your current manganato bookmarks.
--   **All Manganato Features:** All normal manganato features are available.
--   **Remove Bookmarks on Manga Page:** Instead of having to find the manga in the bookmarks page, simply remove it from it's main page.
--   **Search Bookmarks:** Quickly find manga by searching through your bookmarks.
+## Reader Experience
+
+-   **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
+-   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
+-   **Responsive Design:** Fully responsive interface that works on mobile and desktop
+
+## Manga Management
+
+-   **Genre Filtering:** Browse manga by specific genres
+-   **Popular Manga Section:** Discover trending and popular manga
+-   **Latest Updates:** Stay informed about newly added chapters
+
+## Bookmarks and Sync
+
+-   **MyAnimeList Integration:**
+    -   Sync with MyAnimeList (MAL) account
+    -   Enhanced manga information from MAL
+-   **Bookmark Management:**
+    -   Sync bookmarks with Manganato account
+    -   Quick bookmark removal from manga pages
+    -   Search through bookmarked manga
+    -   Up-to-date chapter tracking
+    -   Last read chapter tracking
 
 # Settings
 
 ## General
 
--   **Fetch MAL Image:** Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList to put into the database.
--   **Fancy Animations:** Toggle advanced animations for a richer experience.
+| Setting          | Default | Description                                                                                                     |
+| ---------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| Fetch MAL Image  | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList to put into the database |
+| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                                              |
 
 ## Manga
 
--   **Manga Server:** Chooses the manga server to fetch from.
--   **Show Page Progress:** Enables or disables the progress bar.
+| Setting            | Default   | Description                            |
+| ------------------ | --------- | -------------------------------------- |
+| Manga Server       | Manganato | Chooses the manga server to fetch from |
+| Show Page Progress | Enabled   | Enables or disables the progress bar   |
 
 ## Notifications
 
--   **Use Toasts:** Enable or disable notification toasts.
--   **Login Toasts:** Show warnings when you aren't logged in to a service (MAL).
+| Setting      | Default | Description                                                |
+| ------------ | ------- | ---------------------------------------------------------- |
+| Use Toasts   | Enabled | Enable or disable notification toasts                      |
+| Login Toasts | Enabled | Show warnings when you aren't logged in to a service (MAL) |
 
 ## Cache
 
--   **Clear Cache:** Clears all caches.
+| Setting     | Default | Description       |
+| ----------- | ------- | ----------------- |
+| Clear Cache | N/A     | Clears all caches |
 
 # Getting Started
 
