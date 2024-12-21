@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import Spinner from "@/components/ui/spinners/puffLoader";
 import ConfirmDialog from "@/components/ui/confirmDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import db from "@/lib/db";
+import { getSetting } from "@/lib/settings";
+import { useSettingsVersion } from "@/lib/settings";
 
 interface BookmarkButtonProps {
     manga: MangaDetails;
@@ -140,6 +142,11 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         isBookmarked,
     );
     const [isLoading, setIsLoading] = useState(false);
+    const settingsVersion = useSettingsVersion();
+    const [fancyAnimationsEnabled, setFancyAnimationsEnabled] = useState(false);
+    useEffect(() => {
+        setFancyAnimationsEnabled(getSetting("fancyAnimations"));
+    }, [settingsVersion]);
 
     const handleBookmarkClick = async () => {
         if (isStateBookmarked !== null && manga.storyData) {
@@ -168,31 +175,46 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             <Spinner size={30} />
         ) : (
             <div className="relative w-full h-full flex items-center justify-center">
-                <Bookmark
-                    className={`transition-all duration-300 ease-in-out ${
-                        isStateBookmarked && hovered
-                            ? "-translate-x-7"
-                            : "translate-x-0"
-                    }`}
-                />
-                <span
-                    className={`absolute transition-all duration-300 ease-in-out -translate-x-5 ${
-                        isStateBookmarked && hovered
-                            ? "opacity-100"
-                            : "opacity-0"
-                    }`}
-                >
-                    Remove
-                </span>
-                <span
-                    className={`ml-2 transition-all duration-300 ease-in-out ${
-                        isStateBookmarked && hovered
-                            ? "translate-x-7"
-                            : "translate-x-0"
-                    }`}
-                >
-                    Bookmark
-                </span>
+                {fancyAnimationsEnabled ? (
+                    <>
+                        <Bookmark
+                            className={`transition-all duration-300 ease-in-out ${
+                                isStateBookmarked && hovered
+                                    ? "-translate-x-7"
+                                    : "translate-x-0"
+                            }`}
+                        />
+                        <span
+                            className={`absolute transition-all duration-300 ease-in-out -translate-x-5 ${
+                                isStateBookmarked && hovered
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                            }`}
+                        >
+                            Remove
+                        </span>
+                        <span
+                            className={`ml-2 transition-all duration-300 ease-in-out ${
+                                isStateBookmarked && hovered
+                                    ? "translate-x-7"
+                                    : "translate-x-0"
+                            }`}
+                        >
+                            Bookmark
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <Bookmark className="mr-2" />
+                        <span>
+                            {isStateBookmarked
+                                ? hovered
+                                    ? "Remove"
+                                    : "Bookmarked"
+                                : "Bookmark"}
+                        </span>
+                    </>
+                )}
             </div>
         );
 
