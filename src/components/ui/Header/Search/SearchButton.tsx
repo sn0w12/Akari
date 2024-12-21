@@ -16,6 +16,7 @@ import {
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
 import { SmallManga } from "@/app/api/interfaces";
+import { getSearchResults } from "./searchFunctions";
 
 export default function SearchButton() {
     const [searchText, setSearchText] = useState("");
@@ -28,11 +29,7 @@ export default function SearchButton() {
             if (query) {
                 setIsSearchLoading(true);
                 try {
-                    const res = await fetch(
-                        `/api/search?search=${query.replaceAll(" ", "_")}`,
-                    );
-                    const data = await res.json();
-                    const firstFiveResults = data.slice(0, 5);
+                    const firstFiveResults = await getSearchResults(query, 3);
                     setSearchResults(firstFiveResults);
                 } catch (error) {
                     console.error("Error fetching search results:", error);
@@ -76,7 +73,7 @@ export default function SearchButton() {
                     {isSearchLoading ? (
                         <CenteredSpinner />
                     ) : searchResults.length > 0 ? (
-                        searchResults.slice(0, 3).map((result: SmallManga) => (
+                        searchResults.map((result: SmallManga) => (
                             <Link
                                 href={`/manga/${result.id}`}
                                 key={result.id}

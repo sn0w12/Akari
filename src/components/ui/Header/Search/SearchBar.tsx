@@ -8,6 +8,7 @@ import { debounce } from "lodash";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
 import { SmallManga } from "@/app/api/interfaces";
+import { getSearchResults } from "./searchFunctions";
 
 export default function SearchBar() {
     const [searchText, setSearchText] = useState("");
@@ -22,11 +23,7 @@ export default function SearchBar() {
                 setIsSearchLoading(true);
                 setShowPopup(true);
                 try {
-                    const res = await fetch(
-                        `/api/search?search=${query.replaceAll(" ", "_")}`,
-                    );
-                    const data = await res.json();
-                    const firstFiveResults = data.slice(0, 5);
+                    const firstFiveResults = await getSearchResults(query, 5);
                     setSearchResults(firstFiveResults);
                 } catch (error) {
                     console.error("Error fetching search results:", error);

@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import Fuse from "fuse.js";
 import NodeCache from "node-cache";
 import { SmallManga } from "../interfaces";
+import { replaceImages } from "@/lib/mangaNato";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export async function GET(req: Request): Promise<Response> {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            return new Response(JSON.stringify(cachedData), {
+            return new Response(JSON.stringify({ mangaList: cachedData }), {
                 status: 200,
                 headers: { "Content-Type": "application/json" },
             });
@@ -83,6 +84,7 @@ export async function GET(req: Request): Promise<Response> {
 
         const searchResults = fuse.search(query.replace("_", " "));
         mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
+        await replaceImages(mangaList);
         cache.set(cacheKey, mangaList);
 
         return new Response(
