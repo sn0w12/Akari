@@ -79,6 +79,7 @@ export default function SearchBar() {
                                     key={result.id}
                                     onClick={() => setShowPopup(false)}
                                     className="block p-2 hover:bg-accent flex items-center rounded-lg"
+                                    prefetch={true}
                                 >
                                     <Image
                                         src={result.image}

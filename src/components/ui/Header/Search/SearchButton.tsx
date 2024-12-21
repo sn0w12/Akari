@@ -79,6 +79,7 @@ export default function SearchButton() {
                                 key={result.id}
                                 onClick={() => setOpen(false)}
                                 className="block p-2 hover:bg-accent flex items-center rounded-lg border"
+                                prefetch={true}
                             >
                                 <Image
                                     src={result.image}
