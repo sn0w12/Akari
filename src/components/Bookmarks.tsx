@@ -11,12 +11,15 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        const response = await fetch(`/api/bookmarks?page=${page}`, {
-            headers: {
-                "Content-Type": "application/json",
+        const response = await fetch(
+            `/api/bookmarks?page=${page}&images=true`,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                signal: AbortSignal.timeout(10000),
             },
-            signal: AbortSignal.timeout(10000),
-        });
+        );
 
         const responseText = await response.text();
         let data;

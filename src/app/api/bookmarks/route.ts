@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { Bookmark } from "@/app/api/interfaces";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
+import { getMangaArrayFromSupabase } from "@/lib/supabase";
 
 const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
 
@@ -124,6 +125,7 @@ function processBookmarks(
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const getImages = searchParams.get("images") === "true";
 
     const cookieStore = await cookies();
     const user_data = getUserData(cookieStore);
@@ -151,6 +153,21 @@ export async function GET(request: Request) {
         }
 
         processBookmarks(jsonResult, htmlResult);
+        if (getImages) {
+            const identifiers = jsonResult.data.map((bookmark: Bookmark) =>
+                bookmark.link_story.split("/").pop(),
+            );
+            const malDataArray = await getMangaArrayFromSupabase(identifiers);
+            jsonResult.data.forEach((bookmark: Bookmark) => {
+                const identifier = bookmark.link_story.split("/").pop();
+                const malData = malDataArray.find(
+                    (data) => data?.identifier === identifier,
+                );
+                if (malData?.imageUrl) {
+                    bookmark.image = malData.imageUrl;
+                }
+            });
+        }
 
         return NextResponse.json(
             {

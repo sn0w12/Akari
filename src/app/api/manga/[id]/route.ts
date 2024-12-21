@@ -208,8 +208,16 @@ export async function GET(
         ]);
 
         mangaDetails.malData = malData;
-        if (mangaDetails.malData?.description == "") {
-            mangaDetails.malData.description = mangaDetails.description;
+        if (mangaDetails.malData) {
+            if (mangaDetails.malData.description == "") {
+                mangaDetails.malData.description = mangaDetails.description;
+            }
+            const removeSourcePattern = /\(Source:.*?\)\s*/gi;
+            mangaDetails.malData.description =
+                mangaDetails.malData.description.replace(
+                    removeSourcePattern,
+                    "",
+                );
         }
         if (mangaDetails.storyData) {
             cache.set(cacheKey, mangaDetails);

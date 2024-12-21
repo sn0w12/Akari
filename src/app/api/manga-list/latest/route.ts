@@ -1,22 +1,11 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
+import { replaceImages } from "@/lib/mangaNato";
+import { SmallManga } from "../../interfaces";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
-
-interface Manga {
-    id: string;
-    image: string | undefined;
-    title: string;
-    chapter: string;
-    chapterUrl: string | undefined;
-    description?: string;
-    rating?: string;
-    views?: string;
-    date?: string;
-    author?: string;
-}
 
 export async function GET(req: Request): Promise<Response> {
     try {
@@ -37,8 +26,8 @@ export async function GET(req: Request): Promise<Response> {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
 
-        const mangaList: Manga[] = [];
-        const popular: Manga[] = [];
+        const mangaList: SmallManga[] = [];
+        const popular: SmallManga[] = [];
 
         // Loop through each .content-genres-item div and extract the relevant information
         $(".content-genres-item").each((index, element) => {
@@ -65,10 +54,10 @@ export async function GET(req: Request): Promise<Response> {
 
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl,
+                image: imageUrl || "",
                 title: title,
                 chapter: latestChapter,
-                chapterUrl: chapterUrl,
+                chapterUrl: chapterUrl || "",
                 description: description,
                 rating: rating,
                 views: views,
@@ -100,12 +89,19 @@ export async function GET(req: Request): Promise<Response> {
 
             popular.push({
                 id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl,
+                image: imageUrl || "",
                 title: title,
+                description: "",
                 chapter: latestChapter,
-                chapterUrl: chapterUrl,
+                chapterUrl: chapterUrl || "",
+                date: "",
+                rating: "",
+                views: "",
+                author: "",
             });
         });
+
+        await Promise.all([replaceImages(mangaList), replaceImages(popular)]);
 
         const result = {
             mangaList,

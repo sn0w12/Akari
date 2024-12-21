@@ -47,17 +47,11 @@ export default function EndOfManga({
                 </p>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-                <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="grid grid-cols-1 gap-4 w-full">
                     <Button variant="outline" asChild onClick={handleClick}>
                         <Link href="/bookmarks">
                             <Bookmark className="mr-2 h-4 w-4" />
                             Bookmarks
-                        </Link>
-                    </Button>
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link href={`/manga/${identifier}`}>
-                            <List className="mr-2 h-4 w-4" />
-                            Manga Page
                         </Link>
                     </Button>
                 </div>
@@ -69,9 +63,9 @@ export default function EndOfManga({
                         </Link>
                     </Button>
                     <Button variant="outline" asChild onClick={handleClick}>
-                        <Link href="#" onClick={() => window.history.back()}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Go Back
+                        <Link href={`/manga/${identifier}`}>
+                            <List className="mr-2 h-4 w-4" />
+                            Manga Page
                         </Link>
                     </Button>
                 </div>

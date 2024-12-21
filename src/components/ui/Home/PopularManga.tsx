@@ -1,26 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-interface Manga {
-    id: string;
-    image: string;
-    title: string;
-    chapter: string;
-    chapterUrl: string;
-    description: string;
-    rating: string;
-    views: string;
-    date: string;
-    author: string;
-}
+import { SmallManga } from "@/app/api/interfaces";
+import { MangaCard } from "./MangaCard";
 
 interface PopularMangaProps {
-    mangas: Manga[];
+    mangas: SmallManga[];
 }
 
 export function PopularManga({ mangas }: PopularMangaProps) {
@@ -49,38 +35,7 @@ export function PopularManga({ mangas }: PopularMangaProps) {
         <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {paginatedPopularList.map((manga, index) => (
-                    <Link
-                        href={`/manga/${manga.id}`}
-                        key={manga.id}
-                        className="block"
-                    >
-                        <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
-                            <CardContent className="p-0">
-                                <Image
-                                    loading={
-                                        index * currentPopularPage < 12
-                                            ? "eager"
-                                            : "lazy"
-                                    }
-                                    src={manga.image}
-                                    alt={manga.title}
-                                    width={250}
-                                    height={350}
-                                    className="w-full h-auto object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-0 transition-transform duration-300 ease-in-out">
-                                        <h3 className="font-bold text-sm mb-1 opacity-100 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                            {manga.title}
-                                        </h3>
-                                        <p className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                                            Chapter: {manga.chapter}
-                                        </p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                    <MangaCard key={index} manga={manga} />
                 ))}
             </div>
 

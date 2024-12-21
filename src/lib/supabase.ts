@@ -20,6 +20,7 @@ const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
 function transformMangaData(data: any): HqMangaCacheItem | null {
     if (!data) return null;
     return {
+        identifier: data.identifier,
         titles: data.titles,
         imageUrl: data.image_url,
         smallImageUrl: data.small_image_url,
@@ -50,6 +51,25 @@ export async function getMangaFromSupabase(identifier: string) {
     } catch (e) {
         console.error("Supabase query error:", e);
         return null;
+    }
+}
+
+export async function getMangaArrayFromSupabase(identifiers: string[]) {
+    try {
+        const { data, error } = await supabasePublic
+            .from("manga")
+            .select("*")
+            .in("identifier", identifiers);
+
+        if (error) {
+            console.error("Supabase error details:", error);
+            return [];
+        }
+
+        return data.map((item) => transformMangaData(item)).filter(Boolean);
+    } catch (e) {
+        console.error("Supabase query error:", e);
+        return [];
     }
 }
 

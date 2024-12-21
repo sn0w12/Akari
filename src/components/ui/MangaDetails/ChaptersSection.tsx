@@ -11,12 +11,14 @@ import { debounce } from "lodash";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { DetailsChapter } from "@/app/api/interfaces";
+import { useRouter } from "next/navigation";
 
 interface ChaptersSectionProps {
     manga: MangaDetails;
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
+    const router = useRouter();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
     const [sortedChapters, setSortedChapters] = useState<DetailsChapter[]>([]);
@@ -54,7 +56,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                 return ids.indexOf(chapter.id) === index;
             },
         );
-        console.log(uniqueChapters);
 
         return [...uniqueChapters].sort((a, b) => {
             // Extract numbers from chapter IDs using regex
@@ -112,6 +113,10 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         currentPage * chaptersPerPage,
     );
 
+    const preloadChapter = (chapterId: string) => {
+        router.prefetch(`/manga/${manga.identifier}/${chapterId}`);
+    };
+
     return (
         <>
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
@@ -140,6 +145,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                         href={`/manga/${manga.identifier}/${chapter.id}`}
                         key={chapter.id}
                         id={chapter.id}
+                        onMouseEnter={() => preloadChapter(chapter.id)}
                     >
                         <Card
                             className={`h-full transition-colors ${

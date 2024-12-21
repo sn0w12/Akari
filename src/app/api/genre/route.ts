@@ -2,22 +2,11 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
+import { SmallManga } from "../interfaces";
+import { replaceImages } from "@/lib/mangaNato";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
-
-interface Manga {
-    id: string;
-    image: string | undefined;
-    title: string;
-    chapter: string;
-    chapterUrl: string | undefined;
-    description?: string;
-    rating?: string;
-    views?: string;
-    date?: string;
-    author?: string;
-}
 
 // Genre map to convert genre names to their respective IDs
 const genreMap: { [key: string]: number } = {
@@ -116,7 +105,7 @@ export async function GET(request: Request): Promise<Response> {
         const { data } = await axios.get(searchUrl);
         const $ = cheerio.load(data);
 
-        const mangaList: Manga[] = [];
+        const mangaList: SmallManga[] = [];
 
         // Loop through each .content-genres-item div and extract the relevant information
         $(".content-genres-item").each((index, element) => {
@@ -143,10 +132,10 @@ export async function GET(request: Request): Promise<Response> {
 
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl,
+                image: imageUrl || "",
                 title: title,
                 chapter: latestChapter,
-                chapterUrl: chapterUrl,
+                chapterUrl: chapterUrl || "",
                 description: description,
                 rating: rating,
                 views: views,
@@ -160,6 +149,8 @@ export async function GET(request: Request): Promise<Response> {
         const totalPages: number = lastPageElement.length
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
+
+        await replaceImages(mangaList);
 
         const result = {
             mangaList,

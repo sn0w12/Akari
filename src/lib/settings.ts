@@ -6,6 +6,9 @@ import {
 import React from "react";
 import db from "./db";
 
+let settingsVersion = 0;
+export const useSettingsVersion = () =>
+    React.useMemo(() => settingsVersion, [settingsVersion]);
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
     key: keyof SettingsInterface;
@@ -148,6 +151,7 @@ export function dispatchSettingsChange<T extends SettingValue>(
     previousValue: T,
 ) {
     if (typeof window !== "undefined") {
+        settingsVersion++;
         const event = new CustomEvent<SettingsChangeEvent>(
             SETTINGS_CHANGE_EVENT,
             {

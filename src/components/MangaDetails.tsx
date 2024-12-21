@@ -119,7 +119,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
                             {manga.malData?.aniUrl && (
-                                <a
+                                <Link
                                     href={manga.malData.aniUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -131,10 +131,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                         width={40}
                                         height={40}
                                     />
-                                </a>
+                                </Link>
                             )}
                             {manga.malData?.malUrl && (
-                                <a
+                                <Link
                                     href={manga.malData.malUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -146,7 +146,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                         width={40}
                                         height={40}
                                     />
-                                </a>
+                                </Link>
                             )}
                         </div>
                     </div>
@@ -211,7 +211,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     <h2 className="text-xl font-semibold mb-2">
                                         Genres:
                                     </h2>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-2 lg:overflow-y-scroll lg:max-h-8 xl:overflow-y-visible xl:max-h-96">
                                         {manga.genres.map((genre: string) => (
                                             <Link
                                                 key={genre}
