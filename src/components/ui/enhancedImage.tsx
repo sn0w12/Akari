@@ -8,7 +8,7 @@ import React, {
     useEffect,
 } from "react";
 import Image, { ImageProps } from "next/image";
-import { getSetting } from "@/lib/settings";
+import { getSetting, useSettingsVersion } from "@/lib/settings";
 
 type HoverEffect =
     | "none"
@@ -158,10 +158,11 @@ export default function EnhancedImage({
     const containerRef = useRef<HTMLDivElement>(null);
     const [tiltValues, setTiltValues] = useState({ tiltX: 0, tiltY: 0 });
     const rafId = useRef<number | undefined>(undefined);
+    const settingsVersion = useSettingsVersion();
     const [fancyAnimationsEnabled, setFancyAnimationsEnabled] = useState(false);
     useEffect(() => {
         setFancyAnimationsEnabled(getSetting("fancyAnimations"));
-    }, []);
+    }, [settingsVersion]);
 
     const { containerClass, imageClass, dynamicStyles } =
         effectConfigs[hoverEffect];
