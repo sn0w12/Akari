@@ -211,7 +211,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     <h2 className="text-xl font-semibold mb-2">
                                         Genres:
                                     </h2>
-                                    <div className="flex flex-wrap gap-2 lg:overflow-y-scroll lg:max-h-8 xl:overflow-y-auto xl:max-h-96">
+                                    <div className="flex flex-wrap gap-2 lg:overflow-y-scroll lg:max-h-8 xl:overflow-y-visible xl:max-h-96">
                                         {manga.genres.map((genre: string) => (
                                             <Link
                                                 key={genre}
