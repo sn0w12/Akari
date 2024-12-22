@@ -11,7 +11,7 @@ interface UpdateMangaProps {
 export function UpdateManga({ manga }: UpdateMangaProps) {
     useEffect(() => {
         const update = async () => {
-            await fetchMalData(manga.identifier, false, 1, 0);
+            await fetchMalData(manga.identifier, false, 1, 0, false);
         };
 
         update();
