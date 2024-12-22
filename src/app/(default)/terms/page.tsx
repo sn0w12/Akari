@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Terms of Service",
+    description: "Akari Terms of Service",
+};
+
 export default function TermsPage() {
     return (
         <div className="bg-background text-foreground">

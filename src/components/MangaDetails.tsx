@@ -53,7 +53,7 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-async function getMangaData(id: string) {
+export async function getMangaData(id: string) {
     const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
     if (!response.ok) {

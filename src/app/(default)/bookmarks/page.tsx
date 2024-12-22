@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import BookmarksPage from "@/components/Bookmarks";
 
 interface BookmarksProps {
@@ -6,6 +7,11 @@ interface BookmarksProps {
         [key: string]: string | string[] | undefined;
     }>;
 }
+
+export const metadata: Metadata = {
+    title: "Bookmarks",
+    description: "View and manage your bookmarked series",
+};
 
 export default async function Bookmarks(props: BookmarksProps) {
     const searchParams = await props.searchParams;
