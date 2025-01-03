@@ -94,7 +94,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger>
-                                                <InfoIcon className="w-5 h-5" />
+                                                <InfoIcon className="w-5 h-5 hidden lg:block" />
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <div className="flex flex-wrap gap-2 max-w-96 w-auto">
@@ -150,6 +150,17 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                             )}
                         </div>
                     </div>
+
+                    {manga.alternativeNames &&
+                        manga.alternativeNames.length > 0 && (
+                            <div className="border-b pb-4 mb-4 lg:hidden">
+                                <span className="px-1 rounded opacity-70">
+                                    {manga.alternativeNames
+                                        .map((name: string) => name.trim())
+                                        .join(" | ")}
+                                </span>
+                            </div>
+                        )}
 
                     {/* Middle section grows as needed */}
                     <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow overflow-hidden">
