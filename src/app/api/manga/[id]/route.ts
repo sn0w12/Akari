@@ -179,7 +179,7 @@ export async function GET(
             });
 
             if (!imageUrl) {
-                throw new Error("Failed to fetch manga details");
+                throw new Error("MANGA_NOT_FOUND");
             }
 
             return {
@@ -205,7 +205,12 @@ export async function GET(
         const [mangaDetails, malData] = await Promise.all([
             fetchMangaDetails("https://chapmanganato.to"),
             getMangaFromSupabase(id),
-        ]);
+        ]).catch((error) => {
+            if (error.message === "MANGA_NOT_FOUND") {
+                throw new Error("The specified manga could not be found");
+            }
+            throw error;
+        });
 
         mangaDetails.malData = malData;
         if (mangaDetails.malData) {
@@ -232,15 +237,43 @@ export async function GET(
             "Error fetching manga details:",
             (error as Error).message,
         );
-        if (axios.isAxiosError(error) && error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
+
+        let errorMessage =
+            "An unexpected error occurred while fetching manga details";
+        let statusCode = 500;
+
+        if (axios.isAxiosError(error)) {
+            console.error("Response data:", error.response?.data);
+            console.error("Response status:", error.response?.status);
+            console.error("Response headers:", error.response?.headers);
+
+            switch (error.response?.status) {
+                case 404:
+                    errorMessage = "Manga not found";
+                    statusCode = 404;
+                    break;
+                case 429:
+                    errorMessage = "Too many requests, please try again later";
+                    statusCode = 429;
+                    break;
+                case 403:
+                    errorMessage =
+                        "Access denied. Please check your credentials";
+                    statusCode = 403;
+                    break;
+            }
         }
+
         return new Response(
-            JSON.stringify({ error: "Failed to fetch manga details" }),
+            JSON.stringify({
+                error: {
+                    message: errorMessage,
+                    details: (error as Error).message,
+                    code: statusCode,
+                },
+            }),
             {
-                status: 500,
+                status: statusCode,
                 headers: { "Content-Type": "application/json" },
             },
         );

@@ -66,7 +66,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     if (manga.error) {
         return (
             <main className="container mx-auto px-4 py-8">
-                <ErrorComponent message={manga.error} />
+                <ErrorComponent message={manga.error.message} />
             </main>
         );
     }
