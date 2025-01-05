@@ -16,6 +16,7 @@ import {
 import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
+import ErrorComponent from "./ui/error";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -56,15 +57,19 @@ const formatDate = (date: string) => {
 export async function getMangaData(id: string) {
     const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch manga data");
-    }
-
     return response.json();
 }
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await getMangaData(id);
+
+    if (manga.error) {
+        return (
+            <main className="container mx-auto px-4 py-8">
+                <ErrorComponent message={manga.error} />
+            </main>
+        );
+    }
 
     return (
         <main className="container mx-auto px-4 py-8">
