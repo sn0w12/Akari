@@ -124,8 +124,8 @@ Before running Akari, make sure you have the following installed:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/sn0w12/manga-reader
-cd manga-reader
+git clone https://github.com/sn0w12/Akari
+cd Akari
 ```
 
 2. Install dependencies:
