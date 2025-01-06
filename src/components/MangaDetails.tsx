@@ -128,6 +128,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     href={manga.malData.aniUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    prefetch={false}
                                 >
                                     <Image
                                         src="/img/AniList-logo.webp"
@@ -143,6 +144,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     href={manga.malData.malUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    prefetch={false}
                                 >
                                     <Image
                                         src="/img/MAL-logo.webp"
@@ -183,6 +185,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                                         .pop() || "",
                                                 )}`}
                                                 key={index}
+                                                prefetch={false}
                                             >
                                                 <Badge
                                                     withShadow={true}
@@ -234,6 +237,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                                 href={`/genre/${encodeURIComponent(
                                                     genre.replaceAll(" ", "_"),
                                                 )}`}
+                                                prefetch={false}
                                             >
                                                 <Badge
                                                     variant="secondary"

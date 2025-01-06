@@ -146,6 +146,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                         key={chapter.id}
                         id={chapter.id}
                         onMouseEnter={() => preloadChapter(chapter.id)}
+                        prefetch={false}
                     >
                         <Card
                             className={`h-full transition-colors ${
