@@ -74,22 +74,16 @@ export default function BookmarksBody({
         bookmarkFirstPage: Bookmark[],
         similarityThreshold: number = 0.6,
     ) {
+        const currentHash = generateBookmarksHash(bookmarkFirstPage);
+
         const cachedHash = (await db.getCache(
             db.bookmarkCache,
             "firstPageHash",
         )) as string;
+        await db.setCache(db.bookmarkCache, "firstPageHash", currentHash);
         if (!cachedHash) return false;
 
-        const currentHash = generateBookmarksHash(bookmarkFirstPage);
         const similarity = calculateSimilarity(currentHash, cachedHash);
-
-        // Update cache with new hash
-        await db.setCache(
-            db.bookmarkCache,
-            "firstPageHash",
-            generateBookmarksHash(bookmarkFirstPage),
-        );
-
         console.debug(`Cache similarity: ${similarity * 100}%`);
         return similarity >= similarityThreshold;
     }
