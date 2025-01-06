@@ -149,6 +149,13 @@ export async function GET(
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
 
+        if (Number(page) > totalPages) {
+            return NextResponse.json(
+                { result: "error", data: "Page number exceeds total pages" },
+                { status: 400 },
+            );
+        }
+
         await replaceImages(mangaList);
 
         const result = {

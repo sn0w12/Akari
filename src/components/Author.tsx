@@ -5,6 +5,7 @@ import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { MangaCard } from "./ui/Home/MangaCard";
 import { SmallManga } from "@/app/api/interfaces";
+import Head from "next/head";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -53,39 +54,59 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 py-8">
-                <div className="flex gap-4">
-                    <h2 className={`text-3xl font-bold mb-6`}>
-                        {nextBase64
-                            .decode(params.id)
-                            .replaceAll("_", " ")
-                            .replaceAll("|", " ")
-                            .split(" ")
-                            .map(
-                                (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1),
-                            )
-                            .join(" ")}
-                    </h2>
-                    <SortSelect currentSort={currentSort} />
-                </div>
+        <>
+            <Head>
+                <link
+                    rel="canonical"
+                    href={`/author/${params.id}${currentPage > 1 ? `?page=${currentPage}` : ""}`}
+                />
+                {currentPage > 1 && (
+                    <link
+                        rel="prev"
+                        href={`/author/${params.id}${currentPage > 2 ? `?page=${currentPage - 1}` : ""}`}
+                    />
+                )}
+                {currentPage < totalPages && (
+                    <link
+                        rel="next"
+                        href={`/author/${params.id}?page=${currentPage + 1}`}
+                    />
+                )}
+            </Head>
+            <div className="min-h-screen bg-background text-foreground">
+                <main className="container mx-auto px-4 py-8">
+                    <div className="flex gap-4">
+                        <h2 className={`text-3xl font-bold mb-6`}>
+                            {nextBase64
+                                .decode(params.id)
+                                .replaceAll("_", " ")
+                                .replaceAll("|", " ")
+                                .split(" ")
+                                .map(
+                                    (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1),
+                                )
+                                .join(" ")}
+                        </h2>
+                        <SortSelect currentSort={currentSort} />
+                    </div>
 
-                {error && <ErrorComponent message={error} />}
+                    {error && <ErrorComponent message={error} />}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                    {mangaList.map((manga) => (
-                        <MangaCard key={manga.id} manga={manga} />
-                    ))}
-                </div>
-            </main>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        {mangaList.map((manga) => (
+                            <MangaCard key={manga.id} manga={manga} />
+                        ))}
+                    </div>
+                </main>
 
-            <PaginationElement
-                currentPage={currentPage}
-                totalPages={totalPages}
-                searchParams={[{ key: "sort", value: currentSort }]}
-            />
-        </div>
+                <PaginationElement
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    searchParams={[{ key: "sort", value: currentSort }]}
+                />
+            </div>
+        </>
     );
 }
