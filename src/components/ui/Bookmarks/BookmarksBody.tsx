@@ -6,6 +6,7 @@ import db from "@/lib/db";
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
+import { getAllBookmarks } from "@/lib/bookmarks";
 
 import BookmarksHeader from "./BookmarksHeader";
 import BookmarksGrid from "./BookmarksGrid";
@@ -154,18 +155,22 @@ export default function BookmarksBody({
             autoClose: false,
         });
 
-        const allResponse = await fetch(`/api/bookmarks/all`);
-        if (!allResponse.ok) {
-            bookmarkToast.close();
-            new Toast("Failed to fetch bookmarks.", "error");
-        }
-        const allData = await allResponse.json();
-
-        allData.bookmarks.forEach((bookmark: Bookmark) => {
+        const allBookmarks = await getAllBookmarks();
+        const mangaCache = allBookmarks.map((bookmark: Bookmark) => ({
+            name: bookmark.note_story_name,
+            link: bookmark.link_story,
+            last_chapter: bookmark.link_chapter_last.split("/").pop() || "",
+            last_read: bookmark.link_chapter_now.split("/").pop() || "",
+            bm_data: bookmark.bm_data,
+            id: bookmark.storyid,
+            image: bookmark.image,
+            last_update: bookmark.chapterlastdateupdate,
+        }));
+        allBookmarks.forEach((bookmark: Bookmark) => {
             updateBookmark(bookmark);
         });
 
-        setAllBookmarks(allData.bookmarks);
+        setAllBookmarks(mangaCache);
         setWorkerFinished(true);
         new Toast("Bookmarks processed.", "success");
         bookmarkToast.close();
