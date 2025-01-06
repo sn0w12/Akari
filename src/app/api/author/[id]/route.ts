@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
 import { replaceImages } from "@/lib/mangaNato";
 import { SmallManga } from "../../interfaces";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour
 export const dynamic = "force-dynamic";
@@ -76,7 +77,10 @@ export async function GET(
         if (cachedData) {
             return new Response(JSON.stringify(cachedData), {
                 status: 200,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(600),
+                },
             });
         }
 
@@ -155,7 +159,10 @@ export async function GET(
 
         return new Response(JSON.stringify(result), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(600),
+            },
         });
     } catch (error) {
         console.error("Error fetching author search results:", error);

@@ -1,3 +1,4 @@
+import { generateCacheHeaders } from "@/lib/cache";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -61,7 +62,10 @@ export async function GET(
 
         return new NextResponse(JSON.stringify(response), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(600),
+            },
         });
     } catch (error) {
         console.error("Error searching for manga:", error);
