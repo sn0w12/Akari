@@ -25,6 +25,7 @@ export default function LatestChapterInfo({
                         prefetchChapterData &&
                         prefetchChapterData(bookmark.link_chapter_last)
                     }
+                    prefetch={false}
                 >
                     {bookmark.chapterlastname}
                 </Link>

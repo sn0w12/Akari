@@ -12,6 +12,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return {
         title: manga.name,
         description: manga.malData?.description ?? manga.description,
+        robots: {
+            index: false,
+            follow: false,
+        },
         openGraph: {
             title: manga.name,
             description: manga.malData?.description ?? manga.description,

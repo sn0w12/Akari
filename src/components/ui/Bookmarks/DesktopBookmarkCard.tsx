@@ -35,6 +35,7 @@ const DesktopBookmarkCard: React.FC<{
                     rel="noopener noreferrer"
                     className="block"
                     onMouseEnter={prefetchMangaData}
+                    prefetch={false}
                 >
                     <Image
                         src={bookmark.image}
@@ -50,6 +51,7 @@ const DesktopBookmarkCard: React.FC<{
                     <Link
                         href={`/manga/${mangaIdentifier}`}
                         onMouseEnter={prefetchMangaData}
+                        prefetch={false}
                     >
                         <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
                             {bookmark.storyname}
@@ -63,6 +65,7 @@ const DesktopBookmarkCard: React.FC<{
                         onMouseEnter={() =>
                             prefetchChapterData(continueReading)
                         }
+                        prefetch={false}
                     >
                         <Button
                             className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}

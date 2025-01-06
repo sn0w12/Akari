@@ -1,4 +1,4 @@
-import { Bookmark } from "@/app/api/interfaces";
+import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 
 function compareVersions(str1: string, str2: string): boolean {
     // Replace "-" with "." in both strings
@@ -64,4 +64,37 @@ export async function checkIfBookmarked(mangaId: string) {
     const response = await fetch(`/api/bookmarks/${mangaId}`);
     const data = await response.json();
     return data.isBookmarked;
+}
+
+export async function getAllBookmarks(batchSize: number = 10) {
+    const firstPageResult = await fetch(`/api/bookmarks?page=1`);
+
+    const firstPageData = await firstPageResult.json();
+    const totalPages = firstPageData.totalPages;
+    const allBookmarks: Bookmark[] = [...firstPageData.bookmarks];
+
+    // Create batches of page numbers
+    const remainingPages = Array.from(
+        { length: totalPages - 1 },
+        (_, i) => i + 2,
+    );
+    const batches = [];
+
+    for (let i = 0; i < remainingPages.length; i += batchSize) {
+        batches.push(remainingPages.slice(i, i + batchSize));
+    }
+
+    // Fetch batches in parallel
+    for (const batch of batches) {
+        const batchPromises = batch.map((page) =>
+            fetch(`/api/bookmarks?page=${page}`)
+                .then((res) => res.json())
+                .then((data) => data.bookmarks),
+        );
+
+        const batchResults = await Promise.all(batchPromises);
+        allBookmarks.push(...batchResults.flat());
+    }
+
+    return allBookmarks;
 }

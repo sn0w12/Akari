@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import NodeCache from "node-cache";
 import { MangaDetails, DetailsChapter } from "../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
 
@@ -23,7 +24,10 @@ export async function GET(
     if (cachedData) {
         return new Response(JSON.stringify(cachedData), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(300),
+            },
         });
     }
 
@@ -230,7 +234,10 @@ export async function GET(
 
         return new Response(JSON.stringify(mangaDetails), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(300),
+            },
         });
     } catch (error) {
         console.error(

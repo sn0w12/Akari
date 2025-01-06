@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
 import { SmallManga } from "../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
@@ -79,7 +80,10 @@ export async function GET(request: Request): Promise<Response> {
         if (cachedData) {
             return new Response(JSON.stringify(cachedData), {
                 status: 200,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(600),
+                },
             });
         }
 
@@ -160,7 +164,10 @@ export async function GET(request: Request): Promise<Response> {
 
         return new Response(JSON.stringify(result), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(600),
+            },
         });
     } catch (error) {
         console.error("Error fetching genre search results:", error);

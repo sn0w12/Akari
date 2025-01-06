@@ -1,3 +1,4 @@
+import { generateCacheHeaders } from "@/lib/cache";
 import axios from "axios";
 import { NextResponse } from "next/server";
 
@@ -26,6 +27,7 @@ export async function GET(req: Request): Promise<Response> {
         return new NextResponse(imageBuffer, {
             headers: {
                 "Content-Type": "image/webp",
+                ...generateCacheHeaders(6000),
             },
         });
     } catch (error) {

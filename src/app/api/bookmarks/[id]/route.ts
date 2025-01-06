@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const BOOKMARK_LIST_URL = "https://user.mngusr.com/bookmark_get_list_idstory";
 
@@ -56,5 +57,8 @@ export async function GET(
 
     const isBookmarked = await isMangaBookmarked(user_data, mangaId);
 
-    return NextResponse.json({ isBookmarked });
+    return NextResponse.json(
+        { isBookmarked },
+        { status: 200, headers: { ...generateCacheHeaders(60) } },
+    );
 }
