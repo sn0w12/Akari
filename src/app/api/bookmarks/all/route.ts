@@ -3,6 +3,7 @@ import { Bookmark } from "@/app/api/interfaces";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import { getBaseUrl } from "../../baseUrl";
+import { generateCacheHeaders } from "@/lib/cache";
 
 export const maxDuration = 20;
 const BATCH_SIZE = 10;
@@ -67,7 +68,10 @@ export async function GET() {
             const batchResults = await Promise.all(batchPromises);
             allBookmarks.push(...batchResults.flat());
         }
-        return NextResponse.json({ bookmarks: allBookmarks }, { status: 200 });
+        return NextResponse.json(
+            { bookmarks: allBookmarks },
+            { status: 200, headers: { ...generateCacheHeaders(600) } },
+        );
     } catch (error) {
         return NextResponse.json(
             {

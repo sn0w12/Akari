@@ -7,7 +7,6 @@ import { ArrowUpDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import db from "@/lib/db";
-import { debounce } from "lodash";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { DetailsChapter } from "@/app/api/interfaces";
@@ -36,18 +35,9 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         }
     }, [id]);
 
-    const debouncedLoadManga = useCallback(debounce(loadManga, 10), [
-        loadManga,
-    ]);
-
     useEffect(() => {
-        debouncedLoadManga();
-
-        // Cleanup debounce on unmount
-        return () => {
-            debouncedLoadManga.cancel();
-        };
-    }, [debouncedLoadManga, manga]);
+        loadManga();
+    }, [manga]);
 
     const getSortedChapters = () => {
         const uniqueChapters = manga?.chapterList.filter(
@@ -146,6 +136,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                         key={chapter.id}
                         id={chapter.id}
                         onMouseEnter={() => preloadChapter(chapter.id)}
+                        prefetch={false}
                     >
                         <Card
                             className={`h-full transition-colors ${

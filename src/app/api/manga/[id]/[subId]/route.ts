@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { Chapter } from "@/app/api/interfaces";
 import NodeCache from "node-cache";
 import { badImages } from "@/lib/badImages";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
 
@@ -23,7 +24,10 @@ export async function GET(
     if (cachedData) {
         return new Response(JSON.stringify(cachedData), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(300),
+            },
         });
     }
 
@@ -165,7 +169,13 @@ export async function GET(
             cache.set(cacheKey, responseData);
         }
 
-        const mangaResponse = NextResponse.json(responseData);
+        const mangaResponse = NextResponse.json(responseData, {
+            status: 200,
+            headers: {
+                contentType: "application/json",
+                ...generateCacheHeaders(300),
+            },
+        });
         mangaResponse.cookies.set("manga_server", server, {
             maxAge: 31536000,
             path: "/",

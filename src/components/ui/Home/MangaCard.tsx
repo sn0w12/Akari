@@ -23,6 +23,7 @@ export function MangaCard({ manga }: MangaCardProps) {
             href={`/manga/${manga.id}`}
             className="block"
             onMouseEnter={prefetchManga}
+            prefetch={false}
         >
             <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
                 <CardContent className="p-0">

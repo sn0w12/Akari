@@ -37,6 +37,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                         <Link
                             className="w-full"
                             href={`/manga/${mangaIdentifier}`}
+                            prefetch={false}
                         >
                             <h3 className="font-bold text-2xl mb-2 text-center hover:underline">
                                 {bookmark.storyname}

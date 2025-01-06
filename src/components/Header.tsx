@@ -9,8 +9,7 @@ import SettingsDialog from "./ui/Header/SettingsDialog";
 import ThemeToggle from "./ui/Header/ThemeToggle";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { debounce } from "lodash";
+import { useEffect, useMemo, useState } from "react";
 import {
     Tooltip,
     TooltipContent,
@@ -40,19 +39,18 @@ export function HeaderComponent() {
         [],
     );
 
-    const debouncedFetchNotification = useCallback(
-        debounce(fetchNotification, 10),
-        [fetchNotification],
-    );
-
     useEffect(() => {
-        debouncedFetchNotification();
-    }, [debouncedFetchNotification]);
+        fetchNotification();
+    }, [fetchNotification]);
 
     return (
         <header className="sticky top-0 z-50 bg-background border-b">
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                <Link href="/" className="text-2xl font-bold title">
+                <Link
+                    href="/"
+                    className="text-2xl font-bold title"
+                    prefetch={false}
+                >
                     <Icon />
                 </Link>
 

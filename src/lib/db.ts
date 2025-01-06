@@ -14,7 +14,7 @@ export interface CacheItem<T> {
 
 // Create and manage multiple caches
 class CacheDatabase extends Dexie {
-    public bookmarkCache: Dexie.Table<CacheItem<number | Bookmark[]>, string>;
+    public bookmarkCache: Dexie.Table<CacheItem<number | string>, string>;
     public mangaCache: Dexie.Table<CacheItem<MangaCacheItem>, string>;
     public hqMangaCache: Dexie.Table<CacheItem<HqMangaCacheItem>, string>;
 
