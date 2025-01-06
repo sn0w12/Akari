@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "About Akari",
+    description: "Learn more about Akari and its features",
+};
+
 export default function AboutPage() {
     return (
         <div className="bg-background text-foreground">

@@ -6,7 +6,7 @@ import PageProgress from "../pageProgress";
 import MangaFooter from "../mangaFooter";
 import EndOfManga from "../endOfManga";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
 
 interface PageReaderProps {
@@ -25,7 +25,18 @@ export default function PageReader({
     handleImageLoad,
     toggleReaderMode,
 }: PageReaderProps) {
-    const [currentPage, setCurrentPage] = useState(0);
+    const searchParams = useSearchParams();
+    const [currentPage, setCurrentPage] = useState(() => {
+        const pageParam = searchParams.get("page");
+        if (!chapter) return 0;
+        if (pageParam === "last") return chapter.images.length - 1;
+        const pageNumber = parseInt(pageParam || "1", 10);
+        return isNaN(pageNumber) ||
+            pageNumber < 1 ||
+            pageNumber > chapter.images.length
+            ? 0
+            : pageNumber - 1;
+    });
     const bookmarkUpdatedRef = useRef(false);
     const router = useRouter();
     const hasPrefetchedRef = useRef(false);
@@ -56,8 +67,23 @@ export default function PageReader({
         }
     }, [chapter, currentPage, router]);
 
+    const updatePageUrl = useCallback((pageNum: number) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", (pageNum + 1).toString());
+        window.history.replaceState({}, "", url.toString());
+    }, []);
+
+    const setPageWithUrlUpdate = useCallback(
+        (newPage: number) => {
+            setCurrentPage(newPage);
+            updatePageUrl(newPage);
+        },
+        [updatePageUrl],
+    );
+
     const nextPage = useCallback(() => {
         if (!chapter) return;
+        if (isFooterVisible) return;
 
         const isLastPage = currentPage === chapter.images.length - 1;
         const nextChapterParts = chapter.nextChapter.split("/");
@@ -67,25 +93,27 @@ export default function PageReader({
             .replaceAll(" ", "-");
 
         if (currentPage < chapter.images.length - 1) {
-            setCurrentPage((prev) => prev + 1);
+            setPageWithUrlUpdate(currentPage + 1);
         } else if (isLastPage) {
             if (nextChapterCopy.pop() === formattedChapter) {
-                setCurrentPage((prev) => prev + 1);
+                setPageWithUrlUpdate(currentPage + 1);
             } else if (nextChapterParts.length === 2) {
                 router.push(`/manga/${chapter.nextChapter}`);
             } else {
-                setCurrentPage((prev) => prev + 1);
+                setPageWithUrlUpdate(currentPage + 1);
             }
         }
-    }, [chapter, currentPage, router]);
+    }, [chapter, currentPage, router, isFooterVisible, setPageWithUrlUpdate]);
 
     const prevPage = useCallback(() => {
+        if (isFooterVisible) return;
+
         if (chapter && currentPage > 0) {
-            setCurrentPage((prev) => prev - 1);
+            setPageWithUrlUpdate(currentPage - 1);
         } else if (chapter && currentPage === 0) {
             router.push(`/manga/${chapter.lastChapter}`);
         }
-    }, [chapter, currentPage, router]);
+    }, [chapter, currentPage, router, isFooterVisible, setPageWithUrlUpdate]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

@@ -1,5 +1,4 @@
 import { Chapter } from "@/app/api/interfaces";
-import MangaReaderSkeleton from "./ui/MangaReader/mangaReaderSkeleton";
 import Reader from "./ui/MangaReader/reader";
 import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
@@ -10,7 +9,7 @@ interface ChapterReaderProps {
     subId: string;
 }
 
-async function fetchChapter(id: string, subId: string) {
+export async function fetchChapter(id: string, subId: string) {
     let headersList: { [key: string]: string } = {};
     try {
         const headerEntries = Array.from((await headers()).entries());

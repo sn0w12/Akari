@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Privacy Policy",
+    description: "Akari's privacy policy",
+};
+
 export default function PrivacyPage() {
     return (
         <div className="bg-background text-foreground">
