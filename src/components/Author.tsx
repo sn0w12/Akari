@@ -24,7 +24,6 @@ async function getMangaList(authorId: string, page: number, sort: string) {
     try {
         const response = await fetch(
             `${getProductionUrl()}/api/author/${authorId}?orderBy=${sort}&page=${page}`,
-            { cache: "no-store" },
         );
 
         if (!response.ok) {
