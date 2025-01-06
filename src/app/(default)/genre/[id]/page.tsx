@@ -18,6 +18,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return {
         title: name,
         description: description,
+        robots: {
+            index: false,
+            follow: false,
+        },
         openGraph: {
             title: name,
             description: description,
