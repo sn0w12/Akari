@@ -55,9 +55,32 @@ const formatDate = (date: string) => {
 };
 
 export async function getMangaData(id: string) {
-    const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
+    try {
+        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
-    return response.json();
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error! status: ${response.status}, ${response.statusText}`,
+            );
+        }
+
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error("Failed to parse JSON:", text.substring(0, 100)); // Log start of response
+            throw new Error("Invalid JSON response from server");
+        }
+    } catch (error) {
+        return {
+            error: {
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to fetch manga data",
+            },
+        };
+    }
 }
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
