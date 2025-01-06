@@ -83,6 +83,13 @@ export default function BookmarksBody({
         const currentHash = generateBookmarksHash(bookmarkFirstPage);
         const similarity = calculateSimilarity(currentHash, cachedHash);
 
+        // Update cache with new hash
+        await db.setCache(
+            db.bookmarkCache,
+            "firstPageHash",
+            generateBookmarksHash(bookmarkFirstPage),
+        );
+
         console.debug(`Cache similarity: ${similarity * 100}%`);
         return similarity >= similarityThreshold;
     }
@@ -128,12 +135,6 @@ export default function BookmarksBody({
         }
 
         // Cache miss - fetch all bookmarks
-        await db.setCache(
-            db.bookmarkCache,
-            "firstPageHash",
-            generateBookmarksHash(bookmarkFirstPage),
-        );
-
         const bookmarkToast = new Toast("Processing bookmarks...", "info", {
             autoClose: false,
         });
