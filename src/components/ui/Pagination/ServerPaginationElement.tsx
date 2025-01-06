@@ -34,20 +34,18 @@ export function PaginationElement({
             className={`mb-6 flex items-center justify-center ${className}`}
         >
             <PaginationContent className="flex items-center">
-                <Link
-                    href={createPageUrl(currentPage - 1)}
-                    passHref
-                    legacyBehavior
-                    prefetch={true}
-                >
-                    <PaginationPrevious
-                        className={`w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center ${
-                            currentPage === 1
-                                ? "pointer-events-none opacity-50"
-                                : ""
-                        }`}
-                    />
-                </Link>
+                {currentPage === 1 ? (
+                    <PaginationPrevious className="w-12 px-4 md:pl-2 md:w-28 border justify-center pointer-events-none opacity-50" />
+                ) : (
+                    <Link
+                        href={createPageUrl(currentPage - 1)}
+                        passHref
+                        legacyBehavior
+                        prefetch={true}
+                    >
+                        <PaginationPrevious className="w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center" />
+                    </Link>
+                )}
 
                 {currentPage > 2 && (
                     <>
@@ -118,20 +116,18 @@ export function PaginationElement({
                     </>
                 )}
 
-                <Link
-                    href={createPageUrl(currentPage + 1)}
-                    passHref
-                    legacyBehavior
-                    prefetch={true}
-                >
-                    <PaginationNext
-                        className={`w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${
-                            currentPage === totalPages
-                                ? "pointer-events-none opacity-50"
-                                : ""
-                        }`}
-                    />
-                </Link>
+                {currentPage === totalPages ? (
+                    <PaginationNext className="w-12 px-4 md:pr-2 md:w-28 border justify-center pointer-events-none opacity-50" />
+                ) : (
+                    <Link
+                        href={createPageUrl(currentPage + 1)}
+                        passHref
+                        legacyBehavior
+                        prefetch={true}
+                    >
+                        <PaginationNext className="w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center" />
+                    </Link>
+                )}
             </PaginationContent>
         </Pagination>
     );
