@@ -1,9 +1,5 @@
 import Dexie from "dexie";
-import {
-    MangaCacheItem,
-    HqMangaCacheItem,
-    Bookmark,
-} from "@/app/api/interfaces";
+import { MangaCacheItem, HqMangaCacheItem } from "@/app/api/interfaces";
 
 // Define the structure of your caches
 export interface CacheItem<T> {
@@ -126,6 +122,25 @@ class CacheDatabase extends Dexie {
         // If expiration time is set, check if the cache is expired
         const isExpired = Date.now() - cacheItem.timestamp > expirationTime;
         return isExpired ? null : cacheItem.value;
+    }
+
+    /**
+     * Replaces a cache item in the specified Dexie store and returns the old value.
+     *
+     * @template T - The type of the value to be cached.
+     * @param {Dexie.Table<CacheItem<T>, string>} store - The Dexie table where the cache item will be stored.
+     * @param {string} key - The key associated with the cache item.
+     * @param {T} value - The new value to be cached.
+     * @returns {Promise<T | null>} A promise that resolves to the old value if it existed, or null otherwise.
+     */
+    async replaceCache<T>(
+        store: Dexie.Table<CacheItem<T>, string>,
+        key: string,
+        value: T,
+    ): Promise<T | null> {
+        const oldValue = await this.getCache(store, key);
+        await this.setCache(store, key, value);
+        return oldValue;
     }
 }
 
