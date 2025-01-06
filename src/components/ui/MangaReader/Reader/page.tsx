@@ -58,6 +58,7 @@ export default function PageReader({
 
     const nextPage = useCallback(() => {
         if (!chapter) return;
+        if (isFooterVisible) return;
 
         const isLastPage = currentPage === chapter.images.length - 1;
         const nextChapterParts = chapter.nextChapter.split("/");
@@ -77,15 +78,17 @@ export default function PageReader({
                 setCurrentPage((prev) => prev + 1);
             }
         }
-    }, [chapter, currentPage, router]);
+    }, [chapter, currentPage, router, isFooterVisible]);
 
     const prevPage = useCallback(() => {
+        if (isFooterVisible) return;
+
         if (chapter && currentPage > 0) {
             setCurrentPage((prev) => prev - 1);
         } else if (chapter && currentPage === 0) {
             router.push(`/manga/${chapter.lastChapter}`);
         }
-    }, [chapter, currentPage, router]);
+    }, [chapter, currentPage, router, isFooterVisible]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
