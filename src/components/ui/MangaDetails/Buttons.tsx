@@ -6,7 +6,6 @@ import ReadingButton from "./readingButton";
 import { useState, useCallback, useEffect } from "react";
 import React from "react";
 import db from "@/lib/db";
-import { debounce } from "lodash";
 import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Skeleton } from "../skeleton";
 
@@ -42,18 +41,9 @@ export default function Buttons({ manga }: ButtonsProps) {
         setIsLoading(false);
     }, [id]);
 
-    const debouncedLoadManga = useCallback(debounce(loadManga, 10), [
-        loadManga,
-    ]);
-
     useEffect(() => {
-        debouncedLoadManga();
-
-        // Cleanup debounce on unmount
-        return () => {
-            debouncedLoadManga.cancel();
-        };
-    }, [debouncedLoadManga, manga]);
+        loadManga();
+    }, [manga]);
 
     if (isLoading) {
         return (
