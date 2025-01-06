@@ -43,7 +43,9 @@ export async function getMangaFromSupabase(identifier: string) {
             .single();
 
         if (error) {
-            console.error("Supabase error details:", error);
+            if (error.code !== "PGRST116") {
+                console.error("Supabase error details:", error);
+            }
             return null;
         }
 
@@ -62,7 +64,9 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
             .in("identifier", identifiers);
 
         if (error) {
-            console.error("Supabase error details:", error);
+            if (error.code !== "PGRST116") {
+                console.error("Supabase error details:", error);
+            }
             return [];
         }
 
