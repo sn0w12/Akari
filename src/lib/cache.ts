@@ -6,7 +6,5 @@
 export function generateCacheHeaders(time: number) {
     return {
         "Cache-Control": `public, s-maxage=${time}`,
-        "CDN-Cache-Control": `public, s-maxage=${time * 60}`,
-        "Vercel-CDN-Cache-Control": `public, s-maxage=${time * 60 * 60}`,
     };
 }
