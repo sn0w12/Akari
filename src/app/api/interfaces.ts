@@ -132,3 +132,8 @@ export interface Chapter {
     storyData: string | null;
     chapterData: string | null;
 }
+
+export interface SimpleError {
+    result: string;
+    data: string;
+}

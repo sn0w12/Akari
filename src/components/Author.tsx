@@ -4,7 +4,7 @@ import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationEl
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { MangaCard } from "./ui/Home/MangaCard";
-import { SmallManga } from "@/app/api/interfaces";
+import { SimpleError, SmallManga } from "@/app/api/interfaces";
 import Head from "next/head";
 
 interface MangaListResponse {
@@ -28,7 +28,7 @@ async function getMangaList(authorId: string, page: number, sort: string) {
         );
 
         if (!response.ok) {
-            throw new Error("Failed to fetch manga list");
+            return (await response.json()) as SimpleError;
         }
 
         return (await response.json()) as MangaListResponse;
@@ -43,14 +43,19 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
 
     let mangaList: SmallManga[] = [];
     let totalPages = 1;
-    let error = null;
+    let error: string | null = null;
 
     try {
         const data = await getMangaList(params.id, currentPage, currentSort);
-        mangaList = data.mangaList;
-        totalPages = data.metaData.totalPages;
+
+        if ("result" in data) {
+            error = String(data.data);
+        } else {
+            mangaList = data.mangaList;
+            totalPages = data.metaData.totalPages;
+        }
     } catch (err) {
-        error = `${err}`;
+        error = err instanceof Error ? err.message : String(err);
     }
 
     return (

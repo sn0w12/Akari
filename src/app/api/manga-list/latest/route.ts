@@ -72,6 +72,13 @@ export async function GET(req: Request): Promise<Response> {
             ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
             : 1;
 
+        if (Number(page) > totalPages) {
+            return new Response(JSON.stringify({ error: "Page not found" }), {
+                status: 404,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+
         $(".item").each((index, element) => {
             const mangaElement = $(element);
             const imageUrl = mangaElement.find("img.img-loading").attr("src");
