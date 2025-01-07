@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import NodeCache from "node-cache";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 
@@ -25,7 +26,10 @@ export async function GET() {
     if (cachedData) {
         return new Response(JSON.stringify(cachedData), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(120),
+            },
         });
     }
 
@@ -54,7 +58,12 @@ export async function GET() {
 
         const unreadBookmarks = data.data;
         cache.set(cacheKey, unreadBookmarks);
-        return NextResponse.json(unreadBookmarks);
+        return NextResponse.json(unreadBookmarks, {
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(120),
+            },
+        });
     } catch (error) {
         console.error(error);
         return NextResponse.json(
