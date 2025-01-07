@@ -4,6 +4,7 @@ import { Chapter } from "@/app/api/interfaces";
 import Image from "next/image";
 import MangaFooter from "../mangaFooter";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
 
 interface StripReaderProps {
@@ -20,26 +21,46 @@ export default function StripReader({
     handleImageLoad,
     toggleReaderMode,
 }: StripReaderProps) {
-    const [timeElapsed, setTimeElapsed] = useState(0);
+    const [scrollPercentage, setScrollPercentage] = useState(0);
     const bookmarkUpdatedRef = useRef(false);
+    const router = useRouter();
+    const hasPrefetchedRef = useRef(false);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setTimeElapsed((prev) => prev + 1);
-        }, 1000);
+        const handleScroll = () => {
+            const element = document.documentElement;
+            const scrollTop = element.scrollTop || document.body.scrollTop;
+            const scrollHeight =
+                element.scrollHeight || document.body.scrollHeight;
+            const clientHeight = element.clientHeight;
+            const percentage =
+                (scrollTop / (scrollHeight - clientHeight)) * 100;
+            setScrollPercentage(Math.min(100, Math.max(0, percentage)));
+        };
 
-        return () => clearInterval(interval);
+        window.addEventListener("scroll", handleScroll);
+        handleScroll(); // Initial calculation
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     useEffect(() => {
-        if (!chapter || bookmarkUpdatedRef.current) return;
-        const thirtySecondsPassed = timeElapsed >= 30;
+        if (!chapter) return;
+        const halfWay = scrollPercentage > 50;
+        const prefetch = scrollPercentage > 80;
 
-        if (thirtySecondsPassed) {
+        if (halfWay && !bookmarkUpdatedRef.current) {
             syncAllServices(chapter);
             bookmarkUpdatedRef.current = true;
         }
-    }, [timeElapsed, chapter]);
+
+        if (prefetch && chapter.nextChapter && !hasPrefetchedRef.current) {
+            router.prefetch(`/manga/${chapter.nextChapter}`);
+            hasPrefetchedRef.current = true;
+        }
+    }, [scrollPercentage, chapter]);
 
     return (
         <div>
