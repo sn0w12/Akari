@@ -14,9 +14,9 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
+import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
-import { fetchMangaDetails } from "@/app/api/manga/[id]/route";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -56,7 +56,21 @@ const formatDate = (date: string) => {
 
 export async function getMangaData(id: string) {
     try {
-        return await fetchMangaDetails(id);
+        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error! status: ${response.status}, ${response.statusText}`,
+            );
+        }
+
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error("Failed to parse JSON:", text.substring(0, 100)); // Log start of response
+            throw new Error("Invalid JSON response from server");
+        }
     } catch (error) {
         return {
             error: {
@@ -72,7 +86,7 @@ export async function getMangaData(id: string) {
 export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await getMangaData(id);
 
-    if ("error" in manga) {
+    if (manga.error) {
         return (
             <main className="container mx-auto px-4 py-8">
                 <ErrorComponent message={manga.error.message} />
