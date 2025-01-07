@@ -42,28 +42,27 @@ export default function PageReader({
     const hasPrefetchedRef = useRef(false);
 
     useEffect(() => {
-        if (!chapter || bookmarkUpdatedRef.current) return;
+        if (!chapter) return;
 
+        // Handle bookmark update
         const isHalfwayThrough =
             currentPage >= Math.floor(chapter.images.length / 2);
-
-        if (isHalfwayThrough) {
+        if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
             syncAllServices(chapter);
             bookmarkUpdatedRef.current = true;
         }
-    }, [chapter, currentPage]);
 
-    useEffect(() => {
-        if (!chapter?.nextChapter || hasPrefetchedRef.current) return;
+        // Handle prefetching next chapter
+        if (chapter.nextChapter && !hasPrefetchedRef.current) {
+            const threshold = Math.min(
+                Math.floor(chapter.images.length * 0.75),
+                chapter.images.length - 3,
+            );
 
-        const threshold = Math.min(
-            Math.floor(chapter.images.length * 0.75),
-            chapter.images.length - 3,
-        );
-
-        if (currentPage >= threshold) {
-            router.prefetch(`/manga/${chapter.nextChapter}`);
-            hasPrefetchedRef.current = true;
+            if (currentPage >= threshold) {
+                router.prefetch(`/manga/${chapter.nextChapter}`);
+                hasPrefetchedRef.current = true;
+            }
         }
     }, [chapter, currentPage, router]);
 
@@ -87,33 +86,27 @@ export default function PageReader({
 
         const isLastPage = currentPage === chapter.images.length - 1;
         const nextChapterParts = chapter.nextChapter.split("/");
-        const nextChapterCopy = [...nextChapterParts];
-        const formattedChapter = chapter.chapter
-            .toLowerCase()
-            .replaceAll(" ", "-");
 
         if (currentPage < chapter.images.length - 1) {
             setPageWithUrlUpdate(currentPage + 1);
         } else if (isLastPage) {
-            if (nextChapterCopy.pop() === formattedChapter) {
-                setPageWithUrlUpdate(currentPage + 1);
-            } else if (nextChapterParts.length === 2) {
+            if (nextChapterParts.length === 2) {
                 router.push(`/manga/${chapter.nextChapter}`);
-            } else {
-                setPageWithUrlUpdate(currentPage + 1);
             }
+            setPageWithUrlUpdate(currentPage + 1);
         }
-    }, [chapter, currentPage, router, isFooterVisible, setPageWithUrlUpdate]);
+    }, [chapter, currentPage, router, isFooterVisible]);
 
     const prevPage = useCallback(() => {
+        if (!chapter) return;
         if (isFooterVisible) return;
 
-        if (chapter && currentPage > 0) {
+        if (currentPage > 0) {
             setPageWithUrlUpdate(currentPage - 1);
-        } else if (chapter && currentPage === 0) {
-            router.push(`/manga/${chapter.lastChapter}`);
+        } else if (currentPage === 0) {
+            router.push(`/manga/${chapter.lastChapter}?page=last`);
         }
-    }, [chapter, currentPage, router, isFooterVisible, setPageWithUrlUpdate]);
+    }, [chapter, currentPage, router, isFooterVisible]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
