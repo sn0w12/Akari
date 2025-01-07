@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import { Chapter } from "@/app/api/interfaces";
 import NodeCache from "node-cache";
 import { badImages } from "@/lib/badImages";
 import { generateCacheHeaders } from "@/lib/cache";
+import { getErrorMessage } from "@/lib/utils";
 
 const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
 
@@ -182,11 +183,14 @@ export async function GET(
         });
 
         return mangaResponse;
-    } catch (error) {
-        console.error("Error fetching manga chapter:", error);
+    } catch (error: unknown) {
+        const axiosError = error as AxiosError;
         return NextResponse.json(
-            { error: "Failed to fetch manga chapter data" },
-            { status: 500 },
+            {
+                result: "error",
+                data: getErrorMessage(axiosError.status),
+            },
+            { status: axiosError.status },
         );
     }
 }

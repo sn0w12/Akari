@@ -1,4 +1,4 @@
-import { Chapter } from "@/app/api/interfaces";
+import { Chapter, SimpleError } from "@/app/api/interfaces";
 import Reader from "./ui/MangaReader/reader";
 import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
@@ -33,10 +33,11 @@ export async function fetchChapter(id: string, subId: string) {
             },
         },
     );
-    if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-    }
     const data = await response.json();
+
+    if (!response.ok) {
+        return data as SimpleError;
+    }
     const uniqueChapters: Chapter[] = Array.from(
         new Map<string, Chapter>(
             data.chapters.map((item: { value: string; label: string }) => [
@@ -50,16 +51,18 @@ export async function fetchChapter(id: string, subId: string) {
 }
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
-    let chapterData: Chapter | undefined;
+    let chapterData: Chapter | SimpleError = {} as Chapter;
     let errorMessage = "";
     try {
         chapterData = await fetchChapter(id, subId);
     } catch (error) {
         errorMessage = String(error);
-        console.error("Error fetching chapter data:", error);
     }
 
-    if (!chapterData) {
+    if ("result" in chapterData) {
+        return <ErrorComponent message={chapterData.data} />;
+    }
+    if (errorMessage) {
         return <ErrorComponent message={errorMessage} />;
     }
 
