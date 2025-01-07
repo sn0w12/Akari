@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
-import { SmallManga } from "../interfaces";
+import { MangaListResponse, SimpleError, SmallManga } from "../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
 import { generateCacheHeaders } from "@/lib/cache";
 
@@ -60,6 +60,97 @@ const getGenreIds = (genres: (keyof typeof genreMap)[]): number[] => {
         .filter((id): id is number => id !== undefined); // Filter out undefined genres
 };
 
+export async function fetchMangaGenre(
+    includeGenresParam: string[],
+    excludeGenresParam: string[],
+    orderBy: string,
+    page: number,
+): Promise<MangaListResponse | SimpleError> {
+    // Convert genre names to their corresponding IDs
+    const includeGenres = getGenreIds(includeGenresParam);
+    const excludeGenres = getGenreIds(excludeGenresParam);
+
+    const cacheKey = `genre_${includeGenres.join("_")}_${excludeGenres.join("_")}_${orderBy}_${page}`;
+
+    const cachedData: MangaListResponse | undefined = cache.get(cacheKey);
+    if (cachedData) {
+        return cachedData;
+    }
+
+    if (includeGenres.length === 0) {
+        return { result: "error", data: "Include genres are required" };
+    }
+
+    // Construct include and exclude genre strings
+    const includeGenresString = includeGenres.map((id) => `_${id}_`).join("");
+    const excludeGenresString = excludeGenres.map((id) => `_${id}_`).join("");
+
+    // Construct the search URL
+    const searchUrl = `https://manganato.com/advanced_search?s=all&g_i=${includeGenresString}&g_e=${excludeGenresString}&page=${page}&orby=${orderBy}`;
+
+    // Fetch the data from Manganato
+    const { data } = await axios.get(searchUrl);
+    const $ = cheerio.load(data);
+
+    const mangaList: SmallManga[] = [];
+
+    // Loop through each .content-genres-item div and extract the relevant information
+    $(".content-genres-item").each((index, element) => {
+        const mangaElement = $(element);
+        const imageUrl = mangaElement.find("img.img-loading").attr("src");
+        const titleElement = mangaElement.find("h3 a.genres-item-name");
+        const title = titleElement.text();
+        const mangaUrl = titleElement.attr("href");
+        const chapterElement = mangaElement.find("a.genres-item-chap");
+        const latestChapter =
+            chapterElement
+                .text()
+                .replace("-", ".")
+                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || "";
+        const chapterUrl = chapterElement.attr("href");
+        const description = mangaElement
+            .find(".genres-item-description")
+            .text()
+            .trim();
+        const rating = mangaElement.find("em.genres-item-rate").text();
+        const views = mangaElement.find(".genres-item-view").text();
+        const date = mangaElement.find(".genres-item-time").text();
+        const author = mangaElement.find(".genres-item-author").text();
+
+        mangaList.push({
+            id: mangaUrl?.split("/").pop() || "",
+            image: imageUrl || "",
+            title: title,
+            chapter: latestChapter,
+            chapterUrl: chapterUrl || "",
+            description: description,
+            rating: rating,
+            views: views,
+            date: date,
+            author: author,
+        });
+    });
+
+    const totalStories: number = mangaList.length;
+    const lastPageElement = $("a.page-last");
+    const totalPages: number = lastPageElement.length
+        ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
+        : 1;
+
+    if (page > totalPages) {
+        return { result: "error", data: "Page number exceeds total pages" };
+    }
+
+    await replaceImages(mangaList);
+
+    const result = {
+        mangaList,
+        metaData: { totalStories, totalPages },
+    };
+    cache.set(cacheKey, result);
+    return result;
+}
+
 export async function GET(request: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(request.url);
@@ -70,105 +161,12 @@ export async function GET(request: Request): Promise<Response> {
         const orderBy = searchParams.get("orderBy") || "";
         const page = searchParams.get("page") || "1";
 
-        // Convert genre names to their corresponding IDs
-        const includeGenres = getGenreIds(includeGenresParam);
-        const excludeGenres = getGenreIds(excludeGenresParam);
-
-        const cacheKey = `genre_${includeGenres.join("_")}_${excludeGenres.join("_")}_${orderBy}_${page}`;
-
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            return new Response(JSON.stringify(cachedData), {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    ...generateCacheHeaders(600),
-                },
-            });
-        }
-
-        if (includeGenres.length === 0) {
-            return NextResponse.json(
-                { result: "error", data: "No valid genres included in search" },
-                { status: 400 },
-            );
-        }
-
-        // Construct include and exclude genre strings
-        const includeGenresString = includeGenres
-            .map((id) => `_${id}_`)
-            .join("");
-        const excludeGenresString = excludeGenres
-            .map((id) => `_${id}_`)
-            .join("");
-
-        // Construct the search URL
-        const searchUrl = `https://manganato.com/advanced_search?s=all&g_i=${includeGenresString}&g_e=${excludeGenresString}&page=${page}&orby=${orderBy}`;
-
-        // Fetch the data from Manganato
-        const { data } = await axios.get(searchUrl);
-        const $ = cheerio.load(data);
-
-        const mangaList: SmallManga[] = [];
-
-        // Loop through each .content-genres-item div and extract the relevant information
-        $(".content-genres-item").each((index, element) => {
-            const mangaElement = $(element);
-            const imageUrl = mangaElement.find("img.img-loading").attr("src");
-            const titleElement = mangaElement.find("h3 a.genres-item-name");
-            const title = titleElement.text();
-            const mangaUrl = titleElement.attr("href");
-            const chapterElement = mangaElement.find("a.genres-item-chap");
-            const latestChapter =
-                chapterElement
-                    .text()
-                    .replace("-", ".")
-                    .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || "";
-            const chapterUrl = chapterElement.attr("href");
-            const description = mangaElement
-                .find(".genres-item-description")
-                .text()
-                .trim();
-            const rating = mangaElement.find("em.genres-item-rate").text();
-            const views = mangaElement.find(".genres-item-view").text();
-            const date = mangaElement.find(".genres-item-time").text();
-            const author = mangaElement.find(".genres-item-author").text();
-
-            mangaList.push({
-                id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl || "",
-                title: title,
-                chapter: latestChapter,
-                chapterUrl: chapterUrl || "",
-                description: description,
-                rating: rating,
-                views: views,
-                date: date,
-                author: author,
-            });
-        });
-
-        const totalStories: number = mangaList.length;
-        const lastPageElement = $("a.page-last");
-        const totalPages: number = lastPageElement.length
-            ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
-            : 1;
-
-        if (Number(page) > totalPages) {
-            return NextResponse.json(
-                { result: "error", data: "Page number exceeds total pages" },
-                { status: 400 },
-            );
-        }
-
-        await replaceImages(mangaList);
-
-        const result = {
-            mangaList,
-            metaData: { totalStories, totalPages },
-        };
-        cache.set(cacheKey, result);
-
+        const result = await fetchMangaGenre(
+            includeGenresParam,
+            excludeGenresParam,
+            orderBy,
+            parseInt(page, 10),
+        );
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: {

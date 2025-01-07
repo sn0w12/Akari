@@ -1,41 +1,9 @@
 import ErrorComponent from "./ui/error";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
-import { SmallManga } from "@/app/api/interfaces";
 import { MangaCard } from "./ui/Home/MangaCard";
-
-interface MangaListResponse {
-    mangaList: SmallManga[];
-    popular: SmallManga[];
-    metaData: {
-        totalStories: number;
-        totalPages: number;
-    };
-}
-
-async function getMangaData(page: number): Promise<MangaListResponse> {
-    const baseUrl = getProductionUrl();
-    const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
-
-    const res = await fetch(url, {
-        next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-
-    if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Fetch error details:", {
-            error: errorText,
-            status: res.status,
-            url,
-        });
-        throw new Error(
-            `Failed to fetch manga data: ${res.status} ${res.statusText}`,
-        );
-    }
-
-    return res.json();
-}
+import { fetchMangaHome } from "@/app/api/manga-list/latest/route";
+import { MangaListResponse } from "@/app/api/interfaces";
 
 export default async function MangaReaderHome({
     searchParams,
@@ -43,17 +11,21 @@ export default async function MangaReaderHome({
     searchParams: { page: string };
 }) {
     const currentPage = Number(searchParams.page) || 1;
+    const mangaData = await fetchMangaHome(currentPage);
 
-    let mangaData: MangaListResponse;
-    try {
-        mangaData = await getMangaData(currentPage);
-    } catch (error) {
-        return (
-            <ErrorComponent message={`Failed to load manga data: ${error}`} />
-        );
+    if ("error" in mangaData) {
+        const errorMessage =
+            typeof mangaData.error === "string"
+                ? mangaData.error
+                : "An error occurred";
+        return <ErrorComponent message={errorMessage} />;
     }
 
-    const { mangaList, popular, metaData } = mangaData;
+    if (!mangaData || !(mangaData as MangaListResponse).popular) {
+        return <ErrorComponent message="Failed to load manga data" />;
+    }
+
+    const { mangaList, popular, metaData } = mangaData as MangaListResponse;
     const totalPages = metaData.totalPages;
 
     return (
@@ -64,7 +36,7 @@ export default async function MangaReaderHome({
                         <h2 className="text-3xl font-bold mb-6">
                             Popular Manga
                         </h2>
-                        <PopularManga mangas={popular.slice(0, -1)} />
+                        <PopularManga mangas={popular?.slice(0, -1) || []} />
                     </div>
                 )}
 
