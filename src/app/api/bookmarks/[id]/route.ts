@@ -51,7 +51,7 @@ export async function GET(
     if (!user_data) {
         return NextResponse.json(
             { message: "User data is required" },
-            { status: 400 },
+            { status: 401 },
         );
     }
 
