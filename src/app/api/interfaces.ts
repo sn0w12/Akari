@@ -64,6 +64,15 @@ export interface MangaCacheItem {
     id: string;
 }
 
+export interface MangaListResponse {
+    mangaList: SmallManga[];
+    popular?: SmallManga[];
+    metaData: {
+        totalStories: number;
+        totalPages: number;
+    };
+}
+
 export interface DetailsChapter {
     id: string;
     path: string;

@@ -17,6 +17,9 @@ import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
+import { scrapeMangaDetails } from "@/lib/mangaNato";
+
+export const revalidate = 120; // 1 minute
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -54,42 +57,13 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-export async function getMangaData(id: string) {
-    try {
-        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
-
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error! status: ${response.status}, ${response.statusText}`,
-            );
-        }
-
-        const text = await response.text();
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            console.error("Failed to parse JSON:", text.substring(0, 100)); // Log start of response
-            throw new Error("Invalid JSON response from server");
-        }
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to fetch manga data",
-            },
-        };
-    }
-}
-
 export async function MangaDetailsComponent({ id }: { id: string }) {
-    const manga = await getMangaData(id);
+    const manga = await scrapeMangaDetails(id);
 
-    if (manga.error) {
+    if ("result" in manga) {
         return (
             <main className="container mx-auto px-4 py-8">
-                <ErrorComponent message={manga.error.message} />
+                <ErrorComponent message={manga.data} />
             </main>
         );
     }

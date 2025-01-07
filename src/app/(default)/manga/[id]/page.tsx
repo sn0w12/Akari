@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { getMangaData, MangaDetailsComponent } from "@/components/MangaDetails";
+import { MangaDetailsComponent } from "@/components/MangaDetails";
+import { scrapeMangaDetails } from "@/lib/mangaNato";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -7,7 +8,18 @@ interface PageProps {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
-    const manga = await getMangaData(params.id);
+    const manga = await scrapeMangaDetails(params.id);
+
+    if ("result" in manga) {
+        return {
+            title: "Error",
+            description: manga.data,
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
 
     return {
         title: manga.name,

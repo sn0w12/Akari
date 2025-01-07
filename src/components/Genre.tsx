@@ -1,39 +1,15 @@
 import { SortSelect } from "./ui/SortSelect";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
-import { getProductionUrl } from "@/app/api/baseUrl";
 import { MangaCard } from "./ui/Home/MangaCard";
-import { SimpleError, SmallManga } from "@/app/api/interfaces";
+import { SmallManga } from "@/app/api/interfaces";
+import { scrapeMangaGenre } from "@/lib/mangaNato";
 
-interface MangaListResponse {
-    mangaList: SmallManga[];
-    popular: SmallManga[];
-    metaData: {
-        totalStories: number;
-        totalPages: number;
-    };
-}
+export const revalidate = 60; // 1 minute
 
 interface PageProps {
     params: { id: string };
     searchParams: { page?: string; sort?: string };
-}
-
-async function getMangaList(genreId: string, page: number, sort: string) {
-    try {
-        const response = await fetch(
-            `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,
-            { cache: "no-store" },
-        );
-
-        if (!response.ok) {
-            return (await response.json()) as SimpleError;
-        }
-
-        return (await response.json()) as MangaListResponse;
-    } catch (error) {
-        throw new Error(`Error fetching manga list: ${error}`);
-    }
 }
 
 export default async function GenrePage({ params, searchParams }: PageProps) {
@@ -45,7 +21,12 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     let error: string | null = null;
 
     try {
-        const data = await getMangaList(params.id, currentPage, currentSort);
+        const data = await scrapeMangaGenre(
+            [params.id],
+            [],
+            currentSort,
+            currentPage,
+        );
 
         if ("result" in data) {
             error = String(data.data);
