@@ -1,34 +1,27 @@
 import { Bookmark } from "@/app/api/interfaces";
-import Link from "next/link";
+import HoverLink from "../hoverLink";
 
 export default function LatestChapterInfo({
     bookmark,
     colors,
-    prefetchChapterData = null,
 }: {
     bookmark: Bookmark;
     colors: string;
-    prefetchChapterData?: ((link: string) => void) | null;
 }) {
     return (
         <div className="text-sm text-muted-foreground">
             <p>
                 Latest Chapter:{" "}
-                <Link
+                <HoverLink
                     href={`/manga/${bookmark.link_story
                         .split("/")
                         .pop()}/${bookmark.link_chapter_last.split("/").pop()}`}
                     rel="noopener noreferrer"
                     className={`box-decoration-clone text-white p-0.5 md:pr-1 rounded-sm ${colors} transition-colors`}
                     style={{ WebkitBoxDecorationBreak: "clone" }}
-                    onMouseEnter={() =>
-                        prefetchChapterData &&
-                        prefetchChapterData(bookmark.link_chapter_last)
-                    }
-                    prefetch={false}
                 >
                     {bookmark.chapterlastname}
-                </Link>
+                </HoverLink>
             </p>
             <p className="text-xs text-gray-400">
                 Updated: {bookmark.chapterlastdateupdate}

@@ -11,6 +11,7 @@ import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { DetailsChapter } from "@/app/api/interfaces";
 import { useRouter } from "next/navigation";
+import HoverLink from "../hoverLink";
 
 interface ChaptersSectionProps {
     manga: MangaDetails;
@@ -103,10 +104,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         currentPage * chaptersPerPage,
     );
 
-    const preloadChapter = (chapterId: string) => {
-        router.prefetch(`/manga/${manga.identifier}/${chapterId}`);
-    };
-
     return (
         <>
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
@@ -131,12 +128,10 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             {/* Chapters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
                 {currentChapters?.map((chapter) => (
-                    <Link
+                    <HoverLink
                         href={`/manga/${manga.identifier}/${chapter.id}`}
                         key={chapter.id}
                         id={chapter.id}
-                        onMouseEnter={() => preloadChapter(chapter.id)}
-                        prefetch={false}
                     >
                         <Card
                             className={`h-full transition-colors ${
@@ -176,7 +171,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                 </p>
                             </CardContent>
                         </Card>
-                    </Link>
+                    </HoverLink>
                 ))}
             </div>
 

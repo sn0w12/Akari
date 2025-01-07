@@ -1,30 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { SmallManga } from "@/app/api/interfaces";
-import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import HoverLink from "../hoverLink";
 
 interface MangaCardProps {
     manga: SmallManga;
 }
 
 export function MangaCard({ manga }: MangaCardProps) {
-    const router = useRouter();
-
-    const prefetchManga = useCallback(() => {
-        router.prefetch(`/manga/${manga.id}`);
-    }, [router, manga.id]);
-
     return (
-        <Link
-            href={`/manga/${manga.id}`}
-            className="block"
-            onMouseEnter={prefetchManga}
-            prefetch={false}
-        >
+        <HoverLink href={`/manga/${manga.id}`} className="block">
             <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
                 <CardContent className="p-0">
                     <Image
@@ -56,6 +43,6 @@ export function MangaCard({ manga }: MangaCardProps) {
                     </div>
                 </CardContent>
             </Card>
-        </Link>
+        </HoverLink>
     );
 }
