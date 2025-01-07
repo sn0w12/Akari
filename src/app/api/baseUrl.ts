@@ -9,7 +9,7 @@ export function getBaseUrl() {
             return `https://${process.env.VERCEL_BRANCH_URL}`;
         }
     } else {
-        return `http://127.0.0.1:${port}`;
+        return `http://localhost:${port}`;
     }
 }
 
@@ -20,6 +20,6 @@ export function getProductionUrl() {
     if (vercelEnv) {
         return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     } else {
-        return `http://127.0.0.1:${port}`;
+        return `http://localhost:${port}`;
     }
 }
