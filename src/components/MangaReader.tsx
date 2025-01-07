@@ -1,4 +1,5 @@
 import { Chapter, SimpleError } from "@/app/api/interfaces";
+import { HeaderComponent } from "@/components/Header";
 import Reader from "./ui/MangaReader/reader";
 import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
@@ -51,20 +52,22 @@ export async function fetchChapter(id: string, subId: string) {
 }
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
-    let chapterData: Chapter | SimpleError = {} as Chapter;
-    let errorMessage = "";
     try {
-        chapterData = await fetchChapter(id, subId);
+        const chapterData = await fetchChapter(id, subId);
+
+        if ("result" in chapterData) {
+            throw new Error(chapterData.data);
+        }
+
+        return <Reader chapter={chapterData} />;
     } catch (error) {
-        errorMessage = String(error);
+        return (
+            <>
+                <HeaderComponent />
+                <main className="p-8">
+                    <ErrorComponent message={String(error)} />
+                </main>
+            </>
+        );
     }
-
-    if ("result" in chapterData) {
-        return <ErrorComponent message={chapterData.data} />;
-    }
-    if (errorMessage) {
-        return <ErrorComponent message={errorMessage} />;
-    }
-
-    return <Reader chapter={chapterData} />;
 }
