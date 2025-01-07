@@ -79,6 +79,7 @@ export default function LoginDialog() {
 
     const handleMalLogout = async () => {
         localStorage.removeItem("mal_user");
+        sessionStorage.removeItem("mal");
         setMalUser(null);
         await fetch("/api/logout/mal");
         window.location.reload();
@@ -140,8 +141,15 @@ export default function LoginDialog() {
     };
 
     async function isMalValid() {
+        const cache = sessionStorage.getItem("mal");
+        if (cache === "true") {
+            return true;
+        }
+
         const response = await fetch("/api/mal/isLoggedIn");
         const data = await response.json();
+
+        sessionStorage.setItem("mal", data.result === "ok" ? "true" : "false");
         return data.result === "ok";
     }
 
