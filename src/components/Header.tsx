@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import HoverLink from "./ui/hoverLink";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import LoginDialog from "./ui/Header/AccountDialog";
@@ -46,20 +46,20 @@ export function HeaderComponent() {
     return (
         <header className="sticky top-0 z-50 bg-background border-b">
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                <Link
+                <HoverLink
                     href="/"
                     className="text-2xl font-bold title"
                     prefetch={false}
                 >
                     <Icon />
-                </Link>
+                </HoverLink>
 
                 <div className="flex items-center space-x-4 flex-grow justify-end">
                     <SearchBar />
                     <div className="flex gap-4">
                         <SearchButton />
                         {notification ? (
-                            <Link
+                            <HoverLink
                                 href="/bookmarks"
                                 className={
                                     !notification ? "pointer-events-none" : ""
@@ -84,7 +84,7 @@ export function HeaderComponent() {
                                         </span>
                                     )}
                                 </div>
-                            </Link>
+                            </HoverLink>
                         ) : (
                             <TooltipProvider>
                                 <Tooltip>
