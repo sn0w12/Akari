@@ -114,12 +114,14 @@ export interface UserMangaProgress {
     last_read_chapter: number;
     added_at: string;
     updated_at: string;
+    up_to_date: boolean;
 }
 
 export async function saveUserMangaProgress(
     userId: string,
     mangaIdentifier: string,
     lastChapter: number,
+    upToDate: boolean = false,
 ) {
     if (!supabaseAdmin) {
         throw new Error(
@@ -133,6 +135,7 @@ export async function saveUserMangaProgress(
             user_id: userId,
             manga_identifier: mangaIdentifier,
             last_read_chapter: lastChapter,
+            up_to_date: upToDate,
             updated_at: new Date().toISOString(),
             added_at: new Date().toISOString(), // Only used for new entries
         })
@@ -149,12 +152,20 @@ export async function updateUserMangaProgress(
     userId: string,
     mangaIdentifier: string,
     lastChapter: number,
+    upToDate: boolean = false,
 ) {
+    if (!supabaseAdmin) {
+        throw new Error(
+            "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
+        );
+    }
+
     try {
-        const { data, error } = await supabasePublic
+        const { data, error } = await supabaseAdmin
             .from("user_manga_progress")
             .update({
                 last_read_chapter: lastChapter,
+                up_to_date: upToDate,
                 updated_at: new Date().toISOString(),
             })
             .eq("user_id", userId)
@@ -166,6 +177,7 @@ export async function updateUserMangaProgress(
                 userId,
                 mangaIdentifier,
                 lastChapter,
+                upToDate
             );
         }
 
