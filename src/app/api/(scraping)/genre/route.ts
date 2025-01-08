@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
-import { SmallManga } from "../interfaces";
+import { SmallManga } from "../../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
 import { generateCacheHeaders } from "@/lib/cache";
 

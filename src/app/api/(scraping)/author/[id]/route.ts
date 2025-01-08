@@ -3,7 +3,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
 import { replaceImages } from "@/lib/mangaNato";
-import { SmallManga } from "../../interfaces";
+import { SmallManga } from "../../../interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour

@@ -4,7 +4,7 @@ import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import NodeCache from "node-cache";
-import { MangaDetails, DetailsChapter } from "../../interfaces";
+import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 

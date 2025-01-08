@@ -2,7 +2,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import Fuse from "fuse.js";
 import NodeCache from "node-cache";
-import { SmallManga } from "../interfaces";
+import { SmallManga } from "../../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
