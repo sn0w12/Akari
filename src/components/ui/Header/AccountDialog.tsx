@@ -52,6 +52,7 @@ const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
 export default function LoginDialog() {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
+    const [open, setOpen] = useState(false);
     const [username, setUsername] = useState("");
     const [savedUsername, setSavedUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -60,6 +61,17 @@ export default function LoginDialog() {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const hasAccountParam = params.get("account") === "true";
+        if (hasAccountParam) {
+            fetchCaptcha();
+            setTimeout(() => {
+                setOpen(true);
+            }, 500);
+        }
+    }, [window.location.href]);
 
     useEffect(() => {
         const accountName = localStorage.getItem("accountName");
@@ -199,14 +211,6 @@ export default function LoginDialog() {
         checkSecondaryAuth();
     }, []);
 
-    const handleOpenChange = (
-        open: boolean | ((prevState: boolean) => boolean),
-    ) => {
-        if (open) {
-            fetchCaptcha();
-        }
-    };
-
     const renderSecondaryAccounts = () => (
         <>
             {secondaryAccounts.map((account) => (
@@ -257,7 +261,7 @@ export default function LoginDialog() {
     // If user data exists, display the user's name and user data, otherwise show the login dialog
     if (savedUsername) {
         return (
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon">
                         <User className="h-5 w-5" />
@@ -300,7 +304,15 @@ export default function LoginDialog() {
 
     // Show the login form if the user is not logged in
     return (
-        <Dialog onOpenChange={handleOpenChange}>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (isOpen) {
+                    fetchCaptcha();
+                }
+            }}
+        >
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <User className="h-5 w-5" />
@@ -384,6 +396,17 @@ export default function LoginDialog() {
                                 >
                                     Login
                                 </Button>
+
+                                {/* Register Link */}
+                                <div className="mt-2 text-center">
+                                    <Link
+                                        href="/register"
+                                        className="text-sm text-blue-500 hover:text-blue-400"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Don't have an account? Register here
+                                    </Link>
+                                </div>
 
                                 {/* Error Message */}
                                 {loginError && (
