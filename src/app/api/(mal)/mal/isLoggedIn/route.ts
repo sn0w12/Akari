@@ -1,6 +1,6 @@
 import { getAccessToken } from "@/lib/accessToken";
 import { NextRequest, NextResponse } from "next/server";
-import { getProductionUrl } from "../../baseUrl";
+import { getProductionUrl } from "../../../baseUrl";
 import { generateCacheHeaders } from "@/lib/cache";
 
 export async function GET(req: NextRequest) {

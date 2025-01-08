@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Bookmark } from "@/app/api/interfaces";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
-import { getBaseUrl } from "../../baseUrl";
+import { getBaseUrl } from "../../../baseUrl";
 import { generateCacheHeaders } from "@/lib/cache";
 
 export const maxDuration = 20;

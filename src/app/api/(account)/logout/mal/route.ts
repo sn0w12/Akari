@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBaseUrl } from "../../../baseUrl";
+import { getBaseUrl } from "../../../../../baseUrl";
 
 export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(
