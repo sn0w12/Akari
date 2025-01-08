@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
         return response;
     } else {
         return NextResponse.json(
-            { error: "Failed to get token" },
-            { status: 500 },
+            { error: data.message },
+            { status: response.status },
         );
     }
 }

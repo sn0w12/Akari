@@ -6,7 +6,7 @@ import db from "@/lib/db";
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { numberArraysEqual } from "@/lib/utils";
-import { getAllBookmarks } from "@/lib/bookmarks";
+import { bookmarksToCacheItems, getAllBookmarks } from "@/lib/bookmarks";
 
 import BookmarksHeader from "./BookmarksHeader";
 import BookmarksGrid from "./BookmarksGrid";
@@ -75,12 +75,11 @@ export default function BookmarksBody({
         similarityThreshold: number = 0.6,
     ) {
         const currentHash = generateBookmarksHash(bookmarkFirstPage);
-
-        const cachedHash = (await db.getCache(
+        const cachedHash = (await db.replaceCache(
             db.bookmarkCache,
             "firstPageHash",
+            currentHash,
         )) as string;
-        await db.setCache(db.bookmarkCache, "firstPageHash", currentHash);
         if (!cachedHash) return false;
 
         const similarity = calculateSimilarity(currentHash, cachedHash);
@@ -134,16 +133,7 @@ export default function BookmarksBody({
         });
 
         const allBookmarks = await getAllBookmarks();
-        const mangaCache = allBookmarks.map((bookmark: Bookmark) => ({
-            name: bookmark.note_story_name,
-            link: bookmark.link_story,
-            last_chapter: bookmark.link_chapter_last.split("/").pop() || "",
-            last_read: bookmark.link_chapter_now.split("/").pop() || "",
-            bm_data: bookmark.bm_data,
-            id: bookmark.storyid,
-            image: bookmark.image,
-            last_update: bookmark.chapterlastdateupdate,
-        }));
+        const mangaCache = bookmarksToCacheItems(bookmarkFirstPage);
 
         allBookmarks.forEach((bookmark: Bookmark) => {
             updateBookmark(bookmark);

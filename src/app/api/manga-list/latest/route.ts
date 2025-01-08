@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
 import { replaceImages } from "@/lib/mangaNato";
 import { SmallManga } from "../../interfaces";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
@@ -119,7 +120,10 @@ export async function GET(req: Request): Promise<Response> {
 
         return new Response(JSON.stringify(result), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(60),
+            },
         });
     } catch (error) {
         console.error(error);

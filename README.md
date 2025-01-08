@@ -14,37 +14,37 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## Table of Contents
 
--   [Features](#features)
--   [Settings](#settings)
--   [Getting Started](#getting-started)
-    -   [Online Usage](#online-usage)
-    -   [Local Installation](#local-installation)
+- [Features](#features)
+- [Settings](#settings)
+- [Getting Started](#getting-started)
+    - [Online Usage](#online-usage)
+    - [Local Installation](#local-installation)
 
 # Features
 
 ## Reader Experience
 
--   **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
--   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
--   **Responsive Design:** Fully responsive interface that works on mobile and desktop
+- **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
+- **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
+- **Responsive Design:** Fully responsive interface that works on mobile and desktop
 
 ## Manga Management
 
--   **Genre Filtering:** Browse manga by specific genres
--   **Popular Manga Section:** Discover trending and popular manga
--   **Latest Updates:** Stay informed about newly added chapters
+- **Genre Filtering:** Browse manga by specific genres
+- **Popular Manga Section:** Discover trending and popular manga
+- **Latest Updates:** Stay informed about newly added chapters
 
 ## Bookmarks and Sync
 
--   **MyAnimeList Integration:**
-    -   Sync with MyAnimeList (MAL) account
-    -   Enhanced manga information from MAL
--   **Bookmark Management:**
-    -   Sync bookmarks with Manganato account
-    -   Quick bookmark removal from manga pages
-    -   Search through bookmarked manga
-    -   Up-to-date chapter tracking
-    -   Last read chapter tracking
+- **MyAnimeList Integration:**
+    - Sync with MyAnimeList (MAL) account
+    - Enhanced manga information from MAL
+- **Bookmark Management:**
+    - Sync bookmarks with Manganato account
+    - Quick bookmark removal from manga pages
+    - Search through bookmarked manga
+    - Up-to-date chapter tracking
+    - Last read chapter tracking
 
 # Settings
 
@@ -116,8 +116,8 @@ If you prefer to run Akari locally, follow these steps.
 
 Before running Akari, make sure you have the following installed:
 
--   [Node.js](https://nodejs.org/)
--   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ### Installation
 
@@ -143,6 +143,8 @@ To start the development server, run:
 ```bash
 npm run dev
 ```
+
+> **Note**: When running locally, MyAnimeList authentication only works on specific localhost ports. Currently supported ports are: 3000, 3016, 3456, 3789, and 4000. You can modify the port in your `package.json` scripts by adding a `-p` flag with `next dev / start`.
 
 Open http://localhost:3000 in your browser to see the application.
 

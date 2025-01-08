@@ -179,7 +179,7 @@ export async function GET(request: Request) {
             {
                 status: 200,
                 headers: {
-                    ...generateCacheHeaders(120),
+                    ...generateCacheHeaders(30),
                 },
             },
         );

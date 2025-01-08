@@ -11,7 +11,7 @@ interface BookmarksPageProps {
 
 async function fetchBookmarks(page: number) {
     try {
-        const response = await fetch(`/api/bookmarks?page=${page}`);
+        const response = await fetch(`/api/bookmarks?page=${page}&images=true`);
 
         const responseText = await response.text();
         let data;

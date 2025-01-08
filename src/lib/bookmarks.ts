@@ -98,3 +98,16 @@ export async function getAllBookmarks(batchSize: number = 10) {
 
     return allBookmarks;
 }
+
+export function bookmarksToCacheItems(bookmarks: Bookmark[]): MangaCacheItem[] {
+    return bookmarks.map((bookmark: Bookmark) => ({
+        name: bookmark.note_story_name,
+        link: bookmark.link_story,
+        last_chapter: bookmark.link_chapter_last.split("/").pop() || "",
+        last_read: bookmark.link_chapter_now.split("/").pop() || "",
+        bm_data: bookmark.bm_data,
+        id: bookmark.storyid,
+        image: bookmark.image,
+        last_update: bookmark.chapterlastdateupdate,
+    }));
+}

@@ -1,6 +1,8 @@
 User-agent: *
-Disallow: /
-
+Disallow: /api/
+Disallow: /author/
+Disallow: /genre/
+Disallow: /bookmarks/
 
 User-agent: Amazonbot
 Disallow: /

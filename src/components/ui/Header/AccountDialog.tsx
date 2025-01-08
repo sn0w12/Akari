@@ -14,14 +14,45 @@ import { Input } from "@/components/ui/input";
 import { User } from "lucide-react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
-import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
-import Cookies from "js-cookie";
-import { baseUrl } from "@/lib/consts";
 import Image from "next/image";
 import db from "@/lib/db";
 import { Skeleton } from "../skeleton";
+import { generateMalAuth } from "@/lib/secondaryAccounts";
+import Link from "next/link";
+
+export interface SecondaryAccount {
+    id: string;
+    name: string;
+    displayName: string;
+    user: any | null;
+    authUrl?: string;
+    buttonColor: string;
+    hoverColor: string;
+    storageKey: string;
+    sessionKey: string;
+    apiEndpoint: string;
+    validateEndpoint: string;
+}
+
+const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
+    {
+        id: "mal",
+        name: "MyAnimeList",
+        displayName: "MAL",
+        user: null,
+        buttonColor: "bg-blue-600",
+        hoverColor: "hover:bg-blue-500",
+        storageKey: "mal_user",
+        sessionKey: "mal",
+        apiEndpoint: "/api/logout/mal",
+        validateEndpoint: "/api/mal/isLoggedIn",
+    },
+];
 
 export default function LoginDialog() {
+    const [secondaryAccounts, setSecondaryAccounts] =
+        useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
+    const [open, setOpen] = useState(false);
     const [username, setUsername] = useState("");
     const [savedUsername, setSavedUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -30,20 +61,19 @@ export default function LoginDialog() {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [authUrl, setAuthUrl] = useState<string | null>(null);
-    const [malUser, setMalUser] = useState<MalUser | null>(null);
-
-    interface MalUser {
-        name: string;
-        picture: string;
-        id: number;
-    }
 
     useEffect(() => {
-        // Clear old cookies and localStorage data (temporary)
-        localStorage.removeItem("accountInfo");
-        localStorage.removeItem("user_acc");
+        const params = new URLSearchParams(window.location.search);
+        const hasAccountParam = params.get("account") === "true";
+        if (hasAccountParam) {
+            fetchCaptcha();
+            setTimeout(() => {
+                setOpen(true);
+            }, 500);
+        }
+    }, [window.location.href]);
 
+    useEffect(() => {
         const accountName = localStorage.getItem("accountName");
         if (accountName) {
             try {
@@ -58,15 +88,14 @@ export default function LoginDialog() {
 
     const handleLogout = async () => {
         // Manganato
-        localStorage.removeItem("accountInfo"); // Legacy
         localStorage.removeItem("accountName");
-        localStorage.removeItem("user_acc"); // Legacy
         setUsername(""); // Reset username to trigger the login view again
         setSavedUsername("");
 
-        // MyAnimeList
-        localStorage.removeItem("mal_user");
-        setMalUser(null);
+        secondaryAccounts.forEach((account) => {
+            localStorage.removeItem(account.storageKey);
+            sessionStorage.removeItem(account.sessionKey);
+        });
 
         // Clear Caches
         db.clearCache(db.bookmarkCache);
@@ -77,10 +106,15 @@ export default function LoginDialog() {
         window.location.reload();
     };
 
-    const handleMalLogout = async () => {
-        localStorage.removeItem("mal_user");
-        setMalUser(null);
-        await fetch("/api/logout/mal");
+    const handleSecondaryLogout = async (account: SecondaryAccount) => {
+        localStorage.removeItem(account.storageKey);
+        sessionStorage.removeItem(account.sessionKey);
+        setSecondaryAccounts((accounts) =>
+            accounts.map((acc) =>
+                acc.id === account.id ? { ...acc, user: null } : acc,
+            ),
+        );
+        await fetch(account.apiEndpoint);
         window.location.reload();
     };
 
@@ -139,55 +173,95 @@ export default function LoginDialog() {
         setIsLoading(false);
     };
 
-    async function isMalValid() {
-        const response = await fetch("/api/mal/isLoggedIn");
+    async function isAccountValid(account: SecondaryAccount) {
+        const cache = sessionStorage.getItem(account.sessionKey);
+        if (cache === "true") return true;
+
+        const response = await fetch(account.validateEndpoint);
         const data = await response.json();
+
+        sessionStorage.setItem(
+            account.sessionKey,
+            data.result === "ok" ? "true" : "false",
+        );
         return data.result === "ok";
     }
 
     useEffect(() => {
-        const checkMalAuth = async () => {
-            const malUser = JSON.parse(
-                localStorage.getItem("mal_user") || "{}",
+        const checkSecondaryAuth = async () => {
+            const updatedAccounts = await Promise.all(
+                secondaryAccounts.map(async (account) => {
+                    const userData = JSON.parse(
+                        localStorage.getItem(account.storageKey) || "{}",
+                    );
+                    if (userData.name && (await isAccountValid(account))) {
+                        return { ...account, user: userData };
+                    }
+
+                    if (account.id === "mal") {
+                        return generateMalAuth(account);
+                    }
+
+                    return account;
+                }),
             );
-            if (malUser.name && (await isMalValid())) {
-                setMalUser(malUser);
-                return;
-            }
-
-            const codeVerifier = generateCodeVerifier();
-            const codeChallenge = generateCodeChallenge(codeVerifier);
-            const clientId = process.env.NEXT_PUBLIC_CLIENT_ID!;
-
-            Cookies.set("pkce_code_verifier", codeVerifier, {
-                sameSite: "strict",
-            });
-
-            const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
-            url.searchParams.append("response_type", "code");
-            url.searchParams.append("client_id", clientId);
-            url.searchParams.append("code_challenge", codeChallenge);
-            url.searchParams.append("code_challenge_method", "plain");
-            url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
-
-            setAuthUrl(url.toString());
+            setSecondaryAccounts(updatedAccounts);
         };
 
-        checkMalAuth();
+        checkSecondaryAuth();
     }, []);
 
-    const handleOpenChange = (
-        open: boolean | ((prevState: boolean) => boolean),
-    ) => {
-        if (open) {
-            fetchCaptcha();
-        }
-    };
+    const renderSecondaryAccounts = () => (
+        <>
+            {secondaryAccounts.map((account) => (
+                <div key={account.id}>
+                    {account.authUrl && !account.user && (
+                        <Link href={account.authUrl}>
+                            <Button
+                                variant="outline"
+                                className={`mt-4 w-full ${account.buttonColor} ${account.hoverColor}`}
+                            >
+                                {account.name}
+                            </Button>
+                        </Link>
+                    )}
+                    {account.user && (
+                        <div className="mt-4 flex items-center space-x-4 justify-between">
+                            <div className="flex flex-col">
+                                <h2 className="text-xl font-bold">
+                                    {account.user.name}
+                                </h2>
+                                <p className="mt-2">
+                                    Logged In With {account.displayName}
+                                </p>
+                            </div>
+                            <ConfirmDialog
+                                triggerButton={
+                                    <Button
+                                        variant="outline"
+                                        className="mt-2 bg-red-500 hover:bg-red-400"
+                                    >
+                                        Logout {account.displayName}
+                                    </Button>
+                                }
+                                title="Confirm Logout"
+                                message={`Are you sure you want to logout from ${account.name}?`}
+                                confirmLabel="Logout"
+                                confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+                                cancelLabel="Cancel"
+                                onConfirm={() => handleSecondaryLogout(account)}
+                            />
+                        </div>
+                    )}
+                </div>
+            ))}
+        </>
+    );
 
     // If user data exists, display the user's name and user data, otherwise show the login dialog
     if (savedUsername) {
         return (
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon">
                         <User className="h-5 w-5" />
@@ -203,45 +277,7 @@ export default function LoginDialog() {
                                 {savedUsername}
                             </h2>
                             <p className="mt-2">Logged In With Manganato</p>
-
-                            {authUrl && !malUser && (
-                                <a href={authUrl}>
-                                    <Button
-                                        variant="outline"
-                                        className="mt-4 w-full bg-blue-600 hover:bg-blue-500"
-                                    >
-                                        MyAnimeList
-                                    </Button>
-                                </a>
-                            )}
-                            {malUser && (
-                                <div className="mt-4 flex items-center space-x-4 justify-between">
-                                    <div className="flex flex-col">
-                                        <h2 className="text-xl font-bold">
-                                            {malUser.name}
-                                        </h2>
-                                        <p className="mt-2">
-                                            Logged In With Mal
-                                        </p>
-                                    </div>
-                                    <ConfirmDialog
-                                        triggerButton={
-                                            <Button
-                                                variant="outline"
-                                                className="mt-2 bg-red-500 hover:bg-red-400"
-                                            >
-                                                Logout MAL
-                                            </Button>
-                                        }
-                                        title="Confirm Logout"
-                                        message="Are you sure you want to logout from myanimelist?"
-                                        confirmLabel="Logout"
-                                        confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
-                                        cancelLabel="Cancel"
-                                        onConfirm={handleMalLogout}
-                                    />
-                                </div>
-                            )}
+                            {renderSecondaryAccounts()}
                             {/* Logout Button */}
                             <ConfirmDialog
                                 triggerButton={
@@ -268,7 +304,15 @@ export default function LoginDialog() {
 
     // Show the login form if the user is not logged in
     return (
-        <Dialog onOpenChange={handleOpenChange}>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (isOpen) {
+                    fetchCaptcha();
+                }
+            }}
+        >
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <User className="h-5 w-5" />
@@ -352,6 +396,17 @@ export default function LoginDialog() {
                                 >
                                     Login
                                 </Button>
+
+                                {/* Register Link */}
+                                <div className="mt-2 text-center">
+                                    <Link
+                                        href="/register"
+                                        className="text-sm text-blue-500 hover:text-blue-400"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Don't have an account? Register here
+                                    </Link>
+                                </div>
 
                                 {/* Error Message */}
                                 {loginError && (
