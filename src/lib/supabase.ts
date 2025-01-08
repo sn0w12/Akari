@@ -161,9 +161,12 @@ export async function updateUserMangaProgress(
             .eq("manga_identifier", mangaIdentifier)
             .select();
 
-        if (error) {
-            console.error("Error updating user manga progress:", error);
-            return null;
+        if (error || !data || data.length === 0) {
+            return await saveUserMangaProgress(
+                userId,
+                mangaIdentifier,
+                lastChapter,
+            );
         }
 
         return data[0] as UserMangaProgress;
