@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBaseUrl } from "../../../../../baseUrl";
+import { getBaseUrl } from "@/app/api/baseUrl";
 import { getAccessToken } from "@/lib/accessToken";
 
 export async function GET(req: NextRequest) {
