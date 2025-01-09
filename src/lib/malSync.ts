@@ -1,6 +1,7 @@
 import db from "@/lib/db";
 import { HqMangaCacheItem, MalSync } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
+import { akariUrls } from "./consts";
 
 async function getHqData(malSyncData: MalSync) {
     let service;
@@ -26,10 +27,11 @@ export async function updateMalSync(
     identifier: string,
     data: HqMangaCacheItem,
 ) {
-    if (window.location.hostname === "localhost") {
-        console.log("Skipping MAL Sync update on localhost");
+    if (!akariUrls.includes(window.location.hostname)) {
+        console.log("Skipping MAL Sync update - unauthorized hostname");
         return null;
     }
+
     try {
         const response = await fetch("/api/manga/malsync/update", {
             method: "POST",
@@ -43,11 +45,11 @@ export async function updateMalSync(
         });
 
         if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            console.error(`API error: ${response.status}`);
+            return null;
         }
 
         const result = await response.json();
-        console.log(result);
         return result;
     } catch (error) {
         console.error("Error updating MAL Sync:", error);
