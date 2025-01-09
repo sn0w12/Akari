@@ -1,10 +1,9 @@
 import { Chapter, SimpleError } from "@/app/api/interfaces";
 import { HeaderComponent } from "@/components/Header";
 import Reader from "./ui/MangaReader/reader";
-import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import ErrorComponent from "./ui/error";
-import { getUserHeaders } from "@/lib/utils";
+import { getUserHeaders } from "@/lib/serverUtils";
 
 interface ChapterReaderProps {
     id: string;
