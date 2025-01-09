@@ -45,15 +45,23 @@ export async function GET() {
         });
 
         if (!response.ok) {
-            throw new Error(
+            console.error(
                 `Failed to fetch bookmark list: ${response.statusText}`,
+            );
+            return NextResponse.json(
+                { message: `Failed: ${response.statusText}` },
+                { status: 500 },
             );
         }
 
         const data = await response.json();
 
         if (data.result !== "ok") {
-            throw new Error(`API Error: ${data.data}`);
+            console.error(`API Error: ${data.data}`);
+            return NextResponse.json(
+                { message: `Failed: ${response.statusText}` },
+                { status: 500 },
+            );
         }
 
         const unreadBookmarks = data.data;

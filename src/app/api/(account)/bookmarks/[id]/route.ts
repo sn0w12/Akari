@@ -27,7 +27,8 @@ async function isMangaBookmarked(user_data: string, mangaId: string) {
         const data = await response.json();
 
         if (data.result !== "ok") {
-            throw new Error(`API Error: ${data.data}`);
+            console.error(`API Error: ${data.data}`);
+            return false;
         }
 
         const bookmarkedIds = data.data.split(","); // The list of bookmarked IDs
