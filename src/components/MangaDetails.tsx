@@ -17,6 +17,7 @@ import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
+import { getUserHeaders } from "@/lib/utils";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -56,7 +57,10 @@ const formatDate = (date: string) => {
 
 export async function getMangaData(id: string) {
     try {
-        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
+        const headersList = await getUserHeaders();
+        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`, {
+            headers: headersList,
+        });
 
         if (!response.ok) {
             throw new Error(
