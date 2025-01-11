@@ -9,6 +9,7 @@ import { syncAllServices } from "@/lib/sync";
 
 interface StripReaderProps {
     chapter: Chapter;
+    isFooterVisible: boolean;
     handleImageLoad: (
         e: React.SyntheticEvent<HTMLImageElement>,
         index: number,
@@ -18,10 +19,12 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
+    isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
 }: StripReaderProps) {
     const [scrollPercentage, setScrollPercentage] = useState(0);
+    const [distanceFromBottom, setDistanceFromBottom] = useState(1000);
     const bookmarkUpdatedRef = useRef(false);
     const router = useRouter();
     const hasPrefetchedRef = useRef(false);
@@ -33,9 +36,15 @@ export default function StripReader({
             const scrollHeight =
                 element.scrollHeight || document.body.scrollHeight;
             const clientHeight = element.clientHeight;
+
+            // Calculate percentage
             const percentage =
                 (scrollTop / (scrollHeight - clientHeight)) * 100;
             setScrollPercentage(Math.min(100, Math.max(0, percentage)));
+
+            // Calculate pixels from bottom
+            const bottomDistance = scrollHeight - (scrollTop + clientHeight);
+            setDistanceFromBottom(Math.max(0, bottomDistance));
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -63,7 +72,7 @@ export default function StripReader({
     }, [scrollPercentage, chapter]);
 
     return (
-        <div>
+        <div className={`${distanceFromBottom > 200 ? "mb-12" : ""}`}>
             <div
                 id="reader"
                 className="flex flex-col items-center bg-transparent"
@@ -82,10 +91,14 @@ export default function StripReader({
                     />
                 ))}
             </div>
-            <MangaFooter
-                chapterData={chapter}
-                toggleReaderMode={toggleReaderMode}
-            />
+            <div
+                className={`${distanceFromBottom > 200 ? "footer" : ""} ${isFooterVisible ? "footer-visible" : ""}`}
+            >
+                <MangaFooter
+                    chapterData={chapter}
+                    toggleReaderMode={toggleReaderMode}
+                />
+            </div>
         </div>
     );
 }
