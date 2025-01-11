@@ -7,6 +7,18 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
 
+// Add throttle function
+function throttle(this: any, func: Function, limit: number) {
+    let inThrottle: boolean;
+    return function (this: any, ...args: any[]) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+        }
+    };
+}
+
 interface StripReaderProps {
     chapter: Chapter;
     isFooterVisible: boolean;
@@ -30,7 +42,7 @@ export default function StripReader({
     const hasPrefetchedRef = useRef(false);
 
     useEffect(() => {
-        const handleScroll = () => {
+        const handleScroll = throttle(() => {
             const element = document.documentElement;
             const scrollTop = element.scrollTop || document.body.scrollTop;
             const scrollHeight =
@@ -45,13 +57,15 @@ export default function StripReader({
             // Calculate pixels from bottom
             const bottomDistance = scrollHeight - (scrollTop + clientHeight);
             setDistanceFromBottom(Math.max(0, bottomDistance));
-        };
+        }, 100); // Throttle to 100ms
 
         window.addEventListener("scroll", handleScroll);
         handleScroll(); // Initial calculation
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
+            bookmarkUpdatedRef.current = false;
+            hasPrefetchedRef.current = false;
         };
     }, []);
 
@@ -85,7 +99,7 @@ export default function StripReader({
                         width={700}
                         height={1080}
                         className="object-contain w-128 z-20 relative"
-                        loading="eager"
+                        loading={index < 3 ? "eager" : "lazy"} // Optimize image loading
                         priority={index < 3}
                         onLoad={(e) => handleImageLoad(e, index)}
                     />
