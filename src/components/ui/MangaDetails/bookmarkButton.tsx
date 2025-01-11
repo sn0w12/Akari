@@ -161,6 +161,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             } catch (error) {
                 console.error("Failed to bookmark:", error);
             }
+        } else {
+            new Toast("Failed to bookmark.", "error");
         }
     };
 
