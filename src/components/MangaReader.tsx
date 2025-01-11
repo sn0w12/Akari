@@ -1,9 +1,9 @@
 import { Chapter, SimpleError } from "@/app/api/interfaces";
 import { HeaderComponent } from "@/components/Header";
 import Reader from "./ui/MangaReader/reader";
-import { headers } from "next/headers";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import ErrorComponent from "./ui/error";
+import { getUserHeaders } from "@/lib/serverUtils";
 
 interface ChapterReaderProps {
     id: string;
@@ -11,27 +11,11 @@ interface ChapterReaderProps {
 }
 
 export async function fetchChapter(id: string, subId: string) {
-    let headersList: { [key: string]: string } = {};
-    try {
-        const headerEntries = Array.from((await headers()).entries());
-        headersList = headerEntries.reduce(
-            (acc: { [key: string]: string }, [key, value]) => {
-                acc[key] = value;
-                return acc;
-            },
-            {} as { [key: string]: string },
-        );
-    } catch (headerError) {
-        console.log("Could not get headers:", headerError);
-    }
-
+    const headersList = await getUserHeaders();
     const response = await fetch(
         `${getProductionUrl()}/api/manga/${id}/${subId}`,
         {
-            headers: {
-                "Content-Type": "application/json",
-                ...headersList,
-            },
+            headers: headersList,
         },
     );
     const data = await response.json();

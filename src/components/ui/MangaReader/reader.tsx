@@ -219,6 +219,7 @@ export default function Reader({ chapter }: ReaderProps) {
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
+                        isFooterVisible={isFooterVisible}
                         handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
                     />

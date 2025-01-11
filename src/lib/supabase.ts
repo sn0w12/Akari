@@ -1,21 +1,17 @@
 import { HqMangaCacheItem } from "@/app/api/interfaces";
 import { createClient } from "@supabase/supabase-js";
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
-}
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey);
-const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
-    : null;
+export const supabasePublic =
+    supabaseUrl && supabaseAnonKey
+        ? createClient(supabaseUrl, supabaseAnonKey)
+        : null;
+const supabaseAdmin =
+    process.env.SUPABASE_SERVICE_ROLE_KEY && supabaseUrl
+        ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+        : null;
 
 function transformMangaData(data: any): HqMangaCacheItem | null {
     if (!data) return null;
@@ -35,6 +31,11 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
 }
 
 export async function getMangaFromSupabase(identifier: string) {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized, skipping query");
+        return null;
+    }
+
     try {
         const { data, error } = await supabasePublic
             .from("manga")
@@ -57,6 +58,11 @@ export async function getMangaFromSupabase(identifier: string) {
 }
 
 export async function getMangaArrayFromSupabase(identifiers: string[]) {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized, skipping query");
+        return [];
+    }
+
     try {
         const { data, error } = await supabasePublic
             .from("manga")
@@ -79,9 +85,8 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
 
 export async function saveMangaToSupabase(identifier: string, mangaData: any) {
     if (!supabaseAdmin) {
-        throw new Error(
-            "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
-        );
+        console.warn("Supabase not initialized, skipping query");
+        return null;
     }
     const { data, error } = await supabaseAdmin
         .from("manga")
@@ -124,9 +129,8 @@ export async function saveUserMangaProgress(
     upToDate: boolean = false,
 ) {
     if (!supabaseAdmin) {
-        throw new Error(
-            "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
-        );
+        console.warn("Supabase not initialized, skipping query");
+        return null;
     }
 
     const { data, error } = await supabaseAdmin
@@ -155,9 +159,8 @@ export async function updateUserMangaProgress(
     upToDate: boolean = false,
 ) {
     if (!supabaseAdmin) {
-        throw new Error(
-            "SUPABASE_SERVICE_ROLE_KEY is required for this operation",
-        );
+        console.warn("Supabase not initialized, skipping query");
+        return null;
     }
 
     try {
@@ -177,7 +180,7 @@ export async function updateUserMangaProgress(
                 userId,
                 mangaIdentifier,
                 lastChapter,
-                upToDate
+                upToDate,
             );
         }
 
@@ -189,6 +192,11 @@ export async function updateUserMangaProgress(
 }
 
 export async function getUserManga(userId: string, mangaIdentifier: string) {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized, skipping query");
+        return null;
+    }
+
     try {
         const progressData = supabasePublic
             .from("user_manga_progress")
@@ -208,6 +216,11 @@ export async function getUserMangaArray(
     userId: string,
     identifiers?: string[],
 ) {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized, skipping query");
+        return [];
+    }
+
     try {
         let progressQuery = supabasePublic
             .from("user_manga_progress")
