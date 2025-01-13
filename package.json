@@ -42,7 +42,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-spinners": "^0.14.1",
-        "react-toastify": "^10.0.6",
+        "react-toastify": "^11.0.2",
         "tailwind-merge": "^2.5.5",
         "tailwindcss-animate": "^1.0.7",
         "tough-cookie": "^5.0.0",
