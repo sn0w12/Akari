@@ -51,7 +51,7 @@
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.15",
         "@types/js-cookie": "^3.0.6",
-        "@types/lodash": "^4.17.13",
+        "@types/lodash": "^4.17.14",
         "@types/node": "^22",
         "@types/react": "npm:types-react@19.0.0-rc.1",
         "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
