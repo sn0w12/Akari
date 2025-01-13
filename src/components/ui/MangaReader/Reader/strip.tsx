@@ -106,7 +106,7 @@ export default function StripReader({
                 ))}
             </div>
             <div
-                className={`${distanceFromBottom > 200 ? "footer" : "hidden"} ${isFooterVisible ? "footer-visible" : ""}`}
+                className={`footer ${isFooterVisible && distanceFromBottom > 200 ? "footer-visible" : ""}`}
             >
                 <MangaFooter
                     chapterData={chapter}
