@@ -38,7 +38,7 @@ export async function getMangaFromSupabase(identifier: string) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("manga")
+            .from("mal_data")
             .select("*")
             .eq("identifier", identifier)
             .single();
@@ -65,7 +65,7 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("manga")
+            .from("mal_data")
             .select("*")
             .in("identifier", identifiers);
 
@@ -89,7 +89,7 @@ export async function saveMangaToSupabase(identifier: string, mangaData: any) {
         return null;
     }
     const { data, error } = await supabaseAdmin
-        .from("manga")
+        .from("mal_data")
         .upsert([
             {
                 identifier,

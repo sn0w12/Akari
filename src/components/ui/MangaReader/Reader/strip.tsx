@@ -86,7 +86,7 @@ export default function StripReader({
     }, [scrollPercentage, chapter]);
 
     return (
-        <div className={`${distanceFromBottom > 200 ? "mb-12" : ""}`}>
+        <div>
             <div
                 id="reader"
                 className="flex flex-col items-center bg-transparent"
@@ -106,13 +106,17 @@ export default function StripReader({
                 ))}
             </div>
             <div
-                className={`${distanceFromBottom > 200 ? "footer" : ""} ${isFooterVisible ? "footer-visible" : ""}`}
+                className={`footer ${isFooterVisible && distanceFromBottom > 200 ? "footer-visible" : ""}`}
             >
                 <MangaFooter
                     chapterData={chapter}
                     toggleReaderMode={toggleReaderMode}
                 />
             </div>
+            <MangaFooter
+                chapterData={chapter}
+                toggleReaderMode={toggleReaderMode}
+            />
         </div>
     );
 }

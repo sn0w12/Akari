@@ -16,7 +16,7 @@ export default function MangaFooter({
 
     return (
         <div className="bg-background border-t border-border p-4">
-            <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
                         <a
@@ -42,10 +42,10 @@ export default function MangaFooter({
                             );
                             window.location.href = newUrl;
                         }}
-                        className="mt-2 mb-2 w-auto max-w-64"
+                        className="mt-2 mb-2 w-auto w-full sm:max-w-64 lg:max-w-96"
                     />
                 </div>
-                <div className="flex flex-col w-64 md:w-auto md:flex-row gap-4">
+                <div className="flex flex-col w-full sm:w-64 md:w-auto md:flex-row gap-4">
                     <div className="flex items-center gap-4">
                         <Button
                             className="inline-flex flex-grow items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent text-accent-foreground h-9 w-28 px-4 py-2"
