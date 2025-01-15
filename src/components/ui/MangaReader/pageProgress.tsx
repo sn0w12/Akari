@@ -23,6 +23,7 @@ export default function PageProgress({
     const [mounted, setMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(getSetting("showPageProgress"));
     const [windowWidth, setWindowWidth] = useState(0);
+    const [footerHeight, setFooterHeight] = useState(0);
 
     useEffect(() => {
         setMounted(true);
@@ -38,6 +39,22 @@ export default function PageProgress({
 
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        const updateFooterHeight = () => {
+            const footer = document.querySelector(".footer");
+            setFooterHeight(footer?.clientHeight ?? 0);
+        };
+
+        updateFooterHeight();
+        const resizeObserver = new ResizeObserver(updateFooterHeight);
+        const footer = document.querySelector(".footer");
+        if (footer) {
+            resizeObserver.observe(footer);
+        }
+
+        return () => resizeObserver.disconnect();
     }, []);
 
     // Listen for settings changes
@@ -59,11 +76,8 @@ export default function PageProgress({
             return "1rem";
         }
 
-        if (typeof window !== "undefined" && windowWidth <= 650) {
-            return "12rem";
-        } else {
-            return "8rem";
-        }
+        const baseOffset = footerHeight + 16; // 16px (1rem) padding
+        return `${baseOffset}px`;
     }
 
     useEffect(() => {
