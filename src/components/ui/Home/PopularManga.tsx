@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SmallManga } from "@/app/api/interfaces";
 import { MangaCard } from "./MangaCard";
@@ -11,8 +11,29 @@ interface PopularMangaProps {
 
 export function PopularManga({ mangas }: PopularMangaProps) {
     const [currentPopularPage, setCurrentPopularPage] = useState(1);
-    const itemsPerPage = 12;
+    const [itemsPerPage, setItemsPerPage] = useState(12);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setItemsPerPage(window.innerWidth < 640 ? 6 : 12);
+        };
+
+        handleResize(); // Set initial value
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const totalPopularPages = Math.ceil(mangas.length / itemsPerPage);
+
+    // Reset to page 1 when itemsPerPage changes
+    useEffect(() => {
+        setCurrentPopularPage(1);
+    }, [itemsPerPage]);
+
+    const paginatedPopularList = mangas.slice(
+        (currentPopularPage - 1) * itemsPerPage,
+        currentPopularPage * itemsPerPage,
+    );
 
     const handlePopularPreviousPage = () => {
         if (currentPopularPage > 1) {
@@ -25,11 +46,6 @@ export function PopularManga({ mangas }: PopularMangaProps) {
             setCurrentPopularPage(currentPopularPage + 1);
         }
     };
-
-    const paginatedPopularList = mangas.slice(
-        (currentPopularPage - 1) * itemsPerPage,
-        currentPopularPage * itemsPerPage,
-    );
 
     return (
         <div>
