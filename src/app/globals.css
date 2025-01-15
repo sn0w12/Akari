@@ -115,11 +115,13 @@ input:-webkit-autofill:active {
         bottom 0.3s ease,
         opacity 0.3s ease; /* Smooth scroll effect */
     z-index: 1000;
+    pointer-events: none;
 }
 
 .footer-visible {
     bottom: 0; /* Slide it into view */
     opacity: 1;
+    pointer-events: auto;
 }
 
 .manga-title {

@@ -87,14 +87,12 @@ export default function PageReader({
         const isLastPage = currentPage === chapter.images.length - 1;
         const nextChapterParts = chapter.nextChapter.split("/");
 
-        if (currentPage < chapter.images.length - 1) {
-            setPageWithUrlUpdate(currentPage + 1);
-        } else if (isLastPage) {
-            if (nextChapterParts.length === 2) {
-                router.push(`/manga/${chapter.nextChapter}`);
-            }
-            setPageWithUrlUpdate(currentPage + 1);
+        if (isLastPage && nextChapterParts.length === 2) {
+            router.push(`/manga/${chapter.nextChapter}`);
+            return;
         }
+
+        setPageWithUrlUpdate(currentPage + 1);
     }, [chapter, currentPage, router, isFooterVisible]);
 
     const prevPage = useCallback(() => {
