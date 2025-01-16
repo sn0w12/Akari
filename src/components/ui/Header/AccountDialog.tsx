@@ -19,6 +19,7 @@ import db from "@/lib/db";
 import { Skeleton } from "../skeleton";
 import { generateMalAuth } from "@/lib/secondaryAccounts";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export interface SecondaryAccount {
     id: string;
@@ -61,17 +62,18 @@ export default function LoginDialog() {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const hasAccountParam = params.get("account") === "true";
+        const hasAccountParam = searchParams.get("account") === "true";
         if (hasAccountParam) {
             fetchCaptcha();
             setTimeout(() => {
                 setOpen(true);
             }, 500);
         }
-    }, [window.location.href]);
+    }, [pathname, searchParams]);
 
     useEffect(() => {
         const accountName = localStorage.getItem("accountName");
