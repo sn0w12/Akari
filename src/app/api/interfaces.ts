@@ -40,6 +40,39 @@ export interface MangaDetails {
     malData: HqMangaCacheItem | null;
 }
 
+export interface NewManga {
+    id: string;
+    mangaId: string;
+    storyData: string;
+    imageUrl: string;
+    titles: { [type: string]: string };
+    authors: { name: string; url: string }[];
+    genres: string[];
+    status: string;
+    views: string;
+    score: number;
+    description: string;
+    chapters: NewChapter[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface NewChapter {
+    id: string;
+    storyData: string;
+    chapterData: string;
+    title: string;
+    chapter: string;
+    images: string[];
+    chapters: { id: string; title: string }[];
+    nextChapter: string;
+    previousChapter: string;
+    parentId: string;
+    parentTitle: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface SmallManga {
     id: string;
     image: string;
