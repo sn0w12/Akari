@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function Footer() {
     return (
         <footer className="border-t">
-            <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                <div className="md:flex md:items-center md:justify-between">
+            <div className="mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-2">
                     <div className="flex justify-center md:order-2 space-x-6">
                         <Link
                             href="/about"
@@ -76,18 +76,26 @@ export default function Footer() {
                             <span className="sr-only">Report an issue</span>
                         </Link>
                     </div>
-                    <div className="mt-8 md:mt-0 md:order-1">
+                    <div>
                         <p className="text-center text-base text-gray-400">
-                            &copy; {new Date().getFullYear()} Akari. Licensed
-                            under the AGPL-3.0 License.
+                            &copy; {new Date().getFullYear()} Akari.{" "}
+                            <Link
+                                href={
+                                    "https://www.gnu.org/licenses/agpl-3.0.html"
+                                }
+                                className="text-gray-400 hover:text-gray-500"
+                                prefetch={false}
+                            >
+                                AGPL-3.0.
+                            </Link>
                         </p>
                     </div>
-                </div>
-                <div className="mt-8 text-center text-sm text-gray-400">
-                    <p>
-                        Content sourced from Manganato. Not affiliated with
-                        Manganato.
-                    </p>
+                    <div className="text-center text-sm text-gray-400">
+                        <p>
+                            Content sourced from Manganato. Not affiliated with
+                            Manganato.
+                        </p>
+                    </div>
                 </div>
             </div>
         </footer>
