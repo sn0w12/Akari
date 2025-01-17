@@ -26,9 +26,11 @@ export const generalSettings = {
     label: "General",
     fetchMalImage: {
         label: "Fetch MAL Data",
-        description: "Slows down first load on manga detail pages.",
+        description:
+            "Updates the Akari database with better images and other info.",
         type: "checkbox",
         default: true,
+        deploymentOnly: true,
     },
     fancyAnimations: {
         label: "Fancy Animations",
