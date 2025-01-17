@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Head from "next/head";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import localFont from "next/font/local";
+import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import { ToastContainer } from "react-toastify";
 import { HeaderComponent } from "@/components/Header";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
+import { CookieConsent } from "@/components/ui/cookieConsent";
 import "@/app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -33,8 +33,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <Head>
-                <Analytics />
-                <SpeedInsights />
+                <AnalyticsWrapper />
             </Head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -48,6 +47,7 @@ export default function RootLayout({
                     <HeaderComponent />
                     {children}
                     <ToastContainer />
+                    <CookieConsent />
                     <Footer />
                 </ThemeProvider>
             </body>

@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/Header/Settings";
 import React from "react";
 import db from "./db";
+import { setCookie } from "./cookies";
 
 let settingsVersion = 0;
 export const useSettingsVersion = () =>
@@ -51,7 +52,7 @@ export const mangaSettings = {
         ],
         default: "1",
         onChange: (value: string) => {
-            document.cookie = `manga_server=${value}; max-age=31556926`;
+            setCookie("manga_server", value, "functional");
             if (window.location.pathname.includes("/chapter")) {
                 window.location.reload();
             }

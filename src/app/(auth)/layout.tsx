@@ -1,5 +1,4 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -25,8 +24,7 @@ export default function MangaReaderLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                <Analytics />
-                <SpeedInsights />
+                <AnalyticsWrapper />
             </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}

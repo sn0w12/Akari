@@ -1,8 +1,9 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import Head from "next/head";
+import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { CookieConsent } from "@/components/ui/cookieConsent";
 import "@/app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -24,10 +25,9 @@ export default function MangaReaderLayout({
 }>) {
     return (
         <html lang="en">
-            <head>
-                <Analytics />
-                <SpeedInsights />
-            </head>
+            <Head>
+                <AnalyticsWrapper />
+            </Head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
@@ -39,6 +39,7 @@ export default function MangaReaderLayout({
                 >
                     {children}
                     <ToastContainer />
+                    <CookieConsent />
                 </ThemeProvider>
             </body>
         </html>
