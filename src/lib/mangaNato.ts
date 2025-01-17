@@ -2,7 +2,9 @@ import { SmallManga } from "@/app/api/interfaces";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { getMangaArrayFromSupabase } from "./supabase";
 
-export function getUserData(cookieStore: ReadonlyRequestCookies) {
+export function getUserData(
+    cookieStore: ReadonlyRequestCookies,
+): string | null {
     const userAccCookie = cookieStore.get("user_acc")?.value || "{}";
     const userAcc = JSON.parse(userAccCookie);
 
