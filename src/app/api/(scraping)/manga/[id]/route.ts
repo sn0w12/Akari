@@ -3,12 +3,9 @@ import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
-import NodeCache from "node-cache";
 import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
-
-const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
 
 export async function GET(
     req: Request,
@@ -18,18 +15,6 @@ export async function GET(
     const id = params.id;
     const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
-    const cacheKey = `mangaDetails_${id}`;
-
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-        return new Response(JSON.stringify(cachedData), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                ...generateCacheHeaders(300),
-            },
-        });
-    }
 
     try {
         const jar = new CookieJar();
@@ -227,9 +212,6 @@ export async function GET(
                     removeSourcePattern,
                     "",
                 );
-        }
-        if (mangaDetails.storyData) {
-            cache.set(cacheKey, mangaDetails);
         }
 
         return new Response(JSON.stringify(mangaDetails), {
