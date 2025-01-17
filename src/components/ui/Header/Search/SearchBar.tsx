@@ -16,6 +16,7 @@ export default function SearchBar() {
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,6 +48,7 @@ export default function SearchBar() {
     };
 
     const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(false);
         if (
             popupRef.current &&
             !popupRef.current.contains(e.relatedTarget as Node)
@@ -63,7 +65,11 @@ export default function SearchBar() {
     };
 
     return (
-        <div className="relative xl:w-128 lg:w-96 lg:grow-0 ml-6 w-auto flex-grow">
+        <div
+            className={`relative transition-all w-auto flex-grow ml-6 lg:grow-0 lg:w-96 xl:w-128 ${
+                isFocused ? "xl:w-[40rem] lg:w-128" : ""
+            }`}
+        >
             <div className="flex gap-2">
                 <Input
                     type="search"
@@ -72,9 +78,10 @@ export default function SearchBar() {
                     onChange={handleSearchInputChange}
                     onBlur={handleInputBlur}
                     onKeyDown={handleKeyDown}
-                    onFocus={() =>
-                        searchResults.length > 0 && setShowPopup(true)
-                    }
+                    onFocus={() => {
+                        setIsFocused(true);
+                        searchResults.length > 0 && setShowPopup(true);
+                    }}
                     className="w-full hidden sm:block"
                 />
             </div>
