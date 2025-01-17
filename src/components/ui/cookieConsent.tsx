@@ -10,17 +10,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
+import { useEffect, useState } from "react";
 
 export function CookieConsent() {
     const { consent, setConsent, hasInteracted, setInteracted } =
         useCookieConsent();
+    const [isLocal, setIsLocal] = useState(false);
 
-    if (
-        process.env.NODE_ENV === "development" ||
-        hasInteracted ||
-        window.location.hostname === "localhost"
-    )
-        return null;
+    useEffect(() => {
+        setIsLocal(
+            window.location.hostname === "localhost" ||
+                process.env.NODE_ENV === "development",
+        );
+    }, []);
+
+    if (isLocal || hasInteracted) return null;
 
     const handleAcceptAll = () => {
         setConsent("necessary", true);
