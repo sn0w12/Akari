@@ -73,8 +73,8 @@ export default function SearchButton() {
                     {isSearchLoading ? (
                         <CenteredSpinner />
                     ) : searchResults.length > 0 ? (
-                        searchResults.map((result: SmallManga) => (
-                            <>
+                        <>
+                            {searchResults.map((result: SmallManga) => (
                                 <Link
                                     href={`/manga/${result.id}`}
                                     key={result.id}
@@ -91,15 +91,15 @@ export default function SearchButton() {
                                     />
                                     {result.title}
                                 </Link>
-                                <Link
-                                    href={`/search?q=${encodeURIComponent(searchText)}`}
-                                    className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
-                                    onClick={() => setOpen(false)}
-                                >
-                                    View all results
-                                </Link>
-                            </>
-                        ))
+                            ))}
+                            <Link
+                                href={`/search?q=${encodeURIComponent(searchText)}`}
+                                className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
+                                onClick={() => setOpen(false)}
+                            >
+                                View all results
+                            </Link>
+                        </>
                     ) : (
                         <div className="text-center text-muted-foreground p-4">
                             No Results
