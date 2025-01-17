@@ -74,22 +74,31 @@ export default function SearchButton() {
                         <CenteredSpinner />
                     ) : searchResults.length > 0 ? (
                         searchResults.map((result: SmallManga) => (
-                            <Link
-                                href={`/manga/${result.id}`}
-                                key={result.id}
-                                onClick={() => setOpen(false)}
-                                className="block p-2 hover:bg-accent flex items-center rounded-lg border"
-                                prefetch={true}
-                            >
-                                <Image
-                                    src={result.image}
-                                    alt={result.title}
-                                    className="max-h-24 w-auto rounded mr-2"
-                                    height={100}
-                                    width={70}
-                                />
-                                {result.title}
-                            </Link>
+                            <>
+                                <Link
+                                    href={`/manga/${result.id}`}
+                                    key={result.id}
+                                    onClick={() => setOpen(false)}
+                                    className="block p-2 hover:bg-accent flex items-center rounded-lg border"
+                                    prefetch={true}
+                                >
+                                    <Image
+                                        src={result.image}
+                                        alt={result.title}
+                                        className="max-h-24 w-auto rounded mr-2"
+                                        height={100}
+                                        width={70}
+                                    />
+                                    {result.title}
+                                </Link>
+                                <Link
+                                    href={`/search?q=${encodeURIComponent(searchText)}`}
+                                    className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
+                                    onClick={() => setOpen(false)}
+                                >
+                                    View all results
+                                </Link>
+                            </>
                         ))
                     ) : (
                         <div className="text-center text-muted-foreground p-4">

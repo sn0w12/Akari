@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
@@ -11,6 +12,7 @@ import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
 
 export default function SearchBar() {
+    const router = useRouter();
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -53,17 +55,29 @@ export default function SearchBar() {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            router.push(`/search?q=${encodeURIComponent(searchText)}`);
+            setShowPopup(false);
+        }
+    };
+
     return (
         <div className="relative xl:w-128 lg:w-96 lg:grow-0 ml-6 w-auto flex-grow">
-            <Input
-                type="search"
-                placeholder="Search manga..."
-                value={searchText}
-                onChange={handleSearchInputChange}
-                onBlur={handleInputBlur}
-                onFocus={() => searchResults.length > 0 && setShowPopup(true)}
-                className="w-full hidden sm:block"
-            />
+            <div className="flex gap-2">
+                <Input
+                    type="search"
+                    placeholder="Search manga..."
+                    value={searchText}
+                    onChange={handleSearchInputChange}
+                    onBlur={handleInputBlur}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() =>
+                        searchResults.length > 0 && setShowPopup(true)
+                    }
+                    className="w-full hidden sm:block"
+                />
+            </div>
             {showPopup && (
                 <Card
                     ref={popupRef}
@@ -73,24 +87,33 @@ export default function SearchBar() {
                         {isSearchLoading ? (
                             <CenteredSpinner />
                         ) : searchResults.length > 0 ? (
-                            searchResults.map((result: SmallManga) => (
+                            <>
+                                {searchResults.map((result: SmallManga) => (
+                                    <Link
+                                        href={`/manga/${result.id}`}
+                                        key={result.id}
+                                        onClick={() => setShowPopup(false)}
+                                        className="block p-2 hover:bg-accent flex items-center rounded-lg"
+                                        prefetch={true}
+                                    >
+                                        <Image
+                                            src={result.image}
+                                            alt={result.title}
+                                            className="max-h-24 w-auto rounded mr-2"
+                                            height={100}
+                                            width={70}
+                                        />
+                                        {result.title}
+                                    </Link>
+                                ))}
                                 <Link
-                                    href={`/manga/${result.id}`}
-                                    key={result.id}
+                                    href={`/search?q=${encodeURIComponent(searchText)}`}
+                                    className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
                                     onClick={() => setShowPopup(false)}
-                                    className="block p-2 hover:bg-accent flex items-center rounded-lg"
-                                    prefetch={true}
                                 >
-                                    <Image
-                                        src={result.image}
-                                        alt={result.title}
-                                        className="max-h-24 w-auto rounded mr-2"
-                                        height={100}
-                                        width={70}
-                                    />
-                                    {result.title}
+                                    View all results
                                 </Link>
-                            ))
+                            </>
                         ) : (
                             <div className="text-center text-muted-foreground p-4">
                                 No Results

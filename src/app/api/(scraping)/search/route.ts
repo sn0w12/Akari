@@ -11,9 +11,24 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(req.url);
-        const query: string = searchParams.get("search") || ""; // Get search query
+        const query: string = searchParams.get("query") || "";
+        const included: string = searchParams.get("included") || "";
+        const excluded: string = searchParams.get("excluded") || "";
         const page: string = searchParams.get("page") || "1";
-        const cacheKey = `search_${query}_${page}`;
+        const cacheKey = `search_${query}_${included}_${excluded}_${page}`;
+
+        function getGenreString(genres: string) {
+            if (!genres) return "";
+
+            return (
+                "_" +
+                genres
+                    .split(",")
+                    .map((genre) => genre.trim())
+                    .join("_") +
+                "_"
+            );
+        }
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
@@ -24,24 +39,25 @@ export async function GET(req: Request): Promise<Response> {
         }
 
         // Construct the URL with the page number
-        const url = `https://manganato.com/search/story/${query}?page=${page}`;
+        const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
+        const totalPages = $(".page-last").text().match(/\d+/)?.[0] || "1";
 
         let mangaList: SmallManga[] = [];
-
         // Scrape the manga list from the website
-        $(".search-story-item").each((index, element) => {
+        $(".content-genres-item").each((index, element) => {
             const mangaElement = $(element);
             const imageUrl = mangaElement.find("img.img-loading").attr("src");
-            const titleElement = mangaElement.find("h3 a.item-title");
+            const titleElement = mangaElement.find("h3 a.genres-item-name");
             const title = titleElement.text();
             const mangaUrl = titleElement.attr("href");
-            const chapterElement = mangaElement.find("a.item-chapter").first();
+            const chapterElement = mangaElement
+                .find("a.genres-item-chap")
+                .first();
             const latestChapter = chapterElement.text();
             const chapterUrl = chapterElement.attr("href");
-            const rating = mangaElement.find("em.item-rate").text();
-            const author = mangaElement.find(".item-author").text();
+            const author = mangaElement.find(".genres-item-author").text();
 
             let views: string = "";
 
@@ -49,26 +65,13 @@ export async function GET(req: Request): Promise<Response> {
                 if (i === 0) views = $(timeElement).text();
             });
 
-            if (
-                !imageUrl ||
-                !title ||
-                !mangaUrl ||
-                !latestChapter ||
-                !chapterUrl ||
-                !rating ||
-                !author ||
-                !views
-            ) {
-                return;
-            }
-
             mangaList.push({
                 id: mangaUrl?.split("/").pop() || "",
-                image: imageUrl,
+                image: imageUrl || "",
                 title: title,
                 chapter: latestChapter,
-                chapterUrl: chapterUrl,
-                rating: rating,
+                chapterUrl: chapterUrl || "",
+                rating: "0",
                 author: author,
                 views: views,
                 description: "",
@@ -82,14 +85,20 @@ export async function GET(req: Request): Promise<Response> {
             threshold: 0.6,
         });
 
-        const searchResults = fuse.search(query.replace("_", " "));
-        mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
+        if (query !== "") {
+            const searchResults = fuse.search(query.replace("_", " "));
+            mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
+        }
         await replaceImages(mangaList);
         cache.set(cacheKey, mangaList);
 
         return new Response(
             JSON.stringify({
                 mangaList,
+                metaData: {
+                    totalStories: mangaList.length,
+                    totalPages: totalPages,
+                },
             }),
             {
                 status: 200,
