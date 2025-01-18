@@ -16,6 +16,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
+import { SideBar } from "./SideBar";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -102,14 +103,14 @@ export function HeaderComponent() {
                             </TooltipProvider>
                         )}
 
-                        {/* Settings Dialog */}
-                        <SettingsDialog />
-
                         {/* Theme Handler */}
                         <ThemeSetting />
 
                         {/* Account Information Dialog */}
                         <LoginDialog />
+
+                        {/* Sidebar */}
+                        <SideBar />
                     </div>
                 </div>
             </div>

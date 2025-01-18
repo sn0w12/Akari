@@ -3,7 +3,12 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import SettingsForm from "./Settings";
 import {
     dispatchSettingsChange,
@@ -77,8 +82,13 @@ export default function SettingsDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-full flex items-center gap-2 px-6 py-4"
+                >
                     <Settings className="h-5 w-5" />
+                    <span className="text-lg font-medium">Settings</span>
                 </Button>
             </DialogTrigger>
             <DialogContent>
