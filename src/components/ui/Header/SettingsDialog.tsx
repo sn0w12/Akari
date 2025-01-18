@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -35,16 +35,22 @@ const useSettings = () => {
                         ? newSettings(prevSettings)
                         : newSettings;
 
-                // Dispatch events for each changed setting
-                Object.keys(nextSettings).forEach((key) => {
-                    const typedKey = key as keyof SettingsInterface;
-                    const newValue = nextSettings[typedKey];
-                    const oldValue = prevSettings[typedKey];
+                // Defer events to next tick to avoid render-time updates
+                setTimeout(() => {
+                    Object.keys(nextSettings).forEach((key) => {
+                        const typedKey = key as keyof SettingsInterface;
+                        const newValue = nextSettings[typedKey];
+                        const oldValue = prevSettings[typedKey];
 
-                    if (oldValue !== newValue) {
-                        dispatchSettingsChange(typedKey, newValue, oldValue);
-                    }
-                });
+                        if (oldValue !== newValue) {
+                            dispatchSettingsChange(
+                                typedKey,
+                                newValue,
+                                oldValue,
+                            );
+                        }
+                    });
+                }, 0);
 
                 return nextSettings;
             });
@@ -63,7 +69,10 @@ const useSettings = () => {
 
 export default function SettingsDialog() {
     const { settings, setSettings } = useSettings();
-    const settingsMap = createAllSettingsMaps(settings, setSettings);
+    const settingsMap = useMemo(
+        () => createAllSettingsMaps(settings, setSettings),
+        [settings, setSettings],
+    );
 
     return (
         <Dialog>

@@ -6,7 +6,6 @@ import { Bookmark } from "lucide-react";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsDialog from "./ui/Header/SettingsDialog";
-import ThemeToggle from "./ui/Header/ThemeToggle";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
@@ -16,6 +15,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ThemeSetting } from "./ui/Header/ThemeSettings";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -108,8 +108,8 @@ export function HeaderComponent() {
                         {/* Settings Dialog */}
                         <SettingsDialog />
 
-                        {/* Theme Toggle Button */}
-                        <ThemeToggle />
+                        {/* Theme Handler */}
+                        <ThemeSetting />
                     </div>
                 </div>
             </div>

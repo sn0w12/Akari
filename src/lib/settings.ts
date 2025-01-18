@@ -25,6 +25,16 @@ export type SettingsInterface = {
 
 export const generalSettings = {
     label: "General",
+    theme: {
+        label: "Theme",
+        type: "select",
+        options: [
+            { label: "Light", value: "light" },
+            { label: "Dark", value: "dark" },
+            { label: "System", value: "system" },
+        ],
+        default: "system",
+    },
     fetchMalImage: {
         label: "Fetch MAL Data",
         description:
@@ -168,33 +178,40 @@ export function dispatchSettingsChange<T extends SettingValue>(
         window.dispatchEvent(event);
     }
 }
+
 /**
  * A React hook that listens for settings change events.
  *
- * This hook subscribes to custom settings change events and calls the provided callback
- * when settings are modified. It automatically handles cleanup by removing the event
- * listener when the component unmounts.
- *
- * @param callback - The function to be called when settings change. Receives a CustomEvent
- * containing the settings change details.
+ * @param callback - The function to be called when settings change
+ * @param watchKey - Optional key to only listen for changes to a specific setting
  *
  * @example
  * ```tsx
+ * // Watch all settings changes
  * useSettingsChange((event) => {
  *   console.log('Settings changed:', event.detail);
  * });
+ *
+ * // Watch only theme changes
+ * useSettingsChange((event) => {
+ *   console.log('Theme changed:', event.detail.value);
+ * }, 'theme');
  * ```
  */
 export function useSettingsChange(
     callback: (event: CustomEvent<SettingsChangeEvent>) => void,
+    watchKey?: keyof SettingsInterface,
 ) {
     React.useEffect(() => {
         const handler = (event: Event) => {
-            callback(event as CustomEvent<SettingsChangeEvent>);
+            const settingsEvent = event as CustomEvent<SettingsChangeEvent>;
+            if (!watchKey || settingsEvent.detail.key === watchKey) {
+                callback(settingsEvent);
+            }
         };
         window.addEventListener(SETTINGS_CHANGE_EVENT, handler);
         return () => window.removeEventListener(SETTINGS_CHANGE_EVENT, handler);
-    }, [callback]);
+    }, [callback, watchKey]);
 }
 
 /**
