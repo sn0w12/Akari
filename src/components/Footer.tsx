@@ -5,6 +5,7 @@ import {
     TooltipContent,
     TooltipProvider,
 } from "./ui/tooltip";
+import { CookieConsentFooter } from "./ui/cookieConsent";
 
 export default function Footer() {
     return (
@@ -33,6 +34,7 @@ export default function Footer() {
                         >
                             Terms
                         </Link>
+                        <CookieConsentFooter />
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
