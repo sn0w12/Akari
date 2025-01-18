@@ -1,6 +1,14 @@
 "use client";
 
-import { Menu, Search, List, Home, TrendingUp, LampDesk } from "lucide-react";
+import {
+    Menu,
+    Search,
+    List,
+    Home,
+    TrendingUp,
+    LampDesk,
+    Bookmark,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
@@ -14,6 +22,26 @@ import {
 } from "./ui/accordion";
 import SettingsDialog from "./ui/Header/SettingsDialog";
 import LoginDialog from "./ui/Header/AccountDialog";
+
+function SideBarLink({
+    href,
+    text,
+    icon,
+}: {
+    href: string;
+    text: string;
+    icon: any;
+}) {
+    return (
+        <Link
+            href={href}
+            className="flex items-center gap-3 px-3 py-3 border rounded-lg hover:bg-accent/50 transition-colors duration-200"
+        >
+            {icon}
+            <span className="text-base font-medium">{text}</span>
+        </Link>
+    );
+}
 
 export function SideBar() {
     return (
@@ -40,24 +68,21 @@ export function SideBar() {
                     {/* Navigation */}
                     <ScrollArea className="flex-1 p-4">
                         <div className="flex flex-col gap-2">
-                            <Link
+                            <SideBarLink
                                 href="/"
-                                className="flex items-center gap-3 px-3 py-3 border rounded-lg hover:bg-accent/50 transition-colors duration-200"
-                            >
-                                <Home className="h-5 w-5" />
-                                <span className="text-base font-medium">
-                                    Home
-                                </span>
-                            </Link>
-                            <Link
+                                text="Home"
+                                icon={<Home className="h-5 w-5" />}
+                            />
+                            <SideBarLink
+                                href="/bookmarks"
+                                text="Bookmarks"
+                                icon={<Bookmark className="h-5 w-5" />}
+                            />
+                            <SideBarLink
                                 href="/search"
-                                className="flex items-center gap-3 px-3 py-3 border rounded-lg hover:bg-accent/50 transition-colors duration-200"
-                            >
-                                <Search className="h-5 w-5" />
-                                <span className="text-base font-medium">
-                                    Advanced Search
-                                </span>
-                            </Link>
+                                text="Advanced Search"
+                                icon={<Search className="h-5 w-5" />}
+                            />
                             <Accordion type="multiple" className="w-full">
                                 <AccordionItem
                                     value="genres"
@@ -112,15 +137,11 @@ export function SideBar() {
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
-                            <Link
+                            <SideBarLink
                                 href="/popular"
-                                className="flex items-center gap-3 px-3 py-3 border rounded-lg hover:bg-accent/50 transition-colors duration-200"
-                            >
-                                <TrendingUp className="h-5 w-5" />
-                                <span className="text-base font-medium">
-                                    Popular Manga
-                                </span>
-                            </Link>
+                                text="Popular Manga"
+                                icon={<TrendingUp className="h-5 w-5" />}
+                            />
                         </div>
                     </ScrollArea>
 
