@@ -66,6 +66,7 @@ function CookieConsentBody({
                     </div>
                     <Switch
                         checked={consent.analytics}
+                        disabled={window.location.hostname === "localhost"}
                         onCheckedChange={(checked) =>
                             setConsent("analytics", checked)
                         }
