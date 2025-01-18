@@ -53,11 +53,11 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## General
 
-| Setting          | Default | Description                                                                             |
-| ---------------- | ------- | --------------------------------------------------------------------------------------- |
-| Theme            | System  | Choose between Light, Dark, or System color theme                                       |
-| Fetch MAL Data ⊕ | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database |
-| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                      |
+| Setting          | Default | Description                                                                                                                                                |
+| ---------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme            | System  | Choose between Light, Dark, or System color theme                                                                                                          |
+| Fetch MAL Data ⊕ | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database, this helps improve akari both locally and on the official website |
+| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                                                                                         |
 
 ## Manga
 
