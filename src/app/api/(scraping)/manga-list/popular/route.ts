@@ -1,6 +1,6 @@
 import NodeCache from "node-cache";
 import { generateCacheHeaders } from "@/lib/cache";
-import { processMangaList } from "../latest/route";
+import { processMangaList } from "@/lib/mangaNato";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
