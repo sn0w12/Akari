@@ -136,6 +136,7 @@ export default function BookmarksHeader({
                             className={
                                 "w-auto md:h-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500"
                             }
+                            disabled={sessionStorage.getItem("mal") !== "true"}
                         >
                             Sync Bookmarks
                         </Button>
