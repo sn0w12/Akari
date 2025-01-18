@@ -199,12 +199,6 @@ export function CookieConsentFooter() {
                     </DialogHeader>
                     <CookieConsentBody />
                     <div className="flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => setOpen(false)}
-                        >
-                            Close
-                        </Button>
                         <Button onClick={() => setOpen(false)}>
                             Save Changes
                         </Button>
