@@ -23,3 +23,27 @@ export const setCookie = (
     document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
     return true;
 };
+
+export function getServerCookieConsent(cookieStore: {
+    get: (arg0: string) => any;
+}): CookieConsent {
+    const consentCookie = cookieStore.get("cookie-consent");
+
+    if (!consentCookie) {
+        return {
+            necessary: true,
+            functional: false,
+            analytics: false,
+        };
+    }
+
+    return JSON.parse(consentCookie.value);
+}
+
+export function hasConsentFor(
+    cookieStore: { get: (arg0: string) => any },
+    category: keyof CookieConsent,
+): boolean {
+    const consent = getServerCookieConsent(cookieStore);
+    return category === "necessary" || consent[category];
+}

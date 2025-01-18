@@ -18,10 +18,16 @@ export const useCookieConsent = create<CookieStore>()(
                 analytics: false,
             },
             hasInteracted: false,
-            setConsent: (category, value) =>
-                set((state) => ({
-                    consent: { ...state.consent, [category]: value },
-                })),
+            setConsent: (category, value) => {
+                set((state) => {
+                    const newConsent = {
+                        ...state.consent,
+                        [category]: value,
+                    };
+                    document.cookie = `cookie-consent=${JSON.stringify(newConsent)};path=/;max-age=31536000`;
+                    return { consent: newConsent };
+                });
+            },
             setInteracted: () => set({ hasInteracted: true }),
         }),
         { name: "cookie-consent" },

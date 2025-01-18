@@ -6,6 +6,7 @@ import { Chapter } from "@/app/api/interfaces";
 import { badImages } from "@/lib/badImages";
 import { generateCacheHeaders } from "@/lib/cache";
 import { getErrorMessage } from "@/lib/utils";
+import { hasConsentFor } from "@/lib/cookies";
 
 export async function GET(
     req: Request,
@@ -158,10 +159,12 @@ export async function GET(
                 ...generateCacheHeaders(300),
             },
         });
-        mangaResponse.cookies.set("manga_server", server, {
-            maxAge: 31536000,
-            path: "/",
-        });
+        if (hasConsentFor(cookieStore, "functional")) {
+            mangaResponse.cookies.set("manga_server", server, {
+                maxAge: 31536000,
+                path: "/",
+            });
+        }
 
         return mangaResponse;
     } catch (error: unknown) {

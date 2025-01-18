@@ -10,21 +10,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function CookieConsent() {
     const { consent, setConsent, hasInteracted, setInteracted } =
         useCookieConsent();
-    const [isLocal, setIsLocal] = useState(false);
 
     useEffect(() => {
-        setIsLocal(
+        const isLocalEnv =
             window.location.hostname === "localhost" ||
-                process.env.NODE_ENV === "development",
-        );
-    }, []);
+            process.env.NODE_ENV === "development";
 
-    if (isLocal || hasInteracted) return null;
+        if (isLocalEnv && !hasInteracted) {
+            setConsent("necessary", true);
+            setConsent("functional", true);
+            setConsent("analytics", false);
+            setInteracted();
+        }
+    }, []);
 
     const handleAcceptAll = () => {
         setConsent("necessary", true);
@@ -44,6 +47,8 @@ export function CookieConsent() {
         // Keep current selections and mark as interacted
         setInteracted();
     };
+
+    if (hasInteracted) return null;
 
     return (
         <Dialog open={!hasInteracted} onOpenChange={() => {}}>
