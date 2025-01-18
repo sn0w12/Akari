@@ -10,5 +10,9 @@ export function ThemeSetting() {
         setTheme(String(event.detail.value));
     }, "theme");
 
+    const toggleTheme = () => {
+        setTheme(theme === "light" ? "dark" : "light");
+    };
+
     return null;
 }
