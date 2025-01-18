@@ -102,14 +102,14 @@ export function HeaderComponent() {
                             </TooltipProvider>
                         )}
 
-                        {/* Account Information Dialog */}
-                        <LoginDialog />
-
                         {/* Settings Dialog */}
                         <SettingsDialog />
 
                         {/* Theme Handler */}
                         <ThemeSetting />
+
+                        {/* Account Information Dialog */}
+                        <LoginDialog />
                     </div>
                 </div>
             </div>
