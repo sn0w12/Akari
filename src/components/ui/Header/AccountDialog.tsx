@@ -292,7 +292,7 @@ export default function LoginDialog() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="flex w-full sm:w-auto flex-grow items-center gap-2 px-6 py-4"
+                            className="flex w-full sm:w-auto border flex-grow items-center gap-2 px-6 py-5"
                         >
                             <DialogButtonContent />
                         </Button>
@@ -352,7 +352,7 @@ export default function LoginDialog() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="flex w-full sm:w-auto flex-grow items-center gap-2 px-6 py-4"
+                        className="flex w-full sm:w-auto border flex-grow items-center gap-2 px-6 py-5"
                     >
                         <DialogButtonContent />
                     </Button>
