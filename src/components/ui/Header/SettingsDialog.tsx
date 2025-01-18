@@ -85,7 +85,7 @@ export default function SettingsDialog() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="w-full flex items-center gap-2 px-6 py-4"
+                    className="flex w-full sm:w-auto flex-grow items-center gap-2 px-6 py-4"
                 >
                     <Settings className="h-5 w-5" />
                     <span className="text-lg font-medium">Settings</span>

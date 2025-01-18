@@ -13,6 +13,7 @@ import {
     AccordionTrigger,
 } from "./ui/accordion";
 import SettingsDialog from "./ui/Header/SettingsDialog";
+import LoginDialog from "./ui/Header/AccountDialog";
 
 export function SideBar() {
     return (
@@ -124,8 +125,9 @@ export function SideBar() {
                     </ScrollArea>
 
                     {/* Settings */}
-                    <div className="border-t p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                    <div className="border-t p-4 flex flex-col sm:flex-row justify-center gap-2">
                         <SettingsDialog />
+                        <LoginDialog />
                     </div>
                 </div>
             </SheetContent>

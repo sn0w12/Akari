@@ -67,6 +67,15 @@ function AccountParamChecker({
     return null;
 }
 
+function DialogButtonContent() {
+    return (
+        <>
+            <User className="h-5 w-5" />
+            <span className="text-lg font-medium">Account</span>
+        </>
+    );
+}
+
 export default function LoginDialog() {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
@@ -280,8 +289,12 @@ export default function LoginDialog() {
                 </Suspense>
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <User className="h-5 w-5" />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="flex w-full sm:w-auto flex-grow items-center gap-2 px-6 py-4"
+                        >
+                            <DialogButtonContent />
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -336,8 +349,12 @@ export default function LoginDialog() {
                 }}
             >
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <User className="h-5 w-5" />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="flex w-full sm:w-auto flex-grow items-center gap-2 px-6 py-4"
+                    >
+                        <DialogButtonContent />
                     </Button>
                 </DialogTrigger>
                 <DialogContent>

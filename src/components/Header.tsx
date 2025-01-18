@@ -106,9 +106,6 @@ export function HeaderComponent() {
                         {/* Theme Handler */}
                         <ThemeSetting />
 
-                        {/* Account Information Dialog */}
-                        <LoginDialog />
-
                         {/* Sidebar */}
                         <SideBar />
                     </div>
