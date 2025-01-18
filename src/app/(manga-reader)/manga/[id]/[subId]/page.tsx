@@ -15,8 +15,8 @@ export async function generateMetadata({
         mangaParams.subId,
     );
 
-    const title = `${chapter.title} - Chapter ${chapter.chapter}`;
-    const description = `Read ${chapter.title} Chapter ${chapter.chapter}`;
+    const title = `${chapter.title} - ${chapter.chapter}`;
+    const description = `Read ${chapter.title} ${chapter.chapter}`;
 
     return {
         title,
