@@ -133,7 +133,7 @@ export function CookieConsent() {
     return (
         <Dialog open={!hasInteracted} onOpenChange={() => {}}>
             <DialogContent>
-                <DialogHeader>
+                <DialogHeader className="border-b pb-4">
                     <DialogTitle>Cookie Preferences</DialogTitle>
                     <DialogDescription>
                         We use cookies to enhance your browsing experience and
@@ -190,7 +190,7 @@ export function CookieConsentFooter() {
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
-                    <DialogHeader>
+                    <DialogHeader className="border-b pb-4">
                         <DialogTitle>Cookie Preferences</DialogTitle>
                         <DialogDescription>
                             We use cookies to enhance your browsing experience
