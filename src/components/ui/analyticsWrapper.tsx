@@ -21,7 +21,14 @@ export function AnalyticsWrapper() {
                     return event;
                 }}
             />
-            <SpeedInsights />
+            <SpeedInsights
+                beforeSend={(event) => {
+                    if (!consent.analytics) {
+                        return null;
+                    }
+                    return event;
+                }}
+            />
         </>
     );
 }
