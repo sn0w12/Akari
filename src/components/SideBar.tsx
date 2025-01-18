@@ -26,7 +26,7 @@ export function SideBar() {
                     <Menu className="h-5 w-5" />
                 </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="p-0 w-80 border-l">
+            <SheetContent side="right" className="p-0 w-11/12 sm:w-96 border-l">
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="px-6 py-4 border-b">
