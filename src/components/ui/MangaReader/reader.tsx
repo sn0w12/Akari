@@ -91,6 +91,9 @@ export default function Reader({ chapter }: ReaderProps) {
     };
 
     useEffect(() => {
+        const isSidebarPresent = () =>
+            document.getElementById("sidebar") !== null;
+
         const handleMouseMove = (e: MouseEvent) => {
             if (e.clientY < 175) {
                 setHeaderVisible(true);
@@ -98,7 +101,7 @@ export default function Reader({ chapter }: ReaderProps) {
                 setHeaderVisible(false);
             }
 
-            if (e.clientY > window.innerHeight - 175) {
+            if (e.clientY > window.innerHeight - 175 && !isSidebarPresent()) {
                 setFooterVisible(true);
             } else if (!isHoveringFooter) {
                 setFooterVisible(false);
