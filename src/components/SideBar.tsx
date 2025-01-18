@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Search, List, Home, TrendingUp } from "lucide-react";
+import { Menu, Search, List, Home, TrendingUp, LampDesk } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
@@ -30,7 +30,8 @@ export function SideBar() {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="px-6 py-4 border-b">
-                        <SheetTitle className="text-2xl font-bold">
+                        <SheetTitle className="text-2xl font-bold flex items-center gap-2">
+                            <LampDesk className="h-6 w-6" />
                             Akari
                         </SheetTitle>
                     </div>
