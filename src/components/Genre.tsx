@@ -23,7 +23,6 @@ async function getMangaList(genreId: string, page: number, sort: string) {
     try {
         const response = await fetch(
             `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,
-            { cache: "no-store" },
         );
 
         if (!response.ok) {
