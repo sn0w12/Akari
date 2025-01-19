@@ -42,27 +42,43 @@ export const genreMap: { [key: string]: number } = {
 };
 
 export const GENRE_CATEGORIES: Record<string, readonly string[]> = {
-    Demographics: ["Shounen", "Shoujo", "Seinen", "Josei"],
-    Format: ["Manga", "Manhwa", "Manhua", "One shot", "Webtoons", "Doujinshi"],
-    Themes: [
+    Demographics: ["Josei", "Seinen", "Shoujo", "Shounen"],
+    Format: ["Doujinshi", "Manhua", "Manhwa", "One shot", "Webtoons"],
+    Genres: [
         "Action",
         "Adventure",
         "Comedy",
         "Drama",
         "Fantasy",
+        "Isekai",
         "Romance",
-        "Sci fi",
         "Slice of life",
-    ],
-    Content: ["Mature", "Smut", "Erotica", "Yaoi", "Yuri"],
-    Other: [
         "Sports",
-        "Martial arts",
-        "Supernatural",
+    ],
+    Themes: [
+        "Gender bender",
+        "Harem",
+        "Historical",
         "Horror",
+        "Martial arts",
+        "Mecha",
+        "Medical",
         "Mystery",
         "Psychological",
+        "School life",
+        "Sci fi",
+        "Supernatural",
         "Tragedy",
+        "Yaoi",
+        "Yuri",
+    ],
+    Mature: [
+        "Erotica",
+        "Mature",
+        "Pornographic",
+        "Shoujo ai",
+        "Shounen ai",
+        "Smut",
     ],
 };
 
