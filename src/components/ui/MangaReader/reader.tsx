@@ -95,13 +95,14 @@ export default function Reader({ chapter }: ReaderProps) {
             document.getElementById("sidebar") !== null;
 
         const handleMouseMove = (e: MouseEvent) => {
-            if (e.clientY < 175) {
+            const sidebarVisible = isSidebarPresent();
+            if (e.clientY < 175 && !sidebarVisible) {
                 setHeaderVisible(true);
             } else if (!isHoveringHeader) {
                 setHeaderVisible(false);
             }
 
-            if (e.clientY > window.innerHeight - 175 && !isSidebarPresent()) {
+            if (e.clientY > window.innerHeight - 175 && !sidebarVisible) {
                 setFooterVisible(true);
             } else if (!isHoveringFooter) {
                 setFooterVisible(false);
