@@ -26,6 +26,10 @@ import {
     ContextMenu,
     ContextMenuContent,
     ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "./ui/context-menu";
 import SettingsDialog from "./ui/Header/SettingsDialog";
@@ -107,12 +111,47 @@ export function SideBar() {
                             Search
                         </ContextMenuItem>
                     </Link>
+
+                    {/* Categories */}
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger>
+                            <List className="mr-2 h-4 w-4" />
+                            Categories
+                        </ContextMenuSubTrigger>
+                        <ContextMenuSubContent>
+                            {Object.entries(GENRE_CATEGORIES).map(
+                                ([category, genres]) => (
+                                    <ContextMenuSub key={category}>
+                                        <ContextMenuSubTrigger inset>
+                                            {category}
+                                        </ContextMenuSubTrigger>
+                                        <ContextMenuSubContent>
+                                            {genres.map((genre) => (
+                                                <Link
+                                                    key={genre}
+                                                    href={`/genre/${genre}`}
+                                                >
+                                                    <ContextMenuItem className="cursor-pointer">
+                                                        {genre}
+                                                    </ContextMenuItem>
+                                                </Link>
+                                            ))}
+                                        </ContextMenuSubContent>
+                                    </ContextMenuSub>
+                                ),
+                            )}
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
+
                     <Link href="/popular">
                         <ContextMenuItem className="cursor-pointer">
                             <TrendingUp className="mr-2 h-4 w-4" />
                             Popular
                         </ContextMenuItem>
                     </Link>
+
+                    <ContextMenuSeparator />
+
                     <ContextMenuItem onClick={handleAccountClick}>
                         <User className="mr-2 h-4 w-4" />
                         Account
