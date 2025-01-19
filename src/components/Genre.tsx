@@ -61,7 +61,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
             <main className="container mx-auto px-4 py-8">
                 <div className="flex gap-4">
                     <h2 className={`text-3xl font-bold mb-6`}>
-                        {params.id.replaceAll("_", " ")}
+                        {decodeURIComponent(params.id).replaceAll("_", " ")}
                     </h2>
                     <SortSelect currentSort={currentSort} />
                 </div>
