@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import {
@@ -72,7 +72,7 @@ const useSettings = () => {
     return { settings, setSettings };
 };
 
-export default function SettingsDialog() {
+const SettingsDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const { settings, setSettings } = useSettings();
     const settingsMap = useMemo(
         () => createAllSettingsMaps(settings, setSettings),
@@ -86,6 +86,7 @@ export default function SettingsDialog() {
                     variant="ghost"
                     size="icon"
                     className="flex border w-full sm:w-auto flex-grow items-center gap-2 px-6 py-5"
+                    ref={ref}
                 >
                     <Settings className="h-5 w-5" />
                     <span className="text-lg font-medium">Settings</span>
@@ -96,4 +97,6 @@ export default function SettingsDialog() {
             </DialogContent>
         </Dialog>
     );
-}
+});
+
+export default SettingsDialog;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, Suspense, useCallback, forwardRef } from "react";
 import {
     Dialog,
     DialogContent,
@@ -76,7 +76,7 @@ function DialogButtonContent() {
     );
 }
 
-export default function LoginDialog() {
+const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
     const [open, setOpen] = useState(false);
@@ -290,6 +290,7 @@ export default function LoginDialog() {
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button
+                            ref={ref}
                             variant="ghost"
                             size="icon"
                             className="flex w-full sm:w-auto border flex-grow items-center gap-2 px-6 py-5"
@@ -350,6 +351,7 @@ export default function LoginDialog() {
             >
                 <DialogTrigger asChild>
                     <Button
+                        ref={ref}
                         variant="ghost"
                         size="icon"
                         className="flex w-full sm:w-auto border flex-grow items-center gap-2 px-6 py-5"
@@ -461,4 +463,8 @@ export default function LoginDialog() {
             </Dialog>
         </>
     );
-}
+});
+
+LoginDialog.displayName = "LoginDialog";
+
+export default LoginDialog;
