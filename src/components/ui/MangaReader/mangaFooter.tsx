@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Chapter } from "@/app/api/interfaces";
 import { Combo } from "../combo";
 import { Button } from "../button";
+import { ChapterSelector } from "./chapterSelector";
 
 export default function MangaFooter({
     chapterData,
@@ -13,6 +14,12 @@ export default function MangaFooter({
 }) {
     const lastChapterExists = chapterData.lastChapter.split("/").length === 2;
     const nextChapterExists = chapterData.nextChapter.split("/").length === 2;
+    const transformedChapters = chapterData.chapters.map((chapter) => ({
+        value: chapter.value,
+        label:
+            chapter.label.match(/[Cc]hapter\s+\d+(\.\d+)?/)?.[0] ??
+            chapter.label,
+    }));
 
     return (
         <div className="bg-background border-t border-border p-4">
@@ -26,23 +33,13 @@ export default function MangaFooter({
                             {chapterData.title}
                         </a>
                     </h2>
-                    <Combo
-                        options={chapterData.chapters}
+                    <ChapterSelector
+                        chapters={transformedChapters}
                         value={
                             chapterData.chapter
                                 .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                                .match(/(\d+)(\.\d+)?/)?.[0]
+                                .match(/(\d+)(\.\d+)?/)?.[0] ?? "1"
                         }
-                        onChange={(e) => {
-                            const selectedChapter = e.target.value;
-                            const currentUrl = window.location.href;
-                            const newUrl = currentUrl.replace(
-                                /\/[^\/]*$/,
-                                `/chapter-${selectedChapter}`,
-                            );
-                            window.location.href = newUrl;
-                        }}
-                        className="mt-2 mb-2 w-auto w-full sm:max-w-64 lg:max-w-96"
                     />
                 </div>
                 <div className="flex flex-col w-full sm:w-64 md:w-auto md:flex-row gap-4">
