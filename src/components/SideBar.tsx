@@ -34,7 +34,7 @@ import {
 } from "./ui/context-menu";
 import SettingsDialog from "./ui/Header/SettingsDialog";
 import LoginDialog from "./ui/Header/AccountDialog";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 function SideBarLink({
     href,
