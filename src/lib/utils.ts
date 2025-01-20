@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import db from "@/lib/db";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
@@ -47,3 +49,15 @@ export function getErrorMessage(status: number | undefined): string {
                 : "An unknown error occurred. Please check your internet connection and try again.";
     }
 }
+
+export const time = (label: string) => {
+    if (isDev) {
+        console.time(label);
+    }
+};
+
+export const timeEnd = (label: string) => {
+    if (isDev) {
+        console.timeEnd(label);
+    }
+};

@@ -6,11 +6,13 @@ import { Chapter } from "@/app/api/interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
 import { getErrorMessage } from "@/lib/utils";
 import { hasConsentFor } from "@/lib/cookies";
+import { time, timeEnd } from "@/lib/utils";
 
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string; subId: string }> },
 ): Promise<Response> {
+    time("Total API Request");
     const params = await props.params;
     const { id, subId } = params;
     const cookieStore = await cookies();
@@ -18,6 +20,7 @@ export async function GET(
     const server = cookieStore.get(`manga_server`)?.value || "1";
 
     try {
+        time("Fetch HTML");
         // Fetch the HTML content of the page
         const response = await axios.get(
             `https://chapmanganato.to/${id}/${subId}`,
@@ -32,10 +35,14 @@ export async function GET(
             },
         );
         const html = response.data;
+        timeEnd("Fetch HTML");
 
+        time("Parse HTML");
         // Load the HTML into cheerio for parsing
         const $ = cheerio.load(html);
+        timeEnd("Parse HTML");
 
+        time("Extract Data");
         // Extract the title and chapter name from the panel-breadcrumb
         const breadcrumbLinks = $(".panel-breadcrumb a");
         const mangaTitle = $(breadcrumbLinks[1]).text();
@@ -98,7 +105,6 @@ export async function GET(
             }
         });
 
-        // Return the response as JSON
         const responseData: Chapter = {
             title: mangaTitle,
             chapter: chapterTitle,
@@ -111,6 +117,7 @@ export async function GET(
             storyData: glbStoryData,
             chapterData: glbChapterData,
         };
+        timeEnd("Extract Data");
 
         const mangaResponse = NextResponse.json(responseData, {
             status: 200,
@@ -126,8 +133,10 @@ export async function GET(
             });
         }
 
+        timeEnd("Total API Request");
         return mangaResponse;
     } catch (error: unknown) {
+        timeEnd("Total API Request");
         const axiosError = error as AxiosError;
         return NextResponse.json(
             {
