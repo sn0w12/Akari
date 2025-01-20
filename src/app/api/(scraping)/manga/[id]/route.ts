@@ -3,33 +3,20 @@ import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
-import NodeCache from "node-cache";
 import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
-
-const cache = new NodeCache({ stdTTL: 10 * 60 }); // 10 minutes
+import { time, timeEnd } from "@/lib/utils";
 
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    time("Total API Request");
     const params = await props.params;
     const id = params.id;
     const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
-    const cacheKey = `mangaDetails_${id}`;
-
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-        return new Response(JSON.stringify(cachedData), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                ...generateCacheHeaders(300),
-            },
-        });
-    }
 
     try {
         const jar = new CookieJar();
@@ -37,6 +24,7 @@ export async function GET(
         const fetchMangaDetails = async (
             baseUrl: string,
         ): Promise<MangaDetails> => {
+            time("Fetch Html");
             const url = `${baseUrl}/${id}`;
 
             if (userAcc) {
@@ -59,10 +47,14 @@ export async function GET(
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
                 },
             });
+            timeEnd("Fetch Html");
 
+            time("Parse Html");
             const html = response.data;
             const $ = cheerio.load(html);
+            timeEnd("Parse Html");
 
+            time("Extract Data");
             const identifier = url.split("/").pop() || "";
             const imageUrl = $(".story-info-left .info-image img").attr("src");
             const name = $(".story-info-right h1").text();
@@ -186,7 +178,8 @@ export async function GET(
                 throw new Error("MANGA_NOT_FOUND");
             }
 
-            return {
+            timeEnd("Extract Data");
+            const mangaDetails = {
                 mangaId,
                 identifier,
                 storyData: glbStoryData,
@@ -204,6 +197,7 @@ export async function GET(
                 chapterList,
                 malData: null,
             };
+            return mangaDetails;
         };
 
         const [mangaDetails, malData] = await Promise.all([
@@ -228,10 +222,8 @@ export async function GET(
                     "",
                 );
         }
-        if (mangaDetails.storyData) {
-            cache.set(cacheKey, mangaDetails);
-        }
 
+        timeEnd("Total API Request");
         return new Response(JSON.stringify(mangaDetails), {
             status: 200,
             headers: {
@@ -240,6 +232,7 @@ export async function GET(
             },
         });
     } catch (error) {
+        timeEnd("Total API Request");
         console.error(
             "Error fetching manga details:",
             (error as Error).message,

@@ -6,7 +6,6 @@ import { Bookmark } from "lucide-react";
 import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
 import SettingsDialog from "./ui/Header/SettingsDialog";
-import ThemeToggle from "./ui/Header/ThemeToggle";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
@@ -16,6 +15,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ThemeSetting } from "./ui/Header/ThemeSettings";
+import { SideBar } from "./SideBar";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -75,7 +76,7 @@ export function HeaderComponent() {
                                         <Bookmark className="h-5 w-5" />
                                     </Button>
                                     {/* Badge element */}
-                                    {notification && (
+                                    {notification && notification != "0" && (
                                         <span
                                             className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
                                             style={{ bottom: "0", right: "0" }}
@@ -102,14 +103,11 @@ export function HeaderComponent() {
                             </TooltipProvider>
                         )}
 
-                        {/* Account Information Dialog */}
-                        <LoginDialog />
+                        {/* Theme Handler */}
+                        <ThemeSetting />
 
-                        {/* Settings Dialog */}
-                        <SettingsDialog />
-
-                        {/* Theme Toggle Button */}
-                        <ThemeToggle />
+                        {/* Sidebar */}
+                        <SideBar />
                     </div>
                 </div>
             </div>

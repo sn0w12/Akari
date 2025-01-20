@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import SettingsForm from "./Settings";
 import {
     dispatchSettingsChange,
@@ -35,16 +40,22 @@ const useSettings = () => {
                         ? newSettings(prevSettings)
                         : newSettings;
 
-                // Dispatch events for each changed setting
-                Object.keys(nextSettings).forEach((key) => {
-                    const typedKey = key as keyof SettingsInterface;
-                    const newValue = nextSettings[typedKey];
-                    const oldValue = prevSettings[typedKey];
+                // Defer events to next tick to avoid render-time updates
+                setTimeout(() => {
+                    Object.keys(nextSettings).forEach((key) => {
+                        const typedKey = key as keyof SettingsInterface;
+                        const newValue = nextSettings[typedKey];
+                        const oldValue = prevSettings[typedKey];
 
-                    if (oldValue !== newValue) {
-                        dispatchSettingsChange(typedKey, newValue, oldValue);
-                    }
-                });
+                        if (oldValue !== newValue) {
+                            dispatchSettingsChange(
+                                typedKey,
+                                newValue,
+                                oldValue,
+                            );
+                        }
+                    });
+                }, 0);
 
                 return nextSettings;
             });
@@ -61,15 +72,24 @@ const useSettings = () => {
     return { settings, setSettings };
 };
 
-export default function SettingsDialog() {
+const SettingsDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const { settings, setSettings } = useSettings();
-    const settingsMap = createAllSettingsMaps(settings, setSettings);
+    const settingsMap = useMemo(
+        () => createAllSettingsMaps(settings, setSettings),
+        [settings, setSettings],
+    );
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex border w-full sm:w-auto flex-grow items-center gap-2 px-6 py-5"
+                    ref={ref}
+                >
                     <Settings className="h-5 w-5" />
+                    <span className="text-lg font-medium">Settings</span>
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -77,4 +97,6 @@ export default function SettingsDialog() {
             </DialogContent>
         </Dialog>
     );
-}
+});
+
+export default SettingsDialog;

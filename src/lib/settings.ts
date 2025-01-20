@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/Header/Settings";
 import React from "react";
 import db from "./db";
+import { setCookie } from "./cookies";
 
 let settingsVersion = 0;
 export const useSettingsVersion = () =>
@@ -24,11 +25,23 @@ export type SettingsInterface = {
 
 export const generalSettings = {
     label: "General",
+    theme: {
+        label: "Theme",
+        type: "select",
+        options: [
+            { label: "Light", value: "light" },
+            { label: "Dark", value: "dark" },
+            { label: "System", value: "system" },
+        ],
+        default: "system",
+    },
     fetchMalImage: {
         label: "Fetch MAL Data",
-        description: "Slows down first load on manga detail pages.",
+        description:
+            "Updates the Akari database with better images and other info.",
         type: "checkbox",
         default: true,
+        deploymentOnly: true,
     },
     fancyAnimations: {
         label: "Fancy Animations",
@@ -49,7 +62,7 @@ export const mangaSettings = {
         ],
         default: "1",
         onChange: (value: string) => {
-            document.cookie = `manga_server=${value}; max-age=31556926`;
+            setCookie("manga_server", value, "functional");
             if (window.location.pathname.includes("/chapter")) {
                 window.location.reload();
             }
@@ -165,33 +178,40 @@ export function dispatchSettingsChange<T extends SettingValue>(
         window.dispatchEvent(event);
     }
 }
+
 /**
  * A React hook that listens for settings change events.
  *
- * This hook subscribes to custom settings change events and calls the provided callback
- * when settings are modified. It automatically handles cleanup by removing the event
- * listener when the component unmounts.
- *
- * @param callback - The function to be called when settings change. Receives a CustomEvent
- * containing the settings change details.
+ * @param callback - The function to be called when settings change
+ * @param watchKey - Optional key to only listen for changes to a specific setting
  *
  * @example
  * ```tsx
+ * // Watch all settings changes
  * useSettingsChange((event) => {
  *   console.log('Settings changed:', event.detail);
  * });
+ *
+ * // Watch only theme changes
+ * useSettingsChange((event) => {
+ *   console.log('Theme changed:', event.detail.value);
+ * }, 'theme');
  * ```
  */
 export function useSettingsChange(
     callback: (event: CustomEvent<SettingsChangeEvent>) => void,
+    watchKey?: keyof SettingsInterface,
 ) {
     React.useEffect(() => {
         const handler = (event: Event) => {
-            callback(event as CustomEvent<SettingsChangeEvent>);
+            const settingsEvent = event as CustomEvent<SettingsChangeEvent>;
+            if (!watchKey || settingsEvent.detail.key === watchKey) {
+                callback(settingsEvent);
+            }
         };
         window.addEventListener(SETTINGS_CHANGE_EVENT, handler);
         return () => window.removeEventListener(SETTINGS_CHANGE_EVENT, handler);
-    }, [callback]);
+    }, [callback, watchKey]);
 }
 
 /**

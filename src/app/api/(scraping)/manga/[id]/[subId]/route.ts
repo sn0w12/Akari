@@ -3,36 +3,24 @@ import axios, { AxiosError } from "axios";
 import * as cheerio from "cheerio";
 import { cookies } from "next/headers";
 import { Chapter } from "@/app/api/interfaces";
-import NodeCache from "node-cache";
-import { badImages } from "@/lib/badImages";
 import { generateCacheHeaders } from "@/lib/cache";
 import { getErrorMessage } from "@/lib/utils";
-
-const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hours
+import { hasConsentFor } from "@/lib/cookies";
+import { time, timeEnd } from "@/lib/utils";
 
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string; subId: string }> },
 ): Promise<Response> {
+    time("Total API Request");
     const params = await props.params;
     const { id, subId } = params;
     const cookieStore = await cookies();
     const userAcc = cookieStore.get("user_acc")?.value || null;
     const server = cookieStore.get(`manga_server`)?.value || "1";
-    const cacheKey = `manga_${id}_${subId}_${server}`;
-
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-        return new Response(JSON.stringify(cachedData), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                ...generateCacheHeaders(300),
-            },
-        });
-    }
 
     try {
+        time("Fetch HTML");
         // Fetch the HTML content of the page
         const response = await axios.get(
             `https://chapmanganato.to/${id}/${subId}`,
@@ -47,10 +35,14 @@ export async function GET(
             },
         );
         const html = response.data;
+        timeEnd("Fetch HTML");
 
+        time("Parse HTML");
         // Load the HTML into cheerio for parsing
         const $ = cheerio.load(html);
+        timeEnd("Parse HTML");
 
+        time("Extract Data");
         // Extract the title and chapter name from the panel-breadcrumb
         const breadcrumbLinks = $(".panel-breadcrumb a");
         const mangaTitle = $(breadcrumbLinks[1]).text();
@@ -113,46 +105,6 @@ export async function GET(
             }
         });
 
-        // Load and check first and last images
-        if (images.length > 0) {
-            try {
-                const [firstImageResponse, lastImageResponse] =
-                    await Promise.all([
-                        axios.get(images[0], {
-                            responseType: "arraybuffer",
-                            headers: {
-                                Referer: "https://manganato.com",
-                                "User-Agent": "Mozilla/5.0",
-                            },
-                        }),
-                        axios.get(images[images.length - 1], {
-                            responseType: "arraybuffer",
-                            headers: {
-                                Referer: "https://manganato.com",
-                                "User-Agent": "Mozilla/5.0",
-                            },
-                        }),
-                    ]);
-
-                const firstImageBase64 = Buffer.from(
-                    firstImageResponse.data,
-                ).toString("base64");
-                const lastImageBase64 = Buffer.from(
-                    lastImageResponse.data,
-                ).toString("base64");
-
-                if (badImages.includes(firstImageBase64)) {
-                    images.shift();
-                }
-                if (badImages.includes(lastImageBase64)) {
-                    images.pop();
-                }
-            } catch (error) {
-                console.error("Error checking images:", error);
-            }
-        }
-
-        // Return the response as JSON
         const responseData: Chapter = {
             title: mangaTitle,
             chapter: chapterTitle,
@@ -165,10 +117,7 @@ export async function GET(
             storyData: glbStoryData,
             chapterData: glbChapterData,
         };
-
-        if (responseData.storyData && responseData.chapterData) {
-            cache.set(cacheKey, responseData);
-        }
+        timeEnd("Extract Data");
 
         const mangaResponse = NextResponse.json(responseData, {
             status: 200,
@@ -177,13 +126,17 @@ export async function GET(
                 ...generateCacheHeaders(300),
             },
         });
-        mangaResponse.cookies.set("manga_server", server, {
-            maxAge: 31536000,
-            path: "/",
-        });
+        if (hasConsentFor(cookieStore, "functional")) {
+            mangaResponse.cookies.set("manga_server", server, {
+                maxAge: 31536000,
+                path: "/",
+            });
+        }
 
+        timeEnd("Total API Request");
         return mangaResponse;
     } catch (error: unknown) {
+        timeEnd("Total API Request");
         const axiosError = error as AxiosError;
         return NextResponse.json(
             {

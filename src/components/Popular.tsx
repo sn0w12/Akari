@@ -1,4 +1,3 @@
-import { SortSelect } from "./ui/SortSelect";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
@@ -15,14 +14,13 @@ interface MangaListResponse {
 }
 
 interface PageProps {
-    params: { id: string };
-    searchParams: { page?: string; sort?: string };
+    searchParams: { page?: string };
 }
 
-async function getMangaList(genreId: string, page: number, sort: string) {
+async function getMangaList(page: number) {
     try {
         const response = await fetch(
-            `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,
+            `${getProductionUrl()}/api/manga-list/popular?page=${page}`,
         );
 
         if (!response.ok) {
@@ -35,16 +33,15 @@ async function getMangaList(genreId: string, page: number, sort: string) {
     }
 }
 
-export default async function GenrePage({ params, searchParams }: PageProps) {
+export default async function PopularPage({ searchParams }: PageProps) {
     const currentPage = Number(searchParams.page) || 1;
-    const currentSort = searchParams.sort || "latest";
 
     let mangaList: SmallManga[] = [];
     let totalPages = 1;
     let error: string | null = null;
 
     try {
-        const data = await getMangaList(params.id, currentPage, currentSort);
+        const data = await getMangaList(currentPage);
 
         if ("result" in data) {
             error = String(data.data);
@@ -60,10 +57,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
         <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto px-4 py-8">
                 <div className="flex gap-4">
-                    <h2 className={`text-3xl font-bold mb-6`}>
-                        {decodeURIComponent(params.id).replaceAll("_", " ")}
-                    </h2>
-                    <SortSelect currentSort={currentSort} />
+                    <h2 className={`text-3xl font-bold mb-6`}>Popular Manga</h2>
                 </div>
 
                 {error && <ErrorComponent message={error} />}
@@ -79,7 +73,6 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                 <PaginationElement
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    searchParams={[{ key: "sort", value: currentSort }]}
                 />
             )}
         </div>

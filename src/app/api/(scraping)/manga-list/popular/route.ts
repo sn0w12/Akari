@@ -9,7 +9,7 @@ export async function GET(req: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(req.url);
         const page: string = searchParams.get("page") || "1";
-        const cacheKey = `mangaList_${page}`;
+        const cacheKey = `mangaList_popular_${page}`;
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
@@ -20,7 +20,7 @@ export async function GET(req: Request): Promise<Response> {
         }
 
         // Construct the URL with the page number
-        const url = `https://manganato.com/genre-all/${page}`;
+        const url = `https://manganato.com/genre-all/${page}?type=topview`;
         const result = await processMangaList(url, page);
         cache.set(cacheKey, result);
 

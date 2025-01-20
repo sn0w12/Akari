@@ -16,6 +16,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 - [Features](#features)
 - [Settings](#settings)
+- [Technical Stack](#technical-stack)
 - [Getting Started](#getting-started)
     - [Online Usage](#online-usage)
     - [Local Installation](#local-installation)
@@ -48,19 +49,22 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 # Settings
 
+> ⊕ indicates features only available on the official website.
+
 ## General
 
-| Setting          | Default | Description                                                                                                     |
-| ---------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
-| Fetch MAL Image  | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch better manga info from MyAnimeList to put into the database |
-| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                                              |
+| Setting          | Default | Description                                                                                                                                                |
+| ---------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme            | System  | Choose between Light, Dark, or System color theme                                                                                                          |
+| Fetch MAL Data ⊕ | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database, this helps improve akari both locally and on the official website |
+| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                                                                                         |
 
 ## Manga
 
-| Setting            | Default   | Description                            |
-| ------------------ | --------- | -------------------------------------- |
-| Manga Server       | Manganato | Chooses the manga server to fetch from |
-| Show Page Progress | Enabled   | Enables or disables the progress bar   |
+| Setting            | Default | Description                            |
+| ------------------ | ------- | -------------------------------------- |
+| Manga Server       | 1       | Chooses the manga server to fetch from |
+| Show Page Progress | Enabled | Enables or disables the progress bar   |
 
 ## Notifications
 
@@ -74,6 +78,12 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 | Setting     | Default | Description       |
 | ----------- | ------- | ----------------- |
 | Clear Cache | N/A     | Clears all caches |
+
+# Technical Stack
+
+- **Frontend**: Next.js 15, React 19, TailwindCSS
+- **Database**: Supabase integration for manga data
+- **Authentication**: Built-in Manganato authentication and MyAnimeList OAuth
 
 # Getting Started
 

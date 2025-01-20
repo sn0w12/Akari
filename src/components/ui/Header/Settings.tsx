@@ -36,6 +36,7 @@ interface BaseSetting {
     value: SettingValue;
     default: SettingValue;
     onChange: (value: SettingValue) => void;
+    deploymentOnly?: boolean;
 }
 
 interface CheckboxSetting extends BaseSetting {
@@ -122,6 +123,17 @@ interface SettingsFormProps {
 
 function SettingsForm({ settingsTabs }: SettingsFormProps) {
     const defaultTab = Object.keys(settingsTabs)[0];
+    const isProduction = process.env.NODE_ENV === "production";
+
+    const shouldShowSetting = (setting: Setting) => {
+        if (
+            setting.deploymentOnly &&
+            (!isProduction || window.location.hostname === "localhost")
+        ) {
+            return false;
+        }
+        return true;
+    };
 
     return (
         <>
@@ -153,31 +165,32 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                                 className="space-y-6"
                             >
                                 {Object.entries(settingsMap).map(
-                                    ([key, setting]) => (
-                                        <div
-                                            key={key}
-                                            className="flex flex-col space-y-2"
-                                        >
-                                            <div className="flex justify-between items-center">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={key}
-                                                        className="text-sm font-medium"
-                                                    >
-                                                        {setting.label}
-                                                    </Label>
-                                                    {setting.description && (
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {
-                                                                setting.description
-                                                            }
-                                                        </p>
-                                                    )}
+                                    ([key, setting]) =>
+                                        shouldShowSetting(setting) && (
+                                            <div
+                                                key={key}
+                                                className="flex flex-col space-y-2"
+                                            >
+                                                <div className="flex justify-between items-center">
+                                                    <div>
+                                                        <Label
+                                                            htmlFor={key}
+                                                            className="text-sm font-medium"
+                                                        >
+                                                            {setting.label}
+                                                        </Label>
+                                                        {setting.description && (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                {
+                                                                    setting.description
+                                                                }
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    {renderInput(key, setting)}
                                                 </div>
-                                                {renderInput(key, setting)}
                                             </div>
-                                        </div>
-                                    ),
+                                        ),
                                 )}
                             </TabsContent>
                         ),

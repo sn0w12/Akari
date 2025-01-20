@@ -91,14 +91,25 @@ export default function Reader({ chapter }: ReaderProps) {
     };
 
     useEffect(() => {
+        const isSidebarPresent = () =>
+            document.getElementById("sidebar") !== null;
+        const isChapterSelectorPresent = () =>
+            document.getElementById("chapter-selector") !== null;
+
         const handleMouseMove = (e: MouseEvent) => {
-            if (e.clientY < 175) {
+            const sidebarVisible = isSidebarPresent();
+            const chapterSelectorVisible = isChapterSelectorPresent();
+
+            if (e.clientY < 175 && !sidebarVisible) {
                 setHeaderVisible(true);
             } else if (!isHoveringHeader) {
                 setHeaderVisible(false);
             }
 
-            if (e.clientY > window.innerHeight - 175) {
+            if (
+                (e.clientY > window.innerHeight - 175 && !sidebarVisible) ||
+                chapterSelectorVisible
+            ) {
                 setFooterVisible(true);
             } else if (!isHoveringFooter) {
                 setFooterVisible(false);
