@@ -35,7 +35,7 @@
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "cmdk": "^1.0.0",
-        "dexie": "^4.0.9",
+        "dexie": "^4.0.11",
         "fuse.js": "^7.0.0",
         "js-cookie": "^3.0.5",
         "lodash": "^4.17.21",
