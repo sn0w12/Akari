@@ -34,21 +34,24 @@ import {
 } from "./ui/context-menu";
 import SettingsDialog from "./ui/Header/SettingsDialog";
 import LoginDialog from "./ui/Header/AccountDialog";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 function SideBarLink({
     href,
     text,
     icon,
+    onClose,
 }: {
     href: string;
     text: string;
     icon: any;
+    onClose: () => void;
 }) {
     return (
         <Link
             href={href}
             className="flex items-center gap-3 px-3 py-3 border rounded-lg hover:bg-accent/50 transition-colors duration-200"
+            onClick={onClose}
         >
             {icon}
             <span className="text-base font-medium">{text}</span>
@@ -57,6 +60,7 @@ function SideBarLink({
 }
 
 export function SideBar() {
+    const [open, setOpen] = useState(false);
     const sheetRef = useRef<any>(null);
     const loginRef = useRef<any>(null);
     const settingsRef = useRef<any>(null);
@@ -75,8 +79,12 @@ export function SideBar() {
         }, 300);
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
             <ContextMenu>
                 <ContextMenuTrigger>
                     <SheetTrigger asChild>
@@ -183,16 +191,19 @@ export function SideBar() {
                                     href="/"
                                     text="Home"
                                     icon={<Home className="h-5 w-5" />}
+                                    onClose={handleClose}
                                 />
                                 <SideBarLink
                                     href="/bookmarks"
                                     text="Bookmarks"
                                     icon={<Bookmark className="h-5 w-5" />}
+                                    onClose={handleClose}
                                 />
                                 <SideBarLink
                                     href="/search"
                                     text="Advanced Search"
                                     icon={<Search className="h-5 w-5" />}
+                                    onClose={handleClose}
                                 />
                                 <Accordion type="multiple" className="w-full">
                                     <AccordionItem
@@ -234,6 +245,9 @@ export function SideBar() {
                                                                                 genre
                                                                             }
                                                                             href={`/genre/${genre}`}
+                                                                            onClick={
+                                                                                handleClose
+                                                                            }
                                                                             className="block px-4 py-2 hover:bg-accent rounded-md border text-sm transition-colors duration-200"
                                                                         >
                                                                             {
@@ -254,6 +268,7 @@ export function SideBar() {
                                     href="/popular"
                                     text="Popular Manga"
                                     icon={<TrendingUp className="h-5 w-5" />}
+                                    onClose={handleClose}
                                 />
                             </div>
                         </ScrollArea>
