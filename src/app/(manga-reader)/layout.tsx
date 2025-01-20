@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
@@ -25,9 +24,6 @@ export default function MangaReaderLayout({
 }>) {
     return (
         <html lang="en">
-            <Head>
-                <AnalyticsWrapper />
-            </Head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
@@ -37,6 +33,7 @@ export default function MangaReaderLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <AnalyticsWrapper />
                     {children}
                     <ToastContainer />
                     <CookieConsent />
