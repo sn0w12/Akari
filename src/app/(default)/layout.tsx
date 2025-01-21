@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 import localFont from "next/font/local";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import { ToastContainer } from "react-toastify";
@@ -32,9 +31,6 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <Head>
-                <AnalyticsWrapper />
-            </Head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
@@ -44,6 +40,7 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <AnalyticsWrapper />
                     <HeaderComponent />
                     {children}
                     <ToastContainer />

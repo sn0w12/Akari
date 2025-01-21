@@ -7,10 +7,6 @@ import { useCookieConsent } from "@/hooks/useCookieConsent";
 export function AnalyticsWrapper() {
     const { consent } = useCookieConsent();
 
-    if (!consent.analytics) {
-        return null;
-    }
-
     return (
         <>
             <Analytics

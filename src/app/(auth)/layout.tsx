@@ -23,9 +23,6 @@ export default function MangaReaderLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head>
-                <AnalyticsWrapper />
-            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
@@ -35,6 +32,7 @@ export default function MangaReaderLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <AnalyticsWrapper />
                     {children}
                     <ToastContainer />
                 </ThemeProvider>
