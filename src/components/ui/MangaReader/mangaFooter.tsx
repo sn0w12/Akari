@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Chapter } from "@/app/api/interfaces";
-import { Combo } from "../combo";
 import { Button } from "../button";
 import { ChapterSelector } from "./chapterSelector";
+import { FooterBookmarkButton } from "./footerBookmarkButton";
 
 export default function MangaFooter({
     chapterData,
@@ -50,6 +50,7 @@ export default function MangaFooter({
                         >
                             Toggle Reader
                         </Button>
+                        <FooterBookmarkButton chapterData={chapterData} />
                     </div>
                     <div className="flex items-center gap-4">
                         {lastChapterExists ? (
