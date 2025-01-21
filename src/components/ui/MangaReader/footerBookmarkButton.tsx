@@ -21,9 +21,17 @@ export function FooterBookmarkButton({
             return null;
         }
 
-        const response = await fetch(`/api/manga/${chapterData.parentId}`);
-        const manga = await response.json();
-        return await checkIfBookmarked(manga.mangaId);
+        let mangaId = null;
+        const cache = await db.getCache(db.mangaCache, chapterData.parentId);
+        if (cache && cache.id) {
+            mangaId = cache.id;
+        } else {
+            const response = await fetch(`/api/manga/${chapterData.parentId}`);
+            const manga = await response.json();
+            mangaId = manga.mangaId;
+        }
+
+        return await checkIfBookmarked(mangaId);
     }, [chapterData.parentId]); // Only re-run if parentId changes
 
     useEffect(() => {
