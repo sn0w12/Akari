@@ -99,7 +99,7 @@ export default function StripReader({
                         width={700}
                         height={1080}
                         className="object-contain w-128 z-20 relative"
-                        loading={index < 3 ? "eager" : "lazy"} // Optimize image loading
+                        loading={"eager"}
                         priority={index < 3}
                         onLoad={(e) => handleImageLoad(e, index)}
                     />
