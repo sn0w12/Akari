@@ -137,3 +137,36 @@ export interface SimpleError {
     result: string;
     data: string;
 }
+
+export interface NewManga {
+    id: string;
+    mangaId: string;
+    storyData: string;
+    imageUrl: string;
+    titles: { [type: string]: string };
+    authors: { name: string; id: string }[];
+    genres: string[];
+    status: string;
+    views: string;
+    score: number;
+    description: string;
+    chapters: NewChapter[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface NewChapter {
+    id: string;
+    storyData: string;
+    chapterData: string;
+    title: string;
+    images: string[];
+    pages: number;
+    chapters: { id: string; title: string }[];
+    nextChapter: string | null;
+    previousChapter: string | null;
+    parentId: string;
+    parentTitle: string;
+    createdAt: string;
+    updatedAt: string;
+}
