@@ -10,3 +10,11 @@ export function generateCacheHeaders(time: number) {
         "Vercel-CDN-Cache-Control": `s-maxage=${time}`,
     };
 }
+
+export function generateClientCacheHeaders(time: number) {
+    return {
+        "Cache-Control": `maxage=${time}`,
+        "CDN-Cache-Control": "no-store, no-cache",
+        "Vercel-CDN-Cache-Control": "no-store, no-cache",
+    };
+}
