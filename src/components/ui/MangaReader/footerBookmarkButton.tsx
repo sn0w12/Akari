@@ -16,31 +16,44 @@ export function FooterBookmarkButton({
     const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const bookmarkCheck = useMemo(async () => {
-        if (!chapterData) {
-            return null;
-        }
-
-        let mangaId = null;
-        const cache = await db.getCache(db.mangaCache, chapterData.parentId);
-        if (cache && cache.id) {
-            mangaId = cache.id;
-        } else {
-            const response = await fetch(`/api/manga/${chapterData.parentId}`);
-            const manga = await response.json();
-            mangaId = manga.mangaId;
-        }
-
-        return await checkIfBookmarked(mangaId);
-    }, [chapterData.parentId]); // Only re-run if parentId changes
-
     useEffect(() => {
-        setIsLoading(true);
-        bookmarkCheck.then((result) => {
-            setIsBookmarked(result);
-            setIsLoading(false);
-        });
-    }, [bookmarkCheck]);
+        const checkBookmark = async () => {
+            setIsLoading(true);
+            if (!chapterData) return;
+
+            try {
+                let mangaId = null;
+                // Only try to access IndexedDB on client side
+                if (typeof window !== "undefined") {
+                    const cache = await db.getCache(
+                        db.mangaCache,
+                        chapterData.parentId,
+                    );
+                    if (cache && cache.id) {
+                        mangaId = cache.id;
+                    }
+                }
+
+                if (!mangaId) {
+                    const response = await fetch(
+                        `/api/manga/${chapterData.parentId}`,
+                    );
+                    const manga = await response.json();
+                    mangaId = manga.mangaId;
+                }
+
+                const result = await checkIfBookmarked(mangaId);
+                setIsBookmarked(result);
+            } catch (error) {
+                console.error("Failed to check bookmark:", error);
+                setIsBookmarked(false);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        checkBookmark();
+    }, [chapterData.parentId]);
 
     async function bookmarkManga() {
         setIsLoading(true);
