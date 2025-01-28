@@ -98,6 +98,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
         );
     }
 
+    manga.alternativeNames = manga.alternativeNames?.filter(
+        (name: string) => name.trim() !== "",
+    );
+
     return (
         <main className="container mx-auto px-4 py-8">
             <UpdateManga manga={manga} />
