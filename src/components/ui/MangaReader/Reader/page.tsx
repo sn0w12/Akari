@@ -123,7 +123,12 @@ export default function PageReader({
         const screenWidth = window.innerWidth;
         const clickX = e.clientX;
         const clickY = e.clientY;
-        if (clickY < 100 || clickY > window.innerHeight - 100) return;
+        if (
+            clickY < 100 ||
+            clickY > window.innerHeight - 100 ||
+            isFooterVisible
+        )
+            return;
 
         if (clickX > screenWidth / 2) {
             nextPage(); // Click on the right side
