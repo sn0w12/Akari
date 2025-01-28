@@ -106,7 +106,7 @@ export function PaginationElement({
                                 href={createPageUrl(totalPages)}
                                 passHref
                                 legacyBehavior
-                                prefetch={true}
+                                prefetch={false}
                             >
                                 <PaginationLink className="cursor-pointer">
                                     {totalPages}
