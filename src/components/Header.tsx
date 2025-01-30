@@ -97,7 +97,7 @@ export function HeaderComponent() {
                                     {/* Badge element */}
                                     {notification && notification != "0" && (
                                         <span
-                                            className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
+                                            className="absolute bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
                                             style={{ bottom: "0", right: "0" }}
                                         >
                                             {notification}
