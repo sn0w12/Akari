@@ -23,16 +23,35 @@ export function HeaderComponent() {
 
     const fetchNotification = useMemo(
         () => async () => {
+            // Check local storage first
+            const cached = localStorage.getItem("notification");
+            const timestamp = localStorage.getItem("notificationTimestamp");
+            const now = Date.now();
+
+            // If we have cached data and it's less than 24 hours old
+            if (
+                cached &&
+                timestamp &&
+                now - parseInt(timestamp) < 24 * 60 * 60 * 1000
+            ) {
+                setNotification(cached);
+            }
+
             try {
                 const res = await fetch(`/api/bookmarks/notification`);
 
                 if (!res.ok) {
                     setNotification("");
+                    localStorage.removeItem("notification");
+                    localStorage.removeItem("notificationTimestamp");
                     return;
                 }
 
                 const data = await res.json();
                 setNotification(data);
+                // Cache the new data
+                localStorage.setItem("notification", data);
+                localStorage.setItem("notificationTimestamp", now.toString());
             } catch (error) {
                 console.error("Error fetching search results:", error);
             }
