@@ -10,6 +10,8 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
 import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
+import { useShortcut } from "@/lib/shortcuts";
+import { KeyboardShortcut } from "../../Shortcuts/KeyboardShortcuts";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -19,6 +21,7 @@ export default function SearchBar() {
     const [isFocused, setIsFocused] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const popupRef = useRef<HTMLDivElement | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const debouncedFetchResults = useCallback(
         debounce(async (query) => {
@@ -64,14 +67,23 @@ export default function SearchBar() {
         }
     };
 
+    useShortcut(
+        "ctrl+k",
+        () => {
+            inputRef.current?.focus();
+        },
+        { preventDefault: true },
+    );
+
     return (
         <div
             className={`relative transition-all w-auto flex-grow ml-6 lg:grow-0 lg:w-96 xl:w-128 ${
                 isFocused ? "xl:w-[40rem] lg:w-128" : ""
             }`}
         >
-            <div className="flex gap-2">
+            <div className="flex gap-2 relative">
                 <Input
+                    ref={inputRef}
                     type="search"
                     placeholder="Search manga..."
                     value={searchText}
@@ -83,6 +95,10 @@ export default function SearchBar() {
                         searchResults.length > 0 && setShowPopup(true);
                     }}
                     className="w-full hidden sm:block"
+                />
+                <KeyboardShortcut
+                    keys={["Ctrl", "K"]}
+                    className={`transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
                 />
             </div>
             {showPopup && (
