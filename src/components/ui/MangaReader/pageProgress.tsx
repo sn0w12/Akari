@@ -146,9 +146,9 @@ export default function PageProgress({
                             onClick={(e) => handleClick(index, e)}
                             className={`flex-1 transition-all duration-300 ease-in-out rounded-sm ${
                                 index === currentPage
-                                    ? "bg-accent-color"
+                                    ? "bg-accent-color hover:bg-accent-color/70"
                                     : index < currentPage
-                                      ? "bg-primary"
+                                      ? "bg-primary hover:bg-primary/80"
                                       : "bg-primary/30 hover:bg-primary/50"
                             }`}
                             aria-label={`Go to page ${index + 1}`}
