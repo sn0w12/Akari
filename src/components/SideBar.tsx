@@ -261,7 +261,7 @@ export function SideBar() {
                     side="right"
                     className="p-0 w-11/12 sm:w-96 border-l"
                 >
-                    <div className="flex flex-col h-full">
+                    <div id="sidebar" className="flex flex-col h-full">
                         <SheetTitle className="text-2xl font-bold flex items-center gap-2 p-6 border-b">
                             <LampDesk className="h-6 w-6" />
                             <span>Akari</span>
