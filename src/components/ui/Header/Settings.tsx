@@ -171,7 +171,7 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                             <TabsContent
                                 key={tabKey}
                                 value={tabKey}
-                                className="space-y-6"
+                                className="space-y-4"
                             >
                                 {Object.entries(settingsMap).map(
                                     ([key, setting]) =>
