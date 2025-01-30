@@ -98,7 +98,7 @@ export default function BookmarksGrid({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-2 bg-red-600 text-accent hover:text-red-600 focus:outline-none"
+                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-2 bg-negative text-accent hover:text-negative focus:outline-none"
                                 >
                                     <X className="h-5 w-5" />
                                 </Button>
@@ -106,7 +106,7 @@ export default function BookmarksGrid({
                             title="Confirm Bookmark Removal"
                             message="Are you sure you want to remove this bookmark?"
                             confirmLabel="Remove"
-                            confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+                            confirmColor="bg-negative border-negative hover:bg-negative/70"
                             cancelLabel="Cancel"
                             onConfirm={() =>
                                 removeBookmark(
@@ -120,7 +120,7 @@ export default function BookmarksGrid({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-8 md:right-14 bg-green-600 text-accent hover:text-green-600 focus:outline-none"
+                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-8 md:right-14 bg-positive text-accent hover:text-positive focus:outline-none"
                                 >
                                     <Check className="h-5 w-5" />
                                 </Button>
@@ -128,7 +128,7 @@ export default function BookmarksGrid({
                             title="Mark as read"
                             message="Are you sure you want to mark the latest chapter as read?"
                             confirmLabel="Confirm"
-                            confirmColor="bg-green-600 border-green-500 hover:bg-green-500"
+                            confirmColor="bg-positive border-positive hover:bg-positive/70"
                             cancelLabel="Cancel"
                             onConfirm={() =>
                                 updateBookmark(
