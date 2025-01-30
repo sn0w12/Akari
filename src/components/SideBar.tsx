@@ -262,13 +262,13 @@ export function SideBar() {
                     className="p-0 w-11/12 sm:w-96 border-l"
                 >
                     <div id="sidebar" className="flex flex-col h-full">
-                        <SheetTitle className="text-2xl font-bold flex items-center gap-2 p-6 border-b">
+                        <SheetTitle className="text-2xl font-bold flex items-center gap-2 px-6 py-4 border-b">
                             <LampDesk className="h-6 w-6" />
                             <span>Akari</span>
                         </SheetTitle>
 
                         <ScrollArea className="flex-1 px-6">
-                            <div className="space-y-4 py-6">
+                            <div className="space-y-4 py-4">
                                 <div className="space-y-2">
                                     <h2 className="text-lg font-semibold tracking-tight mb-2">
                                         Navigation
