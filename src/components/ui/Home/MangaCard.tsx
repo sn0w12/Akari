@@ -7,9 +7,15 @@ import HoverLink from "../hoverLink";
 
 interface MangaCardProps {
     manga: SmallManga;
+    loading?: "eager" | "lazy";
+    priority?: boolean;
 }
 
-export function MangaCard({ manga }: MangaCardProps) {
+export function MangaCard({
+    manga,
+    loading = "lazy",
+    priority = false,
+}: MangaCardProps) {
     return (
         <HoverLink href={`/manga/${manga.id}`} className="block">
             <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
@@ -20,6 +26,8 @@ export function MangaCard({ manga }: MangaCardProps) {
                         width={250}
                         height={350}
                         className="w-full h-auto object-cover"
+                        loading={loading}
+                        priority={priority}
                     />
                     <div
                         className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out will-change-opacity transform-gpu"

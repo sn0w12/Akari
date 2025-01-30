@@ -51,7 +51,12 @@ export function PopularManga({ mangas }: PopularMangaProps) {
         <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {paginatedPopularList.map((manga, index) => (
-                    <MangaCard key={index} manga={manga} />
+                    <MangaCard
+                        key={index}
+                        manga={manga}
+                        loading="eager"
+                        priority={index <= 4}
+                    />
                 ))}
             </div>
 
