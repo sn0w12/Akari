@@ -95,12 +95,14 @@ export function SideBar() {
             "openAccount",
             "navigateBookmarks",
         ]);
-        setShortcuts((settings as ShortcutSettings) ?? {
-            toggleSidebar: null,
-            openSettings: null,
-            openAccount: null,
-            navigateBookmarks: null,
-        });
+        setShortcuts(
+            (settings as ShortcutSettings) ?? {
+                toggleSidebar: null,
+                openSettings: null,
+                openAccount: null,
+                navigateBookmarks: null,
+            },
+        );
     }, []);
 
     const handleAccountClick = () => {
@@ -148,7 +150,7 @@ export function SideBar() {
                             ref={sheetRef}
                             variant="ghost"
                             size="icon"
-                            className="hover:bg-accent transition-colors duration-200 select-none touch-none"
+                            className="hover:bg-accent transition-colors duration-200 select-none touch-none border"
                         >
                             <Menu className="h-5 w-5" />
                             <span className="sr-only">Open menu</span>
@@ -181,7 +183,9 @@ export function SideBar() {
                             <span>Bookmarks</span>
                             {shortcuts.navigateBookmarks && (
                                 <KeyboardShortcut
-                                    keys={shortcuts.navigateBookmarks.split("+")}
+                                    keys={shortcuts.navigateBookmarks.split(
+                                        "+",
+                                    )}
                                 />
                             )}
                         </Link>

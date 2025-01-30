@@ -52,7 +52,11 @@ export default function SearchButton() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="sm:hidden">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="sm:hidden border"
+                >
                     <Search className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
