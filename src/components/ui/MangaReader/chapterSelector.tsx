@@ -29,6 +29,7 @@ interface ChapterSelectorProps {
 export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
     const [open, setOpen] = React.useState(false);
     const router = useRouter();
+    const selectedItemRef = React.useRef<HTMLDivElement>(null);
 
     const onChange = (currentValue: string) => {
         const currentUrl = window.location.href;
@@ -39,6 +40,14 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
         router.push(newUrl);
         setOpen(false);
     };
+
+    React.useEffect(() => {
+        requestAnimationFrame(() => {
+            if (open && selectedItemRef.current) {
+                selectedItemRef.current.scrollIntoView({ block: "nearest" });
+            }
+        });
+    }, [open]);
 
     return (
         <>
@@ -80,6 +89,11 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                                         key={chapter.value}
                                         value={chapter.value}
                                         onSelect={onChange}
+                                        ref={
+                                            chapter.value === value
+                                                ? selectedItemRef
+                                                : null
+                                        }
                                     >
                                         <Check
                                             className={cn(
