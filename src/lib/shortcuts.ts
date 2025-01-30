@@ -30,6 +30,19 @@ export function useShortcut(
         const keys = parseShortcut(shortcutKey);
 
         const handler = (event: KeyboardEvent) => {
+            const activeElement = document.activeElement;
+            const isInputFocused =
+                activeElement instanceof HTMLElement &&
+                (activeElement.tagName === "INPUT" ||
+                    activeElement.tagName === "TEXTAREA" ||
+                    activeElement.tagName === "SELECT" ||
+                    activeElement.isContentEditable ||
+                    activeElement.getAttribute("role") === "textbox");
+
+            if (isInputFocused) {
+                return;
+            }
+
             if (matchesShortcut(event, keys)) {
                 if (options.preventDefault) {
                     event.preventDefault();
