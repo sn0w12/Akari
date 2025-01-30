@@ -136,7 +136,7 @@ export default function PageProgress({
                 className="transition-all relative p-1 rounded-lg border border-primary/30 bg-background w-full h-[30px] lg:w-[30px] lg:hover:w-[60px] lg:h-[75vh]"
             >
                 <div
-                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-all duration-300 ease-in-out rounded-md ${gradient}`}
+                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-all duration-300 ease-in-out rounded-sm ${gradient}`}
                     style={backgroundStyle}
                 />
                 <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
@@ -144,7 +144,7 @@ export default function PageProgress({
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 transition-all duration-300 ease-in-out rounded-sm ${
+                            className={`flex-1 transition-all duration-300 ease-in-out rounded-[3px] ${
                                 index === currentPage
                                     ? "bg-accent-color hover:bg-accent-color/70"
                                     : index < currentPage
