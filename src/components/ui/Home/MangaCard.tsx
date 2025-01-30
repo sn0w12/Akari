@@ -21,7 +21,10 @@ export function MangaCard({ manga }: MangaCardProps) {
                         height={350}
                         className="w-full h-auto object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                    <div
+                        className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out will-change-opacity transform-gpu"
+                        style={{ backfaceVisibility: "hidden" }}
+                    >
                         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                             <h3 className="font-bold text-sm mb-1">
                                 {manga.title}
