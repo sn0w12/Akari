@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
     Menu,
@@ -40,6 +41,8 @@ import {
 } from "@/components/ui/context-menu";
 import SettingsDialog from "@/components/ui/Header/SettingsDialog";
 import LoginDialog from "@/components/ui/Header/AccountDialog";
+import { useShortcut } from "@/lib/shortcuts";
+import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 
 function SideBarLink({
     href,
@@ -66,6 +69,7 @@ function SideBarLink({
 
 export function SideBar() {
     const [open, setOpen] = useState(false);
+    const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
     const settingsRef = useRef<HTMLButtonElement>(null);
@@ -88,6 +92,20 @@ export function SideBar() {
         setOpen(false);
     };
 
+    useShortcut("ctrl+shift+b", () => setOpen((prev) => !prev), {
+        preventDefault: true,
+    });
+    useShortcut("ctrl+,", handleSettingsClick, { preventDefault: true });
+    useShortcut("ctrl+.", handleAccountClick, { preventDefault: true });
+    useShortcut(
+        "ctrl+b",
+        () => {
+            router.push("/bookmarks");
+            setOpen(false);
+        },
+        { preventDefault: true },
+    );
+
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <ContextMenu>
@@ -106,6 +124,14 @@ export function SideBar() {
                 </ContextMenuTrigger>
 
                 <ContextMenuContent className="w-56">
+                    <ContextMenuItem onSelect={() => setOpen((prev) => !prev)}>
+                        <Menu className="mr-2 h-4 w-4" />
+                        <span>Open</span>
+                        <KeyboardShortcut keys={["Ctrl", "Shift", "B"]} />
+                    </ContextMenuItem>
+
+                    <ContextMenuSeparator />
+
                     <ContextMenuItem asChild>
                         <Link href="/" className="flex items-center">
                             <Home className="mr-2 h-4 w-4" />
@@ -116,6 +142,7 @@ export function SideBar() {
                         <Link href="/bookmarks" className="flex items-center">
                             <Bookmark className="mr-2 h-4 w-4" />
                             <span>Bookmarks</span>
+                            <KeyboardShortcut keys={["Ctrl", "B"]} />
                         </Link>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
@@ -168,10 +195,12 @@ export function SideBar() {
                     <ContextMenuItem onSelect={handleAccountClick}>
                         <User className="mr-2 h-4 w-4" />
                         <span>Account</span>
+                        <KeyboardShortcut keys={["Ctrl", "."]} />
                     </ContextMenuItem>
                     <ContextMenuItem onSelect={handleSettingsClick}>
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
+                        <KeyboardShortcut keys={["Ctrl", ","]} />
                     </ContextMenuItem>
                 </ContextMenuContent>
 
