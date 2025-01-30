@@ -152,15 +152,14 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
             <CardContent className="min-h-[400px]">
                 <Tabs defaultValue={defaultTab} className="w-full">
                     <TabsList
-                        className="w-full h-auto flex-wrap gap-1"
-                        style={{ display: "flex" }}
+                        className="w-full h-auto gap-1 grid grid-flow-dense auto-rows-auto"
+                        style={{
+                            gridTemplateColumns:
+                                "repeat(auto-fill, minmax(100px, 1fr))",
+                        }}
                     >
                         {Object.keys(settingsTabs).map((tabKey) => (
-                            <TabsTrigger
-                                key={tabKey}
-                                value={tabKey}
-                                className="flex-grow"
-                            >
+                            <TabsTrigger key={tabKey} value={tabKey}>
                                 {tabKey}
                             </TabsTrigger>
                         ))}
