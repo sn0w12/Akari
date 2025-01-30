@@ -14,7 +14,7 @@ export function KeyboardShortcut({
             {keys.map((key, index) => (
                 <>
                     <kbd
-                        key={`${key}-${index}`}
+                        key={`${keys.join("-")}-${key}-${index}`}
                         className="px-1 py-0.5 text-xs border rounded-md bg-muted"
                     >
                         {key}

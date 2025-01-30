@@ -28,6 +28,7 @@ export type SettingType =
     | "textarea"
     | "select"
     | "radio"
+    | "shortcut"
     | "button";
 
 interface BaseSetting {
@@ -71,6 +72,12 @@ interface RadioSetting extends BaseSetting {
     default: string;
 }
 
+interface ShortcutSetting extends BaseSetting {
+    type: "shortcut";
+    value: string;
+    default: string;
+}
+
 interface ButtonSetting extends BaseSetting {
     type: "button";
     label: string;
@@ -85,6 +92,7 @@ export type Setting =
     | TextareaSetting
     | SelectSetting
     | RadioSetting
+    | ShortcutSetting
     | ButtonSetting;
 
 export interface SettingsMap {
@@ -105,6 +113,7 @@ function getSettingValue(setting: Setting): SettingValue {
         case "textarea":
         case "select":
         case "radio":
+        case "shortcut":
             return (
                 (setting as BaseSetting).value ??
                 (setting as BaseSetting).default
@@ -285,6 +294,34 @@ function renderInput(key: string, setting: Setting) {
                         </div>
                     ))}
                 </RadioGroup>
+            );
+        case "shortcut":
+            return (
+                <Input
+                    id={key}
+                    type="text"
+                    value={getSettingValue(setting) as string}
+                    className="max-w-60"
+                    onKeyDown={(e) => {
+                        e.preventDefault();
+                        const keys: string[] = [];
+                        if (e.ctrlKey) keys.push("Ctrl");
+                        if (e.shiftKey) keys.push("Shift");
+                        if (e.altKey) keys.push("Alt");
+                        if (
+                            e.key !== "Control" &&
+                            e.key !== "Shift" &&
+                            e.key !== "Alt"
+                        ) {
+                            keys.push(e.key.toUpperCase());
+                        }
+                        if (keys.length > 0) {
+                            setting.onChange(keys.join("+"));
+                        }
+                    }}
+                    readOnly
+                    placeholder="Press keys..."
+                />
             );
         case "button":
             if (!setting.confirmation) {

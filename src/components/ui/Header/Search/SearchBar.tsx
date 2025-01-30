@@ -12,6 +12,7 @@ import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
 import { useShortcut } from "@/lib/shortcuts";
 import { KeyboardShortcut } from "../../Shortcuts/KeyboardShortcuts";
+import { getSetting, useSettingsChange } from "@/lib/settings";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -20,8 +21,13 @@ export default function SearchBar() {
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [shortcut, setShortcut] = useState(getSetting("searchManga"));
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    useSettingsChange((event) => {
+        setShortcut(event.detail.value);
+    }, "searchManga");
 
     const debouncedFetchResults = useCallback(
         debounce(async (query) => {
@@ -68,7 +74,7 @@ export default function SearchBar() {
     };
 
     useShortcut(
-        "ctrl+k",
+        shortcut,
         () => {
             inputRef.current?.focus();
         },
@@ -97,7 +103,7 @@ export default function SearchBar() {
                     className="w-full hidden sm:block"
                 />
                 <KeyboardShortcut
-                    keys={["Ctrl", "K"]}
+                    keys={shortcut.split("+")}
                     className={`transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
                 />
             </div>

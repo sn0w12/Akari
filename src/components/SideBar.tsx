@@ -43,6 +43,7 @@ import SettingsDialog from "@/components/ui/Header/SettingsDialog";
 import LoginDialog from "@/components/ui/Header/AccountDialog";
 import { useShortcut } from "@/lib/shortcuts";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
+import { getSettings, useSettingsChange } from "@/lib/settings";
 
 function SideBarLink({
     href,
@@ -69,10 +70,30 @@ function SideBarLink({
 
 export function SideBar() {
     const [open, setOpen] = useState(false);
+    const [shortcuts, setShortcuts] = useState(
+        getSettings([
+            "toggleSidebar",
+            "openSettings",
+            "openAccount",
+            "navigateBookmarks",
+        ]),
+    );
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
     const settingsRef = useRef<HTMLButtonElement>(null);
+
+    // Get shortcut settings
+    useSettingsChange((event) => {
+        setShortcuts(
+            getSettings([
+                "toggleSidebar",
+                "openSettings",
+                "openAccount",
+                "navigateBookmarks",
+            ]),
+        );
+    });
 
     const handleAccountClick = () => {
         sheetRef.current?.click();
@@ -92,13 +113,21 @@ export function SideBar() {
         setOpen(false);
     };
 
-    useShortcut("ctrl+shift+b", () => setOpen((prev) => !prev), {
+    useShortcut(
+        shortcuts?.toggleSidebar as string,
+        () => setOpen((prev) => !prev),
+        {
+            preventDefault: true,
+        },
+    );
+    useShortcut(shortcuts?.openSettings as string, handleSettingsClick, {
         preventDefault: true,
     });
-    useShortcut("ctrl+,", handleSettingsClick, { preventDefault: true });
-    useShortcut("ctrl+.", handleAccountClick, { preventDefault: true });
+    useShortcut(shortcuts?.openAccount as string, handleAccountClick, {
+        preventDefault: true,
+    });
     useShortcut(
-        "ctrl+b",
+        shortcuts?.navigateBookmarks as string,
         () => {
             router.push("/bookmarks");
             setOpen(false);
@@ -127,7 +156,13 @@ export function SideBar() {
                     <ContextMenuItem onSelect={() => setOpen((prev) => !prev)}>
                         <Menu className="mr-2 h-4 w-4" />
                         <span>Open</span>
-                        <KeyboardShortcut keys={["Ctrl", "Shift", "B"]} />
+                        <KeyboardShortcut
+                            keys={
+                                typeof shortcuts?.toggleSidebar === "string"
+                                    ? shortcuts.toggleSidebar.split("+")
+                                    : []
+                            }
+                        />
                     </ContextMenuItem>
 
                     <ContextMenuSeparator />
@@ -142,7 +177,14 @@ export function SideBar() {
                         <Link href="/bookmarks" className="flex items-center">
                             <Bookmark className="mr-2 h-4 w-4" />
                             <span>Bookmarks</span>
-                            <KeyboardShortcut keys={["Ctrl", "B"]} />
+                            <KeyboardShortcut
+                                keys={
+                                    typeof shortcuts?.navigateBookmarks ===
+                                    "string"
+                                        ? shortcuts.navigateBookmarks.split("+")
+                                        : []
+                                }
+                            />
                         </Link>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
@@ -195,12 +237,24 @@ export function SideBar() {
                     <ContextMenuItem onSelect={handleAccountClick}>
                         <User className="mr-2 h-4 w-4" />
                         <span>Account</span>
-                        <KeyboardShortcut keys={["Ctrl", "."]} />
+                        <KeyboardShortcut
+                            keys={
+                                typeof shortcuts?.openAccount === "string"
+                                    ? shortcuts.openAccount.split("+")
+                                    : []
+                            }
+                        />
                     </ContextMenuItem>
                     <ContextMenuItem onSelect={handleSettingsClick}>
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
-                        <KeyboardShortcut keys={["Ctrl", ","]} />
+                        <KeyboardShortcut
+                            keys={
+                                typeof shortcuts?.openSettings === "string"
+                                    ? shortcuts.openSettings.split("+")
+                                    : []
+                            }
+                        />
                     </ContextMenuItem>
                 </ContextMenuContent>
 
