@@ -106,7 +106,7 @@ export default function SearchBar() {
                     keys={
                         typeof shortcut === "string" ? shortcut.split("+") : []
                     }
-                    className={`transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
+                    className={`hidden sm:flex transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
                 />
             </div>
             {showPopup && (
