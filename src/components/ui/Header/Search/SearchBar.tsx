@@ -103,7 +103,9 @@ export default function SearchBar() {
                     className="w-full hidden sm:block"
                 />
                 <KeyboardShortcut
-                    keys={shortcut.split("+")}
+                    keys={
+                        typeof shortcut === "string" ? shortcut.split("+") : []
+                    }
                     className={`transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
                 />
             </div>
