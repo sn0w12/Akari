@@ -195,7 +195,11 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                                                             </p>
                                                         )}
                                                     </div>
-                                                    {renderInput(key, setting)}
+                                                    {renderInput(
+                                                        key,
+                                                        setting,
+                                                        settingsMap,
+                                                    )}
                                                 </div>
                                             </div>
                                         ),
@@ -209,7 +213,25 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
     );
 }
 
-function renderInput(key: string, setting: Setting) {
+function findDuplicateShortcuts(settingsMap: SettingsMap): Set<string> {
+    const shortcuts = new Set<string>();
+    const duplicates = new Set<string>();
+
+    Object.values(settingsMap).forEach((setting) => {
+        if (setting.type === "shortcut") {
+            const value =
+                (setting.value as string) ?? (setting.default as string);
+            if (shortcuts.has(value)) {
+                duplicates.add(value);
+            }
+            shortcuts.add(value);
+        }
+    });
+
+    return duplicates;
+}
+
+function renderInput(key: string, setting: Setting, settingsMap: SettingsMap) {
     switch (setting.type) {
         case "checkbox":
             return (
@@ -295,12 +317,17 @@ function renderInput(key: string, setting: Setting) {
                 </RadioGroup>
             );
         case "shortcut":
+            const duplicates = findDuplicateShortcuts(settingsMap);
+            const isDuplicate = duplicates.has(
+                getSettingValue(setting) as string,
+            );
+
             return (
                 <Input
                     id={key}
                     type="text"
                     value={getSettingValue(setting) as string}
-                    className="max-w-60"
+                    className={`max-w-60 ${isDuplicate ? "border-red-500 bg-red-800 focus-visible:ring-red-500" : ""}`}
                     onKeyDown={(e) => {
                         e.preventDefault();
                         const keys: string[] = [];
