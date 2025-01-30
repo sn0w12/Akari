@@ -47,7 +47,8 @@ export async function processMangaList(url: string, page: string) {
             chapterElement
                 .text()
                 .replace("-", ".")
-                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || "";
+                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                .replace("Chapter ", "") || "";
         const chapterUrl = chapterElement.attr("href");
         const description = mangaElement
             .find(".genres-item-description")
@@ -97,7 +98,8 @@ export async function processMangaList(url: string, page: string) {
                 .text()
                 .replace(title, "")
                 .replace("-", ".")
-                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0] || "";
+                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                .replace("Chapter ", "") || "";
         const chapterUrl = chapterElement.attr("href");
 
         popular.push({
