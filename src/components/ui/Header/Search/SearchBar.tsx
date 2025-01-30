@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -21,13 +21,17 @@ export default function SearchBar() {
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [shortcut, setShortcut] = useState(getSetting("searchManga"));
+    const [shortcut, setShortcut] = useState<string | null>(null);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useSettingsChange((event) => {
-        setShortcut(event.detail.value);
+        setShortcut(event.detail.value ? String(event.detail.value) : null);
     }, "searchManga");
+
+    useEffect(() => {
+        setShortcut(getSetting("searchManga"));
+    }, []);
 
     const debouncedFetchResults = useCallback(
         debounce(async (query) => {
@@ -74,7 +78,7 @@ export default function SearchBar() {
     };
 
     useShortcut(
-        shortcut,
+        shortcut || "",
         () => {
             inputRef.current?.focus();
         },
@@ -102,12 +106,12 @@ export default function SearchBar() {
                     }}
                     className="w-full hidden sm:block"
                 />
-                <KeyboardShortcut
-                    keys={
-                        typeof shortcut === "string" ? shortcut.split("+") : []
-                    }
-                    className={`hidden sm:flex transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
-                />
+                {shortcut && (
+                    <KeyboardShortcut
+                        keys={shortcut.split("+")}
+                        className={`hidden sm:flex transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
+                    />
+                )}
             </div>
             {showPopup && (
                 <Card
