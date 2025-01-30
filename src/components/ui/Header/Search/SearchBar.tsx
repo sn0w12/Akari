@@ -10,7 +10,7 @@ import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
 import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
-import { useShortcut } from "@/lib/shortcuts";
+import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "../../Shortcuts/KeyboardShortcuts";
 import { getSetting, useSettingsChange } from "@/lib/settings";
 

@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/context-menu";
 import SettingsDialog from "@/components/ui/Header/SettingsDialog";
 import LoginDialog from "@/components/ui/Header/AccountDialog";
-import { useShortcut } from "@/lib/shortcuts";
+import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 import { getSettings, useSettingsChange } from "@/lib/settings";
 
