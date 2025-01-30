@@ -85,11 +85,11 @@ const SettingsDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="flex border w-full sm:w-auto flex-grow items-center gap-2 px-6 py-5"
+                    className="flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
                     ref={ref}
                 >
                     <Settings className="h-5 w-5" />
-                    <span className="text-lg font-medium">Settings</span>
+                    <span className="text-base font-medium">Settings</span>
                 </Button>
             </DialogTrigger>
             <DialogContent>

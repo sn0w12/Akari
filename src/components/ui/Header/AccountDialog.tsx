@@ -71,7 +71,7 @@ function DialogButtonContent() {
     return (
         <>
             <User className="h-5 w-5" />
-            <span className="text-lg font-medium">Account</span>
+            <span className="text-base font-medium">Account</span>
         </>
     );
 }
@@ -293,7 +293,7 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                             ref={ref}
                             variant="ghost"
                             size="icon"
-                            className="flex w-full sm:w-auto border flex-grow items-center gap-2 px-6 py-5"
+                            className="flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
                         >
                             <DialogButtonContent />
                         </Button>
