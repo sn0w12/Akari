@@ -143,8 +143,8 @@ const allSettings = [
     generalSettings,
     mangaSettings,
     notificationSettings,
-    cacheSettings,
     shortcutsSettings,
+    cacheSettings,
 ];
 type ExcludeLabel<T> = Omit<T, "label">;
 type MergeSettings<T extends readonly unknown[]> = ExcludeLabel<
