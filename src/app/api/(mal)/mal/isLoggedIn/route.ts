@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     if (!accessToken) {
         return NextResponse.json(
             { error: "Missing access_token" },
-            { status: 400 },
+            { status: 401 },
         );
     }
 
