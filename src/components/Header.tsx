@@ -3,9 +3,7 @@
 import HoverLink from "./ui/hoverLink";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
-import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
-import SettingsDialog from "./ui/Header/SettingsDialog";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
@@ -17,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
+import { TrackLogin } from "./ui/Header/TrackLogin";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -124,9 +123,9 @@ export function HeaderComponent() {
 
                         {/* Theme Handler */}
                         <ThemeSetting />
-
                         {/* Sidebar */}
                         <SideBar />
+                        <TrackLogin />
                     </div>
                 </div>
             </div>
