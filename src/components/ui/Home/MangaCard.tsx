@@ -9,16 +9,20 @@ interface MangaCardProps {
     manga: SmallManga;
     loading?: "eager" | "lazy";
     priority?: boolean;
+    isBookmarked?: boolean;
 }
 
 export function MangaCard({
     manga,
     loading = "lazy",
     priority = false,
+    isBookmarked = false,
 }: MangaCardProps) {
     return (
         <HoverLink href={`/manga/${manga.id}`} className="block">
-            <Card className="group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105">
+            <Card
+                className={`group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 ${isBookmarked ? "border-[3px] border-accent-color" : ""}`}
+            >
                 <CardContent className="p-0">
                     <Image
                         src={manga.image}

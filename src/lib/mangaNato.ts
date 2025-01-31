@@ -3,6 +3,8 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import { getMangaArrayFromSupabase } from "./supabase";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import db from "./db";
+import { checkIfBookmarked } from "./bookmarks";
 
 export function getUserData(
     cookieStore: ReadonlyRequestCookies,
@@ -124,4 +126,40 @@ export async function processMangaList(url: string, page: string) {
         metaData: { totalStories, totalPages },
     };
     return result;
+}
+
+export async function getBookmarked(mangaList: SmallManga[]) {
+    const promises = mangaList.map(async (manga) => {
+        const cachedManga = await db.getCache(db.mangaCache, manga.id);
+        if (!cachedManga) {
+            return null;
+        }
+        return { id: cachedManga.id, identifier: manga.id };
+    });
+
+    const mangaIds = (await Promise.all(promises)).filter((id) => id !== null);
+
+    // Create id->identifier mapping
+    const idMap = new Map(mangaIds.map((item) => [item.id, item.identifier]));
+
+    const bookmarkedIds = await checkIfBookmarked(
+        mangaIds.map((item) => item.id),
+    );
+
+    // Transform using identifiers as keys
+    const transformedBookmarks = Object.entries(bookmarkedIds).reduce<
+        Record<string, boolean>
+    >((acc, [id, value]) => {
+        const identifier = idMap.get(id);
+        if (identifier) {
+            acc[identifier] = value;
+        }
+        return acc;
+    }, {});
+
+    const bookmarkedManga = Object.entries(transformedBookmarks)
+        .filter(([_, value]) => value)
+        .map(([identifier]) => identifier);
+
+    return bookmarkedManga;
 }

@@ -4,6 +4,7 @@ import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
 import { SmallManga } from "@/app/api/interfaces";
 import { MangaCard } from "./ui/Home/MangaCard";
+import HomeGrid from "./ui/Home/HomeGrid";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -73,11 +74,7 @@ export default async function MangaReaderHome({
                 >
                     Latest Releases
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                    {mangaList.map((manga) => (
-                        <MangaCard key={manga.id} manga={manga} />
-                    ))}
-                </div>
+                <HomeGrid mangaList={mangaList} />
             </main>
             <PaginationElement
                 currentPage={currentPage}
