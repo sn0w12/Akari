@@ -4,6 +4,7 @@ import Fuse from "fuse.js";
 import NodeCache from "node-cache";
 import { SmallManga } from "../../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
 export const dynamic = "force-dynamic";
@@ -32,12 +33,14 @@ export async function GET(req: Request): Promise<Response> {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            return new Response(JSON.stringify({ mangaList: cachedData }), {
+            return new Response(cachedData as string, {
                 status: 200,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(600),
+                },
             });
         }
-
         // Construct the URL with the page number
         const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
         const { data } = await axios.get(url);
@@ -55,7 +58,10 @@ export async function GET(req: Request): Promise<Response> {
             const chapterElement = mangaElement
                 .find("a.genres-item-chap")
                 .first();
-            const latestChapter = chapterElement.text();
+            const latestChapter = chapterElement
+                .text()
+                .replace("Chapter", "")
+                .trim();
             const chapterUrl = chapterElement.attr("href");
             const author = mangaElement.find(".genres-item-author").text();
 
@@ -90,21 +96,24 @@ export async function GET(req: Request): Promise<Response> {
             mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
         }
         await replaceImages(mangaList);
-        cache.set(cacheKey, mangaList);
 
-        return new Response(
-            JSON.stringify({
-                mangaList,
-                metaData: {
-                    totalStories: mangaList.length,
-                    totalPages: totalPages,
-                },
-            }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
+        const response = JSON.stringify({
+            mangaList,
+            metaData: {
+                totalStories: mangaList.length,
+                totalPages: totalPages,
             },
-        );
+        });
+
+        cache.set(cacheKey, response);
+
+        return new Response(response, {
+            status: 200,
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(600),
+            },
+        });
     } catch (error) {
         console.error(error);
         return new Response(

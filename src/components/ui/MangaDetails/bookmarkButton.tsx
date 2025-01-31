@@ -222,8 +222,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
     const buttonClass = `w-full relative overflow-hidden ${
         isStateBookmarked
-            ? "bg-green-500 text-white hover:bg-red-600"
-            : "hover:bg-green-500"
+            ? "bg-positive text-white hover:bg-negative"
+            : "hover:bg-positive"
     }`;
 
     const button = (
@@ -246,7 +246,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             title="Confirm Bookmark Removal"
             message="Are you sure you want to remove this bookmark?"
             confirmLabel="Remove"
-            confirmColor="bg-red-600 border-red-500 hover:bg-red-500"
+            confirmColor="bg-negative border-negative hover:bg-negative/70"
             cancelLabel="Cancel"
             onConfirm={handleRemoveBookmark}
         />

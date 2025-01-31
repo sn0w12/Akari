@@ -105,10 +105,45 @@ export const cacheSettings = {
     },
 };
 
+export const shortcutsSettings = {
+    label: "Shortcuts",
+    searchManga: {
+        type: "shortcut",
+        label: "Search Manga",
+        value: "Ctrl+K",
+        default: "Ctrl+K",
+    },
+    toggleSidebar: {
+        type: "shortcut",
+        label: "Toggle Sidebar",
+        value: "Ctrl+B",
+        default: "Ctrl+B",
+    },
+    openSettings: {
+        type: "shortcut",
+        label: "Open Settings",
+        value: "Ctrl+,",
+        default: "Ctrl+,",
+    },
+    openAccount: {
+        type: "shortcut",
+        label: "Open Account",
+        value: "Ctrl+.",
+        default: "Ctrl+.",
+    },
+    navigateBookmarks: {
+        type: "shortcut",
+        label: "Navigate to Bookmarks",
+        value: "Ctrl+B",
+        default: "Ctrl+B",
+    },
+};
+
 const allSettings = [
     generalSettings,
     mangaSettings,
     notificationSettings,
+    shortcutsSettings,
     cacheSettings,
 ];
 type ExcludeLabel<T> = Omit<T, "label">;
@@ -229,6 +264,33 @@ export function getSetting(key: keyof SettingsInterface) {
         }
     }
     return null;
+}
+
+/**
+ * Retrieves multiple settings from local storage.
+ *
+ * @param keys - Array of setting keys to retrieve
+ * @returns Object containing the requested settings with their values
+ */
+export function getSettings(keys: (keyof SettingsInterface)[]) {
+    if (typeof window === "undefined") return null;
+
+    const storedSettings = localStorage.getItem("settings");
+    if (!storedSettings) {
+        return keys.reduce<Record<keyof SettingsInterface, SettingValue>>(
+            (acc, key) => {
+                acc[key] = defaultSettings[key];
+                return acc;
+            },
+            {} as Record<keyof SettingsInterface, SettingValue>,
+        );
+    }
+
+    const settings = JSON.parse(storedSettings);
+    return keys.reduce((acc, key) => {
+        acc[key] = settings[key] ?? defaultSettings[key];
+        return acc;
+    }, {} as Partial<SettingsInterface>);
 }
 
 /**

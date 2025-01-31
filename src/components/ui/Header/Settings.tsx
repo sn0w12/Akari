@@ -28,6 +28,7 @@ export type SettingType =
     | "textarea"
     | "select"
     | "radio"
+    | "shortcut"
     | "button";
 
 interface BaseSetting {
@@ -71,6 +72,12 @@ interface RadioSetting extends BaseSetting {
     default: string;
 }
 
+interface ShortcutSetting extends BaseSetting {
+    type: "shortcut";
+    value: string;
+    default: string;
+}
+
 interface ButtonSetting extends BaseSetting {
     type: "button";
     label: string;
@@ -85,6 +92,7 @@ export type Setting =
     | TextareaSetting
     | SelectSetting
     | RadioSetting
+    | ShortcutSetting
     | ButtonSetting;
 
 export interface SettingsMap {
@@ -105,6 +113,7 @@ function getSettingValue(setting: Setting): SettingValue {
         case "textarea":
         case "select":
         case "radio":
+        case "shortcut":
             return (
                 (setting as BaseSetting).value ??
                 (setting as BaseSetting).default
@@ -143,15 +152,14 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
             <CardContent className="min-h-[400px]">
                 <Tabs defaultValue={defaultTab} className="w-full">
                     <TabsList
-                        className="w-full h-auto flex-wrap gap-1"
-                        style={{ display: "flex" }}
+                        className="w-full h-auto gap-1 grid grid-flow-dense auto-rows-auto"
+                        style={{
+                            gridTemplateColumns:
+                                "repeat(auto-fill, minmax(100px, 1fr))",
+                        }}
                     >
                         {Object.keys(settingsTabs).map((tabKey) => (
-                            <TabsTrigger
-                                key={tabKey}
-                                value={tabKey}
-                                className="flex-grow"
-                            >
+                            <TabsTrigger key={tabKey} value={tabKey}>
                                 {tabKey}
                             </TabsTrigger>
                         ))}
@@ -162,7 +170,7 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                             <TabsContent
                                 key={tabKey}
                                 value={tabKey}
-                                className="space-y-6"
+                                className="space-y-4"
                             >
                                 {Object.entries(settingsMap).map(
                                     ([key, setting]) =>
@@ -187,7 +195,11 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                                                             </p>
                                                         )}
                                                     </div>
-                                                    {renderInput(key, setting)}
+                                                    {renderInput(
+                                                        key,
+                                                        setting,
+                                                        settingsMap,
+                                                    )}
                                                 </div>
                                             </div>
                                         ),
@@ -201,7 +213,25 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
     );
 }
 
-function renderInput(key: string, setting: Setting) {
+function findDuplicateShortcuts(settingsMap: SettingsMap): Set<string> {
+    const shortcuts = new Set<string>();
+    const duplicates = new Set<string>();
+
+    Object.values(settingsMap).forEach((setting) => {
+        if (setting.type === "shortcut") {
+            const value =
+                (setting.value as string) ?? (setting.default as string);
+            if (shortcuts.has(value)) {
+                duplicates.add(value);
+            }
+            shortcuts.add(value);
+        }
+    });
+
+    return duplicates;
+}
+
+function renderInput(key: string, setting: Setting, settingsMap: SettingsMap) {
     switch (setting.type) {
         case "checkbox":
             return (
@@ -285,6 +315,39 @@ function renderInput(key: string, setting: Setting) {
                         </div>
                     ))}
                 </RadioGroup>
+            );
+        case "shortcut":
+            const duplicates = findDuplicateShortcuts(settingsMap);
+            const isDuplicate = duplicates.has(
+                getSettingValue(setting) as string,
+            );
+
+            return (
+                <Input
+                    id={key}
+                    type="text"
+                    value={getSettingValue(setting) as string}
+                    className={`max-w-60 ${isDuplicate ? "border-red-500 bg-red-800 focus-visible:ring-red-500" : ""}`}
+                    onKeyDown={(e) => {
+                        e.preventDefault();
+                        const keys: string[] = [];
+                        if (e.ctrlKey) keys.push("Ctrl");
+                        if (e.shiftKey) keys.push("Shift");
+                        if (e.altKey) keys.push("Alt");
+                        if (
+                            e.key !== "Control" &&
+                            e.key !== "Shift" &&
+                            e.key !== "Alt"
+                        ) {
+                            keys.push(e.key.toUpperCase());
+                        }
+                        if (keys.length > 0) {
+                            setting.onChange(keys.join("+"));
+                        }
+                    }}
+                    readOnly
+                    placeholder="Press keys..."
+                />
             );
         case "button":
             if (!setting.confirmation) {

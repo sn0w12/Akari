@@ -4,7 +4,7 @@ import { Bookmark } from "@/app/api/interfaces";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import { getMangaArrayFromSupabase } from "@/lib/supabase";
-import { generateCacheHeaders } from "@/lib/cache";
+import { generateClientCacheHeaders } from "@/lib/cache";
 
 const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
 
@@ -179,7 +179,7 @@ export async function GET(request: Request) {
             {
                 status: 200,
                 headers: {
-                    ...generateCacheHeaders(30),
+                    ...generateClientCacheHeaders(30),
                 },
             },
         );

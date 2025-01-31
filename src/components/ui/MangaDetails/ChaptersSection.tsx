@@ -136,7 +136,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                         <Card
                             className={`h-full transition-colors ${
                                 chapter.id === lastRead
-                                    ? "bg-green-500 hover:bg-green-400"
+                                    ? "bg-positive hover:bg-positive/70"
                                     : "hover:bg-accent"
                             }`}
                         >

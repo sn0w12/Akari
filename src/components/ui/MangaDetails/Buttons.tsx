@@ -31,7 +31,7 @@ export default function Buttons({ manga }: ButtonsProps) {
             checkIfBookmarked(manga.mangaId),
         ]);
 
-        setIsBookmarked(isBookmarked);
+        setIsBookmarked((isBookmarked as boolean) ?? false);
         if (cachedData) {
             setBmData(cachedData.bm_data);
             setLastRead(cachedData.last_read);

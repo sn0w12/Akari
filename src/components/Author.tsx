@@ -3,7 +3,7 @@ import nextBase64 from "next-base64";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
-import { MangaCard } from "./ui/Home/MangaCard";
+import { MangaGrid } from "./MangaGrid";
 import { SimpleError, SmallManga } from "@/app/api/interfaces";
 import Head from "next/head";
 
@@ -98,12 +98,7 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
                     </div>
 
                     {error && <ErrorComponent message={error} />}
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                        {mangaList.map((manga) => (
-                            <MangaCard key={manga.id} manga={manga} />
-                        ))}
-                    </div>
+                    <MangaGrid mangaList={mangaList} />
                 </main>
 
                 {!error && (

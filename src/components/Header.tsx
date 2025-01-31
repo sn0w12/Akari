@@ -3,9 +3,7 @@
 import HoverLink from "./ui/hoverLink";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
-import LoginDialog from "./ui/Header/AccountDialog";
 import Icon from "./ui/Header/Icon";
-import SettingsDialog from "./ui/Header/SettingsDialog";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
@@ -17,22 +15,42 @@ import {
 } from "@/components/ui/tooltip";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
+import { TrackLogin } from "./ui/Header/TrackLogin";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
 
     const fetchNotification = useMemo(
         () => async () => {
+            // Check local storage first
+            const cached = localStorage.getItem("notification");
+            const timestamp = localStorage.getItem("notificationTimestamp");
+            const now = Date.now();
+
+            // If we have cached data and it's less than 24 hours old
+            if (
+                cached &&
+                timestamp &&
+                now - parseInt(timestamp) < 24 * 60 * 60 * 1000
+            ) {
+                setNotification(cached);
+            }
+
             try {
                 const res = await fetch(`/api/bookmarks/notification`);
 
                 if (!res.ok) {
                     setNotification("");
+                    localStorage.removeItem("notification");
+                    localStorage.removeItem("notificationTimestamp");
                     return;
                 }
 
                 const data = await res.json();
                 setNotification(data);
+                // Cache the new data
+                localStorage.setItem("notification", data);
+                localStorage.setItem("notificationTimestamp", now.toString());
             } catch (error) {
                 console.error("Error fetching search results:", error);
             }
@@ -70,7 +88,7 @@ export function HeaderComponent() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="group-hover:bg-accent"
+                                        className="group-hover:bg-accent border"
                                         disabled={!notification}
                                     >
                                         <Bookmark className="h-5 w-5" />
@@ -78,7 +96,7 @@ export function HeaderComponent() {
                                     {/* Badge element */}
                                     {notification && notification != "0" && (
                                         <span
-                                            className="absolute bg-red-500 text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
+                                            className="absolute bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
                                             style={{ bottom: "0", right: "0" }}
                                         >
                                             {notification}
@@ -90,7 +108,7 @@ export function HeaderComponent() {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger>
-                                        <div className="w-10 h-10 flex items-center justify-center">
+                                        <div className="w-10 h-10 flex items-center justify-center border rounded-md">
                                             <Bookmark className="h-5 w-5 text-primary/50" />
                                         </div>
                                     </TooltipTrigger>
@@ -105,9 +123,9 @@ export function HeaderComponent() {
 
                         {/* Theme Handler */}
                         <ThemeSetting />
-
                         {/* Sidebar */}
                         <SideBar />
+                        <TrackLogin />
                     </div>
                 </div>
             </div>

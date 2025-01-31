@@ -20,6 +20,9 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
+    const [gradient, setGradient] = useState(
+        "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40",
+    );
     const [mounted, setMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(getSetting("showPageProgress"));
     const [windowWidth, setWindowWidth] = useState(0);
@@ -99,12 +102,18 @@ export default function PageProgress({
                             height: `${top + buttonRect.height - offset}px`,
                             width: "calc(100% - 8px)",
                         });
+                        setGradient(
+                            "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40",
+                        );
                     } else {
                         const left = buttonRect.left - containerRect.left;
                         setBackgroundStyle({
                             width: `${left + buttonRect.width - offset}px`,
                             height: "calc(100% - 8px)",
                         });
+                        setGradient(
+                            "bg-gradient-to-r from-primary/20 via-primary/30 to-accent-color/40",
+                        );
                     }
                 }
             }
@@ -127,7 +136,7 @@ export default function PageProgress({
                 className="transition-all relative p-1 rounded-lg border border-primary/30 bg-background w-full h-[30px] lg:w-[30px] lg:hover:w-[60px] lg:h-[75vh]"
             >
                 <div
-                    className="absolute left-1 top-1 lg:top-1 right-1 lg:right-1 bg-primary/20 transition-all duration-300 ease-in-out rounded-md"
+                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-all duration-300 ease-in-out rounded-sm ${gradient}`}
                     style={backgroundStyle}
                 />
                 <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
@@ -135,10 +144,12 @@ export default function PageProgress({
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 transition-all duration-300 ease-in-out rounded-sm ${
-                                index <= currentPage
-                                    ? "bg-primary"
-                                    : "bg-primary/30 hover:bg-primary/50"
+                            className={`flex-1 transition-all duration-300 ease-in-out rounded-[3px] ${
+                                index === currentPage
+                                    ? "bg-accent-color hover:bg-accent-color/70"
+                                    : index < currentPage
+                                      ? "bg-primary hover:bg-primary/80"
+                                      : "bg-primary/30 hover:bg-primary/50"
                             }`}
                             aria-label={`Go to page ${index + 1}`}
                         />

@@ -92,7 +92,9 @@ export default function PageReader({
             return;
         }
 
-        setPageWithUrlUpdate(currentPage + 1);
+        if (currentPage < chapter.images.length) {
+            setPageWithUrlUpdate(currentPage + 1);
+        }
     }, [chapter, currentPage, router, isFooterVisible]);
 
     const prevPage = useCallback(() => {
