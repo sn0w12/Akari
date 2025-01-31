@@ -43,7 +43,7 @@ export function FooterBookmarkButton({
                 }
 
                 const result = await checkIfBookmarked(mangaId);
-                setIsBookmarked(result);
+                setIsBookmarked((result as boolean) ?? false);
             } catch (error) {
                 console.error("Failed to check bookmark:", error);
                 setIsBookmarked(false);
