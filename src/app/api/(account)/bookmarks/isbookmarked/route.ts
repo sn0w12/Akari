@@ -45,13 +45,14 @@ async function checkMangaBookmarks(user_data: string, mangaIds: string[]) {
     }
 }
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
     try {
-        const { mangaIds } = await req.json();
+        const { searchParams } = new URL(req.url);
+        const mangaIds = searchParams.get('ids')?.split(',') || [];
 
-        if (!Array.isArray(mangaIds)) {
+        if (mangaIds.length === 0) {
             return NextResponse.json(
-                { message: "mangaIds must be an array" },
+                { message: "mangaIds must be provided as comma-separated list" },
                 { status: 400 },
             );
         }
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
         );
     } catch (error) {
         return NextResponse.json(
-            { message: "Invalid request body" },
+            { message: "Invalid request" },
             { status: 400 },
         );
     }

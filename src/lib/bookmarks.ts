@@ -65,13 +65,9 @@ export async function checkIfBookmarked(
 ): Promise<Record<string, boolean> | boolean> {
     const idsArray = Array.isArray(mangaIds) ? mangaIds : [mangaIds];
 
-    const response = await fetch("/api/bookmarks/isbookmarked", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mangaIds: idsArray }),
-    });
+    const response = await fetch(
+        `/api/bookmarks/isbookmarked?ids=${idsArray.join(",")}`,
+    );
 
     const data = await response.json();
 
