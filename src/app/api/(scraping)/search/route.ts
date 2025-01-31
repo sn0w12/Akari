@@ -55,7 +55,10 @@ export async function GET(req: Request): Promise<Response> {
             const chapterElement = mangaElement
                 .find("a.genres-item-chap")
                 .first();
-            const latestChapter = chapterElement.text();
+            const latestChapter = chapterElement
+                .text()
+                .replace("Chapter", "")
+                .trim();
             const chapterUrl = chapterElement.attr("href");
             const author = mangaElement.find(".genres-item-author").text();
 
