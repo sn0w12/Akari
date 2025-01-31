@@ -33,12 +33,11 @@ export async function GET(req: Request): Promise<Response> {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            return new Response(JSON.stringify(cachedData), {
+            return new Response(cachedData as string, {
                 status: 200,
                 headers: { "Content-Type": "application/json" },
             });
         }
-
         // Construct the URL with the page number
         const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
         const { data } = await axios.get(url);
