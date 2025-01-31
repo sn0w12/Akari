@@ -35,7 +35,10 @@ export async function GET(req: Request): Promise<Response> {
         if (cachedData) {
             return new Response(cachedData as string, {
                 status: 200,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(600),
+                },
             });
         }
         // Construct the URL with the page number
