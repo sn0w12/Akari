@@ -116,7 +116,7 @@ export function FooterBookmarkButton({
         <Button
             className={`inline-flex flex-grow items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input shadow-sm h-9 w-28 px-4 py-2 ${
                 isBookmarked
-                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    ? "bg-positive hover:positive/70 text-white"
                     : "bg-background hover:bg-accent text-accent-foreground"
             }`}
             onClick={bookmarkManga}
