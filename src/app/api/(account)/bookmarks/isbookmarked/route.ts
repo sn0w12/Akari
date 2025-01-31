@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json(
             { bookmarks: bookmarkStatuses },
-            { status: 200, headers: { ...generateCacheHeaders(60) } },
+            { status: 200, headers: { ...generateCacheHeaders(180) } },
         );
     } catch (error) {
         return NextResponse.json(
