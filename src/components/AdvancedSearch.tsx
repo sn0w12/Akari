@@ -3,12 +3,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { genreMap, GENRE_CATEGORIES, advancedSearch } from "@/lib/search";
-import { MangaCard } from "./ui/Home/MangaCard";
 import { debounce } from "lodash";
-import { SmallManga } from "@/app/api/interfaces";
 import PaginationElement from "@/components/ui/Pagination/ClientPaginationElement";
 import MangaCardSkeleton from "./ui/Home/MangaCardSkeleton";
 import { useSearchParams, useRouter } from "next/navigation";
+import { MangaGrid } from "./MangaGrid";
 
 type GenreStatus = "neutral" | "included" | "excluded";
 
@@ -237,15 +236,17 @@ export default function AdvancedSearch() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pt-4">
-                {isLoading === true
-                    ? [...Array(24)].map((_, i) => (
-                          <MangaCardSkeleton key={i} />
-                      ))
-                    : searchResults.map((manga: SmallManga) => (
-                          <MangaCard key={manga.id} manga={manga} />
-                      ))}
-            </div>
+            {isLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pt-4">
+                    {[...Array(24)].map((_, i) => (
+                        <MangaCardSkeleton key={i} />
+                    ))}
+                </div>
+            ) : (
+                <div className="mt-4">
+                    <MangaGrid mangaList={searchResults} />
+                </div>
+            )}
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={totalPages}

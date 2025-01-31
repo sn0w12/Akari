@@ -1,14 +1,14 @@
 "use client";
 
 import { SmallManga } from "@/app/api/interfaces";
-import { MangaCard } from "./MangaCard";
+import { MangaCard } from "./ui/Home/MangaCard";
 import { useEffect, useState } from "react";
 import { getBookmarked } from "@/lib/mangaNato";
 interface MangaGridProps {
     mangaList: SmallManga[];
 }
 
-export default function HomeGrid({ mangaList }: MangaGridProps) {
+export function MangaGrid({ mangaList }: MangaGridProps) {
     const [bookmarks, setBookmarks] = useState<string[]>([]);
 
     useEffect(() => {

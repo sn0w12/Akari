@@ -2,8 +2,8 @@ import { SortSelect } from "./ui/SortSelect";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
-import { MangaCard } from "./ui/Home/MangaCard";
 import { SimpleError, SmallManga } from "@/app/api/interfaces";
+import { MangaGrid } from "./MangaGrid";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -68,11 +68,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
 
                 {error && <ErrorComponent message={error} />}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                    {mangaList.map((manga) => (
-                        <MangaCard key={manga.id} manga={manga} />
-                    ))}
-                </div>
+                <MangaGrid mangaList={mangaList} />
             </main>
 
             {!error && (

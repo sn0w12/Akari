@@ -3,8 +3,7 @@ import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationEl
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
 import { SmallManga } from "@/app/api/interfaces";
-import { MangaCard } from "./ui/Home/MangaCard";
-import HomeGrid from "./ui/Home/HomeGrid";
+import { MangaGrid } from "./MangaGrid";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -74,7 +73,7 @@ export default async function MangaReaderHome({
                 >
                     Latest Releases
                 </h2>
-                <HomeGrid mangaList={mangaList} />
+                <MangaGrid mangaList={mangaList} />
             </main>
             <PaginationElement
                 currentPage={currentPage}
