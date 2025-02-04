@@ -37,9 +37,46 @@ export default function PageReader({
             ? 0
             : pageNumber - 1;
     });
+    const [isInactive, setIsInactive] = useState(false);
+    const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
     const bookmarkUpdatedRef = useRef(false);
-    const router = useRouter();
     const hasPrefetchedRef = useRef(false);
+    const router = useRouter();
+
+    const resetInactivityTimer = useCallback(() => {
+        if (inactivityTimer.current) {
+            clearTimeout(inactivityTimer.current);
+        }
+        setIsInactive(false);
+        inactivityTimer.current = setTimeout(() => {
+            setIsInactive(true);
+        }, 60000);
+    }, []);
+
+    useEffect(() => {
+        // Initialize the inactivity timer
+        resetInactivityTimer();
+
+        const events = [
+            "mousedown",
+            "mousemove",
+            "keypress",
+            "scroll",
+            "touchstart",
+        ];
+        events.forEach((event) => {
+            window.addEventListener(event, resetInactivityTimer);
+        });
+
+        return () => {
+            if (inactivityTimer.current) {
+                clearTimeout(inactivityTimer.current);
+            }
+            events.forEach((event) => {
+                window.removeEventListener(event, resetInactivityTimer);
+            });
+        };
+    }, [resetInactivityTimer]);
 
     useEffect(() => {
         if (!chapter) return;
@@ -125,6 +162,9 @@ export default function PageReader({
         const screenWidth = window.innerWidth;
         const clickX = e.clientX;
         const clickY = e.clientY;
+        const middleZoneStart = screenWidth * 0.4;
+        const middleZoneEnd = screenWidth * 0.6;
+
         if (
             clickY < 100 ||
             clickY > window.innerHeight - 100 ||
@@ -132,19 +172,41 @@ export default function PageReader({
         )
             return;
 
-        if (clickX > screenWidth / 2) {
+        if (clickX > middleZoneEnd) {
             nextPage(); // Click on the right side
-        } else {
+        } else if (clickX < middleZoneStart) {
             prevPage(); // Click on the left side
         }
+        // Clicks in the middle zone (between 40% and 60%) do nothing
     };
 
     return (
         <>
             <div
-                className="flex flex-col justify-center items-center h-dvh w-screen bg-transparent"
+                className={`flex flex-col justify-center items-center h-dvh w-screen bg-transparent relative`}
                 onClick={handleClick}
             >
+                <div
+                    className={`absolute inset-0 z-30 flex pointer-events-none transition-all ${isInactive && currentPage !== chapter.images.length ? "opacity-100" : "opacity-0"}`}
+                >
+                    <div className="w-2/5 h-full flex items-center justify-center">
+                        <div className="bg-black/30 border-2 border-black/50 rounded-lg w-full h-[calc(100vh-200px)] flex items-center justify-center">
+                            <span className="text-white/90 text-xl font-medium">
+                                ← Previous Page
+                            </span>
+                        </div>
+                    </div>
+                    <div className="w-1/5 h-full flex items-center justify-center">
+                        <div className="hidden"></div>
+                    </div>
+                    <div className="w-2/5 h-full flex items-center justify-center">
+                        <div className="bg-black/30 border-2 border-black/50 rounded-lg w-full h-[calc(100vh-200px)] flex items-center justify-center">
+                            <span className="text-white/90 text-xl font-medium">
+                                Next Page →
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div id="reader" className="relative max-h-dvh w-auto">
                     {chapter.images.map((image, index) => (
                         <Image
