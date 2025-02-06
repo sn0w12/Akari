@@ -14,7 +14,5 @@ export function generateCacheHeaders(time: number) {
 export function generateClientCacheHeaders(time: number) {
     return {
         "Cache-Control": `private, maxage=${time}`,
-        "CDN-Cache-Control": "no-store, no-cache",
-        "Vercel-CDN-Cache-Control": "no-store, no-cache",
     };
 }
