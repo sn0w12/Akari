@@ -16,6 +16,7 @@ import {
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
 import { TrackLogin } from "./ui/Header/TrackLogin";
+import { validateSecondaryAccounts } from "@/lib/secondaryAccounts";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -60,6 +61,7 @@ export function HeaderComponent() {
 
     useEffect(() => {
         fetchNotification();
+        validateSecondaryAccounts();
     }, [fetchNotification]);
 
     return (
