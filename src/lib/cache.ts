@@ -5,7 +5,7 @@
  */
 export function generateCacheHeaders(time: number) {
     return {
-        "Cache-Control": `maxage=${time}`,
+        "Cache-Control": `max-age=${time}`,
         "CDN-Cache-Control": `max-age=${time}`,
         "Vercel-CDN-Cache-Control": `s-maxage=${time}`,
     };
@@ -13,7 +13,7 @@ export function generateCacheHeaders(time: number) {
 
 export function generateClientCacheHeaders(time: number) {
     return {
-        "Cache-Control": `private, maxage=${time}`,
+        "Cache-Control": `private, max-age=${time}`,
     };
 }
 
@@ -26,7 +26,7 @@ export function generateFetchCacheOptions(
     }
 
     return {
-        headers: { "cache-control": `maxage=${time}` },
+        headers: { "cache-control": `max-age=${time}` },
         next: { revalidate: revalidate },
     };
 }
