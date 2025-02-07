@@ -34,8 +34,9 @@ async function getMangaList(page: number) {
 }
 
 export default async function PopularPage({ searchParams }: PageProps) {
-    const currentPage = Number(searchParams.page) || 1;
+    "use cache";
 
+    const currentPage = Number(searchParams.page) || 1;
     let mangaList: SmallManga[] = [];
     let totalPages = 1;
     let error: string | null = null;

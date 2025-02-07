@@ -10,8 +10,13 @@ interface ChapterReaderProps {
     subId: string;
 }
 
-export async function fetchChapter(id: string, subId: string) {
-    const headersList = await getUserHeaders();
+export async function fetchChapter(
+    id: string,
+    subId: string,
+    headersList: { [key: string]: string } = {},
+) {
+    "use cache";
+
     const response = await fetch(
         `${getProductionUrl()}/api/manga/${id}/${subId}`,
         {
@@ -37,7 +42,8 @@ export async function fetchChapter(id: string, subId: string) {
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
     try {
-        const chapterData = await fetchChapter(id, subId);
+        const headersList = await getUserHeaders();
+        const chapterData = await fetchChapter(id, subId, headersList);
 
         if ("result" in chapterData) {
             throw new Error(chapterData.data);

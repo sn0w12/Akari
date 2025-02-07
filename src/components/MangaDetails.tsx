@@ -18,6 +18,7 @@ import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
 import { getUserHeaders } from "@/lib/serverUtils";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -55,9 +56,14 @@ const formatDate = (date: string) => {
     return dateArray[0] + ", " + year;
 };
 
-export async function getMangaData(id: string) {
+export async function getMangaData(
+    id: string,
+    headersList: { [key: string]: string } = {},
+) {
+    "use cache";
+    cacheLife("minutes");
+
     try {
-        const headersList = await getUserHeaders();
         const response = await fetch(`${getProductionUrl()}/api/manga/${id}`, {
             headers: headersList,
         });
@@ -88,7 +94,8 @@ export async function getMangaData(id: string) {
 }
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
-    const manga = await getMangaData(id);
+    const headersList = await getUserHeaders();
+    const manga = await getMangaData(id, headersList);
 
     if (manga.error) {
         return (

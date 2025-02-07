@@ -4,6 +4,7 @@ import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
 import { SmallManga } from "@/app/api/interfaces";
 import { MangaGrid } from "./MangaGrid";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -42,8 +43,10 @@ export default async function MangaReaderHome({
 }: {
     searchParams: { page: string };
 }) {
-    const currentPage = Number(searchParams.page) || 1;
+    "use cache";
+    cacheLife("minutes");
 
+    const currentPage = Number(searchParams.page) || 1;
     let mangaData: MangaListResponse;
     try {
         mangaData = await getMangaData(currentPage);
