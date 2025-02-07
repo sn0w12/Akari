@@ -16,3 +16,17 @@ export function generateClientCacheHeaders(time: number) {
         "Cache-Control": `private, maxage=${time}`,
     };
 }
+
+export function generateFetchCacheOptions(
+    time: number,
+    revalidate: number = -1,
+) {
+    if (revalidate === -1) {
+        revalidate = time / 2;
+    }
+
+    return {
+        headers: { "cache-control": `maxage=${time}` },
+        next: { revalidate: revalidate },
+    };
+}

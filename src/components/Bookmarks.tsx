@@ -4,6 +4,7 @@ import BookmarksBody from "./ui/Bookmarks/BookmarksBody";
 import { useEffect, useState } from "react";
 import { Bookmark } from "@/app/api/interfaces";
 import BookmarksSkeleton from "@/components/ui/Bookmarks/bookmarksSkeleton";
+import { generateFetchCacheOptions } from "@/lib/cache";
 
 interface BookmarksPageProps {
     page: number;
@@ -13,9 +14,7 @@ async function fetchBookmarks(page: number) {
     try {
         const response = await fetch(
             `/api/bookmarks?page=${page}&images=true`,
-            {
-                next: { revalidate: 30 },
-            },
+            generateFetchCacheOptions(60),
         );
 
         const responseText = await response.text();
