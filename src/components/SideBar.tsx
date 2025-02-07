@@ -158,7 +158,10 @@ export function SideBar() {
                     </SheetTrigger>
                 </ContextMenuTrigger>
 
-                <ContextMenuContent className="w-56 z-[2000]">
+                <ContextMenuContent
+                    className="w-56 z-[2000]"
+                    id="sidebar-context"
+                >
                     <ContextMenuItem onSelect={() => setOpen((prev) => !prev)}>
                         <Menu className="mr-2 h-4 w-4" />
                         <span>Open</span>
