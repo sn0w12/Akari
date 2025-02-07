@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import NodeCache from "node-cache";
-import { generateCacheHeaders } from "@/lib/cache";
+import { generateClientCacheHeaders } from "@/lib/cache";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 
@@ -28,7 +28,7 @@ export async function GET() {
             status: 200,
             headers: {
                 "Content-Type": "application/json",
-                ...generateCacheHeaders(120),
+                ...generateClientCacheHeaders(120),
             },
         });
     }
@@ -69,7 +69,7 @@ export async function GET() {
         return NextResponse.json(unreadBookmarks, {
             headers: {
                 "Content-Type": "application/json",
-                ...generateCacheHeaders(120),
+                ...generateClientCacheHeaders(120),
             },
         });
     } catch (error) {
