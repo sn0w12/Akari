@@ -105,7 +105,8 @@ async function syncBookmark(data: Chapter) {
     if (!chapterNumber) return;
 
     const malData = await fetchMalData(data.parentId, true);
-    if (!malData || !malData.malUrl) return;
+    const malId = malData?.malUrl.split("/").pop();
+    if (!malData || !malData.malUrl || !malId) return;
 
-    await syncMal(malData.malUrl.split("/").pop(), chapterNumber, false);
+    await syncMal(malId, chapterNumber, false);
 }
