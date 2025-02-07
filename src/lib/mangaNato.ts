@@ -138,6 +138,9 @@ export async function getBookmarked(mangaList: SmallManga[]) {
     });
 
     const mangaIds = (await Promise.all(promises)).filter((id) => id !== null);
+    if (mangaIds.length === 0) {
+        return [];
+    }
 
     // Create id->identifier mapping
     const idMap = new Map(mangaIds.map((item) => [item.id, item.identifier]));
