@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import {
     Tooltip,
@@ -9,7 +7,9 @@ import {
 } from "./ui/tooltip";
 import { CookieConsentFooter } from "./ui/cookieConsent";
 
-export default function Footer() {
+export default async function Footer() {
+    "use cache";
+
     return (
         <footer className="border-t">
             <div className="mx-auto py-8 px-4 sm:px-6 lg:px-8">
