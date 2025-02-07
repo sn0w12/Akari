@@ -31,5 +31,6 @@ module.exports = {
     experimental: {
         reactCompiler: true,
         useCache: true,
+        dynamicIO: true,
     },
 };
