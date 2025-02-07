@@ -109,7 +109,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
                 <div className="flex gap-2">
-                    <Button onClick={navigateToLastRead}>
+                    <Button onClick={navigateToLastRead} className="flex-grow">
                         Find Latest Read
                     </Button>
                     <Button
@@ -118,6 +118,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                 order === "asc" ? "desc" : "asc",
                             )
                         }
+                        className="flex-grow"
                     >
                         <ArrowUpDown className="mr-2 h-4 w-4" />
                         Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
