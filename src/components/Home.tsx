@@ -19,10 +19,7 @@ async function getMangaData(page: number): Promise<MangaListResponse> {
     const baseUrl = getProductionUrl();
     const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
 
-    const res = await fetch(url, {
-        next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-
+    const res = await fetch(url);
     if (!res.ok) {
         const errorText = await res.text();
         console.error("Fetch error details:", {
