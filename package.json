@@ -40,7 +40,7 @@
         "js-cookie": "^3.0.5",
         "lodash": "^4.17.21",
         "lucide-react": "^0.468.0",
-        "next": "15.1.6",
+        "next": "^15.2.0-canary.45",
         "next-base64": "^1.1.0",
         "next-themes": "^0.4.3",
         "node-cache": "^5.1.2",
@@ -78,6 +78,12 @@
         "react-spinners": {
             "react": "^19.0.0",
             "react-dom": "^19.0.0"
+        },
+        "@vercel/analytics": {
+            "next": "^15.2.0-canary.45"
+        },
+        "@vercel/speed-insights": {
+            "next": "^15.2.0-canary.45"
         }
     }
 }
