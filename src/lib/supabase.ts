@@ -27,6 +27,7 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
         aniUrl: data.ani_url,
         up_to_date: undefined,
         is_strip: undefined,
+        updated_at: data.updated_at,
     };
 }
 
