@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import HoverLink from "./ui/hoverLink";
 import {
     Menu,
     Search,
@@ -175,13 +176,16 @@ export function SideBar() {
                     <ContextMenuSeparator />
 
                     <ContextMenuItem asChild>
-                        <Link href="/" className="flex items-center">
+                        <HoverLink href="/" className="flex items-center">
                             <Home className="mr-2 h-4 w-4" />
                             <span>Home</span>
-                        </Link>
+                        </HoverLink>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
-                        <Link href="/bookmarks" className="flex items-center">
+                        <HoverLink
+                            href="/bookmarks"
+                            className="flex items-center"
+                        >
                             <Bookmark className="mr-2 h-4 w-4" />
                             <span>Bookmarks</span>
                             {shortcuts.navigateBookmarks && (
@@ -191,19 +195,22 @@ export function SideBar() {
                                     )}
                                 />
                             )}
-                        </Link>
+                        </HoverLink>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
-                        <Link href="/search" className="flex items-center">
+                        <HoverLink href="/search" className="flex items-center">
                             <Search className="mr-2 h-4 w-4" />
                             <span>Search</span>
-                        </Link>
+                        </HoverLink>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
-                        <Link href="/popular" className="flex items-center">
+                        <HoverLink
+                            href="/popular"
+                            className="flex items-center"
+                        >
                             <TrendingUp className="mr-2 h-4 w-4" />
                             <span>Popular</span>
-                        </Link>
+                        </HoverLink>
                     </ContextMenuItem>
 
                     <ContextMenuSub>
