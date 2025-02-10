@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import { getMangaArrayFromSupabase } from "@/lib/supabase";
 import { generateClientCacheHeaders } from "@/lib/cache";
+import { time, timeEnd } from "@/lib/utils";
 
 const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
 
@@ -124,6 +125,7 @@ function processBookmarks(
 }
 
 export async function GET(request: Request) {
+    time("bookmarks-api");
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const getImages = searchParams.get("images") === "true";
@@ -132,6 +134,7 @@ export async function GET(request: Request) {
     const user_data = getUserData(cookieStore);
 
     if (!user_data) {
+        timeEnd("bookmarks-api");
         return NextResponse.json(
             { message: "user_data is required" },
             { status: 400 },
@@ -140,10 +143,13 @@ export async function GET(request: Request) {
 
     try {
         const url = BOOKMARK_SERVER_URL_1;
+        time("fetch-bookmarks");
         const { jsonResponse: jsonResult, htmlResponse: htmlResult } =
             await fetchBookmarks(user_data, page, url);
+        timeEnd("fetch-bookmarks");
 
         if (jsonResult.result !== "ok") {
+            timeEnd("bookmarks-api");
             return NextResponse.json(
                 {
                     message: "Error fetching bookmarks",
@@ -155,21 +161,27 @@ export async function GET(request: Request) {
 
         processBookmarks(jsonResult, htmlResult);
         if (getImages) {
+            time("fetch-images");
             const identifiers = jsonResult.data.map((bookmark: Bookmark) =>
                 bookmark.link_story.split("/").pop(),
             );
-            const malDataArray = await getMangaArrayFromSupabase(identifiers);
+
+            const imageData = await getMangaArrayFromSupabase(identifiers);
+            const imageMap = new Map(
+                imageData.map((item) => [item.identifier, item.imageUrl]),
+            );
+
             jsonResult.data.forEach((bookmark: Bookmark) => {
                 const identifier = bookmark.link_story.split("/").pop();
-                const malData = malDataArray.find(
-                    (data) => data?.identifier === identifier,
-                );
-                if (malData?.imageUrl) {
-                    bookmark.image = malData.imageUrl;
+                const imageUrl = imageMap.get(identifier);
+                if (imageUrl) {
+                    bookmark.image = imageUrl;
                 }
             });
+            timeEnd("fetch-images");
         }
 
+        timeEnd("bookmarks-api");
         return NextResponse.json(
             {
                 page,
@@ -184,6 +196,7 @@ export async function GET(request: Request) {
             },
         );
     } catch (error) {
+        timeEnd("bookmarks-api");
         return NextResponse.json(
             {
                 message: "Error fetching bookmarks",

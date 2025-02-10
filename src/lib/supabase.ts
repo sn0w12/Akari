@@ -27,6 +27,7 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
         aniUrl: data.ani_url,
         up_to_date: undefined,
         is_strip: undefined,
+        updated_at: data.updated_at,
     };
 }
 
@@ -66,8 +67,9 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
     try {
         const { data, error } = await supabasePublic
             .from("mal_data")
-            .select("*")
-            .in("identifier", identifiers);
+            .select("identifier, image_url")
+            .in("identifier", identifiers)
+            .order("identifier", { ascending: true });
 
         if (error) {
             if (error.code !== "PGRST116") {
@@ -76,7 +78,11 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
             return [];
         }
 
-        return data.map((item) => transformMangaData(item)).filter(Boolean);
+        // Return a simplified structure
+        return data.map((item) => ({
+            identifier: item.identifier,
+            imageUrl: item.image_url,
+        }));
     } catch (e) {
         console.error("Supabase query error:", e);
         return [];

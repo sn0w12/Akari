@@ -3,23 +3,101 @@ import { HqMangaCacheItem, MalSync } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
 import { akariUrls } from "./consts";
 
-async function getHqData(malSyncData: MalSync) {
-    let service;
-    let id;
-    if (malSyncData.malId) {
-        service = "mal";
-        id = malSyncData.malId;
-    } else if (malSyncData.aniId) {
-        service = "ani";
-        id = malSyncData.aniId;
-    } else return null;
+async function getMalData(identifier: number) {
+    const apiEndpoint = `https://api.jikan.moe/v4/manga/${identifier}`;
 
-    const response = await fetch(`/api/manga/${service}/${id}`);
-    if (!response.ok) {
-        console.error(`Failed to fetch data for ${service} ID ${id}`);
+    try {
+        const request = await fetch(apiEndpoint);
+        const data = await request.json();
+        const manga = data.data;
+
+        const response = {
+            titles: manga.titles,
+            imageUrl: manga.images.webp.large_image_url,
+            smallImageUrl: manga.images.webp.small_image_url,
+            url: manga.url,
+            score: manga.scored / 2,
+            description: manga.synopsis,
+        } as HqMangaCacheItem;
+
+        return response;
+    } catch (error) {
+        console.error("Error searching for manga:", error);
         return null;
     }
-    const data = await response.json();
+}
+
+async function getAniData(identifier: number) {
+    const query = `
+        query ExampleQuery($mediaId: Int!) {
+          Media(id: $mediaId) {
+            id
+            title {
+              romaji
+              english
+              native
+            }
+            description
+            coverImage {
+              extraLarge
+              medium
+            }
+            genres
+            averageScore
+            siteUrl
+          }
+        }
+      `;
+
+    const variables = {
+        mediaId: identifier,
+    };
+    try {
+        const request = await fetch("https://graphql.anilist.co", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query,
+                variables,
+            }),
+        });
+
+        const data = await request.json();
+        const manga = data.data.Media;
+
+        const titles = [
+            { type: "Romaji", title: manga.title.romaji },
+            { type: "English", title: manga.title.english },
+            { type: "Native", title: manga.title.native },
+        ].filter((title) => title.title !== null);
+
+        const response = {
+            titles: titles,
+            imageUrl: manga.coverImage.extraLarge,
+            smallImageUrl: manga.coverImage.medium,
+            url: manga.siteUrl,
+            score: manga.averageScore / 20,
+            description: manga.description,
+        } as HqMangaCacheItem;
+
+        return response;
+    } catch (error) {
+        console.error("Error searching for manga:", error);
+        return null;
+    }
+}
+
+async function getHqData(malSyncData: MalSync) {
+    let data = null;
+
+    if (malSyncData.malId) {
+        data = await getMalData(malSyncData.malId);
+    } else if (malSyncData.aniId) {
+        data = await getAniData(malSyncData.aniId);
+    } else return null;
+
     return data;
 }
 

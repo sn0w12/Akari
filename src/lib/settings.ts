@@ -116,8 +116,8 @@ export const shortcutsSettings = {
     toggleSidebar: {
         type: "shortcut",
         label: "Toggle Sidebar",
-        value: "Ctrl+B",
-        default: "Ctrl+B",
+        value: "Ctrl+Shift+B",
+        default: "Ctrl+Shift+B",
     },
     openSettings: {
         type: "shortcut",

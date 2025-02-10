@@ -2,11 +2,11 @@ import axios from "axios";
 import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 import * as cheerio from "cheerio";
-import { cookies } from "next/headers";
 import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 import { time, timeEnd } from "@/lib/utils";
+import { env } from "process";
 
 export async function GET(
     req: Request,
@@ -15,8 +15,7 @@ export async function GET(
     time("Total API Request");
     const params = await props.params;
     const id = params.id;
-    const cookieStore = await cookies();
-    const userAcc = cookieStore.get("user_acc")?.value || null;
+    const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
 
     try {
         const jar = new CookieJar();

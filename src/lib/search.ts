@@ -1,3 +1,5 @@
+import { generateFetchCacheOptions } from "./cache";
+
 export const genreMap: { [key: string]: number } = {
     Action: 2,
     Adventure: 4,
@@ -101,7 +103,7 @@ export async function advancedSearch(
 
     const url = `${baseUrl}${includedParams}${excludedParams}${pageParam}`;
 
-    const res = await fetch(url);
+    const res = await fetch(url, generateFetchCacheOptions(180));
     const data = await res.json();
     return data;
 }

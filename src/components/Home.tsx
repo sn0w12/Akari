@@ -4,6 +4,7 @@ import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
 import { SmallManga } from "@/app/api/interfaces";
 import { MangaGrid } from "./MangaGrid";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -18,10 +19,7 @@ async function getMangaData(page: number): Promise<MangaListResponse> {
     const baseUrl = getProductionUrl();
     const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
 
-    const res = await fetch(url, {
-        next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-
+    const res = await fetch(url);
     if (!res.ok) {
         const errorText = await res.text();
         console.error("Fetch error details:", {
@@ -42,8 +40,10 @@ export default async function MangaReaderHome({
 }: {
     searchParams: { page: string };
 }) {
-    const currentPage = Number(searchParams.page) || 1;
+    "use cache";
+    cacheLife("minutes");
 
+    const currentPage = Number(searchParams.page) || 1;
     let mangaData: MangaListResponse;
     try {
         mangaData = await getMangaData(currentPage);

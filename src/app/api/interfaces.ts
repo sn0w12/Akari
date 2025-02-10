@@ -84,6 +84,7 @@ export interface HqMangaCacheItem {
     url: string;
     is_strip: boolean | undefined;
     up_to_date: boolean | undefined;
+    updated_at?: string | undefined;
 }
 
 export interface Bookmark {

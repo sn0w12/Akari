@@ -17,7 +17,7 @@ import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
-import { getUserHeaders } from "@/lib/serverUtils";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -57,10 +57,7 @@ const formatDate = (date: string) => {
 
 export async function getMangaData(id: string) {
     try {
-        const headersList = await getUserHeaders();
-        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`, {
-            headers: headersList,
-        });
+        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
         if (!response.ok) {
             throw new Error(
@@ -88,6 +85,8 @@ export async function getMangaData(id: string) {
 }
 
 export async function MangaDetailsComponent({ id }: { id: string }) {
+    "use cache";
+    cacheLife("minutes");
     const manga = await getMangaData(id);
 
     if (manga.error) {
@@ -104,7 +103,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
 
     return (
         <main className="container mx-auto px-4 py-8">
-            <UpdateManga manga={manga} />
+            <UpdateManga manga={manga} lastUpdate={manga.malData?.updated_at} />
             <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">

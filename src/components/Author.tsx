@@ -38,6 +38,8 @@ async function getMangaList(authorId: string, page: number, sort: string) {
 }
 
 export default async function AuthorPage({ params, searchParams }: PageProps) {
+    "use cache";
+
     const currentPage = Number(searchParams.page) || 1;
     const currentSort = searchParams.sort || "latest";
 

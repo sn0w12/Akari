@@ -10,12 +10,17 @@ interface ChapterReaderProps {
     subId: string;
 }
 
-export async function fetchChapter(id: string, subId: string) {
-    const headersList = await getUserHeaders();
+export async function fetchChapter(
+    id: string,
+    subId: string,
+    mangaServer: string = "1",
+) {
+    "use cache";
+
     const response = await fetch(
         `${getProductionUrl()}/api/manga/${id}/${subId}`,
         {
-            headers: headersList,
+            headers: { cookie: `manga_server=${mangaServer}` },
         },
     );
     const data = await response.json();
@@ -37,7 +42,12 @@ export async function fetchChapter(id: string, subId: string) {
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
     try {
-        const chapterData = await fetchChapter(id, subId);
+        const headersList = await getUserHeaders();
+        const mangaServer = headersList.cookie
+            .split(";")
+            .find((cookie) => cookie.trim().startsWith("manga_server="))
+            ?.split("=")[1];
+        const chapterData = await fetchChapter(id, subId, mangaServer);
 
         if ("result" in chapterData) {
             throw new Error(chapterData.data);

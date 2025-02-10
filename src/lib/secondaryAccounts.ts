@@ -2,6 +2,7 @@ import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
 import { SecondaryAccount } from "@/components/ui/Header/AccountDialog";
+import { SECONDARY_ACCOUNTS } from "@/components/ui/Header/AccountDialog";
 
 export function generateMalAuth(account: SecondaryAccount) {
     const codeVerifier = generateCodeVerifier();
@@ -20,4 +21,33 @@ export function generateMalAuth(account: SecondaryAccount) {
     url.searchParams.append("redirect_uri", `${baseUrl}/auth/callback`);
 
     return { ...account, authUrl: url.toString() };
+}
+
+export async function isAccountValid(account: SecondaryAccount) {
+    const cache = sessionStorage.getItem(account.sessionKey);
+    if (cache === "true") return true;
+
+    const response = await fetch(account.validateEndpoint);
+    const data = await response.json();
+
+    sessionStorage.setItem(
+        account.sessionKey,
+        data.result === "ok" ? "true" : "false",
+    );
+    return data.result === "ok";
+}
+
+export async function validateSecondaryAccounts() {
+    const validAccounts = await Promise.all(
+        SECONDARY_ACCOUNTS.map(async (account) => {
+            return {
+                id: account.id,
+                name: account.name,
+                valid: await isAccountValid(account),
+            };
+        }),
+    );
+
+    console.log("Validated secondary accounts:", validAccounts);
+    return validAccounts;
 }

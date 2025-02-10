@@ -93,14 +93,17 @@ export default function Reader({ chapter }: ReaderProps) {
     useEffect(() => {
         const isSidebarPresent = () =>
             document.getElementById("sidebar") !== null;
+        const isSidebarContextPresent = () =>
+            document.getElementById("sidebar-context") !== null;
         const isChapterSelectorPresent = () =>
             document.getElementById("chapter-selector") !== null;
 
         const handleMouseMove = (e: MouseEvent) => {
             const sidebarVisible = isSidebarPresent();
+            const sidebarContextVisible = isSidebarContextPresent();
             const chapterSelectorVisible = isChapterSelectorPresent();
 
-            if (e.clientY < 175 && !sidebarVisible) {
+            if ((e.clientY < 175 && !sidebarVisible) || sidebarContextVisible) {
                 setHeaderVisible(true);
             } else if (!isHoveringHeader) {
                 setHeaderVisible(false);
@@ -118,22 +121,18 @@ export default function Reader({ chapter }: ReaderProps) {
 
         const handleHeaderMouseEnter = () => {
             setHoveringHeader(true);
-            setHeaderVisible(true);
         };
 
         const handleHeaderMouseLeave = () => {
             setHoveringHeader(false);
-            setHeaderVisible(false);
         };
 
         const handleFooterMouseEnter = () => {
             setHoveringFooter(true);
-            setFooterVisible(true);
         };
 
         const handleFooterMouseLeave = () => {
             setHoveringFooter(false);
-            setFooterVisible(false);
         };
 
         window.addEventListener("mousemove", handleMouseMove);

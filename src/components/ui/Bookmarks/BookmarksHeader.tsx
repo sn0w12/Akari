@@ -101,6 +101,7 @@ export default function BookmarksHeader({
 
                 if (malData && malData.malUrl && lastReadNumber) {
                     const malId = malData.malUrl.split("/").pop();
+                    if (!malId) continue;
                     const result = await syncMal(malId, lastReadNumber);
                     console.log(result);
                 }

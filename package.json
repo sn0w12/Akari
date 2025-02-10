@@ -18,11 +18,11 @@
         "@radix-ui/react-popover": "^1.1.4",
         "@radix-ui/react-radio-group": "^1.2.1",
         "@radix-ui/react-scroll-area": "^1.2.2",
-        "@radix-ui/react-select": "^2.1.4",
+        "@radix-ui/react-select": "^2.1.5",
         "@radix-ui/react-slot": "^1.1.1",
         "@radix-ui/react-switch": "^1.1.2",
         "@radix-ui/react-tabs": "^1.1.2",
-        "@radix-ui/react-tooltip": "^1.1.6",
+        "@radix-ui/react-tooltip": "^1.1.7",
         "@supabase/supabase-js": "^2.48.1",
         "@vercel/analytics": "^1.4.1",
         "@vercel/speed-insights": "^1.1.0",
@@ -36,18 +36,18 @@
         "clsx": "^2.1.1",
         "cmdk": "^1.0.0",
         "dexie": "^4.0.11",
-        "fuse.js": "^7.0.0",
+        "fuse.js": "^7.1.0",
         "js-cookie": "^3.0.5",
         "lodash": "^4.17.21",
         "lucide-react": "^0.468.0",
-        "next": "15.1.6",
+        "next": "^15.2.0-canary.45",
         "next-base64": "^1.1.0",
         "next-themes": "^0.4.3",
         "node-cache": "^5.1.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-spinners": "^0.14.1",
-        "react-toastify": "^11.0.2",
+        "react-toastify": "^11.0.3",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
         "tough-cookie": "^5.0.0",
@@ -78,6 +78,12 @@
         "react-spinners": {
             "react": "^19.0.0",
             "react-dom": "^19.0.0"
+        },
+        "@vercel/analytics": {
+            "next": "^15.2.0-canary.45"
+        },
+        "@vercel/speed-insights": {
+            "next": "^15.2.0-canary.45"
         }
     }
 }

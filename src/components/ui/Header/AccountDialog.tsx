@@ -20,6 +20,7 @@ import { Skeleton } from "../skeleton";
 import { generateMalAuth } from "@/lib/secondaryAccounts";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { isAccountValid } from "@/lib/secondaryAccounts";
 
 export interface SecondaryAccount {
     id: string;
@@ -35,7 +36,7 @@ export interface SecondaryAccount {
     validateEndpoint: string;
 }
 
-const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
+export const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
     {
         id: "mal",
         name: "MyAnimeList",
@@ -194,20 +195,6 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
         }
         setIsLoading(false);
     };
-
-    async function isAccountValid(account: SecondaryAccount) {
-        const cache = sessionStorage.getItem(account.sessionKey);
-        if (cache === "true") return true;
-
-        const response = await fetch(account.validateEndpoint);
-        const data = await response.json();
-
-        sessionStorage.setItem(
-            account.sessionKey,
-            data.result === "ok" ? "true" : "false",
-        );
-        return data.result === "ok";
-    }
 
     useEffect(() => {
         const checkSecondaryAuth = async () => {

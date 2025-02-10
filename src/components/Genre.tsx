@@ -4,6 +4,7 @@ import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { SimpleError, SmallManga } from "@/app/api/interfaces";
 import { MangaGrid } from "./MangaGrid";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -36,6 +37,9 @@ async function getMangaList(genreId: string, page: number, sort: string) {
 }
 
 export default async function GenrePage({ params, searchParams }: PageProps) {
+    "use cache";
+    cacheLife("minutes");
+
     const currentPage = Number(searchParams.page) || 1;
     const currentSort = searchParams.sort || "latest";
 

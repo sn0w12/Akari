@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
-import { generateCacheHeaders } from "@/lib/cache";
+import { generateClientCacheHeaders } from "@/lib/cache";
 
 const BOOKMARK_LIST_URL = "https://user.mngusr.com/bookmark_get_list_idstory";
 
@@ -48,11 +48,14 @@ async function checkMangaBookmarks(user_data: string, mangaIds: string[]) {
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const mangaIds = searchParams.get('ids')?.split(',') || [];
+        const mangaIds = searchParams.get("ids")?.split(",") || [];
 
         if (mangaIds.length === 0) {
             return NextResponse.json(
-                { message: "mangaIds must be provided as comma-separated list" },
+                {
+                    message:
+                        "mangaIds must be provided as comma-separated list",
+                },
                 { status: 400 },
             );
         }
@@ -71,7 +74,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json(
             { bookmarks: bookmarkStatuses },
-            { status: 200, headers: { ...generateCacheHeaders(180) } },
+            { status: 200, headers: { ...generateClientCacheHeaders(180) } },
         );
     } catch (error) {
         return NextResponse.json(

@@ -7,6 +7,7 @@ import { generateCacheHeaders } from "@/lib/cache";
 import { getErrorMessage } from "@/lib/utils";
 import { hasConsentFor } from "@/lib/cookies";
 import { time, timeEnd } from "@/lib/utils";
+import { env } from "process";
 
 export async function GET(
     req: Request,
@@ -16,7 +17,7 @@ export async function GET(
     const params = await props.params;
     const { id, subId } = params;
     const cookieStore = await cookies();
-    const userAcc = cookieStore.get("user_acc")?.value || null;
+    const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
     const server = cookieStore.get(`manga_server`)?.value || "1";
 
     try {

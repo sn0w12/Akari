@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import Link, { LinkProps } from "next/link";
-import React, { useCallback, useRef, useState, useEffect } from "react";
+import React, { useCallback, useRef, useEffect } from "react";
+import { initializeScrollListener, scrollState } from "@/lib/scrollUtils";
 
 interface HoverLinkProps extends LinkProps {
     children: React.ReactNode;
@@ -22,36 +23,18 @@ export default function HoverLink({
 }: HoverLinkProps) {
     const router = useRouter();
     const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-    const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolling(true);
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current);
-            }
-            scrollTimeoutRef.current = setTimeout(() => {
-                setIsScrolling(false);
-            }, 150);
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current);
-            }
-        };
+        return initializeScrollListener();
     }, []);
 
     const handleMouseEnter = useCallback(() => {
         timeoutRef.current = setTimeout(() => {
-            if (!isScrolling) {
+            if (!scrollState.isScrolling) {
                 router.prefetch(props.href.toString());
             }
         }, delayMs);
-    }, [router, props.href, delayMs, isScrolling]);
+    }, [router, props.href, delayMs]);
 
     const handleMouseLeave = useCallback(() => {
         if (timeoutRef.current) {
