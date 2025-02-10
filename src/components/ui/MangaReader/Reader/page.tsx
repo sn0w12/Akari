@@ -113,6 +113,7 @@ export default function PageReader({
         (newPage: number) => {
             setCurrentPage(newPage);
             updatePageUrl(newPage);
+            resetInactivityTimer();
         },
         [updatePageUrl],
     );
