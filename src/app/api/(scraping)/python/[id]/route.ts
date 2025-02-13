@@ -62,21 +62,12 @@ export async function GET(
             alternativeNames.forEach((name, index) => {
                 titles[`alt${index}`] = name.trim();
             });
-            const authors: { name: string; id: string }[] = [];
+            const authors: string[] = [];
             $(".variations-tableInfo .info-author")
                 .closest("tr")
                 .find("a")
                 .each((index, element) => {
-                    authors.push({
-                        name: $(element).text().trim(),
-                        id:
-                            $(element)
-                                .attr("href")
-                                ?.replace(
-                                    "https://manganato.com/author/story/",
-                                    "",
-                                ) || "",
-                    });
+                    authors.push($(element).text().trim());
                 });
             const status = $(".variations-tableInfo .info-status")
                 .closest("tr")
@@ -138,13 +129,22 @@ export async function GET(
                 }
             });
 
-            const chapterList: { id: string }[] = [];
+            const chapterList: {
+                id: string;
+                views: string;
+                createdAt: string;
+                updatedAt: string;
+            }[] = [];
+            const chapterTimes: string[] = [];
             $(".panel-story-chapter-list .row-content-chapter li").each(
                 (index, element) => {
                     const chapterElement = $(element);
                     const chapterUrl = chapterElement
                         .find(".chapter-name")
                         .attr("href");
+                    const chapterViews = chapterElement
+                        .find(".chapter-view")
+                        .text();
                     const chapterTime = chapterElement
                         .find(".chapter-time")
                         .attr("title");
@@ -153,8 +153,15 @@ export async function GET(
                         return;
                     }
 
+                    const date = new Date(chapterTime);
+                    const isoDate = date.toISOString();
+                    chapterTimes.push(isoDate);
+
                     chapterList.push({
                         id: chapterUrl?.split("/").pop() || "",
+                        views: chapterViews,
+                        createdAt: isoDate,
+                        updatedAt: isoDate,
                     });
                 },
             );
@@ -162,6 +169,10 @@ export async function GET(
             if (!imageUrl) {
                 throw new Error("MANGA_NOT_FOUND");
             }
+
+            const sortedTimes = [...chapterTimes].sort();
+            const createdAt = sortedTimes[0] || "";
+            const updatedAt = sortedTimes[sortedTimes.length - 1] || "";
 
             return {
                 id: identifier,
@@ -176,8 +187,8 @@ export async function GET(
                 genres,
                 description,
                 chapters: chapterList as NewChapter[],
-                createdAt: "",
-                updatedAt: "",
+                createdAt: createdAt,
+                updatedAt: updatedAt,
             };
         };
 

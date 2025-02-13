@@ -6,7 +6,7 @@ import { NewChapter } from "@/app/api/interfaces";
 
 export async function GET(
     req: Request,
-    props: { params: Promise<{ id: string; subId: string }> }
+    props: { params: Promise<{ id: string; subId: string }> },
 ): Promise<Response> {
     const params = await props.params;
     const { id, subId } = params;
@@ -26,7 +26,7 @@ export async function GET(
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
                 },
-            }
+            },
         );
         const html = response.data;
 
@@ -80,10 +80,10 @@ export async function GET(
             if (scriptContent && scriptContent.includes("glb_story_data")) {
                 // Extract glb_story_data and glb_chapter_data using regex
                 const storyDataMatch = scriptContent.match(
-                    /glb_story_data\s*=\s*'([^']+)'/
+                    /glb_story_data\s*=\s*'([^']+)'/,
                 );
                 const chapterDataMatch = scriptContent.match(
-                    /glb_chapter_data\s*=\s*'([^']+)'/
+                    /glb_chapter_data\s*=\s*'([^']+)'/,
                 );
 
                 if (storyDataMatch && storyDataMatch[1]) {
@@ -108,6 +108,7 @@ export async function GET(
             previousChapter: lastChapter,
             parentId: parent,
             parentTitle: mangaTitle,
+            views: "0",
             createdAt: "",
             updatedAt: "",
         };
@@ -131,7 +132,7 @@ export async function GET(
                 result: "error",
                 data: axiosError.status || "An unexpected error occurred",
             },
-            { status: axiosError.status }
+            { status: axiosError.status },
         );
     }
 }
