@@ -145,7 +145,7 @@ export interface NewManga {
     storyData: string;
     imageUrl: string;
     titles: { [type: string]: string };
-    authors: { name: string; id: string }[];
+    authors: string[];
     genres: string[];
     status: string;
     views: string;
@@ -168,6 +168,7 @@ export interface NewChapter {
     previousChapter: string | null;
     parentId: string;
     parentTitle: string;
+    views: string;
     createdAt: string;
     updatedAt: string;
 }
