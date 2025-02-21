@@ -7,6 +7,7 @@ import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
+import { addExtraCookies } from "@/lib/mangaNato";
 
 export async function GET(
     req: Request,
@@ -36,8 +37,13 @@ export async function GET(
                     "https://manganato.com",
                 );
             }
+            await addExtraCookies(jar);
 
-            const instance = wrapper(axios.create({ jar }));
+            const instance = wrapper(
+                axios.create({
+                    jar,
+                }),
+            );
             const response = await instance.get(url, {
                 headers: {
                     "User-Agent":
