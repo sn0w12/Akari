@@ -8,6 +8,9 @@ import { getErrorMessage } from "@/lib/utils";
 import { hasConsentFor } from "@/lib/cookies";
 import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
+import { CookieJar } from "tough-cookie";
+import { addExtraCookies } from "@/lib/mangaNato";
+import { wrapper } from "axios-cookiejar-support";
 
 export async function GET(
     req: Request,
@@ -20,10 +23,18 @@ export async function GET(
     const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
     const server = cookieStore.get(`manga_server`)?.value || "1";
 
+    const jar = new CookieJar();
+    await addExtraCookies(jar);
+
     try {
         time("Fetch HTML");
+        const instance = wrapper(
+            axios.create({
+                jar,
+            }),
+        );
         // Fetch the HTML content of the page
-        const response = await axios.get(
+        const response = await instance.get(
             `https://chapmanganato.to/${id}/${subId}`,
             {
                 headers: {
