@@ -22,8 +22,18 @@ export default function MangaReaderLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const isDevelopment = process.env.NODE_ENV === "development";
+
     return (
         <html lang="en">
+            <head>
+                {isDevelopment && (
+                    <script
+                        src="https://unpkg.com/react-scan/dist/auto.global.js"
+                        async
+                    />
+                )}
+            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
