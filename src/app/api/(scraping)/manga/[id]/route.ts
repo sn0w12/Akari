@@ -7,7 +7,7 @@ import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
-import { addExtraCookies } from "@/lib/mangaNato";
+import { ddosGuardBypass } from "@/lib/ddosBypass";
 
 export async function GET(
     req: Request,
@@ -17,6 +17,7 @@ export async function GET(
     const params = await props.params;
     const id = params.id;
     const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
+    let serviceUrl = "https://ddos-guard.net";
 
     try {
         const jar = new CookieJar();
@@ -37,19 +38,31 @@ export async function GET(
                     "https://manganato.com",
                 );
             }
-            await addExtraCookies(jar);
 
-            const instance = wrapper(
-                axios.create({
-                    jar,
-                }),
-            );
-            const response = await instance.get(url, {
+            const instance = axios.create({
                 headers: {
                     "User-Agent":
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
+                    Referer: serviceUrl,
+                },
+            });
+
+            // Apply ddosGuardBypass first
+            ddosGuardBypass(instance);
+
+            // Then wrap with cookie support
+            const wrappedInstance = wrapper(instance);
+            wrappedInstance.defaults.jar = jar;
+
+            const response = await wrappedInstance.get(url, {
+                headers: {
+                    "User-Agent":
+                        req.headers.get("user-agent") || "Mozilla/5.0",
+                    "Accept-Language":
+                        req.headers.get("accept-language") || "en-US,en;q=0.9",
+                    Referer: serviceUrl,
                 },
             });
             timeEnd("Fetch Html");
