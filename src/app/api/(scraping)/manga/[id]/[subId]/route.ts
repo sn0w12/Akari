@@ -9,8 +9,8 @@ import { hasConsentFor } from "@/lib/cookies";
 import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
 import { CookieJar } from "tough-cookie";
-import { addExtraCookies } from "@/lib/mangaNato";
 import { wrapper } from "axios-cookiejar-support";
+import { ddosGuardBypass } from "@/lib/ddosBypass";
 
 export async function GET(
     req: Request,
@@ -22,19 +22,28 @@ export async function GET(
     const cookieStore = await cookies();
     const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
     const server = cookieStore.get(`manga_server`)?.value || "1";
+    let serviceUrl = "https://ddos-guard.net";
 
     const jar = new CookieJar();
-    await addExtraCookies(jar);
 
     try {
         time("Fetch HTML");
-        const instance = wrapper(
-            axios.create({
-                jar,
-            }),
-        );
+        const instance = axios.create({
+            headers: {
+                "User-Agent": req.headers.get("user-agent") || "Mozilla/5.0",
+                "Accept-Language":
+                    req.headers.get("accept-language") || "en-US,en;q=0.9",
+                Referer: serviceUrl,
+            },
+        });
+
+        ddosGuardBypass(instance);
+
+        const wrappedInstance = wrapper(instance);
+        wrappedInstance.defaults.jar = jar;
+
         // Fetch the HTML content of the page
-        const response = await instance.get(
+        const response = await wrappedInstance.get(
             `https://chapmanganato.to/${id}/${subId}`,
             {
                 headers: {
