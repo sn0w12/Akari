@@ -39,7 +39,7 @@ async function fetchData(
     const data = new URLSearchParams();
     data.append("user_data", user_data);
     data.append("bm_page", page.toString());
-    data.append("bm_source", "manganelo");
+    data.append("bm_source", "manganato");
     data.append("out_type", out_type);
 
     const response = await fetch(url, {
