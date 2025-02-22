@@ -42,7 +42,7 @@ export async function GET(req: Request): Promise<Response> {
             });
         }
         // Construct the URL with the page number
-        const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
+        const url = `https://m.manganelo.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
         const totalPages = $(".page-last").text().match(/\d+/)?.[0] || "1";

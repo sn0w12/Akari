@@ -44,7 +44,7 @@ export async function GET(
 
         // Fetch the HTML content of the page
         const response = await wrappedInstance.get(
-            `https://chapmanganato.to/${id}/${subId}`,
+            `https://chapmanganelo.com/${id}/${subId}`,
             {
                 headers: {
                     cookie: `user_acc=${userAcc}; content_server=server${server}`,

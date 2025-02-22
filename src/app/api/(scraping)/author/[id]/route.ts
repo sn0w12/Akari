@@ -92,7 +92,7 @@ export async function GET(
         }
 
         // Construct the search URL
-        const searchUrl = `https://manganato.com/author/story/${authorId}?page=${page}&orby=${orderBy}`;
+        const searchUrl = `https://m.manganelo.com/search/author/${authorId}?page=${page}&orby=${orderBy}`;
 
         // Fetch the data from Manganato
         const { data } = await axios.get(searchUrl);

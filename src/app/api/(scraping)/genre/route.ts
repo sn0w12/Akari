@@ -103,7 +103,7 @@ export async function GET(request: Request): Promise<Response> {
             .join("");
 
         // Construct the search URL
-        const searchUrl = `https://manganato.com/advanced_search?s=all&g_i=${includeGenresString}&g_e=${excludeGenresString}&page=${page}&orby=${orderBy}`;
+        const searchUrl = `https://m.manganelo.com/advanced_search?s=all&g_i=${includeGenresString}&g_e=${excludeGenresString}&page=${page}&orby=${orderBy}`;
 
         // Fetch the data from Manganato
         const { data } = await axios.get(searchUrl);

@@ -17,14 +17,13 @@ export async function GET(
     const params = await props.params;
     const id = params.id;
     const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
-    let serviceUrl = "https://ddos-guard.net";
 
     try {
         const jar = new CookieJar();
 
         const fetchMangaDetails = async (
             baseUrl: string,
-        ): Promise<MangaDetails> => {
+        ): Promise<MangaDetails | null> => {
             time("Fetch Html");
             const url = `${baseUrl}/${id}`;
 
@@ -37,6 +36,14 @@ export async function GET(
                     `user_acc=${userAcc}`,
                     "https://manganato.com",
                 );
+                await jar.setCookie(
+                    `user_acc=${userAcc}`,
+                    "https://m.manganelo.com",
+                );
+                await jar.setCookie(
+                    `user_acc=${userAcc}`,
+                    "https://chapmanganelo.com",
+                );
             }
 
             const instance = axios.create({
@@ -45,12 +52,8 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
-                    Referer: serviceUrl,
                 },
             });
-
-            // Apply ddosGuardBypass first
-            ddosGuardBypass(instance);
 
             // Then wrap with cookie support
             const wrappedInstance = wrapper(instance);
@@ -62,7 +65,6 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
-                    Referer: serviceUrl,
                 },
             });
             timeEnd("Fetch Html");
@@ -193,7 +195,7 @@ export async function GET(
             });
 
             if (!imageUrl) {
-                throw new Error("MANGA_NOT_FOUND");
+                return null;
             }
 
             timeEnd("Extract Data");
@@ -218,8 +220,9 @@ export async function GET(
             return mangaDetails;
         };
 
-        const [mangaDetails, malData] = await Promise.all([
-            fetchMangaDetails("https://chapmanganato.to"),
+        let [mangaDetails, mangaDetails2, malData] = await Promise.all([
+            fetchMangaDetails("https://m.manganelo.com"),
+            fetchMangaDetails("https://chapmanganelo.com"),
             getMangaFromSupabase(id),
         ]).catch((error) => {
             if (error.message === "MANGA_NOT_FOUND") {
@@ -227,6 +230,14 @@ export async function GET(
             }
             throw error;
         });
+
+        if (mangaDetails2?.mangaId) {
+            mangaDetails = mangaDetails2;
+        }
+
+        if (!mangaDetails) {
+            throw new Error("The specified manga could not be found");
+        }
 
         mangaDetails.malData = malData;
         if (mangaDetails.malData) {
