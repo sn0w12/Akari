@@ -16,6 +16,8 @@ export function AnalyticsWrapper() {
                     src="https://cloud.umami.is/script.js"
                     data-website-id="53600aa5-bffc-4e98-8f78-2351d1206043"
                     strategy="afterInteractive"
+                    data-cache="true"
+                    data-auto-track="false"
                 />
             )}
             <Analytics
