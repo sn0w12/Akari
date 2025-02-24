@@ -28,6 +28,11 @@ export async function GET(request: Request): Promise<Response> {
         const $ = cheerio.load(data);
         const bookmarks: Bookmark[] = [];
 
+        const lastPageElement = $("a.go-p-end.a-hov");
+        const totalPages: number = lastPageElement.length
+            ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
+            : 1;
+
         $(".user-bookmark-item").each((_, element) => {
             const $element = $(element);
 
@@ -105,7 +110,7 @@ export async function GET(request: Request): Promise<Response> {
             bookmarks.push(bookmark);
         });
 
-        return new Response(JSON.stringify({ bookmarks }), {
+        return new Response(JSON.stringify({ bookmarks, totalPages }), {
             status: 200,
             headers: {
                 "Content-Type": "application/json",
