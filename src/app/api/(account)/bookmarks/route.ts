@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: Request): Promise<Response> {
     try {
-        const url = "https://www.nelomanga.com/bookmark";
+        const { searchParams } = new URL(request.url);
+        const page = searchParams.get("page") || "1";
+        const url = `https://www.nelomanga.com/bookmark?page=${page}`;
         const cookieStore = await cookies();
 
         const { data } = await axios.get(url, {
@@ -119,6 +121,15 @@ export async function GET(request: Request): Promise<Response> {
         });
     } catch (error) {
         console.error("Error fetching bookmarks:", error);
+        if (axios.isAxiosError(error)) {
+            return NextResponse.json(
+                {
+                    result: "error",
+                    data: error.response?.data || error.message,
+                },
+                { status: error.response?.status || 500 },
+            );
+        }
         return NextResponse.json(
             { result: "error", data: (error as Error).message },
             { status: 500 },
