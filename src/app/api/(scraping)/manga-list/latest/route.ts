@@ -8,7 +8,7 @@ export async function GET(req: Request): Promise<Response> {
         const page: string = searchParams.get("page") || "1";
 
         // Construct the URL with the page number
-        const url = `https://www.nelomanga.com/genre/all?page=${page}`;
+        const url = `https://www.nelomanga.com/genre/all?page=${page}&type=newest`;
         const result = await processMangaList(url, page);
 
         return new Response(JSON.stringify(result), {
