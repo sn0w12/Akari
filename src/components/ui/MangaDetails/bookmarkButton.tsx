@@ -15,7 +15,6 @@ import { useSettingsVersion } from "@/lib/settings";
 interface BookmarkButtonProps {
     manga: MangaDetails;
     isBookmarked: boolean | null;
-    bmData: string;
 }
 
 async function bookmark(manga: MangaDetails, isBookmarked: boolean) {
@@ -23,14 +22,13 @@ async function bookmark(manga: MangaDetails, isBookmarked: boolean) {
         return;
     }
 
-    const storyData = manga.storyData;
     const response = await fetch("/api/bookmarks/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            story_data: storyData,
+            id: manga.mangaId,
         }),
     });
 
@@ -43,78 +41,17 @@ async function bookmark(manga: MangaDetails, isBookmarked: boolean) {
         new Toast("Bookmark added.", "success");
     }
 
-    const firstChapterId = manga.chapterList[manga.chapterList.length - 1].id;
-    const firstChapter = await fetch(
-        `/api/manga/${manga.identifier}/${firstChapterId}`,
-    );
-    const firstChapterData = await firstChapter.json();
-
-    const updateResponse = await fetch("/api/bookmarks/update", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            story_data: storyData,
-            chapter_data: firstChapterData.chapterData,
-        }),
-    });
-    const updateData = await updateResponse.json();
-    if (updateData.result === "error") {
-        new Toast("Failed to update bookmark.", "error");
-        return;
-    }
-    db.updateCache(db.mangaCache, manga.identifier, {
-        last_read: firstChapterId,
-    });
-
-    return updateData;
+    return data;
 }
 
-async function findBookmarkData(
-    identifier: string,
-    page = 1,
-): Promise<string | null> {
-    const response = await fetch(`/api/bookmarks?page=${page}`);
-    const data = await response.json();
-
-    if (!data.bookmarks || data.result === "error") {
-        return null;
-    }
-
-    const bookmark = data.bookmarks.find((bm: any) =>
-        bm.link_story.includes(identifier),
-    );
-
-    if (bookmark) {
-        return bookmark.bm_data;
-    }
-
-    if (page < data.totalPages) {
-        return findBookmarkData(identifier, page + 1);
-    }
-
-    return null;
-}
-
-async function removeBookmark(bmData: string, manga: MangaDetails) {
-    if (!bmData) {
-        // Try to find the bookmark data if not provided
-        const foundBmData = await findBookmarkData(manga.identifier);
-        if (!foundBmData) {
-            new Toast("Could not find bookmark data", "error");
-            return false;
-        }
-        bmData = foundBmData;
-    }
-
+async function removeBookmark(manga: MangaDetails) {
     const response = await fetch("/api/bookmarks/delete", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            bm_data: bmData,
+            id: manga.mangaId,
         }),
     });
     const data = await response.json();
@@ -135,7 +72,6 @@ async function removeBookmark(bmData: string, manga: MangaDetails) {
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     manga,
     isBookmarked,
-    bmData,
 }) => {
     const [hovered, setHovered] = useState(false);
     const [isStateBookmarked, setIsStateBookmarked] = useState<boolean | null>(
@@ -149,7 +85,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     }, [settingsVersion]);
 
     const handleBookmarkClick = async () => {
-        if (isStateBookmarked !== null && manga.storyData) {
+        if (isStateBookmarked !== null) {
             setIsLoading(true);
             try {
                 const data = await bookmark(manga, isStateBookmarked);
@@ -167,7 +103,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     };
 
     const handleRemoveBookmark = async () => {
-        await removeBookmark(bmData, manga);
+        await removeBookmark(manga);
         setIsStateBookmarked(false);
         return true;
     };

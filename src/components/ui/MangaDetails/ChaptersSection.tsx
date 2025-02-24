@@ -167,8 +167,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                             : ""
                                     }`}
                                 >
-                                    Released:{" "}
-                                    {formatChapterDate(chapter.createdAt)}
+                                    Released: {chapter.createdAt}
                                 </p>
                             </CardContent>
                         </Card>

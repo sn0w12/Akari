@@ -15,7 +15,6 @@ interface ButtonsProps {
 
 export default function Buttons({ manga }: ButtonsProps) {
     const [isLoading, setIsLoading] = useState(true);
-    const [bmData, setBmData] = useState("");
     const [lastRead, setLastRead] = useState<string>("");
     const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
     const id = manga.identifier;
@@ -33,7 +32,6 @@ export default function Buttons({ manga }: ButtonsProps) {
 
         setIsBookmarked((isBookmarked as boolean) ?? false);
         if (cachedData) {
-            setBmData(cachedData.bm_data);
             setLastRead(cachedData.last_read);
         } else {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
@@ -57,11 +55,7 @@ export default function Buttons({ manga }: ButtonsProps) {
     return (
         <div className="flex flex-col xl:flex-row gap-4 mt-auto">
             {/* Toggle bookmark button based on bookmark status */}
-            <BookmarkButton
-                manga={manga}
-                isBookmarked={isBookmarked}
-                bmData={bmData}
-            />
+            <BookmarkButton manga={manga} isBookmarked={isBookmarked} />
             <ReadingButton manga={manga} lastRead={lastRead} />
         </div>
     );
