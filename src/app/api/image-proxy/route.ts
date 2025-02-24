@@ -32,11 +32,10 @@ export async function GET(req: Request): Promise<Response> {
         });
 
         const imageBuffer = Buffer.from(response.data);
-
         return new NextResponse(imageBuffer, {
             headers: {
                 "Content-Type": "image/webp",
-                ...generateCacheHeaders(6000),
+                ...generateCacheHeaders(7 * 24 * 60 * 60),
             },
         });
     } catch (error) {

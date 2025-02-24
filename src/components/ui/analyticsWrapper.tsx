@@ -9,6 +9,13 @@ export function AnalyticsWrapper() {
 
     return (
         <>
+            {consent.analytics && (
+                <script
+                    defer
+                    src="https://cloud.umami.is/script.js"
+                    data-website-id="53600aa5-bffc-4e98-8f78-2351d1206043"
+                ></script>
+            )}
             <Analytics
                 beforeSend={(event) => {
                     if (!consent.analytics) {
