@@ -65,7 +65,7 @@
         "@types/react": "npm:types-react@19.0.0-rc.1",
         "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
         "eslint": "^9.20.0",
-        "eslint-config-next": "15.0.3",
+        "eslint-config-next": "15.1.7",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-prettier": "^5.2.3",
         "postcss": "^8",
