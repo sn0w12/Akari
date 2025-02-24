@@ -51,17 +51,32 @@ function SideBarLink({
     text,
     icon: Icon,
     onClose,
+    disabled = false,
 }: {
     href: string;
     text: string;
     icon: React.ElementType;
     onClose: () => void;
+    disabled?: boolean;
 }) {
+    const baseClassName =
+        "flex items-center gap-3 px-4 py-2 border rounded-md transition-colors";
+    const enabledClassName = "hover:bg-accent cursor-pointer";
+    const disabledClassName =
+        "opacity-50 cursor-not-allowed pointer-events-none";
+
     return (
         <Link
-            href={href}
-            className="flex items-center gap-3 px-4 py-2 border rounded-md hover:bg-accent transition-colors"
-            onClick={onClose}
+            href={disabled ? "#" : href}
+            className={`${baseClassName} ${disabled ? disabledClassName : enabledClassName}`}
+            onClick={(e) => {
+                if (disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                onClose();
+            }}
+            aria-disabled={disabled}
         >
             <Icon className="h-5 w-5" />
             <span className="text-base font-medium">{text}</span>
@@ -198,7 +213,10 @@ export function SideBar() {
                         </HoverLink>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
-                        <HoverLink href="/search" className="flex items-center">
+                        <HoverLink
+                            href="/search"
+                            className="flex items-center opacity-50 cursor-not-allowed pointer-events-none"
+                        >
                             <Search className="mr-2 h-4 w-4" />
                             <span>Search</span>
                         </HoverLink>
@@ -300,6 +318,7 @@ export function SideBar() {
                                         text="Advanced Search"
                                         icon={Search}
                                         onClose={handleClose}
+                                        disabled={true}
                                     />
                                     <SideBarLink
                                         href="/popular"

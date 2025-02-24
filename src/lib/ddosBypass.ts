@@ -5,8 +5,7 @@ import type {
 } from "axios";
 import type { Cookie } from "tough-cookie";
 import { CookieJar } from "tough-cookie";
-import fs from "fs";
-import path from "path";
+import { defaultMark } from "./mark";
 
 declare module "axios" {
     interface AxiosRequestConfig {
@@ -106,36 +105,7 @@ export function ddosGuardBypass(axios: AxiosInstance): void {
                 // Send a request with fake mark data
                 let markUrl = `${origin}/.well-known/ddos-guard/mark/`;
 
-                // Fix path resolution for Windows
-                const currentFilePath = new URL(import.meta.url).pathname;
-                const normalizedPath = currentFilePath.replace(
-                    /^\/([A-Za-z]:)/,
-                    "$1",
-                ); // Remove leading slash for Windows paths
-                const projectRoot = path.resolve(
-                    path.dirname(normalizedPath),
-                    "..",
-                    "..",
-                );
-                const markFilePath = path.join(
-                    projectRoot,
-                    "public",
-                    "fakeMark.json",
-                );
-
-                if (!fs.existsSync(markFilePath)) {
-                    console.error(
-                        `Attempted to load mark file from: ${markFilePath}`,
-                    );
-                    throw new Error(
-                        "fakeMark.json file not found in public directory",
-                    );
-                }
-
-                let mark = JSON.stringify(
-                    JSON.parse(fs.readFileSync(markFilePath, "utf-8")),
-                );
-
+                let mark = defaultMark;
                 resp = await axios({
                     method: "POST",
                     url: markUrl,

@@ -49,12 +49,6 @@ const getViewsColor = (views: string) => {
     return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
-const formatDate = (date: string) => {
-    const dateArray = date.split(",");
-    const year = dateArray[1].split("-")[0].trim();
-    return dateArray[0] + ", " + year;
-};
-
 export async function getMangaData(id: string) {
     try {
         const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
@@ -108,7 +102,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={manga.malData?.imageUrl ?? manga.imageUrl}
+                        src={
+                            "/api/image-proxy?imageUrl=" +
+                            (manga.malData?.imageUrl ?? manga.imageUrl)
+                        }
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
@@ -209,11 +206,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     {manga.authors.map(
                                         (author: string, index: number) => (
                                             <Link
-                                                href={`/author/${encodeURIComponent(
-                                                    manga.author_urls[index]
-                                                        ?.split("/")
-                                                        .pop() || "",
-                                                )}`}
+                                                href={`/author/${encodeURIComponent(author)}`}
                                                 key={index}
                                                 prefetch={false}
                                             >
@@ -241,7 +234,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 <div className="text-lg mb-2 flex items-center">
                                     Updated:
                                     <Badge className="ml-2 hover:bg-gray-300">
-                                        {formatDate(manga.updated)}
+                                        {manga.updated}
                                     </Badge>
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">

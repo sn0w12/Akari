@@ -20,7 +20,7 @@ export async function GET(req: Request): Promise<Response> {
         }
 
         // Construct the URL with the page number
-        const url = `https://manganato.com/genre-all/${page}?type=topview`;
+        const url = `https://www.nelomanga.com/manga-list/hot-manga?page=${page}`;
         const result = await processMangaList(url, page);
         cache.set(cacheKey, result);
 

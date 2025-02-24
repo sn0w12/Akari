@@ -84,9 +84,6 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const [username, setUsername] = useState("");
     const [savedUsername, setSavedUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [captcha, setCaptcha] = useState("");
-    const [captchaUrl, setCaptchaUrl] = useState("");
-    const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -141,49 +138,28 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
         window.location.reload();
     };
 
-    // Fetch CAPTCHA when opening the dialog
-    const fetchCaptcha = async () => {
-        if (captchaUrl && ciSessionCookie) {
-            return;
-        }
-
-        try {
-            const response = await fetch("/api/login/captcha");
-            const data = await response.json();
-            setCaptchaUrl(data.captchaUrl);
-            setCiSessionCookie(data.ciSessionCookie[0]);
-        } catch (error) {
-            console.error("Failed to fetch CAPTCHA:", error);
-            setLoginError("Failed to fetch CAPTCHA.");
-        }
-    };
-
     // Submit login with CAPTCHA, username, and password
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/login/submit", {
+            const response = await fetch("/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    cookie: ciSessionCookie,
                 },
                 body: JSON.stringify({
                     username,
                     password,
-                    captcha,
-                    ciSessionCookie,
                 }),
             });
 
             const data = await response.json();
-            if (data.userAccCookie) {
+            if (data.success === true) {
                 // Decode and parse the user_acc cookie value to update user data
-                const parsedData = JSON.parse(data.userAccCookie);
-                localStorage.setItem("accountName", parsedData.user_name);
-                setSavedUsername(parsedData.user_name);
+                localStorage.setItem("accountName", data.data.username);
+                setSavedUsername(data.data.username);
 
                 window.location.reload();
             } else {
@@ -331,9 +307,6 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                 open={open}
                 onOpenChange={(isOpen) => {
                     setOpen(isOpen);
-                    if (isOpen) {
-                        fetchCaptcha();
-                    }
                 }}
             >
                 <DialogTrigger asChild>
@@ -382,40 +355,6 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                                             setPassword(e.target.value)
                                         }
                                     />
-
-                                    {/* CAPTCHA Field */}
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="block text-sm font-medium mb-2">
-                                            CAPTCHA
-                                        </label>
-                                        <div className="flex items-center w-full">
-                                            {!captchaUrl ? (
-                                                <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
-                                                    <Skeleton className="w-full h-full" />
-                                                </div>
-                                            ) : (
-                                                <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
-                                                    <Image
-                                                        src={`/api/image-proxy?imageUrl=${captchaUrl}`}
-                                                        loading="eager"
-                                                        alt="CAPTCHA"
-                                                        className="max-w-full max-h-full object-contain"
-                                                        width={100}
-                                                        height={45}
-                                                    />
-                                                </div>
-                                            )}
-                                            <Input
-                                                type="text"
-                                                placeholder="Enter CAPTCHA..."
-                                                className="w-full"
-                                                value={captcha}
-                                                onChange={(e) =>
-                                                    setCaptcha(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
 
                                     {/* Submit Button */}
                                     <Button

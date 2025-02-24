@@ -61,3 +61,7 @@ export const timeEnd = (label: string) => {
         console.timeEnd(label);
     }
 };
+
+export function cleanText(text: string): string {
+    return text.trim().replace(/\s+/g, " ");
+}

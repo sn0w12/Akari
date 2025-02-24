@@ -23,7 +23,7 @@ interface PageProps {
 async function getMangaList(genreId: string, page: number, sort: string) {
     try {
         const response = await fetch(
-            `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,
+            `${getProductionUrl()}/api/genre/${genreId}?orderBy=${sort}&page=${page}`,
         );
 
         if (!response.ok) {
