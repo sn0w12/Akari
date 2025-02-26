@@ -28,7 +28,7 @@ const DesktopBookmarkCard: React.FC<{
                     prefetch={false}
                 >
                     <Image
-                        src={`/api/image-proxy?imageUrl=${bookmark.image}`}
+                        src={bookmark.image}
                         alt={bookmark.storyname}
                         width={300}
                         height={450}

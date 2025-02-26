@@ -80,22 +80,16 @@ export async function syncAllServices(data: Chapter) {
 
 // Example sync handler for your website
 async function updateBookmark(data: Chapter) {
-    const mangaId = data.mangaId;
-    const chapterId = data.chapterId;
-
-    if (!mangaId || !chapterId) {
-        return;
-    }
+    const story_data = data.storyData;
+    const chapter_data = data.chapterData;
+    if (!chapter_data || !story_data) return;
 
     const response = await fetch("/api/bookmarks/update", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            manga_id: mangaId,
-            chapter_id: chapterId,
-        }),
+        body: JSON.stringify({ story_data, chapter_data }),
     });
 
     if (!response.ok) {

@@ -26,14 +26,14 @@ export default function BookmarksGrid({
 }: BookmarksGridProps) {
     const [updatedBookmarks, setUpdatedBookmarks] = useState<Bookmark[]>([]);
 
-    async function removeBookmark(noteid: string) {
+    async function removeBookmark(bm_data: string, noteid: string) {
         const response = await fetch("/api/bookmarks/delete", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                id: noteid,
+                bm_data: bm_data,
             }),
         });
         const data = await response.json();
@@ -108,7 +108,12 @@ export default function BookmarksGrid({
                             confirmLabel="Remove"
                             confirmColor="bg-negative border-negative hover:bg-negative/70"
                             cancelLabel="Cancel"
-                            onConfirm={() => removeBookmark(bookmark.noteid)}
+                            onConfirm={() =>
+                                removeBookmark(
+                                    bookmark.bm_data,
+                                    bookmark.noteid,
+                                )
+                            }
                         />
                         <ConfirmDialog
                             triggerButton={

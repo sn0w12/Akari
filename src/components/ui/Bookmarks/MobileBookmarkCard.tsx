@@ -26,7 +26,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                                 className="block"
                             >
                                 <Image
-                                    src={`/api/image-proxy?imageUrl=${bookmark.image}`}
+                                    src={bookmark.image}
                                     alt={bookmark.storyname}
                                     width={300}
                                     height={450}

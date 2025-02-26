@@ -6,6 +6,8 @@ import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 import { time, timeEnd } from "@/lib/utils";
+import { env } from "process";
+import { ddosGuardBypass } from "@/lib/ddosBypass";
 
 export async function GET(
     req: Request,
@@ -14,6 +16,8 @@ export async function GET(
     time("Total API Request");
     const params = await props.params;
     const id = params.id;
+    const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
+    let serviceUrl = "https://ddos-guard.net";
 
     try {
         const jar = new CookieJar();
@@ -22,7 +26,18 @@ export async function GET(
             baseUrl: string,
         ): Promise<MangaDetails> => {
             time("Fetch Html");
-            const url = `${baseUrl}/manga/${id}`;
+            const url = `${baseUrl}/${id}`;
+
+            if (userAcc) {
+                await jar.setCookie(
+                    `user_acc=${userAcc}`,
+                    "https://chapmanganato.to",
+                );
+                await jar.setCookie(
+                    `user_acc=${userAcc}`,
+                    "https://manganato.com",
+                );
+            }
 
             const instance = axios.create({
                 headers: {
@@ -30,8 +45,12 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
+                    Referer: serviceUrl,
                 },
             });
+
+            // Apply ddosGuardBypass first
+            ddosGuardBypass(instance);
 
             // Then wrap with cookie support
             const wrappedInstance = wrapper(instance);
@@ -43,6 +62,7 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
+                    Referer: serviceUrl,
                 },
             });
             timeEnd("Fetch Html");
@@ -54,88 +74,100 @@ export async function GET(
 
             time("Extract Data");
             const identifier = url.split("/").pop() || "";
-            const imageUrl = $(".manga-info-top .manga-info-pic img").attr(
-                "src",
-            );
-            const name = $(".manga-info-text h1").text();
-            const alternativeNames = [""];
-            const authors: string[] = [];
-            $(".manga-info-text li").each((_, element) => {
-                const text = $(element).text().trim();
-                if (text.startsWith("Author")) {
-                    $(element)
-                        .find("a")
-                        .each((_, authorElement) => {
-                            authors.push($(authorElement).text().trim());
-                        });
-                }
-            });
-            const status = $(".manga-info-text li")
-                .filter((_, element) =>
-                    $(element).text().trim().startsWith("Status"),
-                )
+            const imageUrl = $(".story-info-left .info-image img").attr("src");
+            const name = $(".story-info-right h1").text();
+            const alternativeNames = $(
+                ".variations-tableInfo .info-alternative",
+            )
+                .closest("tr")
+                .find("td.table-value")
                 .text()
-                .replace("Status :", "")
+                .trim()
+                .split("; ");
+            const authors: string[] = [];
+            const author_urls: string[] = [];
+            $(".variations-tableInfo .info-author")
+                .closest("tr")
+                .find("a")
+                .each((index, element) => {
+                    authors.push($(element).text().trim());
+                    author_urls.push($(element).attr("href") || "");
+                });
+            const status = $(".variations-tableInfo .info-status")
+                .closest("tr")
+                .find("td.table-value")
+                .text()
                 .trim();
-            const description = $("#contentBox")
+            const description = $(".panel-story-info-description")
                 .clone()
-                .children("h2")
+                .children()
                 .remove()
                 .end()
                 .text()
+                .replace(
+                    `Come visit MangaNato.com sometime to read the latest chapter.`,
+                    "",
+                )
                 .trim();
             const score = parseFloat(
-                $(".rate_row .get_rate").attr("default-stars") || "0",
+                $('em[property="v:average"]').text().trim(),
             );
 
             const genres: string[] = [];
-            $(".manga-info-text li.genres a").each((_, element) => {
-                genres.push($(element).text().trim());
-            });
+            $(".variations-tableInfo .info-genres")
+                .closest("tr")
+                .find("a")
+                .each((index, element) => {
+                    genres.push($(element).text().trim());
+                });
 
-            const updated = $(".manga-info-text li")
-                .filter((_, element) =>
-                    $(element).text().trim().startsWith("Last updated"),
-                )
+            const updated = $(".story-info-right-extent .info-time")
+                .parent()
+                .parent()
+                .find(".stre-value")
                 .text()
-                .replace("Last updated :", "")
                 .trim();
-            const view = $(".manga-info-text li")
-                .filter((_, element) =>
-                    $(element).text().trim().startsWith("View"),
-                )
+            const view = $(".story-info-right-extent .info-view")
+                .parent()
+                .parent()
+                .find(".stre-value")
                 .text()
-                .replace("View :", "")
                 .trim();
 
             const chapterList: DetailsChapter[] = [];
-            $(".chapter-list .row").each((index, element) => {
-                const chapterElement = $(element);
-                const chapterLink = chapterElement.find("span:first-child a");
-                const chapterName = chapterLink.text().trim();
-                const chapterUrl = chapterLink.attr("href");
-                const chapterView = chapterElement
-                    .find("span:nth-child(2)")
-                    .text()
-                    .trim();
-                const chapterTime = chapterElement
-                    .find("span:last-child")
-                    .attr("title");
+            $(".panel-story-chapter-list .row-content-chapter li").each(
+                (index, element) => {
+                    const chapterElement = $(element);
+                    const chapterName = chapterElement
+                        .find(".chapter-name")
+                        .text()
+                        .trim();
+                    const chapterUrl = chapterElement
+                        .find(".chapter-name")
+                        .attr("href");
+                    const chapterView = chapterElement
+                        .find(".chapter-view")
+                        .text()
+                        .trim();
+                    const chapterTime = chapterElement
+                        .find(".chapter-time")
+                        .attr("title");
 
-                if (!chapterTime) {
-                    return;
-                }
+                    if (!chapterTime) {
+                        return;
+                    }
 
-                chapterList.push({
-                    id: chapterUrl?.split("/").pop() || "",
-                    path: chapterUrl || "",
-                    name: chapterName,
-                    view: chapterView,
-                    createdAt: chapterTime,
-                });
-            });
+                    chapterList.push({
+                        id: chapterUrl?.split("/").pop() || "",
+                        path: chapterUrl || "",
+                        name: chapterName,
+                        view: chapterView,
+                        createdAt: chapterTime,
+                    });
+                },
+            );
 
-            const scriptTags = $("script");
+            const scriptTags = $(".body-site script");
 
             let glbStoryData: string | null = null;
             let mangaId: string | null = null;
@@ -144,19 +176,18 @@ export async function GET(
                 const scriptContent = $(elem).html();
 
                 if (scriptContent) {
-                    // Extract story data if present
                     const storyDataMatch = scriptContent.match(
                         /glb_story_data\s*=\s*'([^']+)'/,
                     );
+                    const postidMatches = scriptContent.matchAll(
+                        /\$postid\s*=\s*('|")(\d+)('|")/gm,
+                    );
+                    const firstMatch = [...postidMatches][0];
+                    if (firstMatch) {
+                        mangaId = firstMatch[2]; // Gets the group containing digits
+                    }
                     if (storyDataMatch) {
                         glbStoryData = storyDataMatch[1];
-                    }
-
-                    // Update postid extraction to match direct variable assignment
-                    const postidMatch =
-                        scriptContent.match(/\$postid\s*=\s*(\d+)/);
-                    if (postidMatch) {
-                        mangaId = postidMatch[1];
                     }
                 }
             });
@@ -174,6 +205,7 @@ export async function GET(
                 name,
                 alternativeNames,
                 authors,
+                author_urls,
                 status,
                 updated,
                 view,
@@ -187,7 +219,7 @@ export async function GET(
         };
 
         const [mangaDetails, malData] = await Promise.all([
-            fetchMangaDetails("https://nelomanga.com"),
+            fetchMangaDetails("https://chapmanganato.to"),
             getMangaFromSupabase(id),
         ]).catch((error) => {
             if (error.message === "MANGA_NOT_FOUND") {

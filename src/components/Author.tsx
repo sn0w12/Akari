@@ -1,9 +1,11 @@
 import { SortSelect } from "./ui/SortSelect";
+import nextBase64 from "next-base64";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { MangaGrid } from "./MangaGrid";
 import { SimpleError, SmallManga } from "@/app/api/interfaces";
+import Head from "next/head";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -59,26 +61,56 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 py-8">
-                <div className="flex gap-4">
-                    <h2 className={`text-3xl font-bold mb-6`}>
-                        {params.id.replaceAll("-", " ")}
-                    </h2>
-                    <SortSelect currentSort={currentSort} />
-                </div>
-
-                {error && <ErrorComponent message={error} />}
-                <MangaGrid mangaList={mangaList} />
-            </main>
-
-            {!error && (
-                <PaginationElement
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    searchParams={[{ key: "sort", value: currentSort }]}
+        <>
+            <Head>
+                <link
+                    rel="canonical"
+                    href={`/author/${params.id}${currentPage > 1 ? `?page=${currentPage}` : ""}`}
                 />
-            )}
-        </div>
+                {currentPage > 1 && (
+                    <link
+                        rel="prev"
+                        href={`/author/${params.id}${currentPage > 2 ? `?page=${currentPage - 1}` : ""}`}
+                    />
+                )}
+                {currentPage < totalPages && (
+                    <link
+                        rel="next"
+                        href={`/author/${params.id}?page=${currentPage + 1}`}
+                    />
+                )}
+            </Head>
+            <div className="min-h-screen bg-background text-foreground">
+                <main className="container mx-auto px-4 py-8">
+                    <div className="flex gap-4">
+                        <h2 className={`text-3xl font-bold mb-6`}>
+                            {nextBase64
+                                .decode(params.id)
+                                .replaceAll("_", " ")
+                                .replaceAll("|", " ")
+                                .split(" ")
+                                .map(
+                                    (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1),
+                                )
+                                .join(" ")}
+                        </h2>
+                        <SortSelect currentSort={currentSort} />
+                    </div>
+
+                    {error && <ErrorComponent message={error} />}
+                    <MangaGrid mangaList={mangaList} />
+                </main>
+
+                {!error && (
+                    <PaginationElement
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        searchParams={[{ key: "sort", value: currentSort }]}
+                    />
+                )}
+            </div>
+        </>
     );
 }
