@@ -13,6 +13,9 @@ export function MangaGrid({ mangaList }: MangaGridProps) {
 
     useEffect(() => {
         async function checkBookmarks() {
+            const username = localStorage.getItem("accountName");
+            if (!username) return;
+
             const bookmarkedManga = await getBookmarked(mangaList);
             setBookmarks(bookmarkedManga);
         }
