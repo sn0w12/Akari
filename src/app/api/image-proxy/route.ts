@@ -26,7 +26,7 @@ export async function GET(req: Request): Promise<Response> {
         return new NextResponse(imageBuffer, {
             headers: {
                 "Content-Type": "image/webp",
-                ...generateCacheHeaders(7 * 24 * 60 * 60),
+                ...generateCacheHeaders(86400, 604800, 2592000),
             },
         });
     } catch (error) {

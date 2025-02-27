@@ -93,7 +93,7 @@ export async function GET(
                     status: 200,
                     headers: {
                         "Content-Type": "application/json",
-                        ...generateCacheHeaders(600),
+                        ...generateCacheHeaders(600, 604800),
                     },
                 },
             );

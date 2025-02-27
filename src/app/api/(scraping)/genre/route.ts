@@ -206,7 +206,7 @@ export async function GET(request: Request): Promise<Response> {
             status: 200,
             headers: {
                 "Content-Type": "application/json",
-                ...generateCacheHeaders(600),
+                ...generateCacheHeaders(300),
             },
         });
     } catch (error) {

@@ -151,7 +151,7 @@ export async function GET(
             status: 200,
             headers: {
                 contentType: "application/json",
-                ...generateCacheHeaders(300),
+                ...generateCacheHeaders(3600, 604800, 2592000),
             },
         });
 

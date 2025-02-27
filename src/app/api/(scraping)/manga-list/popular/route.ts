@@ -55,7 +55,7 @@ export async function GET(req: Request): Promise<Response> {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json",
-                    ...generateCacheHeaders(60),
+                    ...generateCacheHeaders(86400, 604800, 2592000),
                 },
             },
         );

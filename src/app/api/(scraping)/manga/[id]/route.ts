@@ -253,7 +253,10 @@ export async function GET(
                 status: 200,
                 headers: {
                     "Content-Type": "application/json",
-                    ...generateCacheHeaders(mangaDetails.storyData ? 300 : 0),
+                    ...generateCacheHeaders(
+                        mangaDetails.storyData ? 300 : 0,
+                        10800,
+                    ),
                 },
             },
         );
