@@ -69,7 +69,7 @@ module.exports = {
         return [
             {
                 source: "/", // Home
-                headers: generateCacheHeaders(60, 300),
+                headers: generateCacheHeaders(60, 360),
             },
             {
                 source: "/popular", // Popular
