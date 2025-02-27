@@ -50,6 +50,10 @@ export function getErrorMessage(status: number | undefined): string {
     }
 }
 
+export function isSignedIn() {
+    return !!localStorage.getItem("accountName");
+}
+
 interface PerformanceMetrics {
     [key: string]: number;
 }
