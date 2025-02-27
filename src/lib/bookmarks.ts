@@ -64,6 +64,7 @@ export async function checkIfBookmarked(
     mangaIds: string | string[],
 ): Promise<Record<string, boolean> | boolean> {
     const idsArray = Array.isArray(mangaIds) ? mangaIds : [mangaIds];
+    if (idsArray.length === 0) return {};
 
     const response = await fetch(
         `/api/bookmarks/isbookmarked?ids=${idsArray.join(",")}`,
