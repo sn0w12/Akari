@@ -21,6 +21,9 @@ interface PageProps {
 }
 
 async function getMangaList(genreId: string, page: number, sort: string) {
+    "use cache";
+    cacheLife("minutes");
+
     try {
         const response = await fetch(
             `${getProductionUrl()}/api/genre?include=${genreId}&orderBy=${sort}&page=${page}`,

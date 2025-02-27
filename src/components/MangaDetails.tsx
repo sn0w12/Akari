@@ -56,6 +56,9 @@ const formatDate = (date: string) => {
 };
 
 export async function getMangaData(id: string) {
+    "use cache";
+    cacheLife("minutes");
+
     try {
         const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
 
@@ -87,8 +90,8 @@ export async function getMangaData(id: string) {
 export async function MangaDetailsComponent({ id }: { id: string }) {
     "use cache";
     cacheLife("minutes");
-    const manga = await getMangaData(id);
 
+    const manga = await getMangaData(id);
     if (manga.error) {
         return (
             <main className="container mx-auto px-4 py-8">

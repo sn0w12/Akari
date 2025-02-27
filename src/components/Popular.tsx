@@ -18,6 +18,8 @@ interface PageProps {
 }
 
 async function getMangaList(page: number) {
+    "use cache";
+
     try {
         const response = await fetch(
             `${getProductionUrl()}/api/manga-list/popular?page=${page}`,

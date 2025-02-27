@@ -16,6 +16,9 @@ interface MangaListResponse {
 }
 
 async function getMangaData(page: number): Promise<MangaListResponse> {
+    "use cache";
+    cacheLife("minutes");
+
     const baseUrl = getProductionUrl();
     const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
 
