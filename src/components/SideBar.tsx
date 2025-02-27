@@ -107,17 +107,21 @@ export function SideBar() {
     }, []);
 
     const handleAccountClick = () => {
-        sheetRef.current?.click();
         setTimeout(() => {
-            loginRef.current?.click();
-        }, 300);
+            setOpen(true);
+            setTimeout(() => {
+                loginRef.current?.click();
+            }, 300);
+        }, 100);
     };
 
     const handleSettingsClick = () => {
-        sheetRef.current?.click();
         setTimeout(() => {
-            settingsRef.current?.click();
-        }, 300);
+            setOpen(true);
+            setTimeout(() => {
+                settingsRef.current?.click();
+            }, 300);
+        }, 100);
     };
 
     const handleClose = () => {
@@ -143,8 +147,8 @@ export function SideBar() {
     );
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <ContextMenu>
+        <ContextMenu>
+            <Sheet open={open} onOpenChange={setOpen}>
                 <ContextMenuTrigger>
                     <SheetTrigger asChild>
                         <Button
@@ -163,7 +167,13 @@ export function SideBar() {
                     className="w-56 z-[2000]"
                     id="sidebar-context"
                 >
-                    <ContextMenuItem onSelect={() => setOpen((prev) => !prev)}>
+                    <ContextMenuItem
+                        onClick={() =>
+                            setTimeout(() => {
+                                setOpen((prev) => !prev);
+                            }, 100)
+                        }
+                    >
                         <Menu className="mr-2 h-4 w-4" />
                         <span>Open</span>
                         {shortcuts.toggleSidebar && (
@@ -361,7 +371,7 @@ export function SideBar() {
                         </div>
                     </div>
                 </SheetContent>
-            </ContextMenu>
-        </Sheet>
+            </Sheet>
+        </ContextMenu>
     );
 }
