@@ -10,7 +10,6 @@ import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
 import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
-import { ddosGuardBypass } from "@/lib/ddosBypass";
 
 export async function GET(
     req: Request,
@@ -36,8 +35,6 @@ export async function GET(
                 Referer: serviceUrl,
             },
         });
-
-        ddosGuardBypass(instance);
 
         const wrappedInstance = wrapper(instance);
         wrappedInstance.defaults.jar = jar;

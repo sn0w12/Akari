@@ -7,7 +7,6 @@ import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
 import { time, timeEnd } from "@/lib/utils";
 import { env } from "process";
-import { ddosGuardBypass } from "@/lib/ddosBypass";
 
 export async function GET(
     req: Request,
@@ -48,9 +47,6 @@ export async function GET(
                     Referer: serviceUrl,
                 },
             });
-
-            // Apply ddosGuardBypass first
-            ddosGuardBypass(instance);
 
             // Then wrap with cookie support
             const wrappedInstance = wrapper(instance);
