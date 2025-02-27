@@ -1,7 +1,7 @@
 /**
  * Generates cache control headers for different caching levels.
  * @param time - The base time in seconds for caching
- * @param staleWhileRevalidate - Time in seconds to use stale content while revalidating (defaults to time/2)
+ * @param staleWhileRevalidate - Time in seconds to use stale content while revalidating (defaults to time*2)
  * @param staleIfError - Time in seconds to use stale content when errors occur (defaults to time)
  * @returns An object containing cache control headers
  */
