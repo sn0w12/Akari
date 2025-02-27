@@ -5,6 +5,12 @@ import NodeCache from "node-cache";
 import { replaceImages } from "@/lib/mangaNato";
 import { SmallManga } from "../../../interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
+import {
+    time,
+    timeEnd,
+    performanceMetrics,
+    clearPerformanceMetrics,
+} from "@/lib/utils";
 
 const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour
 export const dynamic = "force-dynamic";
@@ -65,6 +71,8 @@ export async function GET(
     request: Request,
     props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    clearPerformanceMetrics();
+    time("Total API Request");
     const params = await props.params;
     try {
         const { searchParams } = new URL(request.url);
@@ -75,18 +83,30 @@ export async function GET(
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            return new Response(JSON.stringify(cachedData), {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    ...generateCacheHeaders(600),
+            timeEnd("Total API Request");
+            return new Response(
+                JSON.stringify({
+                    ...cachedData,
+                    performance: performanceMetrics,
+                }),
+                {
+                    status: 200,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...generateCacheHeaders(600),
+                    },
                 },
-            });
+            );
         }
 
         if (!authorId) {
+            timeEnd("Total API Request");
             return NextResponse.json(
-                { result: "error", data: "No valid author included in search" },
+                {
+                    result: "error",
+                    data: "No valid author included in search",
+                    performance: performanceMetrics,
+                },
                 { status: 400 },
             );
         }
@@ -94,10 +114,13 @@ export async function GET(
         // Construct the search URL
         const searchUrl = `https://manganato.com/author/story/${authorId}?page=${page}&orby=${orderBy}`;
 
+        time("Fetch HTML");
         // Fetch the data from Manganato
         const { data } = await axios.get(searchUrl);
-        const $ = cheerio.load(data);
+        timeEnd("Fetch HTML");
 
+        time("Parse HTML");
+        const $ = cheerio.load(data);
         const mangaList: SmallManga[] = [];
 
         // Loop through each .content-genres-item div and extract the relevant information
@@ -136,12 +159,15 @@ export async function GET(
                 description: "",
             });
         });
+        timeEnd("Parse HTML");
 
+        time("Process Results");
         if (orderBy === "latest") {
             mangaList.sort((a, b) => {
                 return Number(b.date) - Number(a.date);
             });
         }
+        timeEnd("Process Results");
 
         const totalStories: number = mangaList.length;
         const lastPageElement = $("a.page-last");
@@ -150,19 +176,28 @@ export async function GET(
             : 1;
 
         if (Number(page) > totalPages) {
+            timeEnd("Total API Request");
             return NextResponse.json(
-                { result: "error", data: "Page number exceeds total pages" },
+                {
+                    result: "error",
+                    data: "Page number exceeds total pages",
+                    performance: performanceMetrics,
+                },
                 { status: 400 },
             );
         }
 
+        time("Replace Images");
         await replaceImages(mangaList);
+        timeEnd("Replace Images");
 
         const result = {
             mangaList,
             metaData: { totalStories, totalPages },
+            performance: performanceMetrics,
         };
         cache.set(cacheKey, result);
+        timeEnd("Total API Request");
 
         return new Response(JSON.stringify(result), {
             status: 200,
@@ -172,9 +207,14 @@ export async function GET(
             },
         });
     } catch (error) {
+        timeEnd("Total API Request");
         console.error("Error fetching author search results:", error);
         return NextResponse.json(
-            { result: "error", data: (error as Error).message },
+            {
+                result: "error",
+                data: (error as Error).message,
+                performance: performanceMetrics,
+            },
             { status: 500 },
         );
     }

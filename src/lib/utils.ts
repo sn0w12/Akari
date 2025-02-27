@@ -50,14 +50,35 @@ export function getErrorMessage(status: number | undefined): string {
     }
 }
 
-export const time = (label: string) => {
+interface PerformanceMetrics {
+    [key: string]: number;
+}
+
+export const performanceMetrics: PerformanceMetrics = {};
+const startTimes: { [key: string]: number } = {};
+
+export function time(label: string) {
+    startTimes[label] = performance.now();
     if (isDev) {
         console.time(label);
     }
-};
+}
 
-export const timeEnd = (label: string) => {
+export function timeEnd(label: string) {
+    const endTime = performance.now();
+    const startTime = startTimes[label];
+    if (startTime) {
+        performanceMetrics[label] = Number((endTime - startTime).toFixed(2));
+        delete startTimes[label];
+    }
+
     if (isDev) {
         console.timeEnd(label);
     }
-};
+}
+
+export function clearPerformanceMetrics() {
+    Object.keys(performanceMetrics).forEach((key) => {
+        delete performanceMetrics[key];
+    });
+}

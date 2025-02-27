@@ -6,7 +6,12 @@ import { Chapter } from "@/app/api/interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
 import { getErrorMessage } from "@/lib/utils";
 import { hasConsentFor } from "@/lib/cookies";
-import { time, timeEnd } from "@/lib/utils";
+import {
+    time,
+    timeEnd,
+    performanceMetrics,
+    clearPerformanceMetrics,
+} from "@/lib/utils";
 import { env } from "process";
 import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
@@ -15,6 +20,7 @@ export async function GET(
     req: Request,
     props: { params: Promise<{ id: string; subId: string }> },
 ): Promise<Response> {
+    clearPerformanceMetrics();
     time("Total API Request");
     const params = await props.params;
     const { id, subId } = params;
@@ -123,7 +129,9 @@ export async function GET(
             }
         });
 
-        const responseData: Chapter = {
+        const responseData: Chapter & {
+            performance?: typeof performanceMetrics;
+        } = {
             title: mangaTitle,
             chapter: chapterTitle,
             chapters: chapters,
@@ -134,8 +142,10 @@ export async function GET(
             images: images,
             storyData: glbStoryData,
             chapterData: glbChapterData,
+            performance: performanceMetrics,
         };
         timeEnd("Extract Data");
+        timeEnd("Total API Request");
 
         const mangaResponse = NextResponse.json(responseData, {
             status: 200,
@@ -144,6 +154,7 @@ export async function GET(
                 ...generateCacheHeaders(300),
             },
         });
+
         if (hasConsentFor(cookieStore, "functional")) {
             mangaResponse.cookies.set("manga_server", server, {
                 maxAge: 31536000,
@@ -151,7 +162,6 @@ export async function GET(
             });
         }
 
-        timeEnd("Total API Request");
         return mangaResponse;
     } catch (error: unknown) {
         timeEnd("Total API Request");
@@ -160,6 +170,7 @@ export async function GET(
             {
                 result: "error",
                 data: getErrorMessage(axiosError.status),
+                performance: performanceMetrics,
             },
             { status: axiosError.status },
         );

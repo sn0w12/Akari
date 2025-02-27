@@ -70,7 +70,7 @@ export async function getMangaData(id: string) {
 
         const text = await response.text();
         try {
-            return JSON.parse(text);
+            return JSON.parse(text).data;
         } catch (e) {
             console.error("Failed to parse JSON:", text.substring(0, 100)); // Log start of response
             throw new Error("Invalid JSON response from server");

@@ -5,6 +5,12 @@ import NodeCache from "node-cache";
 import { SmallManga } from "../../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
 import { generateCacheHeaders } from "@/lib/cache";
+import {
+    time,
+    timeEnd,
+    performanceMetrics,
+    clearPerformanceMetrics,
+} from "@/lib/utils";
 
 const cache = new NodeCache({ stdTTL: 5 * 60 }); // 5 minutes
 export const dynamic = "force-dynamic";
@@ -61,6 +67,8 @@ const getGenreIds = (genres: (keyof typeof genreMap)[]): number[] => {
 };
 
 export async function GET(request: Request): Promise<Response> {
+    clearPerformanceMetrics();
+    time("Total API Request");
     try {
         const { searchParams } = new URL(request.url);
         const includeGenresParam =
@@ -78,18 +86,30 @@ export async function GET(request: Request): Promise<Response> {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            return new Response(JSON.stringify(cachedData), {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    ...generateCacheHeaders(600),
+            timeEnd("Total API Request");
+            return new Response(
+                JSON.stringify({
+                    ...cachedData,
+                    performance: performanceMetrics,
+                }),
+                {
+                    status: 200,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...generateCacheHeaders(600),
+                    },
                 },
-            });
+            );
         }
 
         if (includeGenres.length === 0) {
+            timeEnd("Total API Request");
             return NextResponse.json(
-                { result: "error", data: "No valid genres included in search" },
+                {
+                    result: "error",
+                    data: "No valid genres included in search",
+                    performance: performanceMetrics,
+                },
                 { status: 400 },
             );
         }
@@ -105,10 +125,13 @@ export async function GET(request: Request): Promise<Response> {
         // Construct the search URL
         const searchUrl = `https://manganato.com/advanced_search?s=all&g_i=${includeGenresString}&g_e=${excludeGenresString}&page=${page}&orby=${orderBy}`;
 
+        time("Fetch HTML");
         // Fetch the data from Manganato
         const { data } = await axios.get(searchUrl);
-        const $ = cheerio.load(data);
+        timeEnd("Fetch HTML");
 
+        time("Parse HTML");
+        const $ = cheerio.load(data);
         const mangaList: SmallManga[] = [];
 
         // Loop through each .content-genres-item div and extract the relevant information
@@ -147,6 +170,7 @@ export async function GET(request: Request): Promise<Response> {
                 author: author,
             });
         });
+        timeEnd("Parse HTML");
 
         const totalStories: number = mangaList.length;
         const lastPageElement = $("a.page-last");
@@ -155,19 +179,28 @@ export async function GET(request: Request): Promise<Response> {
             : 1;
 
         if (Number(page) > totalPages) {
+            timeEnd("Total API Request");
             return NextResponse.json(
-                { result: "error", data: "Page number exceeds total pages" },
+                {
+                    result: "error",
+                    data: "Page number exceeds total pages",
+                    performance: performanceMetrics,
+                },
                 { status: 400 },
             );
         }
 
+        time("Replace Images");
         await replaceImages(mangaList);
+        timeEnd("Replace Images");
 
         const result = {
             mangaList,
             metaData: { totalStories, totalPages },
+            performance: performanceMetrics,
         };
         cache.set(cacheKey, result);
+        timeEnd("Total API Request");
 
         return new Response(JSON.stringify(result), {
             status: 200,
@@ -177,9 +210,14 @@ export async function GET(request: Request): Promise<Response> {
             },
         });
     } catch (error) {
+        timeEnd("Total API Request");
         console.error("Error fetching genre search results:", error);
         return NextResponse.json(
-            { result: "error", data: (error as Error).message },
+            {
+                result: "error",
+                data: (error as Error).message,
+                performance: performanceMetrics,
+            },
             { status: 500 },
         );
     }

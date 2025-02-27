@@ -5,13 +5,19 @@ import * as cheerio from "cheerio";
 import { MangaDetails, DetailsChapter } from "../../../interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { generateCacheHeaders } from "@/lib/cache";
-import { time, timeEnd } from "@/lib/utils";
+import {
+    time,
+    timeEnd,
+    performanceMetrics,
+    clearPerformanceMetrics,
+} from "@/lib/utils";
 import { env } from "process";
 
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string }> },
 ): Promise<Response> {
+    clearPerformanceMetrics();
     time("Total API Request");
     const params = await props.params;
     const id = params.id;
@@ -238,13 +244,19 @@ export async function GET(
         }
 
         timeEnd("Total API Request");
-        return new Response(JSON.stringify(mangaDetails), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                ...generateCacheHeaders(mangaDetails.storyData ? 300 : 0),
+        return new Response(
+            JSON.stringify({
+                data: mangaDetails,
+                performance: performanceMetrics,
+            }),
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(mangaDetails.storyData ? 300 : 0),
+                },
             },
-        });
+        );
     } catch (error) {
         timeEnd("Total API Request");
         console.error(

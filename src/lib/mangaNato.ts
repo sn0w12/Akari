@@ -5,8 +5,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import db from "./db";
 import { checkIfBookmarked } from "./bookmarks";
-import { CookieJar } from "tough-cookie";
-import { env } from "process";
+import { time, timeEnd } from "@/lib/utils";
 
 export function getUserData(
     cookieStore: ReadonlyRequestCookies,
@@ -33,7 +32,11 @@ export async function replaceImages(manga: SmallManga[]) {
 }
 
 export async function processMangaList(url: string, page: string) {
+    time("Fetch HTML");
     const { data } = await axios.get(url);
+    timeEnd("Fetch HTML");
+
+    time("Parse HTML");
     const $ = cheerio.load(data);
 
     const mangaList: SmallManga[] = [];
@@ -76,6 +79,7 @@ export async function processMangaList(url: string, page: string) {
             author: author,
         });
     });
+    timeEnd("Parse HTML");
 
     const totalStories: number = mangaList.length;
     const lastPageElement = $("a.page-last");
@@ -90,6 +94,7 @@ export async function processMangaList(url: string, page: string) {
         });
     }
 
+    time("Parse Popular");
     $(".item").each((index: number, element) => {
         const mangaElement = $(element);
         const imageUrl = mangaElement.find("img.img-loading").attr("src");
@@ -119,8 +124,11 @@ export async function processMangaList(url: string, page: string) {
             author: "",
         });
     });
+    timeEnd("Parse Popular");
 
+    time("Replace Images");
     await Promise.all([replaceImages(mangaList), replaceImages(popular)]);
+    timeEnd("Replace Images");
 
     const result = {
         mangaList,

@@ -5,11 +5,19 @@ import NodeCache from "node-cache";
 import { SmallManga } from "../../interfaces";
 import { replaceImages } from "@/lib/mangaNato";
 import { generateCacheHeaders } from "@/lib/cache";
+import {
+    time,
+    timeEnd,
+    performanceMetrics,
+    clearPerformanceMetrics,
+} from "@/lib/utils";
 
 const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutes
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request): Promise<Response> {
+    clearPerformanceMetrics();
+    time("Total API Request");
     try {
         const { searchParams } = new URL(req.url);
         const query: string = searchParams.get("query") || "";
@@ -33,6 +41,7 @@ export async function GET(req: Request): Promise<Response> {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
+            timeEnd("Total API Request");
             return new Response(cachedData as string, {
                 status: 200,
                 headers: {
@@ -41,9 +50,14 @@ export async function GET(req: Request): Promise<Response> {
                 },
             });
         }
+
+        time("Fetch HTML");
         // Construct the URL with the page number
         const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
         const { data } = await axios.get(url);
+        timeEnd("Fetch HTML");
+
+        time("Parse HTML");
         const $ = cheerio.load(data);
         const totalPages = $(".page-last").text().match(/\d+/)?.[0] || "1";
 
@@ -84,7 +98,9 @@ export async function GET(req: Request): Promise<Response> {
                 date: "",
             });
         });
+        timeEnd("Parse HTML");
 
+        time("Process Results");
         // Use Fuse.js to search the manga list
         const fuse = new Fuse(mangaList, {
             keys: ["title"],
@@ -96,6 +112,7 @@ export async function GET(req: Request): Promise<Response> {
             mangaList = searchResults.map((result) => result.item); // Map Fuse results back to original data
         }
         await replaceImages(mangaList);
+        timeEnd("Process Results");
 
         const response = JSON.stringify({
             mangaList,
@@ -103,9 +120,11 @@ export async function GET(req: Request): Promise<Response> {
                 totalStories: mangaList.length,
                 totalPages: totalPages,
             },
+            performance: performanceMetrics,
         });
 
         cache.set(cacheKey, response);
+        timeEnd("Total API Request");
 
         return new Response(response, {
             status: 200,
@@ -115,9 +134,13 @@ export async function GET(req: Request): Promise<Response> {
             },
         });
     } catch (error) {
+        timeEnd("Total API Request");
         console.error(error);
         return new Response(
-            JSON.stringify({ error: "Failed to fetch latest manga" }),
+            JSON.stringify({
+                error: "Failed to fetch latest manga",
+                performance: performanceMetrics,
+            }),
             {
                 status: 500,
                 headers: { "Content-Type": "application/json" },
