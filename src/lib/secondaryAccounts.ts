@@ -26,6 +26,7 @@ export function generateMalAuth(account: SecondaryAccount) {
 export async function isAccountValid(account: SecondaryAccount) {
     const cache = sessionStorage.getItem(account.sessionKey);
     if (cache === "true") return true;
+    if (cache === "false") return false;
 
     const response = await fetch(account.validateEndpoint);
     const data = await response.json();
