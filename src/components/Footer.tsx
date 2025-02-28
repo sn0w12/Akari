@@ -6,10 +6,12 @@ import {
     TooltipProvider,
 } from "./ui/tooltip";
 import { CookieConsentFooter } from "./ui/cookieConsent";
+import pkg from "../../package.json";
 
 export default async function Footer() {
     "use cache";
 
+    const version = pkg.version;
     return (
         <footer className="border-t">
             <div className="mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -119,8 +121,11 @@ export default async function Footer() {
                         </TooltipProvider>
                     </div>
                     <div>
-                        <p className="text-center text-base text-gray-400">
-                            &copy; {new Date().getFullYear()} Akari.{" "}
+                        <p className="text-center text-base text-gray-400 flex items-center justify-center gap-2">
+                            <span>&copy; {new Date().getFullYear()} Akari</span>
+                            <span className="h-4 border-r border-gray-400"></span>
+                            <span>v{version}</span>
+                            <span className="h-4 border-r border-gray-400"></span>
                             <Link
                                 href={
                                     "https://www.gnu.org/licenses/agpl-3.0.html"
