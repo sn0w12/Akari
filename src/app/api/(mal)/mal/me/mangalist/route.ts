@@ -3,10 +3,10 @@ import { getBaseUrl } from "@/app/api/baseUrl";
 import { getAccessToken } from "@/lib/accessToken";
 
 export async function GET(req: NextRequest) {
-    const authorizationHeader = req.headers.get("authorization");
-    if (!authorizationHeader) {
+    const accessToken = await getAccessToken(req, getBaseUrl());
+    if (!accessToken) {
         return NextResponse.json(
-            { error: "Authorization header missing" },
+            { error: "Failed to get access token" },
             { status: 401 },
         );
     }
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         "https://api.myanimelist.net/v2/users/@me/mangalist?fields=list_status&sort=list_score&limit=1000",
         {
             headers: {
-                Authorization: authorizationHeader,
+                Authorization: `Bearer ${accessToken}`,
             },
         },
     );
