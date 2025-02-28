@@ -17,6 +17,7 @@ import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
 import { TrackLogin } from "./ui/Header/TrackLogin";
 import { validateSecondaryAccounts } from "@/lib/secondaryAccounts";
+import BookmarksButton from "./ui/Bookmarks/BookmarksButton";
 
 export function HeaderComponent() {
     const [notification, setNotification] = useState<string>("");
@@ -80,32 +81,7 @@ export function HeaderComponent() {
                     <div className="flex gap-4">
                         <SearchButton />
                         {notification ? (
-                            <HoverLink
-                                href="/bookmarks"
-                                className={
-                                    !notification ? "pointer-events-none" : ""
-                                }
-                            >
-                                <div className="relative group">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="group-hover:bg-accent border"
-                                        disabled={!notification}
-                                    >
-                                        <Bookmark className="h-5 w-5" />
-                                    </Button>
-                                    {/* Badge element */}
-                                    {notification && notification != "0" && (
-                                        <span
-                                            className="absolute bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex items-center justify-center transform translate-x-1/4 translate-y-1/4"
-                                            style={{ bottom: "0", right: "0" }}
-                                        >
-                                            {notification}
-                                        </span>
-                                    )}
-                                </div>
-                            </HoverLink>
+                            <BookmarksButton notification={notification} />
                         ) : (
                             <TooltipProvider>
                                 <Tooltip>

@@ -1,7 +1,7 @@
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import { isSignedIn } from "./utils";
 
-function compareVersions(str1: string, str2: string): boolean {
+export function compareVersions(str1: string, str2: string): boolean {
     // Replace "-" with "." in both strings
     const num1 = parseFloat(str1.replace(/-/g, "."));
     const num2 = parseFloat(str2.replace(/-/g, "."));

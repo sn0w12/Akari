@@ -2,8 +2,14 @@
 
 import * as React from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
-import { Check, ChevronRight, Circle } from "lucide-react";
-
+import {
+    ArrowRight,
+    Check,
+    ChevronRight,
+    Circle,
+    PanelRight,
+} from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const ContextMenu = ContextMenuPrimitive.Root;
@@ -181,6 +187,25 @@ const ContextMenuShortcut = ({
 };
 ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
+const LinkContextMenuItems = ({ href }: { href: string }) => {
+    return (
+        <>
+            <Link href={href}>
+                <ContextMenuItem className="cursor-pointer">
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <span>Open</span>
+                </ContextMenuItem>
+            </Link>
+            <Link href={href} target="_blank" rel="noopener noreferrer">
+                <ContextMenuItem className="cursor-pointer">
+                    <PanelRight className="mr-2 h-4 w-4" />
+                    <span>Open In New Tab</span>
+                </ContextMenuItem>
+            </Link>
+        </>
+    );
+};
+
 export {
     ContextMenu,
     ContextMenuTrigger,
@@ -197,4 +222,5 @@ export {
     ContextMenuSubContent,
     ContextMenuSubTrigger,
     ContextMenuRadioGroup,
+    LinkContextMenuItems,
 };
