@@ -172,12 +172,12 @@ export default function SettingsPage() {
                         className="w-full"
                     >
                         <div className="border-b px-4">
-                            <TabsList className="flex h-auto gap-4 w-full justify-start overflow-x-auto py-2 bg-transparent">
+                            <TabsList className="flex flex-wrap h-auto gap-2 w-full justify-center md:justify-start py-2 bg-transparent">
                                 {Object.keys(settingsMap).map((category) => (
                                     <TabsTrigger
                                         key={category}
                                         value={category}
-                                        className="data-[state=active]:bg-accent rounded-md px-3 py-1.5 hover:bg-accent/70"
+                                        className="data-[state=active]:bg-accent rounded-md px-3 py-1.5 hover:bg-accent/70 flex-shrink-0"
                                     >
                                         {category}
                                     </TabsTrigger>
