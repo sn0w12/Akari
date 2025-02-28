@@ -44,7 +44,9 @@ import SettingsDialog from "@/components/ui/Header/SettingsDialog";
 import LoginDialog from "@/components/ui/Header/AccountDialog";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
-import { getSettings, useSettingsChange } from "@/lib/settings";
+import { getSettings, getSetting, useSetting } from "@/lib/settings";
+import { useSettingsDialog } from "@/hooks/useSettingsDialog";
+import { useSidebar } from "@/hooks/useSidebar";
 
 function SideBarLink({
     href,
@@ -70,7 +72,9 @@ function SideBarLink({
 }
 
 export function SideBar() {
-    const [open, setOpen] = useState(false);
+    const { isSidebarOpen, toggleSidebar, openSidebar, closeSidebar } =
+        useSidebar();
+    const { openSettings } = useSettingsDialog();
     type ShortcutSettings = {
         toggleSidebar: string | null;
         openSettings: string | null;
@@ -83,10 +87,10 @@ export function SideBar() {
         openAccount: null,
         navigateBookmarks: null,
     });
+    const preferSettingsPage = useSetting("preferSettingsPage");
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
-    const settingsRef = useRef<HTMLButtonElement>(null);
 
     // Get shortcut settings
     useEffect(() => {
@@ -108,7 +112,7 @@ export function SideBar() {
 
     const handleAccountClick = () => {
         setTimeout(() => {
-            setOpen(true);
+            openSidebar();
             setTimeout(() => {
                 loginRef.current?.click();
             }, 300);
@@ -116,19 +120,22 @@ export function SideBar() {
     };
 
     const handleSettingsClick = () => {
+        if (preferSettingsPage) {
+            router.push("/settings");
+            return;
+        }
+
         setTimeout(() => {
-            setOpen(true);
-            setTimeout(() => {
-                settingsRef.current?.click();
-            }, 300);
+            openSidebar();
+            openSettings();
         }, 100);
     };
 
     const handleClose = () => {
-        setOpen(false);
+        closeSidebar();
     };
 
-    useShortcut(shortcuts.toggleSidebar || "", () => setOpen((prev) => !prev), {
+    useShortcut(shortcuts.toggleSidebar || "", () => toggleSidebar(), {
         preventDefault: true,
     });
     useShortcut(shortcuts.openSettings || "", handleSettingsClick, {
@@ -141,14 +148,14 @@ export function SideBar() {
         shortcuts.navigateBookmarks || "",
         () => {
             router.push("/bookmarks");
-            setOpen(false);
+            closeSidebar();
         },
         { preventDefault: true },
     );
 
     return (
         <ContextMenu>
-            <Sheet open={open} onOpenChange={setOpen}>
+            <Sheet open={isSidebarOpen} onOpenChange={toggleSidebar}>
                 <ContextMenuTrigger>
                     <SheetTrigger asChild>
                         <Button
@@ -170,7 +177,7 @@ export function SideBar() {
                     <ContextMenuItem
                         onClick={() =>
                             setTimeout(() => {
-                                setOpen((prev) => !prev);
+                                openSidebar();
                             }, 100)
                         }
                     >
@@ -366,7 +373,20 @@ export function SideBar() {
                         </ScrollArea>
 
                         <div className="border-t p-4 flex flex-col sm:flex-row justify-center gap-2">
-                            <SettingsDialog ref={settingsRef} />
+                            {preferSettingsPage ? (
+                                <Link
+                                    href="/settings"
+                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                    onClick={closeSidebar}
+                                >
+                                    <Settings className="h-5 w-5" />
+                                    <span className="text-base font-medium">
+                                        Settings
+                                    </span>
+                                </Link>
+                            ) : (
+                                <SettingsDialog />
+                            )}
                             <LoginDialog ref={loginRef} />
                         </div>
                     </div>

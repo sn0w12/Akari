@@ -49,6 +49,12 @@ export const generalSettings = {
         type: "checkbox",
         default: true,
     },
+    preferSettingsPage: {
+        label: "Prefer Settings Page",
+        description: "Open settings page instead of the settings dialog.",
+        type: "checkbox",
+        default: false,
+    },
 };
 
 export const mangaSettings = {
@@ -247,6 +253,32 @@ export function useSettingsChange(
         window.addEventListener(SETTINGS_CHANGE_EVENT, handler);
         return () => window.removeEventListener(SETTINGS_CHANGE_EVENT, handler);
     }, [callback, watchKey]);
+}
+
+/**
+ * A React hook that returns a setting value and stays up-to-date with changes.
+ *
+ * @param key - The setting key to retrieve and watch
+ * @returns The current value of the setting
+ *
+ * @example
+ * ```tsx
+ * const theme = useSetting('theme');
+ * // theme will automatically update when the theme setting changes
+ * ```
+ */
+export function useSetting<K extends keyof SettingsInterface>(key: K) {
+    const [value, setValue] = React.useState<SettingsInterface[K]>(
+        () => getSetting(key) ?? defaultSettings[key],
+    );
+
+    useSettingsChange((event) => {
+        if (event.detail.key === key) {
+            setValue(event.detail.value as SettingsInterface[K]);
+        }
+    }, key);
+
+    return value;
 }
 
 /**

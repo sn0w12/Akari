@@ -17,6 +17,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ConfirmDialog from "@/components/ui/confirmDialog";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useSettingsDialog } from "@/hooks/useSettingsDialog";
+import { useSidebar } from "@/hooks/useSidebar";
 
 export type SettingValue = string | boolean | string[];
 export type SettingType =
@@ -133,6 +136,8 @@ interface SettingsFormProps {
 function SettingsForm({ settingsTabs }: SettingsFormProps) {
     const defaultTab = Object.keys(settingsTabs)[0];
     const isProduction = process.env.NODE_ENV === "production";
+    const { closeSettings } = useSettingsDialog();
+    const { closeSidebar } = useSidebar();
 
     const shouldShowSetting = (setting: Setting) => {
         if (
@@ -148,6 +153,16 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
         <>
             <DialogHeader className="border-b pb-4">
                 <DialogTitle>Settings</DialogTitle>
+                <Link
+                    href="/settings"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    onClick={() => {
+                        closeSettings();
+                        closeSidebar();
+                    }}
+                >
+                    Open in full page
+                </Link>
             </DialogHeader>
             <CardContent className="min-h-[400px]">
                 <Tabs defaultValue={defaultTab} className="w-full">
@@ -231,7 +246,11 @@ function findDuplicateShortcuts(settingsMap: SettingsMap): Set<string> {
     return duplicates;
 }
 
-function renderInput(key: string, setting: Setting, settingsMap: SettingsMap) {
+export function renderInput(
+    key: string,
+    setting: Setting,
+    settingsMap: SettingsMap,
+) {
     switch (setting.type) {
         case "checkbox":
             return (
