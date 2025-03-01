@@ -147,7 +147,6 @@ export async function saveReadingHistoryEntry(
     userId: string,
     entry: Omit<ReadingHistoryEntry, "id" | "userId" | "readAt">,
 ): Promise<ReadingHistoryEntry | null> {
-    console.log(entry);
     if (!supabaseAdmin) {
         console.warn("Supabase admin not initialized");
         return null;
