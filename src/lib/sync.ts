@@ -83,8 +83,9 @@ async function updateBookmark(data: Chapter) {
     const chapterData = data.chapterData;
     if (!storyData || !chapterData) return;
 
+    const fallbackId = window.location.href.split("/").pop()?.split("?")[0];
     const chapterDataBody: BookmarkUpdateRequest = {
-        chapterId: data.id,
+        chapterId: data.id || fallbackId || "",
         chapterTitle: data.chapter,
         mangaId: data.parentId,
         mangaTitle: data.title,
