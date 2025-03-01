@@ -24,8 +24,11 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReadingHistory from "@/components/ui/Account/ReadingHistory";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AccountClient() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
     const [loading, setLoading] = useState(true);
@@ -37,6 +40,8 @@ export default function AccountClient() {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const tabParam = searchParams.get("tab");
+    const [activeTab, setActiveTab] = useState<string>("account");
 
     useEffect(() => {
         // Check if user is logged in
@@ -45,6 +50,14 @@ export default function AccountClient() {
             try {
                 const decodedAccountName = decodeURIComponent(accountName);
                 setSavedUsername(decodedAccountName);
+
+                // Set active tab from URL parameter if available and valid
+                if (
+                    tabParam &&
+                    ["account", "connections", "history"].includes(tabParam)
+                ) {
+                    setActiveTab(tabParam);
+                }
             } catch (error) {
                 console.error("Failed to parse user_acc cookie:", error);
             }
@@ -161,6 +174,11 @@ export default function AccountClient() {
         setIsLoading(false);
     };
 
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        router.push(`/account?tab=${value}`, { scroll: false });
+    };
+
     if (loading) {
         return;
     }
@@ -168,7 +186,11 @@ export default function AccountClient() {
     // Logged in view
     if (savedUsername) {
         return (
-            <Tabs defaultValue="account" className="space-y-2">
+            <Tabs
+                value={activeTab}
+                onValueChange={handleTabChange}
+                className="space-y-2"
+            >
                 <TabsList className="flex flex-wrap h-auto gap-2 w-full justify-center md:justify-start p-2 bg-transparent rounded-lg border">
                     <TabsTrigger
                         value="account"
