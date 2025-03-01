@@ -1,4 +1,4 @@
-import { Chapter } from "@/app/api/interfaces";
+import { Chapter, BookmarkUpdateRequest } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import db from "./db";
@@ -78,18 +78,30 @@ export async function syncAllServices(data: Chapter) {
     }
 }
 
-// Example sync handler for your website
 async function updateBookmark(data: Chapter) {
-    const story_data = data.storyData;
-    const chapter_data = data.chapterData;
-    if (!chapter_data || !story_data) return;
+    const storyData = data.storyData;
+    const chapterData = data.chapterData;
+    if (!storyData || !chapterData) return;
+
+    const chapterDataBody: BookmarkUpdateRequest = {
+        chapterId: data.id,
+        chapterTitle: data.chapter,
+        mangaId: data.parentId,
+        mangaTitle: data.title,
+        image: data.images[0],
+        readAt: new Date(),
+        id: "",
+        userId: "",
+        storyData,
+        chapterData,
+    };
 
     const response = await fetch("/api/bookmarks/update", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ story_data, chapter_data }),
+        body: JSON.stringify({ chapter: chapterDataBody }),
     });
 
     if (!response.ok) {
@@ -97,7 +109,6 @@ async function updateBookmark(data: Chapter) {
     }
 }
 
-// Example sync handler for external site (MAL)
 async function syncBookmark(data: Chapter) {
     const regex = /Chapter\s(\d+)/;
     const match = data.chapter.match(regex);

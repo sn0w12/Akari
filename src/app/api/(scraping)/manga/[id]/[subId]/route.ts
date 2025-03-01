@@ -132,6 +132,7 @@ export async function GET(
         const responseData: Chapter & {
             performance?: typeof performanceMetrics;
         } = {
+            id: subId,
             title: mangaTitle,
             chapter: chapterTitle,
             chapters: chapters,
