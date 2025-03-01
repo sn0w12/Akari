@@ -55,6 +55,7 @@ const CallbackPage = () => {
                 if (malResponse.ok) {
                     const malData = await malResponse.json();
                     localStorage.setItem("mal_user", JSON.stringify(malData));
+                    sessionStorage.setItem("mal", "true");
                 }
 
                 // Redirect to homepage
