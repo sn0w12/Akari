@@ -54,7 +54,9 @@ export async function GET(req: Request): Promise<Response> {
         time("Fetch HTML");
         // Construct the URL with the page number
         const url = `https://manganato.com/advanced_search?s=all&g_i=${getGenreString(included)}&g_e=${getGenreString(excluded)}&keyw=${query}&page=${page}`;
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, {
+            timeout: 10000,
+        });
         timeEnd("Fetch HTML");
 
         time("Parse HTML");

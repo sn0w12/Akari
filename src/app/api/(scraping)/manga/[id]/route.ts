@@ -22,7 +22,6 @@ export async function GET(
     const params = await props.params;
     const id = params.id;
     const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
-    let serviceUrl = "https://ddos-guard.net";
 
     try {
         const jar = new CookieJar();
@@ -50,7 +49,6 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
-                    Referer: serviceUrl,
                 },
             });
 
@@ -64,8 +62,8 @@ export async function GET(
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
-                    Referer: serviceUrl,
                 },
+                timeout: 10000,
             });
             timeEnd("Fetch Html");
 

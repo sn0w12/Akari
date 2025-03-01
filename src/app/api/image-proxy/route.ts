@@ -20,6 +20,7 @@ export async function GET(req: Request): Promise<Response> {
                 Referer: "https://manganato.com",
                 "User-Agent": "Mozilla/5.0",
             },
+            timeout: 10000,
         });
 
         const imageBuffer = Buffer.from(response.data);

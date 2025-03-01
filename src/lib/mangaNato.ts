@@ -33,7 +33,9 @@ export async function replaceImages(manga: SmallManga[]) {
 
 export async function processMangaList(url: string, page: string) {
     time("Fetch HTML");
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(url, {
+        timeout: 10000,
+    });
     timeEnd("Fetch HTML");
 
     time("Parse HTML");

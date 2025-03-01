@@ -127,7 +127,9 @@ export async function GET(request: Request): Promise<Response> {
 
         time("Fetch HTML");
         // Fetch the data from Manganato
-        const { data } = await axios.get(searchUrl);
+        const { data } = await axios.get(searchUrl, {
+            timeout: 10000,
+        });
         timeEnd("Fetch HTML");
 
         time("Parse HTML");

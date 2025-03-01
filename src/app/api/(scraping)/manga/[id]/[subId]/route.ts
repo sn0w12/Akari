@@ -56,6 +56,7 @@ export async function GET(
                     "Accept-Language":
                         req.headers.get("accept-language") || "en-US,en;q=0.9",
                 },
+                timeout: 10000,
             },
         );
         const html = response.data;
