@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { createAllSettingsMaps } from "@/lib/settings";
-import { Setting, SettingsMap } from "@/components/ui/Header/Settings";
-import { renderInput } from "@/components/ui/Header/Settings";
+import { Setting, SettingsMap, renderInput } from "@/lib/settings";
 import { useSettings } from "@/hooks/useSettings";
 
 export default function SettingsClient() {
