@@ -55,6 +55,12 @@ export const generalSettings = {
         type: "checkbox",
         default: false,
     },
+    preferAccountPage: {
+        label: "Prefer Account Page",
+        description: "Open account page instead of the account dialog.",
+        type: "checkbox",
+        default: false,
+    },
 };
 
 export const mangaSettings = {

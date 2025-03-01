@@ -47,6 +47,7 @@ import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 import { getSettings, getSetting, useSetting } from "@/lib/settings";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
 import { useSidebar } from "@/hooks/useSidebar";
+import { useAccountDialog } from "@/hooks/useAccountDialog";
 
 function SideBarLink({
     href,
@@ -75,6 +76,7 @@ export function SideBar() {
     const { isSidebarOpen, toggleSidebar, openSidebar, closeSidebar } =
         useSidebar();
     const { openSettings } = useSettingsDialog();
+    const { openAccount } = useAccountDialog();
     type ShortcutSettings = {
         toggleSidebar: string | null;
         openSettings: string | null;
@@ -88,6 +90,7 @@ export function SideBar() {
         navigateBookmarks: null,
     });
     const preferSettingsPage = useSetting("preferSettingsPage");
+    const preferAccountPage = useSetting("preferAccountPage");
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
@@ -111,11 +114,14 @@ export function SideBar() {
     }, []);
 
     const handleAccountClick = () => {
+        if (preferAccountPage) {
+            router.push("/account");
+            return;
+        }
+
         setTimeout(() => {
             openSidebar();
-            setTimeout(() => {
-                loginRef.current?.click();
-            }, 300);
+            openAccount();
         }, 100);
     };
 
@@ -387,7 +393,20 @@ export function SideBar() {
                             ) : (
                                 <SettingsDialog />
                             )}
-                            <LoginDialog ref={loginRef} />
+                            {preferAccountPage ? (
+                                <Link
+                                    href="/account"
+                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                    onClick={closeSidebar}
+                                >
+                                    <User className="h-5 w-5" />
+                                    <span className="text-base font-medium">
+                                        Account
+                                    </span>
+                                </Link>
+                            ) : (
+                                <LoginDialog />
+                            )}
                         </div>
                     </div>
                 </SheetContent>
