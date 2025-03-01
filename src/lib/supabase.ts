@@ -205,7 +205,7 @@ export async function getUserReadingHistory(
     limit = 10,
     offset = 0,
 ): Promise<ReadingHistoryEntry[]> {
-    if (!supabasePublic) {
+    if (!supabaseAdmin) {
         console.warn("Supabase not initialized");
         return [];
     }
@@ -214,7 +214,7 @@ export async function getUserReadingHistory(
     const encodedUserId = encodeUserId(userId);
 
     try {
-        const { data, error } = await supabasePublic
+        const { data, error } = await supabaseAdmin
             .from("reading_history")
             .select("*")
             .eq("user_id", encodedUserId)
@@ -232,7 +232,7 @@ export async function getUserReadingHistory(
         const mangaIds = [...new Set(data.map((entry) => entry.manga_id))];
 
         // Fetch high-quality images from mal_data
-        const { data: malData, error: malError } = await supabasePublic
+        const { data: malData, error: malError } = await supabaseAdmin
             .from("mal_data")
             .select("identifier, image_url")
             .in("identifier", mangaIds);
@@ -272,7 +272,7 @@ export async function getUserReadingStats(
     userId: string,
     period: "24h" | "7d" | "30d" = "7d",
 ): Promise<{ date: string; count: number }[]> {
-    if (!supabasePublic) {
+    if (!supabaseAdmin) {
         console.warn("Supabase not initialized");
         return [];
     }
@@ -309,7 +309,7 @@ export async function getUserReadingStats(
     }
 
     try {
-        const { data, error } = await supabasePublic
+        const { data, error } = await supabaseAdmin
             .from("reading_history")
             .select("read_at")
             .eq("user_id", encodedUserId)
