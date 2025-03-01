@@ -727,11 +727,11 @@ export function renderInputSkeleton(setting: Setting) {
         case "email":
         case "number":
         case "shortcut":
-            return <Skeleton className="h-10 w-[194px]" />;
+            return <Skeleton className="h-10 w-48" />;
         case "textarea":
-            return <Skeleton className="h-24 w-[194px]" />;
+            return <Skeleton className="h-24 w-48" />;
         case "select":
-            return <Skeleton className="h-10 w-[180px]" />;
+            return <Skeleton className="h-10 w-44" />;
         case "radio":
             return (
                 <div className="flex flex-col space-y-2">
