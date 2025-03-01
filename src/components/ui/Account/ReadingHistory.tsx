@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Clock, Book, BarChart3 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Clock, Book, BarChart3, Loader2 } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -25,131 +25,92 @@ import { ReadingHistoryEntry } from "@/app/api/interfaces";
 
 export default function ReadingHistory() {
     const [readingHistory, setReadingHistory] = useState<ReadingHistoryEntry[]>(
-        () => {
-            // Helper function to create a date relative to now
-            const getRelativeDate = (daysAgo: number, hoursAgo = 0): Date => {
-                const date = new Date();
-                date.setDate(date.getDate() - daysAgo);
-                date.setHours(date.getHours() - hoursAgo);
-                return date;
-            };
-
-            return [
-                {
-                    id: "1",
-                    userId: "user-1",
-                    mangaId: "manga-1",
-                    mangaTitle: "One Piece",
-                    image: "https://picsum.photos/100/150",
-                    chapterId: "chapter-1052",
-                    chapterTitle: "Chapter 1052: New Era",
-                    readAt: getRelativeDate(0, 2), // Today, 2 hours ago
-                },
-            ];
-        },
+        [],
     );
     const [selectedPeriod, setSelectedPeriod] = useState<"24h" | "7d" | "30d">(
         "7d",
     );
+    const [historyLoading, setHistoryLoading] = useState(true);
+    const [statsLoading, setStatsLoading] = useState(true);
+    const [chartData, setChartData] = useState<
+        { date: string; count: number }[]
+    >([]);
+    const [offset, setOffset] = useState(0);
+    const limit = 10;
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    function getChartData() {
-        const now = new Date();
-        let startDate: Date;
-        let dateFormat: Intl.DateTimeFormatOptions;
-        let periodDivisions: number;
+    // Fetch reading history
+    useEffect(() => {
+        async function fetchHistory() {
+            setHistoryLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(
+                    `/api/account/reading/history?limit=${limit}&offset=0`,
+                );
+                if (!response.ok) throw new Error("Failed to fetch history");
 
-        switch (selectedPeriod) {
-            case "24h":
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 1);
-                dateFormat = { hour: "2-digit" };
-                periodDivisions = 24; // 24 hours
-                break;
-            case "7d":
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
-                dateFormat = { weekday: "short" };
-                periodDivisions = 7; // 7 days
-                break;
-            case "30d":
-            default:
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 30);
-                dateFormat = { month: "short", day: "numeric" };
-                periodDivisions = 30; // 30 days
-                break;
-        }
-
-        // Filter history entries after start date
-        const filteredHistory = readingHistory.filter(
-            (entry) => entry.readAt >= startDate,
-        );
-
-        // Create a map of all possible date keys with zero counts
-        const allPeriods: Record<string, number> = {};
-
-        // For 7d and 30d, generate all possible date keys
-        if (selectedPeriod === "7d" || selectedPeriod === "30d") {
-            for (let i = 0; i < periodDivisions; i++) {
-                const date = new Date(now);
-                date.setDate(date.getDate() - i);
-                const dateKey = new Intl.DateTimeFormat(
-                    "en-US",
-                    dateFormat,
-                ).format(date);
-                allPeriods[dateKey] = 0;
-            }
-        } else if (selectedPeriod === "24h") {
-            // For 24h, generate hourly keys
-            for (let i = 0; i < 24; i++) {
-                const date = new Date(now);
-                date.setHours(now.getHours() - i);
-                const dateKey = new Intl.DateTimeFormat(
-                    "en-US",
-                    dateFormat,
-                ).format(date);
-                allPeriods[dateKey] = 0;
+                const data = await response.json();
+                setReadingHistory(data.history || []);
+                setHasMore((data.history || []).length === limit);
+                setOffset(limit);
+            } catch (err) {
+                setError("Failed to load reading history");
+                console.error(err);
+            } finally {
+                setHistoryLoading(false);
             }
         }
 
-        // Fill in actual counts
-        filteredHistory.forEach((entry) => {
-            const dateKey = new Intl.DateTimeFormat("en-US", dateFormat).format(
-                entry.readAt,
+        fetchHistory();
+    }, []);
+
+    // Fetch reading stats when period changes
+    useEffect(() => {
+        async function fetchStats() {
+            setStatsLoading(true);
+            try {
+                const response = await fetch(
+                    `/api/account/reading/stats?period=${selectedPeriod}`,
+                );
+                if (!response.ok) throw new Error("Failed to fetch stats");
+
+                const data = await response.json();
+                setChartData(data.stats || []);
+            } catch (err) {
+                console.error("Error fetching reading stats:", err);
+            } finally {
+                setStatsLoading(false);
+            }
+        }
+
+        fetchStats();
+    }, [selectedPeriod]);
+
+    // Load more history
+    async function loadMore() {
+        if (loadingMore || !hasMore) return;
+
+        setLoadingMore(true);
+        try {
+            const response = await fetch(
+                `/api/account/reading/history?limit=${limit}&offset=${offset}`,
             );
-            allPeriods[dateKey] = (allPeriods[dateKey] || 0) + 1;
-        });
+            if (!response.ok) throw new Error("Failed to fetch more history");
 
-        // Convert to array for chart and sort chronologically
-        return Object.entries(allPeriods)
-            .map(([date, count]) => ({
-                date,
-                count,
-            }))
-            .sort((a, b) => {
-                // Simple sort for hour format (24h view)
-                if (selectedPeriod === "24h") {
-                    return a.date.localeCompare(b.date);
-                }
+            const data = await response.json();
+            const newHistory = data.history || [];
 
-                // For other periods, we need more complex sorting
-                if (selectedPeriod === "7d") {
-                    // Sort by day of week
-                    const days = [
-                        "Sun",
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                    ];
-                    return days.indexOf(a.date) - days.indexOf(b.date);
-                }
-
-                // For 30d, sort by date
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            });
+            setReadingHistory((prev) => [...prev, ...newHistory]);
+            setHasMore(newHistory.length === limit);
+            setOffset((prev) => prev + newHistory.length);
+        } catch (err) {
+            console.error("Error loading more history:", err);
+        } finally {
+            setLoadingMore(false);
+        }
     }
 
     // Format the date for display
@@ -192,95 +153,101 @@ export default function ReadingHistory() {
                 </CardHeader>
                 <CardContent>
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <ChartContainer
-                                config={{
-                                    activity: {
-                                        label: "Chapters Read",
-                                        theme: {
-                                            light: "hsl(221.2 83.2% 53.3%)",
-                                            dark: "hsl(217.2 91.2% 59.8%)",
+                        {statsLoading ? (
+                            <div className="h-full flex items-center justify-center">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <ChartContainer
+                                    config={{
+                                        activity: {
+                                            label: "Chapters Read",
+                                            theme: {
+                                                light: "hsl(221.2 83.2% 53.3%)",
+                                                dark: "hsl(217.2 91.2% 59.8%)",
+                                            },
                                         },
-                                    },
-                                }}
-                            >
-                                <LineChart
-                                    data={getChartData()}
-                                    margin={{
-                                        top: 10,
-                                        right: 10,
-                                        left: 10,
-                                        bottom: 20,
                                     }}
                                 >
-                                    <CartesianGrid
-                                        strokeDasharray="3 3"
-                                        vertical={false}
-                                        opacity={0.3}
-                                    />
-                                    <XAxis
-                                        dataKey="date"
-                                        tickLine={false}
-                                        axisLine={false}
-                                        fontSize={12}
-                                        padding={{ left: 10, right: 10 }}
-                                    />
-                                    <YAxis
-                                        tickLine={false}
-                                        axisLine={false}
-                                        fontSize={12}
-                                        allowDecimals={false}
-                                        width={30}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="count"
-                                        name="activity"
-                                        stroke="var(--accent-color)"
-                                        strokeWidth={2}
-                                        dot={{
-                                            r: 0,
+                                    <LineChart
+                                        data={chartData}
+                                        margin={{
+                                            top: 10,
+                                            right: 10,
+                                            left: 10,
+                                            bottom: 20,
                                         }}
-                                        activeDot={{
-                                            r: 6,
-                                            fill: "var(--accent-color)",
-                                        }}
-                                        isAnimationActive={false}
-                                    />
-                                    <ChartTooltip
-                                        content={({ active, payload }) => {
-                                            if (
-                                                active &&
-                                                payload &&
-                                                payload.length
-                                            ) {
-                                                return (
-                                                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            <span className="font-medium">
-                                                                {
-                                                                    payload[0]
-                                                                        .payload
-                                                                        .date
-                                                                }
-                                                            </span>
-                                                            <span className="font-medium">
-                                                                {
-                                                                    payload[0]
-                                                                        .value
-                                                                }{" "}
-                                                                chapters
-                                                            </span>
+                                    >
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            vertical={false}
+                                            opacity={0.3}
+                                        />
+                                        <XAxis
+                                            dataKey="date"
+                                            tickLine={false}
+                                            axisLine={false}
+                                            fontSize={12}
+                                            padding={{ left: 10, right: 10 }}
+                                        />
+                                        <YAxis
+                                            tickLine={false}
+                                            axisLine={false}
+                                            fontSize={12}
+                                            allowDecimals={false}
+                                            width={30}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="count"
+                                            name="activity"
+                                            stroke="var(--accent-color)"
+                                            strokeWidth={2}
+                                            dot={{
+                                                r: 0,
+                                            }}
+                                            activeDot={{
+                                                r: 6,
+                                                fill: "var(--accent-color)",
+                                            }}
+                                            isAnimationActive={false}
+                                        />
+                                        <ChartTooltip
+                                            content={({ active, payload }) => {
+                                                if (
+                                                    active &&
+                                                    payload &&
+                                                    payload.length
+                                                ) {
+                                                    return (
+                                                        <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                <span className="font-medium">
+                                                                    {
+                                                                        payload[0]
+                                                                            .payload
+                                                                            .date
+                                                                    }
+                                                                </span>
+                                                                <span className="font-medium">
+                                                                    {
+                                                                        payload[0]
+                                                                            .value
+                                                                    }{" "}
+                                                                    chapters
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                </LineChart>
-                            </ChartContainer>
-                        </ResponsiveContainer>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                    </LineChart>
+                                </ChartContainer>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -296,7 +263,15 @@ export default function ReadingHistory() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {readingHistory.length === 0 ? (
+                    {historyLoading ? (
+                        <div className="flex justify-center py-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-8 text-red-500">
+                            {error}
+                        </div>
+                    ) : readingHistory.length === 0 ? (
                         <div className="text-center py-8">
                             <Book className="mx-auto h-12 w-12 text-gray-400 mb-3" />
                             <h3 className="text-lg font-medium">
@@ -343,7 +318,9 @@ export default function ReadingHistory() {
                                             <p className="text-sm text-gray-500 mb-3">
                                                 <Clock className="inline h-3 w-3 mr-1" />
                                                 Read on{" "}
-                                                {formatDate(entry.readAt)}
+                                                {formatDate(
+                                                    new Date(entry.readAt),
+                                                )}
                                             </p>
                                             <Link
                                                 href={`/manga/${entry.mangaId}/${entry.chapterId}`}
@@ -358,11 +335,25 @@ export default function ReadingHistory() {
                                 </Card>
                             ))}
 
-                            <div className="flex justify-center w-full">
-                                <Button variant="outline" className="w-full">
-                                    Load More
-                                </Button>
-                            </div>
+                            {hasMore && (
+                                <div className="flex justify-center w-full">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full"
+                                        onClick={loadMore}
+                                        disabled={loadingMore}
+                                    >
+                                        {loadingMore ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            "Load More"
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </CardContent>
