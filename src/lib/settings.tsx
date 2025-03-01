@@ -121,8 +121,8 @@ export const notificationSettings = {
     },
 };
 
-export const cacheSettings = {
-    label: "Cache",
+export const dataSettings = {
+    label: "Data",
     clearCache: {
         label: "Clear Cache",
         type: "button",
@@ -175,7 +175,7 @@ const allSettings = [
     mangaSettings,
     notificationSettings,
     shortcutsSettings,
-    cacheSettings,
+    dataSettings,
 ];
 type ExcludeLabel<T> = Omit<T, "label">;
 type MergeSettings<T extends readonly unknown[]> = ExcludeLabel<
