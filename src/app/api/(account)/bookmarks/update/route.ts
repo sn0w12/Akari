@@ -17,13 +17,20 @@ export async function POST(request: Request): Promise<Response> {
             mangaId,
             mangaTitle,
             image,
-            readAt,
-            id,
             storyData,
             chapterData,
         } = chapter;
 
         const cookieStore = await cookies();
+
+        const canSaveMangaCookie = cookieStore.get(
+            "save_reading_history",
+        )?.value;
+        let canSaveManga = canSaveMangaCookie === "true";
+        if (canSaveMangaCookie === undefined) {
+            canSaveManga = true;
+        }
+
         const user_data = getUserData(cookieStore);
         const userId = userDataToUserId(user_data);
 
@@ -57,7 +64,7 @@ export async function POST(request: Request): Promise<Response> {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             }),
-            saveReadingHistoryEntry(userId, {
+            saveReadingHistoryEntry(userId, canSaveManga, {
                 mangaId,
                 mangaTitle,
                 image,

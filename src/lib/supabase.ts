@@ -145,10 +145,15 @@ export async function saveMangaToSupabase(identifier: string, mangaData: any) {
  */
 export async function saveReadingHistoryEntry(
     userId: string,
+    canSaveManga: boolean,
     entry: Omit<ReadingHistoryEntry, "id" | "userId" | "readAt">,
 ): Promise<ReadingHistoryEntry | null> {
     if (!supabaseAdmin) {
         console.warn("Supabase admin not initialized");
+        return null;
+    }
+
+    if (!canSaveManga) {
         return null;
     }
 
