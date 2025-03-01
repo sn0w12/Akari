@@ -85,6 +85,14 @@ export const mangaSettings = {
         type: "checkbox",
         default: true,
     },
+    saveReadingHistory: {
+        label: "Save Reading History",
+        type: "checkbox",
+        default: true,
+        onChange: (value: string) => {
+            setCookie("save_reading_history", value, "functional");
+        },
+    },
 };
 
 export const notificationSettings = {
