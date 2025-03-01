@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getUserData } from "@/lib/mangaNato";
 import { saveReadingHistoryEntry, userDataToUserId } from "@/lib/supabase";
 import { BookmarkUpdateRequest } from "@/app/api/interfaces";
+import { hasConsentFor } from "@/lib/cookies";
 
 const BOOKMARK_UPDATE_URL = "https://user.mngusr.com/bookmark_update";
 
@@ -23,11 +24,12 @@ export async function POST(request: Request): Promise<Response> {
 
         const cookieStore = await cookies();
 
+        const functionalConsent = hasConsentFor(cookieStore, "functional");
         const canSaveMangaCookie = cookieStore.get(
             "save_reading_history",
         )?.value;
         let canSaveManga = canSaveMangaCookie === "true";
-        if (canSaveMangaCookie === undefined) {
+        if (canSaveMangaCookie === undefined && functionalConsent) {
             canSaveManga = true;
         }
 
