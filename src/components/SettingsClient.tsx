@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { CardContent, Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Search } from "lucide-react";
 import { createAllSettingsMaps } from "@/lib/settings";
 import { Setting, SettingsMap, renderInput } from "@/lib/settings";
 import { useSettings } from "@/hooks/useSettings";
-import SettingsSkeleton from "./ui/Settings/skeleton";
+import { useSearchParams } from "next/navigation";
 
 export default function SettingsClient() {
     const { settings, setSettings } = useSettings();
@@ -17,6 +17,9 @@ export default function SettingsClient() {
     const [activeTab, setActiveTab] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
     const isProduction = process.env.NODE_ENV === "production";
+    const searchParams = useSearchParams();
+    const targetSettingId = searchParams.get("id");
+    const settingRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
     useEffect(() => {
         const skeletonElement = document.querySelector(".settings-skeleton");
@@ -105,6 +108,37 @@ export default function SettingsClient() {
         }
     }, [activeTab, settingsMap]);
 
+    // Handle scrolling to target setting when component loads
+    useEffect(() => {
+        if (targetSettingId && isClient) {
+            const settingItem = allSettingsList.find(
+                ({ key }) => key === targetSettingId,
+            );
+
+            if (settingItem) {
+                // Switch to the correct tab
+                setActiveTab(settingItem.category);
+                setSearchQuery(""); // Clear any search query
+
+                // Wait for DOM to update after tab change
+                setTimeout(() => {
+                    const elementId = `${settingItem.category}-${settingItem.key}`;
+                    const element = settingRefs.current[elementId];
+                    if (element) {
+                        // Scroll the setting into view
+                        element.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+
+                        // Add highlight class
+                        element.classList.add("setting-highlight");
+                    }
+                }, 200);
+            }
+        }
+    }, [targetSettingId, isClient, allSettingsList]);
+
     if (!isClient) {
         return null;
     }
@@ -134,7 +168,19 @@ export default function SettingsClient() {
                                             key={`${category}-${key}`}
                                             className="border-b pb-4 last:border-b-0 last:pb-0"
                                         >
-                                            <div className="flex flex-col space-y-2">
+                                            <div
+                                                ref={(el) => {
+                                                    settingRefs.current[
+                                                        `${category}-${key}`
+                                                    ] = el;
+                                                }}
+                                                className={`flex flex-col space-y-2 ${
+                                                    targetSettingId ===
+                                                    `${category}-${key}`
+                                                        ? "setting-highlight"
+                                                        : ""
+                                                }`}
+                                            >
                                                 <div className="flex justify-between items-center">
                                                     <div>
                                                         <Label
@@ -214,10 +260,24 @@ export default function SettingsClient() {
                                                             setting,
                                                         ) && (
                                                             <div
-                                                                key={key}
+                                                                key={`${category}-${key}`}
                                                                 className="border-b pb-4 last:border-b-0 last:pb-0"
                                                             >
-                                                                <div className="flex flex-col space-y-2">
+                                                                <div
+                                                                    ref={(
+                                                                        el,
+                                                                    ) => {
+                                                                        settingRefs.current[
+                                                                            `${category}-${key}`
+                                                                        ] = el;
+                                                                    }}
+                                                                    className={`flex flex-col space-y-2 ${
+                                                                        targetSettingId ===
+                                                                        `${category}-${key}`
+                                                                            ? "setting-highlight"
+                                                                            : ""
+                                                                    }`}
+                                                                >
                                                                     <div className="flex justify-between items-center">
                                                                         <div>
                                                                             <Label
