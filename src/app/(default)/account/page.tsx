@@ -36,7 +36,6 @@ export default function AccountPage() {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [activeTab, setActiveTab] = useState("account");
 
     useEffect(() => {
         // Check if user is logged in
@@ -294,8 +293,8 @@ export default function AccountPage() {
                                                         {account.user.name}
                                                     </span>
                                                 </div>
-                                                <p className="text-green-500 flex items-center gap-1">
-                                                    <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                                                <p className="text-accent-color flex items-center gap-1">
+                                                    <span className="inline-block w-2 h-2 rounded-full bg-accent-color"></span>
                                                     Connected
                                                 </p>
                                             </div>
