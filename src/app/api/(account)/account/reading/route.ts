@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
     deleteAllReadingHistory,
     deleteReadingHistoryEntry,
-    encodeUserId,
     userDataToUserId,
 } from "@/lib/supabase";
 import { cookies } from "next/headers";

@@ -134,6 +134,16 @@ export const dataSettings = {
             window.location.reload();
         },
     },
+    clearReadingHistory: {
+        label: "Clear Reading History",
+        type: "button",
+        confirmation: "Are you sure you want to clear your reading history?",
+        onClick: async () => {
+            await fetch("/api/account/reading", {
+                method: "DELETE",
+            });
+        },
+    },
 };
 
 export const shortcutsSettings = {
