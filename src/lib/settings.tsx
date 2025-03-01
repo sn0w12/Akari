@@ -619,7 +619,7 @@ export function renderInput(
                         setting.onChange(value);
                     }}
                 >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-48">
                         <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
                     <SelectContent>
@@ -731,7 +731,7 @@ export function renderInputSkeleton(setting: Setting) {
         case "textarea":
             return <Skeleton className="h-24 w-48" />;
         case "select":
-            return <Skeleton className="h-10 w-44" />;
+            return <Skeleton className="h-10 w-48" />;
         case "radio":
             return (
                 <div className="flex flex-col space-y-2">
