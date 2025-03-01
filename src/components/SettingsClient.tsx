@@ -9,6 +9,7 @@ import { Search } from "lucide-react";
 import { createAllSettingsMaps } from "@/lib/settings";
 import { Setting, SettingsMap, renderInput } from "@/lib/settings";
 import { useSettings } from "@/hooks/useSettings";
+import SettingsSkeleton from "./ui/Settings/skeleton";
 
 export default function SettingsClient() {
     const { settings, setSettings } = useSettings();
@@ -18,6 +19,10 @@ export default function SettingsClient() {
     const isProduction = process.env.NODE_ENV === "production";
 
     useEffect(() => {
+        const skeletonElement = document.querySelector(".settings-skeleton");
+        if (skeletonElement) {
+            skeletonElement.classList.add("hidden");
+        }
         setIsClient(true);
     }, []);
 
@@ -99,6 +104,10 @@ export default function SettingsClient() {
             setActiveTab(Object.keys(settingsMap)[0]);
         }
     }, [activeTab, settingsMap]);
+
+    if (!isClient) {
+        return null;
+    }
 
     return (
         <>
