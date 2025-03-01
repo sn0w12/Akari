@@ -370,3 +370,39 @@ export async function deleteReadingHistoryEntry(
         return false;
     }
 }
+
+export async function deleteAllReadingHistory(userId: string): Promise<boolean> {
+    // Import supabaseAdmin directly in this file as a temporary solution
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const { createClient } = require("@supabase/supabase-js");
+
+    const supabaseAdmin =
+        process.env.SUPABASE_SERVICE_ROLE_KEY && supabaseUrl
+            ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+            : null;
+
+    if (!supabaseAdmin) {
+        console.warn("Supabase admin not initialized");
+        return false;
+    }
+
+    // Encode the user ID for database lookup
+    const encodedUserId = encodeUserId(userId);
+
+    try {
+        const { error } = await supabaseAdmin
+            .from("reading_history")
+            .delete()
+            .eq("user_id", encodedUserId);
+
+        if (error) {
+            console.error("Error deleting all reading history:", error);
+            return false;
+        }
+
+        return true;
+    } catch (e) {
+        console.error("Exception deleting all reading history:", e);
+        return false;
+    }
+}
