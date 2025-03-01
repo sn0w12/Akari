@@ -1,8 +1,10 @@
 import { HqMangaCacheItem, ReadingHistoryEntry } from "@/app/api/interfaces";
 import { createClient } from "@supabase/supabase-js";
+import * as crypto from "crypto";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const USER_ID_HASH_KEY = process.env.USER_ID_HASH_KEY || null;
 
 export const supabasePublic =
     supabaseUrl && supabaseAnonKey
@@ -17,6 +19,19 @@ export function userDataToUserId(userData: string | null): string | null {
     if (!userData) return null;
     const parts = userData.split(".");
     return parts.length === 3 ? parts[1] : null;
+}
+
+/**
+ * Encode a user ID to protect it in the database
+ * Uses HMAC-SHA256 for consistent but secure one-way transformation
+ */
+export function encodeUserId(userId: string): string {
+    if (!userId) return "";
+    if (!USER_ID_HASH_KEY) return userId;
+    return crypto
+        .createHmac("sha256", USER_ID_HASH_KEY)
+        .update(userId)
+        .digest("hex");
 }
 
 function transformMangaData(data: any): HqMangaCacheItem | null {
@@ -138,11 +153,14 @@ export async function saveReadingHistoryEntry(
         return null;
     }
 
+    // Encode the user ID before storing in the database
+    const encodedUserId = encodeUserId(userId);
+
     try {
         const { data, error } = await supabaseAdmin
             .from("reading_history")
             .upsert({
-                user_id: userId,
+                user_id: encodedUserId,
                 manga_id: entry.mangaId,
                 manga_title: entry.mangaTitle,
                 image: entry.image,
@@ -161,7 +179,7 @@ export async function saveReadingHistoryEntry(
 
         return {
             id: data[0].id,
-            userId: data[0].user_id,
+            userId: userId, // Return the original user ID to the client
             mangaId: data[0].manga_id,
             mangaTitle: data[0].manga_title,
             image: data[0].image,
@@ -188,11 +206,14 @@ export async function getUserReadingHistory(
         return [];
     }
 
+    // Encode the user ID for database lookup
+    const encodedUserId = encodeUserId(userId);
+
     try {
         const { data, error } = await supabasePublic
             .from("reading_history")
             .select("*")
-            .eq("user_id", userId)
+            .eq("user_id", encodedUserId)
             .order("read_at", { ascending: false })
             .range(offset, offset + limit - 1);
 
@@ -224,7 +245,7 @@ export async function getUserReadingHistory(
 
         return data.map((entry) => ({
             id: entry.id,
-            userId: entry.user_id,
+            userId: userId, // Return the original user ID to the client
             mangaId: entry.manga_id,
             mangaTitle: entry.manga_title,
             // Use high-quality image if available, otherwise fall back to stored image
@@ -252,6 +273,9 @@ export async function getUserReadingStats(
         return [];
     }
 
+    // Encode the user ID for database lookup
+    const encodedUserId = encodeUserId(userId);
+
     // Calculate start date based on period
     const now = new Date();
     let startDate: Date;
@@ -276,7 +300,7 @@ export async function getUserReadingStats(
         const { data, error } = await supabasePublic
             .from("reading_history")
             .select("read_at")
-            .eq("user_id", userId)
+            .eq("user_id", encodedUserId)
             .gte("read_at", startDate.toISOString());
 
         if (error) {
@@ -327,11 +351,14 @@ export async function deleteReadingHistoryEntry(
         return false;
     }
 
+    // Encode the user ID for database lookup
+    const encodedUserId = encodeUserId(userId);
+
     try {
         const { error } = await supabaseAdmin
             .from("reading_history")
             .delete()
-            .match({ id: entryId, user_id: userId });
+            .match({ id: entryId, user_id: encodedUserId });
 
         if (error) {
             console.error("Error deleting reading history entry:", error);
