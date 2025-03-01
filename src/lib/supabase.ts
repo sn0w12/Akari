@@ -278,20 +278,28 @@ export async function getUserReadingStats(
     // Calculate start date based on period
     const now = new Date();
     let startDate: Date;
+    let interval: "hour" | "day" | "day"; // Interval type for generating timeslots
+    let timeSlots: number; // Number of time slots to generate
 
     switch (period) {
         case "24h":
             startDate = new Date(now);
-            startDate.setDate(now.getDate() - 1);
+            startDate.setHours(now.getHours() - 24);
+            interval = "hour";
+            timeSlots = 24;
             break;
         case "7d":
             startDate = new Date(now);
             startDate.setDate(now.getDate() - 7);
+            interval = "day";
+            timeSlots = 7;
             break;
         case "30d":
         default:
             startDate = new Date(now);
             startDate.setDate(now.getDate() - 30);
+            interval = "day";
+            timeSlots = 30;
             break;
     }
 
@@ -309,29 +317,70 @@ export async function getUserReadingStats(
 
         if (!data) return [];
 
-        const readDates = data.map((entry) => new Date(entry.read_at));
-        const dateFormat: Intl.DateTimeFormatOptions =
-            period === "24h"
-                ? { hour: "2-digit" }
-                : period === "7d"
-                  ? { weekday: "short" }
-                  : { month: "short", day: "numeric" };
+        // Choose appropriate date format based on period
+        let dateFormat: Intl.DateTimeFormatOptions;
+        if (period === "24h") {
+            dateFormat = { hour: "2-digit" };
+        } else if (period === "7d") {
+            dateFormat = { weekday: "short" };
+        } else {
+            // For 30d, use a format that creates a unique string for each day
+            dateFormat = { month: "short", day: "numeric" };
+        }
 
         // Group by formatted date
         const countsByDate: Record<string, number> = {};
-        readDates.forEach((date) => {
+
+        data.forEach((entry) => {
+            const entryDate = new Date(entry.read_at);
             const formattedDate = new Intl.DateTimeFormat(
                 "en-US",
                 dateFormat,
-            ).format(date);
+            ).format(entryDate);
             countsByDate[formattedDate] =
                 (countsByDate[formattedDate] || 0) + 1;
         });
 
-        return Object.entries(countsByDate).map(([date, count]) => ({
-            date,
-            count,
-        }));
+        // Generate complete timeline with all time slots
+        const completeTimeline: { date: string; count: number }[] = [];
+        const referenceDate = new Date(now);
+
+        // Reset time components based on period
+        if (period === "24h") {
+            // For 24h, set minutes and seconds to 0 for the current hour
+            referenceDate.setMinutes(0);
+            referenceDate.setSeconds(0);
+            referenceDate.setMilliseconds(0);
+        } else {
+            // For 7d and 30d, set hours, minutes and seconds to 0 for the current day
+            referenceDate.setHours(0);
+            referenceDate.setMinutes(0);
+            referenceDate.setSeconds(0);
+            referenceDate.setMilliseconds(0);
+        }
+
+        // Generate all time slots
+        for (let i = timeSlots - 1; i >= 0; i--) {
+            const slotDate = new Date(referenceDate);
+
+            if (period === "24h") {
+                slotDate.setHours(slotDate.getHours() - i);
+            } else {
+                slotDate.setDate(slotDate.getDate() - i);
+            }
+
+            const formattedDate = new Intl.DateTimeFormat(
+                "en-US",
+                dateFormat,
+            ).format(slotDate);
+
+            completeTimeline.push({
+                date: formattedDate,
+                count: countsByDate[formattedDate] || 0,
+            });
+        }
+
+        return completeTimeline;
     } catch (e) {
         console.error("Exception fetching reading stats:", e);
         return [];
@@ -371,7 +420,9 @@ export async function deleteReadingHistoryEntry(
     }
 }
 
-export async function deleteAllReadingHistory(userId: string): Promise<boolean> {
+export async function deleteAllReadingHistory(
+    userId: string,
+): Promise<boolean> {
     // Import supabaseAdmin directly in this file as a temporary solution
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
     const { createClient } = require("@supabase/supabase-js");
