@@ -154,6 +154,15 @@ input:-webkit-autofill:active {
     }
 }
 
+.settings-description a {
+    color: hsl(var(--primary));
+}
+
+.settings-description a:hover {
+    color: hsl(var(--accent-color));
+    text-decoration: underline;
+}
+
 /* INPUTS */
 input:invalid {
     border-color: red;

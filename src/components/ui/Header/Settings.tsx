@@ -203,11 +203,12 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                                                             {setting.label}
                                                         </Label>
                                                         {setting.description && (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                {
-                                                                    setting.description
-                                                                }
-                                                            </p>
+                                                            <p
+                                                                className="text-sm text-muted-foreground settings-description"
+                                                                dangerouslySetInnerHTML={{
+                                                                    __html: setting.description,
+                                                                }}
+                                                            />
                                                         )}
                                                     </div>
                                                     {renderInput(

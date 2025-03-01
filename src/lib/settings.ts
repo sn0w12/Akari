@@ -87,6 +87,7 @@ export const mangaSettings = {
     },
     saveReadingHistory: {
         label: "Save Reading History",
+        description: `Saves your reading history, see the <a href="/account">account</a> page.`,
         type: "checkbox",
         default: true,
         onChange: (value: string) => {

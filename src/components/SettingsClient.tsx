@@ -223,11 +223,12 @@ export default function SettingsClient() {
                                                                                 }
                                                                             </Label>
                                                                             {setting.description && (
-                                                                                <p className="text-sm text-muted-foreground">
-                                                                                    {
-                                                                                        setting.description
-                                                                                    }
-                                                                                </p>
+                                                                                <p
+                                                                                    className="text-sm text-muted-foreground settings-description"
+                                                                                    dangerouslySetInnerHTML={{
+                                                                                        __html: setting.description,
+                                                                                    }}
+                                                                                />
                                                                             )}
                                                                         </div>
                                                                         <div>
