@@ -3,19 +3,39 @@ import { getBaseUrl } from "@/app/api/baseUrl";
 import { getAccessToken } from "@/lib/accessToken";
 
 export async function GET(req: NextRequest) {
-    const authorizationHeader = req.headers.get("authorization");
-    if (!authorizationHeader) {
+    const accessToken = await getAccessToken(req, getBaseUrl());
+    if (!accessToken) {
         return NextResponse.json(
-            { error: "Authorization header missing" },
+            { error: "Failed to get access token" },
             { status: 401 },
         );
     }
 
+    // Extract query parameters
+    const searchParams = req.nextUrl.searchParams;
+    const status = searchParams.get("status");
+    const sort = searchParams.get("sort") || "list_score";
+    const limit = searchParams.get("limit") || "100";
+    const offset = searchParams.get("offset") || "0";
+
+    // Build query parameters for MAL API
+    const queryParams = new URLSearchParams({
+        fields: "list_status",
+        sort,
+        limit,
+        offset,
+    });
+
+    // Only add status if it's provided
+    if (status) {
+        queryParams.append("status", status);
+    }
+
     const response = await fetch(
-        "https://api.myanimelist.net/v2/users/@me/mangalist?fields=list_status&sort=list_score&limit=1000",
+        `https://api.myanimelist.net/v2/users/@me/mangalist?${queryParams.toString()}`,
         {
             headers: {
-                Authorization: authorizationHeader,
+                Authorization: `Bearer ${accessToken}`,
             },
         },
     );

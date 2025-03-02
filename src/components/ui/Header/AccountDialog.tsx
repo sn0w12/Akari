@@ -21,6 +21,8 @@ import { generateMalAuth } from "@/lib/secondaryAccounts";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { isAccountValid } from "@/lib/secondaryAccounts";
+import { useSidebar } from "@/hooks/useSidebar";
+import { useAccountDialog } from "@/hooks/useAccountDialog";
 
 export interface SecondaryAccount {
     id: string;
@@ -80,7 +82,6 @@ function DialogButtonContent() {
 const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
-    const [open, setOpen] = useState(false);
     const [username, setUsername] = useState("");
     const [savedUsername, setSavedUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -89,10 +90,13 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const [ciSessionCookie, setCiSessionCookie] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { isAccountOpen, toggleAccount, openAccount, closeAccount } =
+        useAccountDialog();
+    const { closeSidebar } = useSidebar();
 
     const handleAccountParam = useCallback(() => {
         setTimeout(() => {
-            setOpen(true);
+            openAccount();
         }, 500);
     }, []);
 
@@ -274,7 +278,7 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                 <Suspense>
                     <AccountParamChecker onAccountParam={handleAccountParam} />
                 </Suspense>
-                <Dialog open={open} onOpenChange={setOpen}>
+                <Dialog open={isAccountOpen} onOpenChange={toggleAccount}>
                     <DialogTrigger asChild>
                         <Button
                             ref={ref}
@@ -288,6 +292,16 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Account Information</DialogTitle>
+                            <Link
+                                href="/account"
+                                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                onClick={() => {
+                                    closeAccount();
+                                    closeSidebar();
+                                }}
+                            >
+                                Open in full page
+                            </Link>
                         </DialogHeader>
                         <div className="flex items-center space-x-4 mb-4 border-t">
                             <div className="mt-4 w-full">
@@ -328,9 +342,9 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                 <AccountParamChecker onAccountParam={handleAccountParam} />
             </Suspense>
             <Dialog
-                open={open}
+                open={isAccountOpen}
                 onOpenChange={(isOpen) => {
-                    setOpen(isOpen);
+                    toggleAccount();
                     if (isOpen) {
                         fetchCaptcha();
                     }
@@ -352,6 +366,16 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                         <>
                             <DialogHeader>
                                 <DialogTitle>Login</DialogTitle>
+                                <Link
+                                    href="/account"
+                                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    onClick={() => {
+                                        closeAccount();
+                                        closeSidebar();
+                                    }}
+                                >
+                                    Open in full page
+                                </Link>
                             </DialogHeader>
                             <div className="flex items-center space-x-4 mb-4 border-t">
                                 <div className="mt-4 w-full">
@@ -430,7 +454,7 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                                         <Link
                                             href="/register"
                                             className="text-sm text-blue-500 hover:text-blue-400"
-                                            onClick={() => setOpen(false)}
+                                            onClick={() => closeAccount()}
                                         >
                                             Don't have an account? Register here
                                         </Link>

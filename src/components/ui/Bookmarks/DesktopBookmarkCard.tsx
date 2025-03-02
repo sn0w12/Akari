@@ -50,7 +50,7 @@ const DesktopBookmarkCard: React.FC<{
                     <HoverLink
                         href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                         rel="noopener noreferrer"
-                        className="block mt-4"
+                        className="block mt-4 w-fit"
                         prefetch={false}
                     >
                         <Button

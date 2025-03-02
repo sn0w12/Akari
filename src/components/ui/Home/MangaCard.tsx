@@ -19,7 +19,7 @@ export function MangaCard({
     isBookmarked = false,
 }: MangaCardProps) {
     return (
-        <HoverLink href={`/manga/${manga.id}`} className="block">
+        <HoverLink href={`/manga/${manga.id}`} className="block h-fit">
             <Card
                 className={`group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 ${isBookmarked ? "border-[3px] border-accent-color" : ""}`}
             >

@@ -122,6 +122,7 @@ export interface MalSync {
 }
 
 export interface Chapter {
+    id: string;
     title: string;
     chapter: string;
     chapters: { value: string; label: string }[];
@@ -171,4 +172,20 @@ export interface NewChapter {
     views: string;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ReadingHistoryEntry {
+    id: string;
+    userId: string;
+    mangaId: string;
+    mangaTitle: string;
+    image: string;
+    chapterId: string;
+    chapterTitle: string;
+    readAt: Date;
+}
+
+export interface BookmarkUpdateRequest extends ReadingHistoryEntry {
+    storyData: string;
+    chapterData: string;
 }

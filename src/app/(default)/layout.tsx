@@ -42,7 +42,7 @@ export default function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased`}
             >
                 <ThemeProvider
                     attribute="class"
@@ -52,7 +52,7 @@ export default function RootLayout({
                 >
                     <AnalyticsWrapper />
                     <HeaderComponent />
-                    {children}
+                    <main className="flex-grow">{children}</main>
                     <ToastContainer />
                     <CookieConsent />
                     <Footer />

@@ -44,7 +44,10 @@ import SettingsDialog from "@/components/ui/Header/SettingsDialog";
 import LoginDialog from "@/components/ui/Header/AccountDialog";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
-import { getSettings, useSettingsChange } from "@/lib/settings";
+import { getSettings, getSetting, useSetting } from "@/lib/settings";
+import { useSettingsDialog } from "@/hooks/useSettingsDialog";
+import { useSidebar } from "@/hooks/useSidebar";
+import { useAccountDialog } from "@/hooks/useAccountDialog";
 
 function SideBarLink({
     href,
@@ -70,7 +73,10 @@ function SideBarLink({
 }
 
 export function SideBar() {
-    const [open, setOpen] = useState(false);
+    const { isSidebarOpen, toggleSidebar, openSidebar, closeSidebar } =
+        useSidebar();
+    const { openSettings } = useSettingsDialog();
+    const { openAccount } = useAccountDialog();
     type ShortcutSettings = {
         toggleSidebar: string | null;
         openSettings: string | null;
@@ -83,10 +89,11 @@ export function SideBar() {
         openAccount: null,
         navigateBookmarks: null,
     });
+    const preferSettingsPage = useSetting("preferSettingsPage");
+    const preferAccountPage = useSetting("preferAccountPage");
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
-    const settingsRef = useRef<HTMLButtonElement>(null);
 
     // Get shortcut settings
     useEffect(() => {
@@ -107,24 +114,34 @@ export function SideBar() {
     }, []);
 
     const handleAccountClick = () => {
-        sheetRef.current?.click();
+        if (preferAccountPage) {
+            router.push("/account");
+            return;
+        }
+
         setTimeout(() => {
-            loginRef.current?.click();
-        }, 300);
+            openSidebar();
+            openAccount();
+        }, 100);
     };
 
     const handleSettingsClick = () => {
-        sheetRef.current?.click();
+        if (preferSettingsPage) {
+            router.push("/settings");
+            return;
+        }
+
         setTimeout(() => {
-            settingsRef.current?.click();
-        }, 300);
+            openSidebar();
+            openSettings();
+        }, 100);
     };
 
     const handleClose = () => {
-        setOpen(false);
+        closeSidebar();
     };
 
-    useShortcut(shortcuts.toggleSidebar || "", () => setOpen((prev) => !prev), {
+    useShortcut(shortcuts.toggleSidebar || "", () => toggleSidebar(), {
         preventDefault: true,
     });
     useShortcut(shortcuts.openSettings || "", handleSettingsClick, {
@@ -137,14 +154,14 @@ export function SideBar() {
         shortcuts.navigateBookmarks || "",
         () => {
             router.push("/bookmarks");
-            setOpen(false);
+            closeSidebar();
         },
         { preventDefault: true },
     );
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <ContextMenu>
+        <ContextMenu>
+            <Sheet open={isSidebarOpen} onOpenChange={toggleSidebar}>
                 <ContextMenuTrigger>
                     <SheetTrigger asChild>
                         <Button
@@ -163,7 +180,13 @@ export function SideBar() {
                     className="w-56 z-[2000]"
                     id="sidebar-context"
                 >
-                    <ContextMenuItem onSelect={() => setOpen((prev) => !prev)}>
+                    <ContextMenuItem
+                        onClick={() =>
+                            setTimeout(() => {
+                                openSidebar();
+                            }, 100)
+                        }
+                    >
                         <Menu className="mr-2 h-4 w-4" />
                         <span>Open</span>
                         {shortcuts.toggleSidebar && (
@@ -356,12 +379,38 @@ export function SideBar() {
                         </ScrollArea>
 
                         <div className="border-t p-4 flex flex-col sm:flex-row justify-center gap-2">
-                            <SettingsDialog ref={settingsRef} />
-                            <LoginDialog ref={loginRef} />
+                            {preferSettingsPage ? (
+                                <Link
+                                    href="/settings"
+                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                    onClick={closeSidebar}
+                                >
+                                    <Settings className="h-5 w-5" />
+                                    <span className="text-base font-medium">
+                                        Settings
+                                    </span>
+                                </Link>
+                            ) : (
+                                <SettingsDialog />
+                            )}
+                            {preferAccountPage ? (
+                                <Link
+                                    href="/account"
+                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                    onClick={closeSidebar}
+                                >
+                                    <User className="h-5 w-5" />
+                                    <span className="text-base font-medium">
+                                        Account
+                                    </span>
+                                </Link>
+                            ) : (
+                                <LoginDialog />
+                            )}
                         </div>
                     </div>
                 </SheetContent>
-            </ContextMenu>
-        </Sheet>
+            </Sheet>
+        </ContextMenu>
     );
 }

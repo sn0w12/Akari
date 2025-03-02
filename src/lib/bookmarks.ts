@@ -1,6 +1,7 @@
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
+import { isSignedIn } from "./utils";
 
-function compareVersions(str1: string, str2: string): boolean {
+export function compareVersions(str1: string, str2: string): boolean {
     // Replace "-" with "." in both strings
     const num1 = parseFloat(str1.replace(/-/g, "."));
     const num2 = parseFloat(str2.replace(/-/g, "."));
@@ -64,12 +65,13 @@ export async function checkIfBookmarked(
     mangaIds: string | string[],
 ): Promise<Record<string, boolean> | boolean> {
     const idsArray = Array.isArray(mangaIds) ? mangaIds : [mangaIds];
-    if (idsArray.length === 0) return {};
+    if (idsArray.length === 0 || !isSignedIn()) {
+        return Array.isArray(mangaIds) ? {} : false;
+    }
 
     const response = await fetch(
         `/api/bookmarks/isbookmarked?ids=${idsArray.join(",")}`,
     );
-
     const data = await response.json();
 
     // If single ID was passed, return just the boolean
