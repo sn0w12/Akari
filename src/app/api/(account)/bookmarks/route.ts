@@ -1,207 +1,137 @@
 import { NextResponse } from "next/server";
+import axios from "axios";
 import * as cheerio from "cheerio";
-import { Bookmark } from "@/app/api/interfaces";
+import { Bookmark } from "../../interfaces";
+import { generateCacheHeaders } from "@/lib/cache";
 import { cookies } from "next/headers";
-import { getUserData } from "@/lib/mangaNato";
-import { getMangaArrayFromSupabase } from "@/lib/supabase";
-import { generateClientCacheHeaders } from "@/lib/cache";
-import { time, timeEnd } from "@/lib/utils";
 
-const BOOKMARK_SERVER_URL_1 = "https://user.mngusr.com/bookmark_get_list_full";
+export const dynamic = "force-dynamic";
 
-function pluralizeTimeAgo(input: string): string {
-    const trimmedInput = input.trim();
-    const hourPattern = /^(\d+) hour ago$/;
-    const dayPattern = /^(\d+) day ago$/;
-
-    const hourMatch = trimmedInput.match(hourPattern);
-    const dayMatch = trimmedInput.match(dayPattern);
-
-    if (hourMatch) {
-        const num = parseInt(hourMatch[1], 10);
-        return num === 1 ? trimmedInput : `${num} hours ago`;
-    }
-
-    if (dayMatch) {
-        const num = parseInt(dayMatch[1], 10);
-        return num === 1 ? trimmedInput : `${num} days ago`;
-    }
-
-    return trimmedInput;
-}
-
-async function fetchData(
-    user_data: string,
-    page: number,
-    url: string,
-    out_type: string,
-) {
-    const data = new URLSearchParams();
-    data.append("user_data", user_data);
-    data.append("bm_page", page.toString());
-    data.append("bm_source", "manganato");
-    data.append("out_type", out_type);
-
-    const response = await fetch(url, {
-        method: "POST",
-        body: data.toString(),
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error ${response.status}: ${errorText}`);
-    }
-
-    return out_type === "json" ? response.json() : response.text();
-}
-
-async function fetchBookmarks(user_data: string, page: number, url: string) {
+export async function GET(request: Request): Promise<Response> {
     try {
-        const [jsonResponse, htmlResponse] = await Promise.all([
-            fetchData(user_data, page, url, "json"),
-            fetchData(user_data, page, url, "html"),
-        ]);
-        return { jsonResponse, htmlResponse };
+        const { searchParams } = new URL(request.url);
+        const page = searchParams.get("page") || "1";
+        const url = `https://www.nelomanga.com/bookmark?page=${page}`;
+        const cookieStore = await cookies();
+
+        const { data } = await axios.get(url, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                cookie: cookieStore.toString(),
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+                referer: `https://www.nelomanga.com/`,
+                host: "www.nelomanga.com",
+                origin: "https://www.nelomanga.com",
+                accept: "application/json, text/javascript, */*; q=0.01",
+                "x-requested-with": "XMLHttpRequest",
+            },
+        });
+        const $ = cheerio.load(data);
+        const bookmarks: Bookmark[] = [];
+
+        const lastPageElement = $("a.go-p-end.a-hov");
+        const totalPages: number = lastPageElement.length
+            ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
+            : 1;
+
+        $(".user-bookmark-item").each((_, element) => {
+            const $element = $(element);
+
+            // Extract the story ID from the div class
+            const bookmarkId =
+                $element.attr("class")?.match(/bm-it-(\d+)/)?.[1] || "";
+
+            // Get main story link and image
+            const mainLink = $element.find("a").first();
+            const storyLink = mainLink.attr("href") || "";
+            const image = mainLink.find("img").attr("src") || "";
+
+            // Get story name
+            const storyName = $element.find(".bm-title a").text().trim();
+
+            // Get chapter information
+            const viewedChapterElement = $element.find(
+                '.user-bookmark-item-right span:contains("Viewed")',
+            );
+            const currentChapterElement = $element.find(
+                '.user-bookmark-item-right span:contains("Current")',
+            );
+
+            const viewedChapterLink =
+                viewedChapterElement.find("a").attr("href") || "";
+            const viewedChapterText = viewedChapterElement
+                .find("a")
+                .text()
+                .trim();
+            const currentChapterLink =
+                currentChapterElement.find("a").attr("href") || "";
+            const currentChapterText = currentChapterElement
+                .find("a")
+                .text()
+                .trim();
+
+            // Extract chapter numbers
+            const viewedChapterNumber =
+                viewedChapterText.match(/Chapter (\d+)/)?.[1] || "";
+            const currentChapterNumber =
+                currentChapterText.match(/Chapter (\d+)/)?.[1] || "";
+
+            // Get last update time
+            const lastUpdated = $element
+                .find(".chapter-datecreate")
+                .text()
+                .replace("Last updated :", "")
+                .trim();
+
+            const bookmark: Bookmark = {
+                up_to_date:
+                    Number(viewedChapterNumber) ===
+                    Number(currentChapterNumber),
+                bm_data: "", // This field might need to be populated from elsewhere
+                chapter_namenow: viewedChapterText,
+                chapter_numbernow: viewedChapterNumber,
+                chapterlastdateupdate: lastUpdated,
+                chapterlastname: currentChapterText,
+                chapterlastnumber: currentChapterNumber,
+                image: image,
+                isread: "0", // Default value, might need to be determined differently
+                link_chapter_last: currentChapterLink,
+                link_chapter_now: viewedChapterLink,
+                link_story: storyLink,
+                note_story_id: bookmarkId,
+                note_story_name: storyName,
+                noteid: bookmarkId,
+                storyid: bookmarkId,
+                storyname: storyName,
+                storynameunsigned_storykkl: storyName
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-"),
+            };
+
+            bookmarks.push(bookmark);
+        });
+
+        return new Response(JSON.stringify({ bookmarks, totalPages }), {
+            status: 200,
+            headers: {
+                "Content-Type": "application/json",
+                ...generateCacheHeaders(600),
+            },
+        });
     } catch (error) {
-        throw new Error(
-            `Error fetching bookmarks: ${(error as Error).message}`,
-        );
-    }
-}
-
-function extractBmData(
-    onClickAttr: string,
-    noteId: string,
-): string | undefined {
-    const match = onClickAttr.match(/fun_bookmark_delete\('([^']+)'/);
-    if (match && match[1]) {
-        return match[1];
-    } else {
-        console.log(`Could not extract bm_data for noteid ${noteId}`);
-        return undefined;
-    }
-}
-
-function processBookmarks(
-    jsonResult: { result: string; data: Bookmark[] },
-    htmlResult: string,
-) {
-    const html = JSON.parse(htmlResult);
-    const $ = cheerio.load(html.data);
-
-    for (const item of jsonResult.data) {
-        const noteId = item.noteid;
-        const className = `bm-it-${noteId}`;
-        item.chapterlastdateupdate = pluralizeTimeAgo(
-            item.chapterlastdateupdate,
-        );
-
-        const element = $(`.${className}`);
-        if (!element.length) {
-            console.log(`Element not found for noteid ${noteId}`);
-            continue;
-        }
-
-        const removeButton = element.find(".btn-remove");
-        if (!removeButton.length) {
-            console.log(`Remove button not found for noteid ${noteId}`);
-            continue;
-        }
-
-        const onClickAttr = removeButton.attr("onclick");
-        if (!onClickAttr) {
-            console.log(`No onclick attribute found for noteid ${noteId}`);
-            continue;
-        }
-
-        const bmData = extractBmData(onClickAttr, noteId);
-        if (bmData) {
-            item["bm_data"] = bmData;
-        }
-    }
-}
-
-export async function GET(request: Request) {
-    time("bookmarks-api");
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const getImages = searchParams.get("images") === "true";
-
-    const cookieStore = await cookies();
-    const user_data = getUserData(cookieStore);
-
-    if (!user_data) {
-        timeEnd("bookmarks-api");
-        return NextResponse.json(
-            { message: "user_data is required" },
-            { status: 400 },
-        );
-    }
-
-    try {
-        const url = BOOKMARK_SERVER_URL_1;
-        time("fetch-bookmarks");
-        const { jsonResponse: jsonResult, htmlResponse: htmlResult } =
-            await fetchBookmarks(user_data, page, url);
-        timeEnd("fetch-bookmarks");
-
-        if (jsonResult.result !== "ok") {
-            timeEnd("bookmarks-api");
+        console.error("Error fetching bookmarks:", error);
+        if (axios.isAxiosError(error)) {
             return NextResponse.json(
                 {
-                    message: "Error fetching bookmarks",
-                    details: jsonResult.data,
+                    result: "error",
+                    data: error.response?.data || error.message,
                 },
-                { status: 500 },
+                { status: error.response?.status || 500 },
             );
         }
-
-        processBookmarks(jsonResult, htmlResult);
-        if (getImages) {
-            time("fetch-images");
-            const identifiers = jsonResult.data.map((bookmark: Bookmark) =>
-                bookmark.link_story.split("/").pop(),
-            );
-
-            const imageData = await getMangaArrayFromSupabase(identifiers);
-            const imageMap = new Map(
-                imageData.map((item) => [item.identifier, item.imageUrl]),
-            );
-
-            jsonResult.data.forEach((bookmark: Bookmark) => {
-                const identifier = bookmark.link_story.split("/").pop();
-                const imageUrl = imageMap.get(identifier);
-                if (imageUrl) {
-                    bookmark.image = imageUrl;
-                }
-            });
-            timeEnd("fetch-images");
-        }
-
-        timeEnd("bookmarks-api");
         return NextResponse.json(
-            {
-                page,
-                totalPages: jsonResult.bm_page_total,
-                bookmarks: jsonResult.data,
-            },
-            {
-                status: 200,
-                headers: {
-                    ...generateClientCacheHeaders(30),
-                },
-            },
-        );
-    } catch (error) {
-        timeEnd("bookmarks-api");
-        return NextResponse.json(
-            {
-                message: "Error fetching bookmarks",
-                error: (error as Error).message,
-            },
+            { result: "error", data: (error as Error).message },
             { status: 500 },
         );
     }

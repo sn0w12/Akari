@@ -15,12 +15,17 @@ import {
 } from "@/components/ui/dialog";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
-import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
 
 export default function SearchButton() {
     const [searchText, setSearchText] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<
+        {
+            id: string;
+            title: string;
+            image: string;
+        }[]
+    >([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -78,24 +83,30 @@ export default function SearchButton() {
                         <CenteredSpinner />
                     ) : searchResults.length > 0 ? (
                         <>
-                            {searchResults.map((result: SmallManga) => (
-                                <Link
-                                    href={`/manga/${result.id}`}
-                                    key={result.id}
-                                    onClick={() => setOpen(false)}
-                                    className="block p-2 hover:bg-accent flex items-center rounded-lg border"
-                                    prefetch={true}
-                                >
-                                    <Image
-                                        src={result.image}
-                                        alt={result.title}
-                                        className="max-h-24 w-auto rounded mr-2"
-                                        height={100}
-                                        width={70}
-                                    />
-                                    {result.title}
-                                </Link>
-                            ))}
+                            {searchResults.map(
+                                (result: {
+                                    id: string;
+                                    title: string;
+                                    image: string;
+                                }) => (
+                                    <Link
+                                        href={`/manga/${result.id}`}
+                                        key={result.id}
+                                        onClick={() => setOpen(false)}
+                                        className="block p-2 hover:bg-accent flex items-center rounded-lg border"
+                                        prefetch={true}
+                                    >
+                                        <Image
+                                            src={`/api/image-proxy?imageUrl=${result.image}`}
+                                            alt={result.title}
+                                            className="max-h-24 w-auto rounded mr-2"
+                                            height={100}
+                                            width={70}
+                                        />
+                                        {result.title}
+                                    </Link>
+                                ),
+                            )}
                             <Link
                                 href={`/search?q=${encodeURIComponent(searchText)}`}
                                 className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"

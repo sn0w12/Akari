@@ -1,4 +1,4 @@
-import { Chapter, BookmarkUpdateRequest } from "@/app/api/interfaces";
+import { Chapter, ReadingHistoryEntry } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { fetchMalData, syncMal } from "@/lib/malSync";
 import db from "./db";
@@ -79,12 +79,8 @@ export async function syncAllServices(data: Chapter) {
 }
 
 async function updateBookmark(data: Chapter) {
-    const storyData = data.storyData;
-    const chapterData = data.chapterData;
-    if (!storyData || !chapterData) return;
-
     const fallbackId = window.location.href.split("/").pop()?.split("?")[0];
-    const chapterDataBody: BookmarkUpdateRequest = {
+    const chapterDataBody: ReadingHistoryEntry = {
         chapterId: data.id || fallbackId || "",
         chapterTitle: data.chapter,
         mangaId: data.parentId,
@@ -93,8 +89,6 @@ async function updateBookmark(data: Chapter) {
         readAt: new Date(),
         id: "",
         userId: "",
-        storyData,
-        chapterData,
     };
 
     const response = await fetch("/api/bookmarks/update", {

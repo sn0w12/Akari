@@ -80,24 +80,7 @@ export function HeaderComponent() {
                     <SearchBar />
                     <div className="flex gap-4">
                         <SearchButton />
-                        {notification ? (
-                            <BookmarksButton notification={notification} />
-                        ) : (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <div className="w-10 h-10 flex items-center justify-center border rounded-md">
-                                            <Bookmark className="h-5 w-5 text-primary/50" />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="text-center text-base">
-                                            Please log in to view your bookmarks
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
+                        <BookmarksButton notification={notification} />
 
                         {/* Theme Handler */}
                         <ThemeSetting />

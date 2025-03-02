@@ -57,14 +57,13 @@ export function FooterBookmarkButton({
 
     async function bookmarkManga() {
         setIsLoading(true);
-        const storyData = chapterData.storyData;
         const response = await fetch("/api/bookmarks/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                story_data: storyData,
+                id: chapterData.mangaId,
             }),
         });
 
@@ -85,8 +84,8 @@ export function FooterBookmarkButton({
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                story_data: storyData,
-                chapter_data: chapterData.chapterData,
+                manga_id: chapterData.mangaId,
+                chapter_id: chapterData.chapterId,
             }),
         });
         const updateData = await updateResponse.json();

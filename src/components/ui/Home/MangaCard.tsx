@@ -25,7 +25,7 @@ export function MangaCard({
             >
                 <CardContent className="p-0">
                     <Image
-                        src={manga.image}
+                        src={`/api/image-proxy?imageUrl=${manga.image}`}
                         alt={manga.title}
                         width={250}
                         height={350}

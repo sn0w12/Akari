@@ -73,9 +73,7 @@ export async function checkIfBookmarked(
         `/api/bookmarks/isbookmarked?ids=${idsArray.join(",")}`,
     );
     const data = await response.json();
-
-    // If single ID was passed, return just the boolean
-    return Array.isArray(mangaIds) ? data.bookmarks : data.bookmarks[mangaIds];
+    return data.isBookmarked;
 }
 
 export async function getAllBookmarks(batchSize: number = 10) {

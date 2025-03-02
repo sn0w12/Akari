@@ -39,7 +39,7 @@ export async function GET(req: Request): Promise<Response> {
 
         time("Process Manga List");
         // Construct the URL with the page number
-        const url = `https://manganato.com/genre-all/${page}?type=topview`;
+        const url = `https://www.nelomanga.com/manga-list/hot-manga?page=${page}`;
         const result = await processMangaList(url, page);
         timeEnd("Process Manga List");
 

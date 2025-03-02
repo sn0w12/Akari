@@ -174,11 +174,10 @@ export default function PageReader({
             return;
 
         if (clickX > middleZoneEnd) {
-            nextPage(); // Click on the right side
+            nextPage();
         } else if (clickX < middleZoneStart) {
-            prevPage(); // Click on the left side
+            prevPage();
         }
-        // Clicks in the middle zone (between 40% and 60%) do nothing
     };
 
     return (

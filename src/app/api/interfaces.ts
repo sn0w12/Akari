@@ -5,7 +5,6 @@ export interface Manga {
     imageUrl: string;
     name: string;
     authors: string[];
-    author_urls: string[];
     status: string;
     updated: string;
     view: string;
@@ -29,7 +28,6 @@ export interface MangaDetails {
     name: string;
     alternativeNames: string[];
     authors: string[];
-    author_urls: string[];
     status: string;
     updated: string;
     view: string;
@@ -131,8 +129,9 @@ export interface Chapter {
     nextChapter: string;
     lastChapter: string;
     images: string[];
-    storyData: string | null;
-    chapterData: string | null;
+    mangaId: string | null;
+    chapterId: string | null;
+    token: string;
 }
 
 export interface SimpleError {
@@ -174,6 +173,16 @@ export interface NewChapter {
     updatedAt: string;
 }
 
+export interface NeloMangaSearchResult {
+    id: number;
+    author: string;
+    name: string;
+    chapterLatest: string;
+    url: string;
+    thumb: string;
+    slug: string;
+}
+
 export interface ReadingHistoryEntry {
     id: string;
     userId: string;
@@ -183,9 +192,4 @@ export interface ReadingHistoryEntry {
     chapterId: string;
     chapterTitle: string;
     readAt: Date;
-}
-
-export interface BookmarkUpdateRequest extends ReadingHistoryEntry {
-    storyData: string;
-    chapterData: string;
 }
