@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import { Bookmark } from "../../interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
 import { cookies } from "next/headers";
+import { getMangaArrayFromSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export async function GET(request: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(request.url);
         const page = searchParams.get("page") || "1";
+        const images = searchParams.get("images") === "true";
         const url = `https://${process.env.NEXT_MANGA_URL}/bookmark?page=${page}`;
         const cookieStore = await cookies();
 
@@ -112,6 +114,27 @@ export async function GET(request: Request): Promise<Response> {
 
             bookmarks.push(bookmark);
         });
+
+        if (images) {
+            // Extract identifiers from story links
+            const identifiers = bookmarks.map(
+                (bookmark) => bookmark.link_story.split("/").pop() || "",
+            );
+
+            // Get high quality images from Supabase
+            const supabaseImages = await getMangaArrayFromSupabase(identifiers);
+
+            // Update bookmark images if found
+            bookmarks.forEach((bookmark) => {
+                const identifier = bookmark.link_story.split("/").pop() || "";
+                const supabaseImage = supabaseImages.find(
+                    (img) => img.identifier === identifier,
+                );
+                if (supabaseImage?.imageUrl) {
+                    bookmark.image = supabaseImage.imageUrl;
+                }
+            });
+        }
 
         const response = new Response(
             JSON.stringify({ bookmarks, totalPages }),
