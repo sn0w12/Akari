@@ -44,29 +44,25 @@ export async function processMangaList(url: string, page: string) {
     const mangaList: SmallManga[] = [];
     const popular: SmallManga[] = [];
 
-    // Loop through each .content-genres-item div and extract the relevant information
-    $(".content-genres-item").each((index: number, element) => {
+    // Loop through each .list-truyen-item-wrap div and extract the relevant information
+    $(".list-truyen-item-wrap").each((index: number, element) => {
         const mangaElement = $(element);
-        const imageUrl = mangaElement.find("img.img-loading").attr("src");
-        const titleElement = mangaElement.find("h3 a.genres-item-name");
+        const imageUrl = mangaElement.find("img.lazy").attr("src");
+        const titleElement = mangaElement.find("h3 a");
         const title = titleElement.text();
         const mangaUrl = titleElement.attr("href");
-        const chapterElement = mangaElement.find("a.genres-item-chap");
+        const chapterElement = mangaElement.find(
+            "a.list-story-item-wrap-chapter",
+        );
         const latestChapter =
             chapterElement
                 .text()
-                .replace("-", ".")
+                .trim()
                 .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
                 .replace("Chapter ", "") || "";
         const chapterUrl = chapterElement.attr("href");
-        const description = mangaElement
-            .find(".genres-item-description")
-            .text()
-            .trim();
-        const rating = mangaElement.find("em.genres-item-rate").text();
-        const views = mangaElement.find(".genres-item-view").text();
-        const date = mangaElement.find(".genres-item-time").text();
-        const author = mangaElement.find(".genres-item-author").text();
+        const description = mangaElement.find("p").text().trim();
+        const views = mangaElement.find(".aye_icon").text();
 
         mangaList.push({
             id: mangaUrl?.split("/").pop() || "",
@@ -75,16 +71,46 @@ export async function processMangaList(url: string, page: string) {
             chapter: latestChapter,
             chapterUrl: chapterUrl || "",
             description: description,
-            rating: rating,
+            rating: "", // Site doesn't seem to have ratings
             views: views,
-            date: date,
-            author: author,
+            date: "", // Site doesn't show dates
+            author: "", // Author info needs to be extracted from description if needed
         });
     });
     timeEnd("Parse HTML");
 
+    $(".owl-carousel .item").each((index: number, element) => {
+        const mangaElement = $(element);
+        const imageUrl = mangaElement.find("img").attr("src");
+        const titleElement = mangaElement.find("h3 a");
+        const title = titleElement.text().trim();
+        const mangaUrl = titleElement.attr("href");
+        const chapterElement = mangaElement.find(".slide-caption > a").last();
+        const latestChapter =
+            chapterElement
+                .text()
+                .trim()
+                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
+                .replace("Chapter ", "") || "";
+        const chapterUrl = chapterElement.attr("href");
+
+        popular.push({
+            id: mangaUrl?.split("/").pop() || "",
+            image: imageUrl || "",
+            title: title,
+            chapter: latestChapter,
+            chapterUrl: chapterUrl || "",
+            description: "", // Popular section doesn't show descriptions
+            rating: "",
+            views: "",
+            date: "",
+            author: "",
+        });
+    });
+    timeEnd("Parse Popular");
+
     const totalStories: number = mangaList.length;
-    const lastPageElement = $("a.page-last");
+    const lastPageElement = $("a.page_blue.page_last");
     const totalPages: number = lastPageElement.length
         ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
         : 1;
@@ -96,85 +122,10 @@ export async function processMangaList(url: string, page: string) {
         });
     }
 
-    time("Parse Popular");
-    $(".item").each((index: number, element) => {
-        const mangaElement = $(element);
-        const imageUrl = mangaElement.find("img.img-loading").attr("src");
-        const titleElement = mangaElement.find("h3 a.text-nowrap");
-        const title = titleElement.text();
-        const mangaUrl = titleElement.attr("href");
-        const chapterElement = mangaElement.find("a.text-nowrap");
-        const latestChapter =
-            chapterElement
-                .text()
-                .replace(title, "")
-                .replace("-", ".")
-                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                .replace("Chapter ", "") || "";
-        const chapterUrl = chapterElement.attr("href");
-
-        popular.push({
-            id: mangaUrl?.split("/").pop() || "",
-            image: imageUrl || "",
-            title: title,
-            description: "",
-            chapter: latestChapter,
-            chapterUrl: chapterUrl || "",
-            date: "",
-            rating: "",
-            views: "",
-            author: "",
-        });
-    });
-    timeEnd("Parse Popular");
-
-    time("Replace Images");
-    await Promise.all([replaceImages(mangaList), replaceImages(popular)]);
-    timeEnd("Replace Images");
-
     const result = {
         mangaList,
         popular,
         metaData: { totalStories, totalPages },
     };
     return result;
-}
-
-export async function getBookmarked(mangaList: SmallManga[]) {
-    const promises = mangaList.map(async (manga) => {
-        const cachedManga = await db.getCache(db.mangaCache, manga.id);
-        if (!cachedManga) {
-            return null;
-        }
-        return { id: cachedManga.id, identifier: manga.id };
-    });
-
-    const mangaIds = (await Promise.all(promises)).filter((id) => id !== null);
-    if (mangaIds.length === 0) {
-        return [];
-    }
-
-    // Create id->identifier mapping
-    const idMap = new Map(mangaIds.map((item) => [item.id, item.identifier]));
-
-    const bookmarkedIds = await checkIfBookmarked(
-        mangaIds.map((item) => item.id),
-    );
-
-    // Transform using identifiers as keys
-    const transformedBookmarks = Object.entries(bookmarkedIds).reduce<
-        Record<string, boolean>
-    >((acc, [id, value]) => {
-        const identifier = idMap.get(id);
-        if (identifier) {
-            acc[identifier] = value;
-        }
-        return acc;
-    }, {});
-
-    const bookmarkedManga = Object.entries(transformedBookmarks)
-        .filter(([_, value]) => value)
-        .map(([identifier]) => identifier);
-
-    return bookmarkedManga;
 }

@@ -1,8 +1,35 @@
 import { generateCodeVerifier, generateCodeChallenge } from "@/lib/pkce";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
-import { SecondaryAccount } from "@/components/ui/Header/AccountDialog";
-import { SECONDARY_ACCOUNTS } from "@/components/ui/Header/AccountDialog";
+
+export interface SecondaryAccount {
+    id: string;
+    name: string;
+    displayName: string;
+    user: any | null;
+    authUrl?: string;
+    buttonColor: string;
+    hoverColor: string;
+    storageKey: string;
+    sessionKey: string;
+    apiEndpoint: string;
+    validateEndpoint: string;
+}
+
+export const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
+    {
+        id: "mal",
+        name: "MyAnimeList",
+        displayName: "MAL",
+        user: null,
+        buttonColor: "bg-blue-600",
+        hoverColor: "hover:bg-blue-500",
+        storageKey: "mal_user",
+        sessionKey: "mal",
+        apiEndpoint: "/api/logout/mal",
+        validateEndpoint: "/api/mal/isLoggedIn",
+    },
+];
 
 export function generateMalAuth(account: SecondaryAccount) {
     const codeVerifier = generateCodeVerifier();

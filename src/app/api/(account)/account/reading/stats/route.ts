@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies, headers } from "next/headers";
-import { getUserReadingStats, userDataToUserId } from "@/lib/supabase";
-import { getUserData } from "@/lib/mangaNato";
+import { cookies } from "next/headers";
+import { getUserReadingStats } from "@/lib/supabase";
 import { generateClientCacheHeaders } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
     const cookieStore = await cookies();
-    const user_data = getUserData(cookieStore);
-    const userId = userDataToUserId(user_data);
+    const userId = cookieStore.get("user_id")?.value;
 
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

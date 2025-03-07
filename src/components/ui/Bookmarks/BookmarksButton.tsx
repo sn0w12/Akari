@@ -90,17 +90,13 @@ export default function BookmarksButton({
     return (
         <ContextMenu onOpenChange={(open) => open && loadBookmarks()}>
             <ContextMenuTrigger id="bookmarks-context-trigger">
-                <HoverLink
-                    href="/bookmarks"
-                    className={!notification ? "pointer-events-none" : ""}
-                >
+                <HoverLink href="/bookmarks">
                     <div className="relative group">
                         <Button
                             id="bookmarks-button"
                             variant="ghost"
                             size="icon"
                             className="group-hover:bg-accent border"
-                            disabled={!notification}
                         >
                             <BookmarkIcon className="h-5 w-5" />
                         </Button>

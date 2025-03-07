@@ -11,8 +11,8 @@ import {
     timeEnd,
     performanceMetrics,
     clearPerformanceMetrics,
+    cleanText,
 } from "@/lib/utils";
-import { env } from "process";
 import { CookieJar } from "tough-cookie";
 import { wrapper } from "axios-cookiejar-support";
 
@@ -25,7 +25,6 @@ export async function GET(
     const params = await props.params;
     const { id, subId } = params;
     const cookieStore = await cookies();
-    const userAcc = env.NEXT_MANGANATO_ACCOUNT || null;
     const server = cookieStore.get(`manga_server`)?.value || "1";
     let serviceUrl = "https://ddos-guard.net";
 
@@ -47,10 +46,10 @@ export async function GET(
 
         // Fetch the HTML content of the page
         const response = await wrappedInstance.get(
-            `https://chapmanganato.to/${id}/${subId}`,
+            `https://nelomanga.com/manga/${id}/${subId}`,
             {
                 headers: {
-                    cookie: `user_acc=${userAcc}; content_server=server${server}`,
+                    cookie: `content_server=server${server}`,
                     "User-Agent":
                         req.headers.get("user-agent") || "Mozilla/5.0",
                     "Accept-Language":
@@ -69,7 +68,7 @@ export async function GET(
 
         time("Extract Data");
         // Extract the title and chapter name from the panel-breadcrumb
-        const breadcrumbLinks = $(".panel-breadcrumb a");
+        const breadcrumbLinks = $(".breadcrumb a");
         const mangaTitle = $(breadcrumbLinks[1]).text();
         const parent =
             $(breadcrumbLinks[1]).attr("href")?.split("/").pop() || "";
@@ -80,7 +79,15 @@ export async function GET(
             const chapterValue = $(element).attr("data-c");
             const chapterText = $(element).text();
             if (chapterValue) {
-                chapters.push({ value: chapterValue, label: chapterText });
+                chapters.push({
+                    value:
+                        chapterValue
+                            .split("/")
+                            .pop()
+                            ?.replace("chapter-", "")
+                            ?.replace("-", ".") || "",
+                    label: cleanText(chapterText),
+                });
             }
         });
 
@@ -94,57 +101,60 @@ export async function GET(
 
         const pages = images.length;
 
-        const nextChapterLink = $(".navi-change-chapter-btn-next").attr("href");
+        const nextChapterLink = $(".back").attr("href");
         const nextChapter = nextChapterLink
             ? `${id}/${nextChapterLink.split("/").pop()}`
             : id;
-        const lastChapterLink = $(".navi-change-chapter-btn-prev").attr("href");
+        const lastChapterLink = $(".next").attr("href");
         const lastChapter = lastChapterLink
             ? `${id}/${lastChapterLink.split("/").pop()}`
             : id;
 
-        const scriptTags = $(".body-site script");
+        const imageContainer = $(".container-chapter-reader");
+        const token = imageContainer.find('input[name="_token"]').attr("value");
 
-        let glbStoryData: string | null = null;
-        let glbChapterData: string | null = null;
+        const scriptTags = $("script");
+
+        let mangaId: string | null = null;
+        let chapterId: string | null = null;
 
         // Loop through script tags to find the one containing glb_story_data
         scriptTags.each((i, elem) => {
             const scriptContent = $(elem).html();
 
-            if (scriptContent && scriptContent.includes("glb_story_data")) {
+            if (scriptContent) {
                 // Extract glb_story_data and glb_chapter_data using regex
-                const storyDataMatch = scriptContent.match(
-                    /glb_story_data\s*=\s*'([^']+)'/,
-                );
-                const chapterDataMatch = scriptContent.match(
-                    /glb_chapter_data\s*=\s*'([^']+)'/,
-                );
+                if (scriptContent.includes("window.chapter_data")) {
+                    const comicIdMatch = scriptContent.match(
+                        /"comic_id":\s*"(\d+)"/,
+                    );
+                    const chapterIdMatch = scriptContent.match(
+                        /"chapter_id":\s*"(\d+)"/,
+                    );
 
-                if (storyDataMatch && storyDataMatch[1]) {
-                    glbStoryData = storyDataMatch[1];
-                }
-                if (chapterDataMatch && chapterDataMatch[1]) {
-                    glbChapterData = chapterDataMatch[1];
+                    if (comicIdMatch && comicIdMatch[1]) {
+                        mangaId = comicIdMatch[1];
+                    }
+                    if (chapterIdMatch && chapterIdMatch[1]) {
+                        chapterId = chapterIdMatch[1];
+                    }
                 }
             }
         });
 
-        const responseData: Chapter & {
-            performance?: typeof performanceMetrics;
-        } = {
+        const responseData: Chapter = {
             id: subId,
-            title: mangaTitle,
-            chapter: chapterTitle,
+            title: cleanText(mangaTitle),
+            chapter: cleanText(chapterTitle),
             chapters: chapters,
             pages: pages,
             parentId: parent,
             nextChapter: nextChapter,
             lastChapter: lastChapter,
             images: images,
-            storyData: glbStoryData,
-            chapterData: glbChapterData,
-            performance: performanceMetrics,
+            mangaId: mangaId,
+            chapterId: chapterId,
+            token: token || "",
         };
         timeEnd("Extract Data");
         timeEnd("Total API Request");

@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import NodeCache from "node-cache";
-import { replaceImages } from "@/lib/mangaNato";
 import { SmallManga } from "../../../interfaces";
 import { generateCacheHeaders } from "@/lib/cache";
 import {
@@ -12,41 +10,24 @@ import {
     clearPerformanceMetrics,
 } from "@/lib/utils";
 
-const cache = new NodeCache({ stdTTL: 1 * 60 * 60 }); // 1 hour
 export const dynamic = "force-dynamic";
 
 function parseDateString(dateStr: string | undefined): number {
     if (!dateStr) return 0;
 
-    // Handle relative dates (e.g. "2 hours ago")
-    if (dateStr.includes("ago")) {
-        const num = parseInt(dateStr);
-        if (dateStr.includes("hour")) {
-            return Date.now() - num * 60 * 60 * 1000;
-        } else if (dateStr.includes("day")) {
-            return Date.now() - num * 24 * 60 * 60 * 1000;
-        }
-    }
+    // Handle "Feb-23-2025 06:18" format
+    const [datePart, timePart] = dateStr.split(" ");
+    const [month, day, year] = datePart.split("-");
+    const [hours, minutes] = timePart.split(":");
 
-    // Handle "Updated : Nov 08,2024 - 18:51" format
-    if (dateStr.includes("Updated")) {
-        const [, cleanDate, minutes] = dateStr.split(":"); // "Nov 08,2024 - 18:51"
-        const [datePart, timePart] = cleanDate.split("-").map((s) => s.trim());
-        const [month, day, year] = datePart.split(/[\s,]+/);
-        const [hours] = timePart.split(":");
-
-        const date = new Date(
-            parseInt(year),
-            getMonthNumber(month),
-            parseInt(day),
-            parseInt(hours),
-            parseInt(minutes),
-        );
-        return date.getTime();
-    }
-
-    // Fallback to regular date parsing
-    return Date.parse(dateStr);
+    const date = new Date(
+        parseInt(year),
+        getMonthNumber(month),
+        parseInt(day),
+        parseInt(hours),
+        parseInt(minutes),
+    );
+    return date.getTime();
 }
 
 function getMonthNumber(month: string): number {
@@ -79,25 +60,6 @@ export async function GET(
         const authorId = params.id;
         const orderBy = searchParams.get("orderBy") || "latest";
         const page = searchParams.get("page") || "1";
-        const cacheKey = `author_${authorId}_${orderBy}_${page}`;
-
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            timeEnd("Total API Request");
-            return new Response(
-                JSON.stringify({
-                    ...cachedData,
-                    performance: performanceMetrics,
-                }),
-                {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "application/json",
-                        ...generateCacheHeaders(600, 604800),
-                    },
-                },
-            );
-        }
 
         if (!authorId) {
             timeEnd("Total API Request");
@@ -112,7 +74,7 @@ export async function GET(
         }
 
         // Construct the search URL
-        const searchUrl = `https://manganato.com/author/story/${authorId}?page=${page}&orby=${orderBy}`;
+        const searchUrl = `https://nelomanga.com/author/${authorId}?page=${page}&orby=${orderBy}`;
 
         time("Fetch HTML");
         // Fetch the data from Manganato
@@ -125,39 +87,44 @@ export async function GET(
         const $ = cheerio.load(data);
         const mangaList: SmallManga[] = [];
 
-        // Loop through each .content-genres-item div and extract the relevant information
-        $(".search-story-item").each((index, element) => {
+        // Loop through each .story_item div and extract the relevant information
+        $(".story_item").each((index, element) => {
             const mangaElement = $(element);
-            const imageUrl = mangaElement.find("img.img-loading").attr("src");
-            const titleElement = mangaElement.find("h3 a.item-title");
-            const title = titleElement.text();
+            const imageUrl = mangaElement.find("img").attr("src");
+            const titleElement = mangaElement.find("h3.story_name a");
+            const title = titleElement.text().trim();
             const mangaUrl = titleElement.attr("href");
-            const chapterElement = mangaElement.find("a.item-chapter").first();
-            const latestChapter = chapterElement.text();
+            const chapterElement = mangaElement
+                .find("em.story_chapter a")
+                .first();
+            const latestChapter = chapterElement.text().trim();
             const chapterUrl = chapterElement.attr("href");
-            const rating = mangaElement.find("em.item-rate").text();
-            const author = mangaElement.find(".item-author").text();
 
-            let views: string | undefined;
-            let date: string | undefined;
+            let author = "";
+            let date = "";
+            let views = "";
 
-            mangaElement.find(".item-time").each((i, timeElement) => {
-                if (i === 0) date = $(timeElement).text();
-                if (i === 1) views = $(timeElement).text();
+            mangaElement.find(".story_item_right span").each((i, span) => {
+                const text = $(span).text().trim();
+                if (text.startsWith("Author")) {
+                    author = text.replace("Author(s) : ", "");
+                } else if (text.startsWith("Updated")) {
+                    date = text.replace("Updated : ", "");
+                } else if (text.startsWith("View")) {
+                    views = text.replace("View : ", "");
+                }
             });
 
-            if (!date || !views) return;
-
             mangaList.push({
-                id: mangaUrl?.split("/").pop() || "",
+                id: mangaUrl?.split("/manga/").pop() || "",
                 image: imageUrl || "",
                 title: title,
                 chapter: latestChapter,
                 chapterUrl: chapterUrl || "",
-                rating: rating,
+                rating: "N/A", // Rating is not present in the new HTML
                 author: author,
                 date: parseDateString(date),
-                views: views.replace("View : ", ""),
+                views: views,
                 description: "",
             });
         });
@@ -189,23 +156,18 @@ export async function GET(
             );
         }
 
-        time("Replace Images");
-        await replaceImages(mangaList);
-        timeEnd("Replace Images");
-
         const result = {
             mangaList,
             metaData: { totalStories, totalPages },
             performance: performanceMetrics,
         };
-        cache.set(cacheKey, result);
         timeEnd("Total API Request");
 
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: {
                 "Content-Type": "application/json",
-                ...generateCacheHeaders(600),
+                ...generateCacheHeaders(600, 604800),
             },
         });
     } catch (error) {

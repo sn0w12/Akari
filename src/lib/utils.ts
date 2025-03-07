@@ -81,6 +81,10 @@ export function timeEnd(label: string) {
     }
 }
 
+export function cleanText(text: string): string {
+    return text.trim().replace(/\s+/g, " ");
+}
+
 export function clearPerformanceMetrics() {
     Object.keys(performanceMetrics).forEach((key) => {
         delete performanceMetrics[key];

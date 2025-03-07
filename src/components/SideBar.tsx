@@ -41,7 +41,6 @@ import {
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import SettingsDialog from "@/components/ui/Header/SettingsDialog";
-import LoginDialog from "@/components/ui/Header/AccountDialog";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 import { getSettings, getSetting, useSetting } from "@/lib/settings";
@@ -54,17 +53,32 @@ function SideBarLink({
     text,
     icon: Icon,
     onClose,
+    disabled = false,
 }: {
     href: string;
     text: string;
     icon: React.ElementType;
     onClose: () => void;
+    disabled?: boolean;
 }) {
+    const baseClassName =
+        "flex items-center gap-3 px-4 py-2 border rounded-md transition-colors";
+    const enabledClassName = "hover:bg-accent cursor-pointer";
+    const disabledClassName =
+        "opacity-50 cursor-not-allowed pointer-events-none";
+
     return (
         <Link
-            href={href}
-            className="flex items-center gap-3 px-4 py-2 border rounded-md hover:bg-accent transition-colors"
-            onClick={onClose}
+            href={disabled ? "#" : href}
+            className={`${baseClassName} ${disabled ? disabledClassName : enabledClassName}`}
+            onClick={(e) => {
+                if (disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                onClose();
+            }}
+            aria-disabled={disabled}
         >
             <Icon className="h-5 w-5" />
             <span className="text-base font-medium">{text}</span>
@@ -90,7 +104,6 @@ export function SideBar() {
         navigateBookmarks: null,
     });
     const preferSettingsPage = useSetting("preferSettingsPage");
-    const preferAccountPage = useSetting("preferAccountPage");
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
@@ -114,15 +127,7 @@ export function SideBar() {
     }, []);
 
     const handleAccountClick = () => {
-        if (preferAccountPage) {
-            router.push("/account");
-            return;
-        }
-
-        setTimeout(() => {
-            openSidebar();
-            openAccount();
-        }, 100);
+        router.push("/account");
     };
 
     const handleSettingsClick = () => {
@@ -221,7 +226,10 @@ export function SideBar() {
                         </HoverLink>
                     </ContextMenuItem>
                     <ContextMenuItem asChild>
-                        <HoverLink href="/search" className="flex items-center">
+                        <HoverLink
+                            href="/search"
+                            className="flex items-center opacity-50 cursor-not-allowed pointer-events-none"
+                        >
                             <Search className="mr-2 h-4 w-4" />
                             <span>Search</span>
                         </HoverLink>
@@ -323,6 +331,7 @@ export function SideBar() {
                                         text="Advanced Search"
                                         icon={Search}
                                         onClose={handleClose}
+                                        disabled={true}
                                     />
                                     <SideBarLink
                                         href="/popular"
@@ -393,20 +402,16 @@ export function SideBar() {
                             ) : (
                                 <SettingsDialog />
                             )}
-                            {preferAccountPage ? (
-                                <Link
-                                    href="/account"
-                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
-                                    onClick={closeSidebar}
-                                >
-                                    <User className="h-5 w-5" />
-                                    <span className="text-base font-medium">
-                                        Account
-                                    </span>
-                                </Link>
-                            ) : (
-                                <LoginDialog />
-                            )}
+                            <Link
+                                href="/account"
+                                className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                onClick={closeSidebar}
+                            >
+                                <User className="h-5 w-5" />
+                                <span className="text-base font-medium">
+                                    Account
+                                </span>
+                            </Link>
                         </div>
                     </div>
                 </SheetContent>

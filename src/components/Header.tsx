@@ -1,18 +1,10 @@
 "use client";
 
 import HoverLink from "./ui/hoverLink";
-import { Button } from "@/components/ui/button";
-import { Bookmark } from "lucide-react";
 import Icon from "./ui/Header/Icon";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
 import { TrackLogin } from "./ui/Header/TrackLogin";
@@ -45,6 +37,10 @@ export function HeaderComponent() {
                     setNotification("");
                     localStorage.removeItem("notification");
                     localStorage.removeItem("notificationTimestamp");
+                    if (res.status === 401) {
+                        localStorage.removeItem("auth");
+                        localStorage.removeItem("accountName");
+                    }
                     return;
                 }
 
@@ -54,7 +50,7 @@ export function HeaderComponent() {
                 localStorage.setItem("notification", data);
                 localStorage.setItem("notificationTimestamp", now.toString());
             } catch (error) {
-                console.error("Error fetching search results:", error);
+                console.error("Error fetching notification:", error);
             }
         },
         [],
@@ -80,24 +76,7 @@ export function HeaderComponent() {
                     <SearchBar />
                     <div className="flex gap-4">
                         <SearchButton />
-                        {notification ? (
-                            <BookmarksButton notification={notification} />
-                        ) : (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <div className="w-10 h-10 flex items-center justify-center border rounded-md">
-                                            <Bookmark className="h-5 w-5 text-primary/50" />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="text-center text-base">
-                                            Please log in to view your bookmarks
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
+                        <BookmarksButton notification={notification} />
 
                         {/* Theme Handler */}
                         <ThemeSetting />

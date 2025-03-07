@@ -11,10 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { generateMalAuth, isAccountValid } from "@/lib/secondaryAccounts";
 import Link from "next/link";
 import ConfirmDialog from "@/components/ui/confirmDialog";
-import {
-    SecondaryAccount,
-    SECONDARY_ACCOUNTS,
-} from "@/components/ui/Header/AccountDialog";
+import { SecondaryAccount, SECONDARY_ACCOUNTS } from "@/lib/secondaryAccounts";
 import {
     Card,
     CardContent,
@@ -25,6 +22,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReadingHistory from "@/components/ui/Account/ReadingHistory";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+    fetchCaptcha,
+    submitLogin,
+    logout,
+    logoutSecondaryAccount,
+} from "@/lib/auth";
 
 export default function AccountClient() {
     const searchParams = useSearchParams();
@@ -37,7 +40,8 @@ export default function AccountClient() {
     const [password, setPassword] = useState("");
     const [captcha, setCaptcha] = useState("");
     const [captchaUrl, setCaptchaUrl] = useState("");
-    const [ciSessionCookie, setCiSessionCookie] = useState("");
+    const [token, setToken] = useState("");
+    const [sessionCookies, setSessionCookies] = useState([""]);
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const tabParam = searchParams.get("tab");
@@ -89,51 +93,42 @@ export default function AccountClient() {
 
         // If not logged in, fetch captcha for login form
         if (!accountName) {
-            fetchCaptcha();
+            handleFetchCaptcha();
         }
     }, []);
 
     const handleLogout = async () => {
-        localStorage.removeItem("accountName");
+        await logout(secondaryAccounts);
         setUsername("");
         setSavedUsername("");
-
-        secondaryAccounts.forEach((account) => {
-            localStorage.removeItem(account.storageKey);
-            sessionStorage.removeItem(account.sessionKey);
-        });
-
-        // Clear Caches
-        db.clearCache(db.bookmarkCache);
-        db.clearCache(db.mangaCache);
-        db.clearCache(db.hqMangaCache);
-
-        await fetch("/api/logout");
         window.location.reload();
     };
 
     const handleSecondaryLogout = async (account: SecondaryAccount) => {
-        localStorage.removeItem(account.storageKey);
-        sessionStorage.removeItem(account.sessionKey);
+        await logoutSecondaryAccount(account);
         setSecondaryAccounts((accounts) =>
             accounts.map((acc) =>
                 acc.id === account.id ? { ...acc, user: null } : acc,
             ),
         );
-        await fetch(account.apiEndpoint);
         window.location.reload();
     };
 
-    const fetchCaptcha = async () => {
-        if (captchaUrl && ciSessionCookie) return;
+    const handleFetchCaptcha = async () => {
+        if (captchaUrl && sessionCookies.length > 0) {
+            return;
+        }
 
         try {
-            const response = await fetch("/api/login/captcha");
-            const data = await response.json();
-            setCaptchaUrl(data.captchaUrl);
-            setCiSessionCookie(data.ciSessionCookie[0]);
+            const {
+                captchaUrl: url,
+                sessionCookies: cookies,
+                token: newToken,
+            } = await fetchCaptcha();
+            setCaptchaUrl(url);
+            setSessionCookies(cookies);
+            setToken(newToken);
         } catch (error) {
-            console.error("Failed to fetch CAPTCHA:", error);
             setLoginError("Failed to fetch CAPTCHA.");
         }
     };
@@ -143,31 +138,20 @@ export default function AccountClient() {
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/login/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    cookie: ciSessionCookie,
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                    captcha,
-                    ciSessionCookie,
-                }),
-            });
-
-            const data = await response.json();
-            if (data.userAccCookie) {
-                const parsedData = JSON.parse(data.userAccCookie);
-                localStorage.setItem("accountName", parsedData.user_name);
-                setSavedUsername(parsedData.user_name);
+            const response = await submitLogin(
+                username,
+                password,
+                captcha,
+                token,
+                sessionCookies,
+            );
+            if (response.success && response.data) {
+                setSavedUsername(response.data.username);
                 window.location.reload();
             } else {
-                setLoginError(data.error || "Login failed");
+                setLoginError(response.error || "Login failed");
             }
         } catch (error) {
-            console.error("Failed to submit login:", error);
             setLoginError("An error occurred during login.");
         }
 
@@ -333,22 +317,6 @@ export default function AccountClient() {
     // Login form (not logged in)
     return (
         <div className="container mx-auto px-4 py-8 max-w-md">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold flex items-center gap-3">
-                    <User className="h-8 w-8" />
-                    Account Login
-                </h1>
-                <Link href="/">
-                    <Button
-                        variant="outline"
-                        className="flex items-center gap-2"
-                    >
-                        <ArrowLeftCircle className="h-4 w-4" />
-                        Back
-                    </Button>
-                </Link>
-            </div>
-
             {isLoading ? (
                 <div className="min-h-[400px] flex items-center justify-center">
                     <CenteredSpinner />
@@ -416,7 +384,7 @@ export default function AccountClient() {
                                     ) : (
                                         <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
                                             <Image
-                                                src={`/api/image-proxy?imageUrl=${captchaUrl}`}
+                                                src={captchaUrl}
                                                 loading="eager"
                                                 alt="CAPTCHA"
                                                 className="object-contain"
