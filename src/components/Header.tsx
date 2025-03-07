@@ -1,18 +1,10 @@
 "use client";
 
 import HoverLink from "./ui/hoverLink";
-import { Button } from "@/components/ui/button";
-import { Bookmark } from "lucide-react";
 import Icon from "./ui/Header/Icon";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useMemo, useState } from "react";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
 import { SideBar } from "./SideBar";
 import { TrackLogin } from "./ui/Header/TrackLogin";
