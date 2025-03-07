@@ -30,6 +30,25 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        const checkVoteStatus = async () => {
+            try {
+                const response = await fetch(
+                    `/api/mal/check-vote?mangaId=${mangaId}`,
+                );
+                const data = await response.json();
+
+                if (data.hasVoted) {
+                    setIsVisible(false);
+                    return;
+                }
+
+                // Only search MAL if user hasn't voted
+                searchMal();
+            } catch (error) {
+                console.error("Error checking vote status:", error);
+            }
+        };
+
         const searchMal = async () => {
             if (!mangaTitle) return;
 
@@ -49,7 +68,9 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
             }
         };
 
-        searchMal();
+        if (mangaTitle && mangaId) {
+            checkVoteStatus();
+        }
     }, [mangaTitle]);
 
     async function onSelect(id: number, isPositive: boolean) {
