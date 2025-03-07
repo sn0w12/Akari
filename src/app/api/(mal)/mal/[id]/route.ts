@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { generateCacheHeaders } from "@/lib/cache";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAdmin =
@@ -45,10 +46,17 @@ export async function GET(
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            data: mangaData,
-        });
+        return NextResponse.json(
+            {
+                success: true,
+                data: mangaData,
+            },
+            {
+                headers: {
+                    ...generateCacheHeaders(36000, 604800, 2592000),
+                },
+            },
+        );
     } catch (error) {
         console.error("Error fetching manga data:", error);
         return NextResponse.json(
