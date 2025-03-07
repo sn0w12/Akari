@@ -205,18 +205,18 @@ export async function getUserReadingHistory(
         // Get unique manga IDs to fetch high-quality images
         const mangaIds = [...new Set(data.map((entry) => entry.manga_id))];
 
-        // Fetch high-quality images from mal_data
+        // Fetch high-quality images from manga_mal_data
         const { data: malData, error: malError } = await supabaseAdmin
-            .from("mal_data")
-            .select("identifier, image_url")
-            .in("identifier", mangaIds);
+            .from("manga_mal_data")
+            .select("id, image")
+            .in("id", mangaIds);
 
         // Create a map of manga_id to high-quality image URL
         const highQualityImages: Record<string, string> = {};
         if (malData && !malError) {
             malData.forEach((item) => {
-                if (item.image_url) {
-                    highQualityImages[item.identifier] = item.image_url;
+                if (item.image) {
+                    highQualityImages[item.id] = item.image;
                 }
             });
         }
