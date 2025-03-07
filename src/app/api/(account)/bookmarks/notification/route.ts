@@ -38,12 +38,20 @@ export async function GET() {
         }
 
         const unreadBookmarks = data.data;
-        return NextResponse.json(unreadBookmarks, {
+        const setCookieHeaders = response.headers.getSetCookie();
+        const res = NextResponse.json(unreadBookmarks, {
             headers: {
                 "Content-Type": "application/json",
                 ...generateClientCacheHeaders(120),
             },
         });
+
+        // Append each Set-Cookie header individually
+        setCookieHeaders.forEach((cookie) => {
+            res.headers.append("Set-Cookie", cookie);
+        });
+
+        return res;
     } catch (error) {
         console.error(error);
         return NextResponse.json(
