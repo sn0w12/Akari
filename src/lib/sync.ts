@@ -80,15 +80,19 @@ export async function syncAllServices(data: Chapter) {
 
 async function updateBookmark(data: Chapter) {
     const fallbackId = window.location.href.split("/").pop()?.split("?")[0];
+    const auth = JSON.parse(localStorage.getItem("auth") || "{}");
+
     const chapterDataBody: ReadingHistoryEntry = {
-        chapterId: data.id || fallbackId || "",
+        chapterId: data.chapterId || "",
+        chapterIdentifier: data.id || fallbackId || "",
         chapterTitle: data.chapter,
-        mangaId: data.parentId,
+        mangaId: data.mangaId || "",
+        mangaIdentifier: data.parentId,
         mangaTitle: data.title,
         image: data.images[0],
         readAt: new Date(),
         id: "",
-        userId: "",
+        userId: auth.id,
     };
 
     const response = await fetch("/api/bookmarks/update", {
@@ -96,7 +100,9 @@ async function updateBookmark(data: Chapter) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ chapter: chapterDataBody }),
+        body: JSON.stringify({
+            chapter: chapterDataBody,
+        }),
     });
 
     if (!response.ok) {

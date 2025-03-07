@@ -11,7 +11,7 @@ export async function GET(request: Request): Promise<Response> {
     try {
         const { searchParams } = new URL(request.url);
         const page = searchParams.get("page") || "1";
-        const url = `https://www.nelomanga.com/bookmark?page=${page}`;
+        const url = `https://${process.env.NEXT_MANGA_URL}/bookmark?page=${page}`;
         const cookieStore = await cookies();
 
         const { data } = await axios.get(url, {
@@ -20,9 +20,9 @@ export async function GET(request: Request): Promise<Response> {
                 cookie: cookieStore.toString(),
                 "User-Agent":
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-                referer: `https://www.nelomanga.com/`,
-                host: "www.nelomanga.com",
-                origin: "https://www.nelomanga.com",
+                referer: `https://${process.env.NEXT_MANGA_URL}`,
+                host: process.env.NEXT_MANGA_URL,
+                origin: process.env.NEXT_MANGA_URL,
                 accept: "application/json, text/javascript, */*; q=0.01",
                 "x-requested-with": "XMLHttpRequest",
             },

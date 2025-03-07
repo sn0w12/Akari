@@ -1,18 +1,24 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getUserData } from "@/lib/mangaNato";
 import { saveReadingHistoryEntry, userDataToUserId } from "@/lib/supabase";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
 import { hasConsentFor } from "@/lib/cookies";
-
-const BOOKMARK_UPDATE_URL = "https://user.mngusr.com/bookmark_update";
 
 export async function POST(request: Request): Promise<Response> {
     try {
         const { chapter } = (await request.json()) as {
             chapter: ReadingHistoryEntry;
         };
-        const { chapterId, chapterTitle, mangaId, mangaTitle, image } = chapter;
+        const {
+            chapterId,
+            chapterIdentifier,
+            chapterTitle,
+            mangaId,
+            mangaIdentifier,
+            mangaTitle,
+            image,
+            userId,
+        } = chapter;
 
         const cookieStore = await cookies();
 
@@ -25,10 +31,7 @@ export async function POST(request: Request): Promise<Response> {
             canSaveManga = true;
         }
 
-        const user_data = getUserData(cookieStore);
-        const userId = userDataToUserId(user_data);
-
-        if (!user_data || !userId) {
+        if (!userId) {
             return NextResponse.json(
                 { result: "error", data: "User data is required" },
                 { status: 401 },
@@ -45,35 +48,25 @@ export async function POST(request: Request): Promise<Response> {
             );
         }
 
-        const newToken = await fetch(
-            "https://www.nelomanga.com/user_auth/csrf_token",
-            {
-                method: "GET",
-                headers: {
-                    cookie: cookieStore.toString(),
-                },
-            },
-        );
-        const tokenData = await newToken.json();
         const formData = new URLSearchParams();
-        formData.append("_token", tokenData._token);
         formData.append("comic_id", mangaId);
         formData.append("chapter_id", chapterId);
 
         const response = await fetch(
-            "https://www.nelomanga.com/action/add-history",
+            `https://${process.env.NEXT_MANGA_URL}/action/add-history`,
             {
                 method: "POST",
                 body: formData.toString(),
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8",
                     cookie: cookieStore.toString(),
                     "User-Agent":
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-                    referer: `https://www.nelomanga.com/manga/${mangaId}/${chapterId}`,
-                    host: "www.nelomanga.com",
-                    origin: "https://www.nelomanga.com",
-                    accept: "application/json, text/javascript, */*; q=0.01",
+                    referer: `https://${process.env.NEXT_MANGA_URL}/manga/${mangaId}/${chapterId}`,
+                    host: `${process.env.NEXT_MANGA_URL}`,
+                    origin: `${process.env.NEXT_MANGA_URL}`,
+                    accept: "*/*",
                     "x-requested-with": "XMLHttpRequest",
                 },
             },
@@ -81,10 +74,10 @@ export async function POST(request: Request): Promise<Response> {
 
         /*
         await saveReadingHistoryEntry(userId, canSaveManga, {
-            mangaId,
+            mangaIdentifier,
             mangaTitle,
             image,
-            chapterId,
+            chapterIdentifier,
             chapterTitle,
         }).catch((err) => {
             // Log error but don't fail the request

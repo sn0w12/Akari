@@ -7,14 +7,14 @@ export async function POST(request: Request): Promise<Response> {
         const cookieStore = await cookies();
 
         const addBookmark = await fetch(
-            `https://www.nelomanga.com/action/bookmark/${id}?action=add`,
+            `https://${process.env.NEXT_MANGA_URL}/action/bookmark/${id}?action=add`,
             {
                 headers: {
                     cookie: cookieStore.toString(),
                     "User-Agent":
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-                    referer: `https://www.nelomanga.com/manga/${id}`,
-                    host: "www.nelomanga.com",
+                    referer: `https://${process.env.NEXT_MANGA_URL}/manga/${id}`,
+                    host: `${process.env.NEXT_MANGA_URL}`,
                 },
             },
         );

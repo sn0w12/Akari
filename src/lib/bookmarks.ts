@@ -62,16 +62,9 @@ export function getButtonInfo(bookmark: Bookmark) {
 }
 
 export async function checkIfBookmarked(
-    mangaIds: string | string[],
+    mangaId: string,
 ): Promise<Record<string, boolean> | boolean> {
-    const idsArray = Array.isArray(mangaIds) ? mangaIds : [mangaIds];
-    if (idsArray.length === 0 || !isSignedIn()) {
-        return Array.isArray(mangaIds) ? {} : false;
-    }
-
-    const response = await fetch(
-        `/api/bookmarks/isbookmarked?ids=${idsArray.join(",")}`,
-    );
+    const response = await fetch(`/api/bookmarks/isbookmarked?id=${mangaId}`);
     const data = await response.json();
     return data.isBookmarked;
 }

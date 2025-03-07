@@ -187,9 +187,11 @@ export interface ReadingHistoryEntry {
     id: string;
     userId: string;
     mangaId: string;
+    mangaIdentifier: string;
     mangaTitle: string;
     image: string;
     chapterId: string;
+    chapterIdentifier: string;
     chapterTitle: string;
     readAt: Date;
 }

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
         const cookieStore = await cookies();
         const bookmarkStatus = await fetch(
-            `https://www.nelomanga.com/manga/status/${mangaId}`,
+            `https://${process.env.NEXT_MANGA_URL}/manga/status/${mangaId}`,
             {
                 headers: {
                     cookie: cookieStore.toString(),

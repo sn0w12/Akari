@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
     try {
         const response = await fetch(
-            `https://www.nelomanga.com/home/search/json?searchword=${encodeURIComponent(query.replaceAll(" ", "_"))}`,
+            `https://${process.env.NEXT_MANGA_URL}/home/search/json?searchword=${encodeURIComponent(query.replaceAll(" ", "_"))}`,
             {
                 headers: {
                     "User-Agent":
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
                     "Accept-Encoding": "gzip, deflate, br, zstd",
                     "Sec-GPC": "1",
                     Connection: "keep-alive",
-                    Referer: "https://www.nelomanga.com/",
+                    Referer: `https://${process.env.NEXT_MANGA_URL}/`,
                     "Sec-Fetch-Dest": "image",
                     "Sec-Fetch-Mode": "no-cors",
                     "Sec-Fetch-Site": "cross-site",

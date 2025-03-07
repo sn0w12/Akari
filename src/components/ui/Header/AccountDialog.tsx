@@ -23,6 +23,12 @@ import { useSearchParams } from "next/navigation";
 import { isAccountValid } from "@/lib/secondaryAccounts";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useAccountDialog } from "@/hooks/useAccountDialog";
+import {
+    fetchCaptcha,
+    submitLogin,
+    logout,
+    logoutSecondaryAccount,
+} from "@/lib/auth";
 
 export interface SecondaryAccount {
     id: string;
@@ -87,6 +93,10 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [captcha, setCaptcha] = useState("");
+    const [captchaUrl, setCaptchaUrl] = useState("");
+    const [token, setToken] = useState("");
+    const [sessionCookies, setSessionCookies] = useState([""]);
     const { isAccountOpen, toggleAccount, openAccount, closeAccount } =
         useAccountDialog();
     const { closeSidebar } = useSidebar();
@@ -111,66 +121,60 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
     }, []);
 
     const handleLogout = async () => {
-        // Manganato
-        localStorage.removeItem("accountName");
-        setUsername(""); // Reset username to trigger the login view again
+        await logout(secondaryAccounts);
+        setUsername("");
         setSavedUsername("");
-
-        secondaryAccounts.forEach((account) => {
-            localStorage.removeItem(account.storageKey);
-            sessionStorage.removeItem(account.sessionKey);
-        });
-
-        // Clear Caches
-        db.clearCache(db.bookmarkCache);
-        db.clearCache(db.mangaCache);
-        db.clearCache(db.hqMangaCache);
-
-        await fetch("/api/logout");
         window.location.reload();
     };
 
     const handleSecondaryLogout = async (account: SecondaryAccount) => {
-        localStorage.removeItem(account.storageKey);
-        sessionStorage.removeItem(account.sessionKey);
+        await logoutSecondaryAccount(account);
         setSecondaryAccounts((accounts) =>
             accounts.map((acc) =>
                 acc.id === account.id ? { ...acc, user: null } : acc,
             ),
         );
-        await fetch(account.apiEndpoint);
         window.location.reload();
     };
 
-    // Submit login with CAPTCHA, username, and password
+    const handleFetchCaptcha = async () => {
+        if (captchaUrl && sessionCookies.length > 0) {
+            return;
+        }
+
+        try {
+            const {
+                captchaUrl: url,
+                sessionCookies: cookies,
+                token: newToken,
+            } = await fetchCaptcha();
+            setCaptchaUrl(url);
+            setSessionCookies(cookies);
+            setToken(newToken);
+        } catch (error) {
+            setLoginError("Failed to fetch CAPTCHA.");
+        }
+    };
+
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
-            });
-
-            const data = await response.json();
-            if (data.success === true) {
-                // Decode and parse the user_acc cookie value to update user data
-                localStorage.setItem("accountName", data.data.username);
-                setSavedUsername(data.data.username);
-
+            const response = await submitLogin(
+                username,
+                password,
+                captcha,
+                token,
+                sessionCookies,
+            );
+            if (response.success && response.data) {
+                setSavedUsername(response.data.username);
                 window.location.reload();
             } else {
-                setLoginError(data.error || "Login failed");
+                setLoginError(response.error || "Login failed");
             }
         } catch (error) {
-            console.error("Failed to submit login:", error);
             setLoginError("An error occurred during login.");
         }
         setIsLoading(false);
@@ -198,6 +202,7 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
         };
 
         checkSecondaryAuth();
+        handleFetchCaptcha();
     }, []);
 
     const renderSecondaryAccounts = () => (
@@ -379,6 +384,40 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                                             setPassword(e.target.value)
                                         }
                                     />
+
+                                    {/* CAPTCHA Field */}
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="block text-sm font-medium mb-2">
+                                            CAPTCHA
+                                        </label>
+                                        <div className="flex items-center w-full">
+                                            {!captchaUrl ? (
+                                                <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
+                                                    <Skeleton className="w-full h-full" />
+                                                </div>
+                                            ) : (
+                                                <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
+                                                    <Image
+                                                        src={`/api/image-proxy?imageUrl=${captchaUrl}&cache=false`}
+                                                        loading="eager"
+                                                        alt="CAPTCHA"
+                                                        className="max-w-full max-h-full object-contain"
+                                                        width={100}
+                                                        height={45}
+                                                    />
+                                                </div>
+                                            )}
+                                            <Input
+                                                type="text"
+                                                placeholder="Enter CAPTCHA..."
+                                                className="w-full"
+                                                value={captcha}
+                                                onChange={(e) =>
+                                                    setCaptcha(e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
 
                                     {/* Submit Button */}
                                     <Button
