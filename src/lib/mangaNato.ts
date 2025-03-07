@@ -109,6 +109,21 @@ export async function processMangaList(url: string, page: string) {
     });
     timeEnd("Parse Popular");
 
+    // Replace manga images with high quality versions from Supabase
+    const allManga = [...mangaList, ...popular];
+    const identifiers = allManga.map((manga) => manga.id);
+    const supabaseImages = await getMangaArrayFromSupabase(identifiers);
+
+    // Update images if found in Supabase
+    allManga.forEach((manga) => {
+        const supabaseImage = supabaseImages.find(
+            (img) => img.identifier === manga.id,
+        );
+        if (supabaseImage?.imageUrl) {
+            manga.image = supabaseImage.imageUrl;
+        }
+    });
+
     const totalStories: number = mangaList.length;
     const lastPageElement = $("a.page_blue.page_last");
     const totalPages: number = lastPageElement.length
