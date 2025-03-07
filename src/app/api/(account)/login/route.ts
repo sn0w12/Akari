@@ -142,6 +142,11 @@ export async function POST(request: NextRequest) {
             response.headers.append("Set-Cookie", cookie.toString());
         });
 
+        response.headers.append(
+            "Set-Cookie",
+            `user_id=${loginResponse.data.data.id}; Path=/;`,
+        );
+
         return response;
     } catch (error) {
         return NextResponse.json(
