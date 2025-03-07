@@ -1,7 +1,7 @@
 "use client";
 
 import { Chapter } from "@/app/api/interfaces";
-import Image from "next/image";
+import { default as NextImage } from "next/image";
 import PageProgress from "../pageProgress";
 import MangaFooter from "../mangaFooter";
 import EndOfManga from "../endOfManga";
@@ -42,6 +42,11 @@ export default function PageReader({
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
     const router = useRouter();
+    const [combinedImages, setCombinedImages] = useState<{
+        [key: number]: string;
+    }>({});
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [skipPages, setSkipPages] = useState<number[]>([]);
 
     const resetInactivityTimer = useCallback(() => {
         if (inactivityTimer.current) {
@@ -122,7 +127,13 @@ export default function PageReader({
         if (!chapter) return;
         if (isFooterVisible) return;
 
-        const isLastPage = currentPage === chapter.images.length - 1;
+        const nextPageIndex = currentPage + 1;
+        // Skip the next page if it's part of a combined image
+        const skipToPage = skipPages.includes(nextPageIndex)
+            ? nextPageIndex + 1
+            : nextPageIndex;
+
+        const isLastPage = skipToPage >= chapter.images.length;
         const nextChapterParts = chapter.nextChapter.split("/");
 
         if (isLastPage && nextChapterParts.length === 2) {
@@ -130,21 +141,41 @@ export default function PageReader({
             return;
         }
 
-        if (currentPage < chapter.images.length) {
-            setPageWithUrlUpdate(currentPage + 1);
+        if (skipToPage < chapter.images.length) {
+            setPageWithUrlUpdate(skipToPage);
         }
-    }, [chapter, currentPage, router, isFooterVisible]);
+    }, [
+        chapter,
+        currentPage,
+        skipPages,
+        router,
+        isFooterVisible,
+        setPageWithUrlUpdate,
+    ]);
 
     const prevPage = useCallback(() => {
         if (!chapter) return;
         if (isFooterVisible) return;
 
-        if (currentPage > 0) {
-            setPageWithUrlUpdate(currentPage - 1);
-        } else if (currentPage === 0) {
+        let prevPageIndex = currentPage - 1;
+        // Skip the previous page if it's part of a combined image
+        while (prevPageIndex >= 0 && skipPages.includes(prevPageIndex)) {
+            prevPageIndex--;
+        }
+
+        if (prevPageIndex >= 0) {
+            setPageWithUrlUpdate(prevPageIndex);
+        } else if (prevPageIndex < 0) {
             router.push(`/manga/${chapter.lastChapter}?page=last`);
         }
-    }, [chapter, currentPage, router, isFooterVisible]);
+    }, [
+        chapter,
+        currentPage,
+        skipPages,
+        router,
+        isFooterVisible,
+        setPageWithUrlUpdate,
+    ]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -180,8 +211,85 @@ export default function PageReader({
         }
     };
 
+    const combineImages = useCallback(
+        async (index: number, nextIndex: number) => {
+            if (!chapter.images[index] || !chapter.images[nextIndex])
+                return null;
+
+            const canvas = canvasRef.current;
+            if (!canvas) return null;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return null;
+
+            try {
+                const loadImage = (url: string): Promise<HTMLImageElement> => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.crossOrigin = "anonymous";
+                        img.onload = () => resolve(img);
+                        img.onerror = reject;
+                        img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+                    });
+                };
+
+                const [img1, img2] = await Promise.all([
+                    loadImage(chapter.images[index]),
+                    loadImage(chapter.images[nextIndex]),
+                ]);
+
+                // Check if first image height is exactly 1500px
+                if (img1.height !== 1500) return null;
+
+                canvas.width = img1.width;
+                canvas.height = img1.height + img2.height;
+
+                ctx.drawImage(img1, 0, 0);
+                ctx.drawImage(img2, 0, img1.height);
+
+                const combinedDataUrl = canvas.toDataURL("image/jpeg");
+                setCombinedImages((prev) => ({
+                    ...prev,
+                    [index]: combinedDataUrl,
+                }));
+                // Add nextIndex to skipPages
+                setSkipPages((prev) =>
+                    Array.from(new Set([...prev, nextIndex])).sort(),
+                );
+                return combinedDataUrl;
+            } catch (error) {
+                console.error("Error combining images:", error);
+                return null;
+            }
+        },
+        [chapter.images],
+    );
+
+    const handleImageLoadWithCombine = useCallback(
+        async (e: React.SyntheticEvent<HTMLImageElement>, index: number) => {
+            const img = e.target as HTMLImageElement;
+            if (img.naturalHeight === 1500 && !combinedImages[index]) {
+                await combineImages(index, index + 1);
+            }
+            handleImageLoad(e, index);
+        },
+        [handleImageLoad, combineImages, combinedImages],
+    );
+
+    const getEffectivePageCount = useCallback(() => {
+        return chapter.images.length - skipPages.length;
+    }, [chapter.images.length, skipPages.length]);
+
+    const getEffectivePageIndex = useCallback(
+        (index: number) => {
+            if (skipPages.includes(index)) return -1; // Return -1 for skipped pages
+            return index - skipPages.filter((skip) => skip < index).length;
+        },
+        [skipPages],
+    );
+
     return (
         <>
+            <canvas ref={canvasRef} style={{ display: "none" }} />
             <div
                 className={`flex flex-col justify-center items-center h-dvh w-screen bg-transparent relative`}
                 onClick={handleClick}
@@ -208,32 +316,51 @@ export default function PageReader({
                     </div>
                 </div>
                 <div id="reader" className="relative max-h-dvh w-auto">
-                    {chapter.images.map((image, index) => (
-                        <Image
-                            key={index}
-                            src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
-                            alt={`${chapter.title} - ${chapter.chapter} Page ${index + 1}`}
-                            width={700}
-                            height={1080}
-                            loading="eager"
-                            priority={index === 1}
-                            className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${index !== currentPage ? "hidden" : ""}`}
-                            onLoad={(e) => handleImageLoad(e, index)}
-                        />
-                    ))}
+                    {[-1, 0, 1].map((offset) => {
+                        const index = currentPage + offset;
+                        if (index < 0 || index >= chapter.images.length)
+                            return null;
+
+                        const effectiveIndex = getEffectivePageIndex(index);
+                        if (effectiveIndex === -1) return null;
+
+                        return (
+                            <NextImage
+                                key={index}
+                                src={
+                                    combinedImages[index] ||
+                                    `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[index])}`
+                                }
+                                alt={`${chapter.title} - ${chapter.chapter} Page ${effectiveIndex + 1}`}
+                                width={700}
+                                height={1080}
+                                loading="eager"
+                                priority={index === currentPage}
+                                className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${effectiveIndex !== getEffectivePageIndex(currentPage) ? "hidden" : ""}`}
+                                onLoad={(e) =>
+                                    handleImageLoadWithCombine(e, index)
+                                }
+                            />
+                        );
+                    })}
                     <EndOfManga
                         title={chapter.title}
                         identifier={chapter.parentId}
-                        className={`${chapter.images.length !== currentPage ? "hidden" : ""}`}
+                        className={`${getEffectivePageIndex(currentPage) !== getEffectivePageCount() ? "hidden" : ""}`}
                     />
                 </div>
                 <div
-                    className={`sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${chapter.images.length !== currentPage ? "block" : "hidden md:block"}`}
+                    className={`sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${getEffectivePageIndex(currentPage) !== getEffectivePageCount() - 1 ? "block" : "hidden md:block"}`}
                 >
                     <PageProgress
-                        currentPage={currentPage}
-                        totalPages={chapter.images.length}
-                        setCurrentPage={setCurrentPage}
+                        currentPage={getEffectivePageIndex(currentPage)}
+                        totalPages={getEffectivePageCount()}
+                        setCurrentPage={(page) => {
+                            const adjustedPage =
+                                page +
+                                skipPages.filter((skip) => skip <= page).length;
+                            setCurrentPage(adjustedPage);
+                        }}
                         isFooterVisible={isFooterVisible}
                     />
                 </div>
