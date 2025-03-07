@@ -45,6 +45,10 @@ export function HeaderComponent() {
                     setNotification("");
                     localStorage.removeItem("notification");
                     localStorage.removeItem("notificationTimestamp");
+                    if (res.status === 401) {
+                        localStorage.removeItem("auth");
+                        localStorage.removeItem("accountName");
+                    }
                     return;
                 }
 
@@ -54,7 +58,7 @@ export function HeaderComponent() {
                 localStorage.setItem("notification", data);
                 localStorage.setItem("notificationTimestamp", now.toString());
             } catch (error) {
-                console.error("Error fetching search results:", error);
+                console.error("Error fetching notification:", error);
             }
         },
         [],

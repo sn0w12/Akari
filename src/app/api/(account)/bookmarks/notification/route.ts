@@ -22,8 +22,8 @@ export async function GET() {
                 `Failed to fetch bookmark list: ${response.statusText}`,
             );
             return NextResponse.json(
-                { message: `Failed: ${response.statusText}` },
-                { status: 500 },
+                { message: `${response.statusText}` },
+                { status: response.status },
             );
         }
 
