@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SmallManga } from "@/app/api/interfaces";
 import { MangaCard } from "./MangaCard";
-import { getBookmarked } from "@/lib/mangaNato";
 
 interface PopularMangaProps {
     mangas: SmallManga[];
@@ -13,16 +12,6 @@ interface PopularMangaProps {
 export function PopularManga({ mangas }: PopularMangaProps) {
     const [currentPopularPage, setCurrentPopularPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
-    const [bookmarks, setBookmarks] = useState<string[]>([]);
-
-    useEffect(() => {
-        async function checkBookmarks() {
-            const bookmarkedManga = await getBookmarked(mangas);
-            setBookmarks(bookmarkedManga);
-        }
-
-        checkBookmarks();
-    }, [mangas]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -67,7 +56,7 @@ export function PopularManga({ mangas }: PopularMangaProps) {
                         manga={manga}
                         loading="eager"
                         priority={index <= 4}
-                        isBookmarked={bookmarks.includes(manga.id)}
+                        isBookmarked={false}
                     />
                 ))}
             </div>

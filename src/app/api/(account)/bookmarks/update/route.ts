@@ -1,25 +1,23 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getUserData } from "@/lib/mangaNato";
 import { saveReadingHistoryEntry, userDataToUserId } from "@/lib/supabase";
-import { BookmarkUpdateRequest } from "@/app/api/interfaces";
+import { ReadingHistoryEntry } from "@/app/api/interfaces";
 import { hasConsentFor } from "@/lib/cookies";
-
-const BOOKMARK_UPDATE_URL = "https://user.mngusr.com/bookmark_update";
 
 export async function POST(request: Request): Promise<Response> {
     try {
         const { chapter } = (await request.json()) as {
-            chapter: BookmarkUpdateRequest;
+            chapter: ReadingHistoryEntry;
         };
         const {
             chapterId,
+            chapterIdentifier,
             chapterTitle,
             mangaId,
+            mangaIdentifier,
             mangaTitle,
             image,
-            storyData,
-            chapterData,
+            userId,
         } = chapter;
 
         const cookieStore = await cookies();
@@ -33,54 +31,60 @@ export async function POST(request: Request): Promise<Response> {
             canSaveManga = true;
         }
 
-        const user_data = getUserData(cookieStore);
-        const userId = userDataToUserId(user_data);
-
-        if (!user_data || !userId) {
+        if (!userId) {
             return NextResponse.json(
                 { result: "error", data: "User data is required" },
                 { status: 401 },
             );
         }
 
-        if (!storyData || !chapterData) {
+        if (!mangaId || !chapterId) {
             return NextResponse.json(
                 {
                     result: "error",
-                    data: "Missing story_data, or chapter_data",
+                    data: "mangaId, and chapterId are required",
                 },
                 { status: 400 },
             );
         }
 
         const formData = new URLSearchParams();
-        formData.append("user_data", user_data);
-        formData.append("story_data", storyData);
-        formData.append("chapter_data", chapterData);
+        formData.append("comic_id", mangaId);
+        formData.append("chapter_id", chapterId);
 
-        const [response, _] = await Promise.all([
-            fetch(BOOKMARK_UPDATE_URL, {
+        const response = await fetch(
+            `https://${process.env.NEXT_MANGA_URL}/action/add-history`,
+            {
                 method: "POST",
                 body: formData.toString(),
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8",
+                    cookie: cookieStore.toString(),
+                    "User-Agent":
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+                    referer: `https://${process.env.NEXT_MANGA_URL}/manga/${mangaId}/${chapterId}`,
+                    host: `${process.env.NEXT_MANGA_URL}`,
+                    origin: `${process.env.NEXT_MANGA_URL}`,
+                    accept: "*/*",
+                    "x-requested-with": "XMLHttpRequest",
                 },
-            }),
-            saveReadingHistoryEntry(userId, canSaveManga, {
-                mangaId,
-                mangaTitle,
-                image,
-                chapterId,
-                chapterTitle,
-            }).catch((err) => {
-                // Log error but don't fail the request
-                console.error(
-                    "Failed to save reading history to database:",
-                    err,
-                );
-                return null;
-            }),
-        ]);
+            },
+        );
+
+        /*
+        await saveReadingHistoryEntry(userId, canSaveManga, {
+            mangaIdentifier,
+            mangaTitle,
+            image,
+            chapterIdentifier,
+            chapterTitle,
+        }).catch((err) => {
+            // Log error but don't fail the request
+            console.error("Failed to save reading history to database:", err);
+            return null;
+        });
+        */
 
         const data = await response.text();
         const result = JSON.parse(data);
