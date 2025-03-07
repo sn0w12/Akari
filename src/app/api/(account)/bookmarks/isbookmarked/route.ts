@@ -28,10 +28,18 @@ export async function GET(req: Request) {
 
         const data = await bookmarkStatus.json();
         const isBookmarked = data.data.isBookmarked === 1;
-        return NextResponse.json(
+        const setCookieHeaders = bookmarkStatus.headers.getSetCookie();
+
+        const response = NextResponse.json(
             { isBookmarked },
             { status: 200, headers: { ...generateClientCacheHeaders(180) } },
         );
+
+        setCookieHeaders.forEach((cookie) => {
+            response.headers.append("Set-Cookie", cookie);
+        });
+
+        return response;
     } catch (error) {
         return NextResponse.json(
             { message: "Invalid request" },
