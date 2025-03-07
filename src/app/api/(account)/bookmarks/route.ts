@@ -14,7 +14,7 @@ export async function GET(request: Request): Promise<Response> {
         const url = `https://${process.env.NEXT_MANGA_URL}/bookmark?page=${page}`;
         const cookieStore = await cookies();
 
-        const { data } = await axios.get(url, {
+        const { data, headers } = await axios.get(url, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 cookie: cookieStore.toString(),
@@ -27,6 +27,7 @@ export async function GET(request: Request): Promise<Response> {
                 "x-requested-with": "XMLHttpRequest",
             },
         });
+        const setCookieHeaders = headers["set-cookie"] || [];
         const $ = cheerio.load(data);
         const bookmarks: Bookmark[] = [];
 
@@ -112,13 +113,21 @@ export async function GET(request: Request): Promise<Response> {
             bookmarks.push(bookmark);
         });
 
-        return new Response(JSON.stringify({ bookmarks, totalPages }), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                ...generateCacheHeaders(600),
+        const response = new Response(
+            JSON.stringify({ bookmarks, totalPages }),
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...generateCacheHeaders(600),
+                },
             },
+        );
+        setCookieHeaders.forEach((cookie) => {
+            response.headers.append("Set-Cookie", cookie);
         });
+
+        return response;
     } catch (error) {
         console.error("Error fetching bookmarks:", error);
         if (axios.isAxiosError(error)) {
