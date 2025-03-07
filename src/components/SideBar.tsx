@@ -41,7 +41,6 @@ import {
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import SettingsDialog from "@/components/ui/Header/SettingsDialog";
-import LoginDialog from "@/components/ui/Header/AccountDialog";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 import { getSettings, getSetting, useSetting } from "@/lib/settings";
@@ -105,7 +104,6 @@ export function SideBar() {
         navigateBookmarks: null,
     });
     const preferSettingsPage = useSetting("preferSettingsPage");
-    const preferAccountPage = useSetting("preferAccountPage");
     const router = useRouter();
     const sheetRef = useRef<HTMLButtonElement>(null);
     const loginRef = useRef<HTMLButtonElement>(null);
@@ -129,15 +127,7 @@ export function SideBar() {
     }, []);
 
     const handleAccountClick = () => {
-        if (preferAccountPage) {
-            router.push("/account");
-            return;
-        }
-
-        setTimeout(() => {
-            openSidebar();
-            openAccount();
-        }, 100);
+        router.push("/account");
     };
 
     const handleSettingsClick = () => {
@@ -412,20 +402,16 @@ export function SideBar() {
                             ) : (
                                 <SettingsDialog />
                             )}
-                            {preferAccountPage ? (
-                                <Link
-                                    href="/account"
-                                    className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
-                                    onClick={closeSidebar}
-                                >
-                                    <User className="h-5 w-5" />
-                                    <span className="text-base font-medium">
-                                        Account
-                                    </span>
-                                </Link>
-                            ) : (
-                                <LoginDialog />
-                            )}
+                            <Link
+                                href="/account"
+                                className="justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 flex w-full sm:w-auto flex-grow items-center gap-3 px-4 py-2 border rounded-md"
+                                onClick={closeSidebar}
+                            >
+                                <User className="h-5 w-5" />
+                                <span className="text-base font-medium">
+                                    Account
+                                </span>
+                            </Link>
                         </div>
                     </div>
                 </SheetContent>

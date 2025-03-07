@@ -11,10 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { generateMalAuth, isAccountValid } from "@/lib/secondaryAccounts";
 import Link from "next/link";
 import ConfirmDialog from "@/components/ui/confirmDialog";
-import {
-    SecondaryAccount,
-    SECONDARY_ACCOUNTS,
-} from "@/components/ui/Header/AccountDialog";
+import { SecondaryAccount, SECONDARY_ACCOUNTS } from "@/lib/secondaryAccounts";
 import {
     Card,
     CardContent,

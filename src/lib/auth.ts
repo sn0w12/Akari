@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import { SecondaryAccount } from "@/components/ui/Header/AccountDialog";
+import { SecondaryAccount } from "@/lib/secondaryAccounts";
 
 export interface LoginResponse {
     success: boolean;
