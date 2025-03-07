@@ -466,3 +466,80 @@ export async function deleteAllReadingHistory(
         return false;
     }
 }
+
+interface MangaMalData {
+    id: string;
+    mal_id: number;
+    image: string;
+    description: string;
+    score: number;
+}
+
+/**
+ * Save MAL data for a manga
+ */
+export async function saveMangaMalData(
+    data: MangaMalData,
+): Promise<MangaMalData | null> {
+    if (!supabaseAdmin) {
+        console.warn("Supabase admin not initialized");
+        return null;
+    }
+
+    try {
+        const { data: savedData, error } = await supabaseAdmin
+            .from("manga_mal_data")
+            .upsert({
+                id: data.id,
+                mal_id: data.mal_id,
+                image: data.image,
+                description: data.description,
+                score: data.score,
+                updated_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error saving MAL data:", error);
+            return null;
+        }
+
+        return savedData;
+    } catch (e) {
+        console.error("Exception saving MAL data:", e);
+        return null;
+    }
+}
+
+/**
+ * Get MAL data for a manga
+ */
+export async function getMangaMalData(
+    mangaId: string,
+): Promise<MangaMalData | null> {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized");
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabasePublic
+            .from("manga_mal_data")
+            .select("*")
+            .eq("id", mangaId)
+            .single();
+
+        if (error) {
+            if (error.code !== "PGRST116") {
+                console.error("Error fetching MAL data:", error);
+            }
+            return null;
+        }
+
+        return data;
+    } catch (e) {
+        console.error("Exception fetching MAL data:", e);
+        return null;
+    }
+}

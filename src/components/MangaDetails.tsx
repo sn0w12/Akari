@@ -17,7 +17,9 @@ import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
+import { MalPopup } from "./ui/MangaReader/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import { MangaDetails } from "@/app/api/interfaces";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -49,7 +51,9 @@ const getViewsColor = (views: string) => {
     return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
-export async function getMangaData(id: string) {
+export async function getMangaData(
+    id: string,
+): Promise<MangaDetails | { error: { message: string } }> {
     "use cache";
     cacheLife("minutes");
 
@@ -86,7 +90,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     cacheLife("minutes");
 
     const manga = await getMangaData(id);
-    if (manga.error) {
+    if ("error" in manga) {
         return (
             <main className="container mx-auto px-4 py-8">
                 <ErrorComponent message={manga.error.message} />
@@ -100,7 +104,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
 
     return (
         <main className="container mx-auto px-4 py-8">
-            <UpdateManga manga={manga} lastUpdate={manga.malData?.updated_at} />
+            <UpdateManga
+                manga={manga}
+                lastUpdate={manga.malData?.updated_at ?? manga.updated}
+            />
             <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
@@ -299,6 +306,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             <ChaptersSection manga={manga} />
+            <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
         </main>
     );
 }
