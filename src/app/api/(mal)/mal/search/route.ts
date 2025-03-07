@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { generateCacheHeaders } from "@/lib/cache";
 
 export async function GET(request: Request) {
     try {
@@ -36,7 +37,11 @@ export async function GET(request: Request) {
         }
 
         const data = await response.json();
-        return NextResponse.json(data);
+        return NextResponse.json(data, {
+            headers: {
+                ...generateCacheHeaders(3600),
+            },
+        });
     } catch (error) {
         console.error("Search error:", error);
         return NextResponse.json(
