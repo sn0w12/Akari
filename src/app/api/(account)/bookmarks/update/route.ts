@@ -72,19 +72,18 @@ export async function POST(request: Request): Promise<Response> {
             },
         );
 
-        /*
         await saveReadingHistoryEntry(userId, canSaveManga, {
             mangaIdentifier,
             mangaTitle,
             image,
             chapterIdentifier,
             chapterTitle,
+            mangaId,
+            chapterId,
         }).catch((err) => {
             // Log error but don't fail the request
             console.error("Failed to save reading history to database:", err);
-            return null;
         });
-        */
 
         const data = await historyResponse.text();
         const result = JSON.parse(data);

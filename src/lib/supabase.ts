@@ -137,10 +137,10 @@ export async function saveReadingHistoryEntry(
             .from("reading_history")
             .upsert({
                 user_id: encodedUserId,
-                manga_id: entry.mangaId,
+                manga_id: entry.mangaIdentifier,
                 manga_title: entry.mangaTitle,
                 image: entry.image,
-                chapter_id: entry.chapterId,
+                chapter_id: entry.chapterIdentifier,
                 chapter_title: entry.chapterTitle,
                 read_at: new Date().toISOString(),
             })
