@@ -9,6 +9,28 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const manga = await getMangaData(params.id);
 
+    if ("error" in manga) {
+        return {
+            title: "Manga not found",
+            description: "The manga you are looking for could not be found.",
+            robots: {
+                index: false,
+                follow: false,
+            },
+            openGraph: {
+                title: "Manga not found",
+                description:
+                    "The manga you are looking for could not be found.",
+            },
+            twitter: {
+                card: "summary_large_image",
+                title: "Manga not found",
+                description:
+                    "The manga you are looking for could not be found.",
+            },
+        };
+    }
+
     return {
         title: manga.name,
         description: manga.malData?.description ?? manga.description,
