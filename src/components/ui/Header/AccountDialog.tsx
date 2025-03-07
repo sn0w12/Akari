@@ -15,7 +15,6 @@ import { User } from "lucide-react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import React from "react";
 import Image from "next/image";
-import db from "@/lib/db";
 import { Skeleton } from "../skeleton";
 import { generateMalAuth } from "@/lib/secondaryAccounts";
 import Link from "next/link";
