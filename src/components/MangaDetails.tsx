@@ -105,10 +105,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
 
     return (
         <main className="container mx-auto px-4 py-8">
-            <UpdateManga
-                manga={manga}
-                lastUpdate={manga.malData?.updated_at ?? manga.updated}
-            />
             <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
