@@ -398,7 +398,7 @@ const LoginDialog = forwardRef<HTMLButtonElement>((props, ref) => {
                                             ) : (
                                                 <div className="w-[100px] h-[45px] mr-2 flex items-center justify-center flex-shrink-0">
                                                     <Image
-                                                        src={`/api/image-proxy?imageUrl=${captchaUrl}&cache=false`}
+                                                        src={captchaUrl}
                                                         loading="eager"
                                                         alt="CAPTCHA"
                                                         className="max-w-full max-h-full object-contain"
