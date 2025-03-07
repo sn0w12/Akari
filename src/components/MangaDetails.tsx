@@ -17,7 +17,7 @@ import { InfoIcon } from "lucide-react";
 import { getProductionUrl } from "@/app/api/baseUrl";
 import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
-import { MalPopup } from "./ui/MangaReader/malPopup";
+import { MalPopup } from "./ui/MangaDetails/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { MangaDetails } from "@/app/api/interfaces";
 
@@ -101,6 +101,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     manga.alternativeNames = manga.alternativeNames?.filter(
         (name: string) => name.trim() !== "",
     );
+    const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
     return (
         <main className="container mx-auto px-4 py-8">
@@ -306,7 +307,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             <ChaptersSection manga={manga} />
-            <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
+            {shouldShowPopup && (
+                <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
+            )}
         </main>
     );
 }

@@ -5,6 +5,8 @@ import { encodeUserId } from "@/lib/supabase";
 const MIN_TOTAL_VOTES = 3; // Minimum number of total votes required
 const REQUIRED_PERCENTAGE = 0.75; // 75% of votes must agree
 const TRUSTED_WEIGHT = 5; // Weight multiplier for trusted users
+const POPUP_MIN_VOTES = 5;
+const POPUP_REQUIRED_PERCENTAGE = 0.8; // 80% agreement to hide popup
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAdmin =
@@ -121,6 +123,12 @@ export async function POST(request: NextRequest) {
         // Calculate percentage using weighted votes
         const percentage = winningVotes / totalWeightedVotes;
 
+        // Determine if we should hide the popup (more lenient requirements)
+        const shouldShowPopup = !(
+            totalWeightedVotes >= POPUP_MIN_VOTES &&
+            percentage >= POPUP_REQUIRED_PERCENTAGE
+        );
+
         // If we have enough votes and meet the percentage threshold
         if (percentage >= REQUIRED_PERCENTAGE) {
             const jikanResponse = await fetch(
@@ -134,6 +142,7 @@ export async function POST(request: NextRequest) {
                 image: jikanData.data.images.webp.large_image_url,
                 description: jikanData.data.synopsis,
                 score: jikanData.data.score,
+                should_show_popup: shouldShowPopup,
                 updated_at: new Date().toISOString(),
             });
 
