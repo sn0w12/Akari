@@ -42,7 +42,6 @@ export async function GET() {
         const res = NextResponse.json(unreadBookmarks, {
             headers: {
                 "Content-Type": "application/json",
-                ...generateClientCacheHeaders(120),
             },
         });
 
