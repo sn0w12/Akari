@@ -71,21 +71,16 @@ export default function Reader({ chapter }: ReaderProps) {
         if (index === 0) setFirstImageLoaded(true);
         if (isStripMode !== undefined) return;
 
-        const imageCutoff = Math.floor(chapter!.images.length / 2);
-
         const imgElement = event.currentTarget;
-        const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
+        const height = imgElement.naturalHeight;
         imageCountRef.current += 1;
-        if (aspectRatio > 2) {
+        if (height >= 1500) {
             longImageCountRef.current += 1;
         }
 
-        if (
-            longImageCountRef.current == 5 ||
-            longImageCountRef.current > imageCutoff
-        ) {
+        if (longImageCountRef.current >= 2) {
             setReaderMode(true);
-        } else if (imageCountRef.current === imageCutoff) {
+        } else {
             setReaderMode(false);
         }
     };
