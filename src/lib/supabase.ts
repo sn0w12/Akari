@@ -184,10 +184,12 @@ export async function saveReadingHistoryEntry(
         return {
             id: data[0].id,
             userId: userId, // Return the original user ID to the client
-            mangaId: data[0].manga_id,
+            mangaIdentifier: data[0].manga_id,
+            mangaId: "",
             mangaTitle: data[0].manga_title,
             image: data[0].image,
-            chapterId: data[0].chapter_id,
+            chapterIdentifier: data[0].chapter_id,
+            chapterId: "",
             chapterTitle: data[0].chapter_title,
             readAt: new Date(data[0].read_at),
         };
@@ -250,11 +252,13 @@ export async function getUserReadingHistory(
         return data.map((entry) => ({
             id: entry.id,
             userId: userId, // Return the original user ID to the client
-            mangaId: entry.manga_id,
+            mangaIdentifier: entry.manga_id,
+            mangaId: "",
             mangaTitle: entry.manga_title,
             // Use high-quality image if available, otherwise fall back to stored image
             image: highQualityImages[entry.manga_id] || entry.image,
-            chapterId: entry.chapter_id,
+            chapterIdentifier: entry.chapter_id,
+            chapterId: "",
             chapterTitle: entry.chapter_title,
             chapterNumber: entry.chapter_number,
             readAt: new Date(entry.read_at),
