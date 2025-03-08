@@ -17,10 +17,10 @@ export async function POST(request: Request): Promise<Response> {
             mangaIdentifier,
             mangaTitle,
             image,
-            userId,
         } = chapter;
 
         const cookieStore = await cookies();
+        const userId = cookieStore.get("user_id")?.value;
 
         const functionalConsent = hasConsentFor(cookieStore, "functional");
         const canSaveMangaCookie = cookieStore.get(
