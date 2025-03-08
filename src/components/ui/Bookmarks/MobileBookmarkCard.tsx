@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "./LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
+import { imageUrl } from "@/lib/utils";
 
 const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
     const {
@@ -26,7 +27,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                                 className="block"
                             >
                                 <Image
-                                    src={`/api/image-proxy?imageUrl=${bookmark.image}`}
+                                    src={imageUrl(bookmark.image)}
                                     alt={bookmark.storyname}
                                     width={300}
                                     height={450}

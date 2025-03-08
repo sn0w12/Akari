@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "./LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
+import { imageUrl } from "@/lib/utils";
 
 const DesktopBookmarkCard: React.FC<{
     bookmark: Bookmark;
@@ -28,7 +29,7 @@ const DesktopBookmarkCard: React.FC<{
                     prefetch={false}
                 >
                     <Image
-                        src={`/api/image-proxy?imageUrl=${bookmark.image}`}
+                        src={imageUrl(bookmark.image)}
                         alt={bookmark.storyname}
                         width={300}
                         height={450}

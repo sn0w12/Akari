@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { SmallManga } from "@/app/api/interfaces";
 import HoverLink from "../hoverLink";
+import { imageUrl } from "@/lib/utils";
 
 interface MangaCardProps {
     manga: SmallManga;
@@ -25,7 +26,7 @@ export function MangaCard({
             >
                 <CardContent className="p-0">
                     <Image
-                        src={`/api/image-proxy?imageUrl=${manga.image}`}
+                        src={imageUrl(manga.image)}
                         alt={manga.title}
                         width={250}
                         height={350}
