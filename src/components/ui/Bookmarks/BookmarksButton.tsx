@@ -39,6 +39,9 @@ export default function BookmarksButton({
 }) {
     const [bookmarks, setBookmarks] = useState<ProcessedBookmark[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showBookmarks, setShowBookmarks] = useState(
+        localStorage.getItem("accountName") ? true : false,
+    );
 
     const loadBookmarks = async () => {
         setIsLoading(true);
@@ -118,103 +121,118 @@ export default function BookmarksButton({
                 id="bookmarks-context"
             >
                 <LinkContextMenuItems href={"/bookmarks"} />
-                <ContextMenuSeparator />
-
-                {isLoading
-                    ? Array(5)
-                          .fill(0)
-                          .map((_, index) => (
-                              <ContextMenuItem
-                                  key={`skeleton-${index}`}
-                                  className="p-0"
-                              >
-                                  <div className="flex items-stretch w-full py-2 px-2 gap-2">
-                                      <div className="flex-shrink-0">
-                                          <Skeleton className="w-16 h-[91px] rounded-md" />
-                                      </div>
-                                      <div className="flex flex-col justify-between gap-2 flex-1 min-w-0">
-                                          <div className="flex-grow">
-                                              <Skeleton className="h-4 rounded-md w-3/4 mb-1" />
-                                              <Skeleton className="h-4 rounded-md w-1/2" />
-                                          </div>
-                                          <div className="flex gap-1 justify-between">
-                                              <Skeleton className="h-9 rounded-md flex-grow" />
-                                              <Skeleton className="h-9 rounded-md flex-grow" />
-                                          </div>
-                                      </div>
-                                  </div>
-                              </ContextMenuItem>
-                          ))
-                    : bookmarks.map((bookmark, index) => (
-                          <ContextMenuItem
-                              key={index}
-                              className="p-0 cursor-pointer"
-                          >
-                              <div className="flex items-stretch w-full py-2 px-2 gap-2">
-                                  <Link
-                                      href={bookmark.link}
-                                      onClick={handleLinkClick}
-                                  >
-                                      <Image
-                                          src={bookmark.image}
-                                          height={91}
-                                          width={64}
-                                          alt={bookmark.name}
-                                          className="w-16 h-[91px] object-cover bg-primary rounded-md flex-shrink-0"
-                                      />
-                                  </Link>
-                                  <div className="flex flex-col justify-between gap-2 flex-1 min-w-0">
-                                      <Link
-                                          href={bookmark.link}
-                                          className="flex-grow"
-                                          onClick={handleLinkClick}
+                {showBookmarks && (
+                    <>
+                        <ContextMenuSeparator />
+                        {isLoading
+                            ? Array(5)
+                                  .fill(0)
+                                  .map((_, index) => (
+                                      <ContextMenuItem
+                                          key={`skeleton-${index}`}
+                                          className="p-0"
                                       >
-                                          <span className="line-clamp-2">
-                                              {bookmark.name}
-                                          </span>
-                                      </Link>
-                                      <div className="flex gap-1 justify-between">
-                                          {bookmark.up_to_date ||
-                                          bookmark.has_new_chapter ? (
-                                              <HoverLink
-                                                  className={`${bookmark.color} flex-grow text-center px-2 py-1.5 rounded-md transition-colors`}
-                                                  href={
-                                                      bookmark.last_chapter_link
-                                                  }
+                                          <div className="flex items-stretch w-full py-2 px-2 gap-2">
+                                              <div className="flex-shrink-0">
+                                                  <Skeleton className="w-16 h-[91px] rounded-md" />
+                                              </div>
+                                              <div className="flex flex-col justify-between gap-2 flex-1 min-w-0">
+                                                  <div className="flex-grow">
+                                                      <Skeleton className="h-4 rounded-md w-3/4 mb-1" />
+                                                      <Skeleton className="h-4 rounded-md w-1/2" />
+                                                  </div>
+                                                  <div className="flex gap-1 justify-between">
+                                                      <Skeleton className="h-9 rounded-md flex-grow" />
+                                                      <Skeleton className="h-9 rounded-md flex-grow" />
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </ContextMenuItem>
+                                  ))
+                            : bookmarks.map((bookmark, index) => (
+                                  <ContextMenuItem
+                                      key={index}
+                                      className="p-0 cursor-pointer"
+                                  >
+                                      <div className="flex items-stretch w-full py-2 px-2 gap-2">
+                                          <Link
+                                              href={bookmark.link}
+                                              onClick={handleLinkClick}
+                                          >
+                                              <Image
+                                                  src={`/api/image-proxy?imageUrl=${bookmark.image}`}
+                                                  height={91}
+                                                  width={64}
+                                                  alt={bookmark.name}
+                                                  className="w-16 h-[91px] object-cover bg-primary rounded-md flex-shrink-0"
+                                              />
+                                          </Link>
+                                          <div className="flex flex-col justify-between gap-2 flex-1 min-w-0">
+                                              <Link
+                                                  href={bookmark.link}
+                                                  className="flex-grow"
                                                   onClick={handleLinkClick}
                                               >
-                                                  Chapter{" "}
-                                                  {bookmark.last_chapter}
-                                              </HoverLink>
-                                          ) : (
-                                              <>
-                                                  <HoverLink
-                                                      className="bg-accent-color hover:bg-accent-color/70 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
-                                                      href={
-                                                          bookmark.current_chapter_link
-                                                      }
-                                                      onClick={handleLinkClick}
-                                                  >
-                                                      Chapter{" "}
-                                                      {bookmark.current_chapter}
-                                                  </HoverLink>
-                                                  <HoverLink
-                                                      className="bg-green-600 hover:bg-green-700 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
-                                                      href={
-                                                          bookmark.last_chapter_link
-                                                      }
-                                                      onClick={handleLinkClick}
-                                                  >
-                                                      Chapter{" "}
-                                                      {bookmark.last_chapter}
-                                                  </HoverLink>
-                                              </>
-                                          )}
+                                                  <span className="line-clamp-2">
+                                                      {bookmark.name}
+                                                  </span>
+                                              </Link>
+                                              <div className="flex gap-1 justify-between">
+                                                  {bookmark.up_to_date ||
+                                                  bookmark.has_new_chapter ? (
+                                                      <HoverLink
+                                                          className={`${bookmark.color} flex-grow text-center px-2 py-1.5 rounded-md transition-colors`}
+                                                          href={
+                                                              bookmark.last_chapter_link
+                                                          }
+                                                          onClick={
+                                                              handleLinkClick
+                                                          }
+                                                      >
+                                                          Chapter{" "}
+                                                          {
+                                                              bookmark.last_chapter
+                                                          }
+                                                      </HoverLink>
+                                                  ) : (
+                                                      <>
+                                                          <HoverLink
+                                                              className="bg-accent-color hover:bg-accent-color/70 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
+                                                              href={
+                                                                  bookmark.current_chapter_link
+                                                              }
+                                                              onClick={
+                                                                  handleLinkClick
+                                                              }
+                                                          >
+                                                              Chapter{" "}
+                                                              {
+                                                                  bookmark.current_chapter
+                                                              }
+                                                          </HoverLink>
+                                                          <HoverLink
+                                                              className="bg-green-600 hover:bg-green-700 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
+                                                              href={
+                                                                  bookmark.last_chapter_link
+                                                              }
+                                                              onClick={
+                                                                  handleLinkClick
+                                                              }
+                                                          >
+                                                              Chapter{" "}
+                                                              {
+                                                                  bookmark.last_chapter
+                                                              }
+                                                          </HoverLink>
+                                                      </>
+                                                  )}
+                                              </div>
+                                          </div>
                                       </div>
-                                  </div>
-                              </div>
-                          </ContextMenuItem>
-                      ))}
+                                  </ContextMenuItem>
+                              ))}
+                    </>
+                )}
             </ContextMenuContent>
         </ContextMenu>
     );
