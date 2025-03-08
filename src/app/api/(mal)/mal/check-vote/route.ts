@@ -42,12 +42,18 @@ export async function GET(request: NextRequest) {
             .eq("user_id", encodedUserId)
             .single();
 
+        const hasVoted = !!existingVote;
+        let cacheTime = 36000;
+        if (!hasVoted) {
+            cacheTime = 0;
+        }
+
         return NextResponse.json(
             {
                 hasVoted: !!existingVote,
             },
             {
-                headers: { ...generateClientCacheHeaders(36000) },
+                headers: { ...generateClientCacheHeaders(cacheTime) },
             },
         );
     } catch (error) {
