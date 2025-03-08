@@ -42,11 +42,11 @@ export default function PageReader({
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
     const router = useRouter();
-    const [combinedImages, setCombinedImages] = useState<{
-        [key: number]: string;
-    }>({});
-    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [skipPages, setSkipPages] = useState<number[]>([]);
+    const [isProcessingImages, setIsProcessingImages] = useState(true);
+    const [processedImages, setProcessedImages] = useState<string[]>([]);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [initialPagesReady, setInitialPagesReady] = useState(false);
 
     const resetInactivityTimer = useCallback(() => {
         if (inactivityTimer.current) {
@@ -141,7 +141,7 @@ export default function PageReader({
             return;
         }
 
-        if (skipToPage < chapter.images.length) {
+        if (skipToPage <= chapter.images.length) {
             setPageWithUrlUpdate(skipToPage);
         }
     }, [
@@ -211,69 +211,102 @@ export default function PageReader({
         }
     };
 
-    const combineImages = useCallback(
-        async (index: number, nextIndex: number) => {
-            if (!chapter.images[index] || !chapter.images[nextIndex])
-                return null;
+    const processImages = useCallback(async () => {
+        if (!chapter?.images?.length) return;
 
-            const canvas = canvasRef.current;
-            if (!canvas) return null;
-            const ctx = canvas.getContext("2d");
-            if (!ctx) return null;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-            try {
-                const loadImage = (url: string): Promise<HTMLImageElement> => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        img.onload = () => resolve(img);
-                        img.onerror = reject;
-                        img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
-                    });
-                };
+        const loadImage = (url: string): Promise<HTMLImageElement> => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+            });
+        };
 
-                const [img1, img2] = await Promise.all([
-                    loadImage(chapter.images[index]),
-                    loadImage(chapter.images[nextIndex]),
-                ]);
+        try {
+            const processed: string[] = [];
+            const skipped: number[] = [];
 
-                // Check if first image height is exactly 1500px
-                if (img1.height !== 1500) return null;
+            // First, process the initial 3 pages
+            const initialBatch = chapter.images.slice(0, 3);
+            const initialImages = await Promise.all(
+                initialBatch.map((url) => loadImage(url)),
+            );
 
-                canvas.width = img1.width;
-                canvas.height = img1.height + img2.height;
+            // Process initial images
+            for (let i = 0; i < initialImages.length; i++) {
+                if (skipped.includes(i)) continue;
 
-                ctx.drawImage(img1, 0, 0);
-                ctx.drawImage(img2, 0, img1.height);
-
-                const combinedDataUrl = canvas.toDataURL("image/jpeg");
-                setCombinedImages((prev) => ({
-                    ...prev,
-                    [index]: combinedDataUrl,
-                }));
-                // Add nextIndex to skipPages
-                setSkipPages((prev) =>
-                    Array.from(new Set([...prev, nextIndex])).sort(),
-                );
-                return combinedDataUrl;
-            } catch (error) {
-                console.error("Error combining images:", error);
-                return null;
+                const img = initialImages[i];
+                if (img.height === 1500 && i < initialImages.length - 1) {
+                    const nextImg = initialImages[i + 1];
+                    canvas.width = img.width;
+                    canvas.height = img.height + nextImg.height;
+                    ctx.drawImage(img, 0, 0);
+                    ctx.drawImage(nextImg, 0, img.height);
+                    processed[i] = canvas.toDataURL("image/jpeg");
+                    skipped.push(i + 1);
+                } else {
+                    processed[i] =
+                        `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+                }
             }
-        },
-        [chapter.images],
-    );
 
-    const handleImageLoadWithCombine = useCallback(
-        async (e: React.SyntheticEvent<HTMLImageElement>, index: number) => {
-            const img = e.target as HTMLImageElement;
-            if (img.naturalHeight === 1500 && !combinedImages[index]) {
-                await combineImages(index, index + 1);
+            // Make initial pages available
+            setProcessedImages(processed);
+            setSkipPages(skipped);
+            setInitialPagesReady(true);
+
+            // Process remaining images
+            const remainingImages = await Promise.all(
+                chapter.images.slice(3).map((url) => loadImage(url)),
+            );
+
+            // Process remaining images
+            for (let i = 3; i < chapter.images.length; i++) {
+                if (skipped.includes(i)) continue;
+
+                const img = remainingImages[i - 3];
+                if (img.height === 1500 && i < chapter.images.length - 1) {
+                    const nextImg = remainingImages[i - 2];
+                    canvas.width = img.width;
+                    canvas.height = img.height + nextImg.height;
+                    ctx.drawImage(img, 0, 0);
+                    ctx.drawImage(nextImg, 0, img.height);
+                    processed[i] = canvas.toDataURL("image/jpeg");
+                    skipped.push(i + 1);
+                } else {
+                    processed[i] =
+                        `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+                }
             }
-            handleImageLoad(e, index);
-        },
-        [handleImageLoad, combineImages, combinedImages],
-    );
+
+            // Update with all processed images
+            setProcessedImages(processed);
+            setSkipPages(skipped);
+        } catch (error) {
+            console.error("Error processing images:", error);
+        } finally {
+            setIsProcessingImages(false);
+        }
+    }, [chapter?.images]);
+
+    useEffect(() => {
+        processImages();
+    }, [processImages]);
+
+    const handlePageLoad = (
+        e: React.SyntheticEvent<HTMLImageElement>,
+        index: number,
+    ) => {
+        handleImageLoad(e, index);
+    };
 
     const getEffectivePageCount = useCallback(() => {
         return chapter.images.length - skipPages.length;
@@ -316,54 +349,65 @@ export default function PageReader({
                     </div>
                 </div>
                 <div id="reader" className="relative max-h-dvh w-auto">
-                    {[-1, 0, 1].map((offset) => {
-                        const index = currentPage + offset;
-                        if (index < 0 || index >= chapter.images.length)
-                            return null;
+                    {initialPagesReady &&
+                        [-1, 0, 1].map((offset) => {
+                            const index = currentPage + offset;
+                            if (index < 0 || index >= processedImages.length)
+                                return null;
 
-                        const effectiveIndex = getEffectivePageIndex(index);
-                        if (effectiveIndex === -1) return null;
+                            const effectiveIndex = getEffectivePageIndex(index);
+                            if (effectiveIndex === -1) return null;
 
-                        return (
-                            <NextImage
-                                key={index}
-                                src={
-                                    combinedImages[index] ||
-                                    `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[index])}`
-                                }
-                                alt={`${chapter.title} - ${chapter.chapter} Page ${effectiveIndex + 1}`}
-                                width={700}
-                                height={1080}
-                                loading="eager"
-                                priority={index === currentPage}
-                                className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${effectiveIndex !== getEffectivePageIndex(currentPage) ? "hidden" : ""}`}
-                                onLoad={(e) =>
-                                    handleImageLoadWithCombine(e, index)
-                                }
-                            />
-                        );
-                    })}
+                            return (
+                                <NextImage
+                                    key={index}
+                                    src={processedImages[index]}
+                                    alt={`${chapter.title} - ${chapter.chapter} Page ${effectiveIndex + 1}`}
+                                    width={700}
+                                    height={1080}
+                                    loading="eager"
+                                    priority={index === currentPage}
+                                    className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${
+                                        effectiveIndex !==
+                                        getEffectivePageIndex(currentPage)
+                                            ? "hidden"
+                                            : ""
+                                    }`}
+                                    onLoad={(e) => handlePageLoad(e, index)}
+                                />
+                            );
+                        })}
                     <EndOfManga
                         title={chapter.title}
                         identifier={chapter.parentId}
                         className={`${getEffectivePageIndex(currentPage) !== getEffectivePageCount() ? "hidden" : ""}`}
                     />
                 </div>
-                <div
-                    className={`sm:opacity-0 lg:opacity-100 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${getEffectivePageIndex(currentPage) !== getEffectivePageCount() - 1 ? "block" : "hidden md:block"}`}
-                >
-                    <PageProgress
-                        currentPage={getEffectivePageIndex(currentPage)}
-                        totalPages={getEffectivePageCount()}
-                        setCurrentPage={(page) => {
-                            const adjustedPage =
-                                page +
-                                skipPages.filter((skip) => skip <= page).length;
-                            setCurrentPage(adjustedPage);
-                        }}
-                        isFooterVisible={isFooterVisible}
-                    />
-                </div>
+                {!isProcessingImages && (
+                    <div
+                        className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
+                            isFooterVisible ? "opacity-100" : "opacity-0"
+                        } ${
+                            getEffectivePageIndex(currentPage) !==
+                            getEffectivePageCount()
+                                ? "block"
+                                : "hidden md:block"
+                        }`}
+                    >
+                        <PageProgress
+                            currentPage={getEffectivePageIndex(currentPage)}
+                            totalPages={getEffectivePageCount()}
+                            setCurrentPage={(page) => {
+                                const adjustedPage =
+                                    page +
+                                    skipPages.filter((skip) => skip <= page)
+                                        .length;
+                                setCurrentPage(adjustedPage);
+                            }}
+                            isFooterVisible={isFooterVisible}
+                        />
+                    </div>
+                )}
             </div>
             <div
                 className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapter.images.length ? "hidden" : ""}`}
