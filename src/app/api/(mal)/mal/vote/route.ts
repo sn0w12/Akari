@@ -7,6 +7,7 @@ const REQUIRED_PERCENTAGE = 0.75; // 75% of votes must agree
 const TRUSTED_WEIGHT = 5; // Weight multiplier for trusted users
 const POPUP_MIN_VOTES = 6;
 const POPUP_REQUIRED_PERCENTAGE = 0.8; // 80% agreement to hide popup
+const NEGATIVE_THRESHOLD = -5;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAdmin =
@@ -102,6 +103,34 @@ export async function POST(request: NextRequest) {
                 (voteCount[vote.mal_id] || 0) + vote.weight;
             totalWeightedVotes += vote.weight;
         });
+
+        // Check if we need to remove an incorrect MAL data entry
+        if (voteCount[malId] <= NEGATIVE_THRESHOLD) {
+            // Check if there's an existing entry for this manga+MAL combo
+            const { data: existingMalData } = await supabaseAdmin
+                .from("manga_mal_data")
+                .select("id")
+                .eq("id", mangaId)
+                .eq("mal_id", malId)
+                .single();
+
+            // If an entry exists, remove it
+            if (existingMalData) {
+                await supabaseAdmin
+                    .from("manga_mal_data")
+                    .delete()
+                    .eq("id", mangaId)
+                    .eq("mal_id", malId);
+
+                return NextResponse.json({
+                    success: true,
+                    removed: true,
+                    totalVotes: allVotes.length,
+                    totalWeight: totalWeightedVotes,
+                    message: `MAL data removed due to negative votes`,
+                });
+            }
+        }
 
         // Check if we have enough total weight
         if (totalWeightedVotes < MIN_TOTAL_VOTES) {
