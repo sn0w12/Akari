@@ -51,9 +51,41 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         };
 
         const searchMal = async () => {
-            if (!mangaTitle) return;
+            if (!mangaTitle || !mangaId) return;
 
             try {
+                // First try to get data directly using mangaId
+                const directResponse = await fetch(`/api/mal/${mangaId}`);
+
+                if (directResponse.ok) {
+                    const directData = await directResponse.json();
+
+                    if (directData.success && directData.data) {
+                        // Create a result object from the direct API data
+                        const result: MalSearchResult = {
+                            id: directData.data.mal_id,
+                            name: mangaTitle,
+                            image_url: directData.data.image,
+                            url: `https://myanimelist.net/manga/${directData.data.mal_id}`,
+                            payload: {
+                                media_type: "",
+                                start_year: 0,
+                                published: "",
+                                score: directData.data.score.toString(),
+                                status: "",
+                            },
+                            es_score: 1,
+                        };
+
+                        setFirstResult(result);
+                        setIsVisible(
+                            directData.data.should_show_popup !== false,
+                        );
+                        return;
+                    }
+                }
+
+                // Fall back to search if direct lookup fails
                 const response = await fetch(
                     `/api/mal/search?q=${encodeURIComponent(mangaTitle)}&v=1`,
                 );
@@ -65,7 +97,7 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                     setIsVisible(true);
                 }
             } catch (error) {
-                console.error("Error searching MAL:", error);
+                console.error("Error fetching MAL data:", error);
             }
         };
 
