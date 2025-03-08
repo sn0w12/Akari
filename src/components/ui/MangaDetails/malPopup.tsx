@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface MalSearchResult {
     id: number;
@@ -154,9 +155,12 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                         height={64}
                     />
                     <div className="space-y-1.5">
-                        <p className="text-lg font-semibold leading-none tracking-tight">
+                        <Link
+                            href={`https://myanimelist.net/manga/${firstResult.id}`}
+                            className="text-lg font-semibold leading-none tracking-tight hover:underline"
+                        >
                             {firstResult.name}
-                        </p>
+                        </Link>
                         <p className="text-sm text-muted-foreground">
                             Is this the correct manga?
                         </p>
