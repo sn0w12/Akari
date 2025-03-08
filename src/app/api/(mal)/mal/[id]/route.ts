@@ -42,7 +42,12 @@ export async function GET(
         if (!mangaData) {
             return NextResponse.json(
                 { error: "Manga not found" },
-                { status: 404 },
+                {
+                    status: 404,
+                    headers: {
+                        ...generateCacheHeaders(3600, 60480, 259200),
+                    },
+                },
             );
         }
 
