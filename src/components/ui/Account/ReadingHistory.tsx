@@ -302,10 +302,7 @@ export default function ReadingHistory() {
                                         >
                                             <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
                                                 <Image
-                                                    src={
-                                                        entry.image ||
-                                                        "/placeholder.svg"
-                                                    }
+                                                    src={`/api/image-proxy?imageUrl=${entry.image}`}
                                                     alt={entry.mangaTitle}
                                                     className="object-cover"
                                                     fill
