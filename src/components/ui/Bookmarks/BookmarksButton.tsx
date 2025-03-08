@@ -39,11 +39,15 @@ export default function BookmarksButton({
 }) {
     const [bookmarks, setBookmarks] = useState<ProcessedBookmark[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [showBookmarks, setShowBookmarks] = useState(
-        localStorage.getItem("accountName") ? true : false,
-    );
+    const [showBookmarks, setShowBookmarks] = useState(false);
 
     const loadBookmarks = async () => {
+        const shouldShowBookmarks = localStorage.getItem("accountName")
+            ? true
+            : false;
+        setShowBookmarks(shouldShowBookmarks);
+        if (!shouldShowBookmarks) return;
+
         setIsLoading(true);
         const data = await fetchBookmarks(1);
         let processedBookmarks: ProcessedBookmark[] = [];
