@@ -103,6 +103,12 @@ export const mangaSettings = {
             setCookie("save_reading_history", value, "functional");
         },
     },
+    disableMalPopup: {
+        label: "Disable MAL Popup",
+        description: "Disables the MAL popup on manga pages.",
+        type: "checkbox",
+        default: false,
+    },
 };
 
 export const notificationSettings = {

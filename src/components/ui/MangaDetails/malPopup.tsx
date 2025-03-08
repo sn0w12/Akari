@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getSetting } from "@/lib/settings";
 
 interface MalSearchResult {
     id: number;
@@ -105,7 +106,8 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
             }
         };
 
-        if (mangaTitle && mangaId) {
+        const shouldShow = !getSetting("disableMalPopup");
+        if (mangaTitle && mangaId && shouldShow) {
             checkVoteStatus();
         }
     }, [mangaTitle, mangaId]);
