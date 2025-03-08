@@ -7,7 +7,7 @@ const REQUIRED_PERCENTAGE = 0.75; // 75% of votes must agree
 const TRUSTED_WEIGHT = 5; // Weight multiplier for trusted users
 const POPUP_MIN_VOTES = 6;
 const POPUP_REQUIRED_PERCENTAGE = 0.8; // 80% agreement to hide popup
-const NEGATIVE_THRESHOLD = -5;
+const NEGATIVE_THRESHOLD = -1;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAdmin =
