@@ -29,6 +29,10 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         null,
     );
     const [isVisible, setIsVisible] = useState(false);
+    const [isSearchMode, setIsSearchMode] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<MalSearchResult[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
         const checkVoteStatus = async () => {
@@ -104,7 +108,7 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         if (mangaTitle && mangaId) {
             checkVoteStatus();
         }
-    }, [mangaTitle]);
+    }, [mangaTitle, mangaId]);
 
     async function onSelect(id: number, isPositive: boolean) {
         try {
@@ -148,8 +152,34 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         }
     }
 
-    if (!firstResult || !isVisible || !localStorage.getItem("accountName"))
-        return null;
+    async function handleSearch(e: React.FormEvent) {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        setIsSearching(true);
+        try {
+            const response = await fetch(
+                `/api/mal/search?q=${encodeURIComponent(searchQuery)}&v=1`,
+            );
+            const data = await response.json();
+
+            // Extract all items from categories
+            const allItems: MalSearchResult[] = [];
+            data.categories?.forEach((category: any) => {
+                if (category.items && category.items.length > 0) {
+                    allItems.push(...category.items);
+                }
+            });
+
+            setSearchResults(allItems);
+        } catch (error) {
+            console.error("Error searching MAL:", error);
+        } finally {
+            setIsSearching(false);
+        }
+    }
+
+    if (!isVisible || !localStorage.getItem("accountName")) return null;
 
     return (
         <div
@@ -178,46 +208,108 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                 </svg>
             </button>
             <div className="flex flex-col space-y-4">
-                <div className="flex items-center gap-4">
-                    <Image
-                        src={firstResult.image_url}
-                        alt={firstResult.name}
-                        className="w-16 h-auto object-cover rounded"
-                        width={64}
-                        height={64}
-                    />
-                    <div className="space-y-1.5">
-                        <Link
-                            href={`https://myanimelist.net/manga/${firstResult.id}`}
-                            className="text-lg font-semibold leading-none tracking-tight hover:underline"
-                        >
-                            {firstResult.name}
-                        </Link>
-                        <p className="text-sm text-muted-foreground">
-                            Is this the correct manga?
-                        </p>
-                    </div>
-                </div>
-                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                    <button
-                        onClick={() => {
-                            onSelect(firstResult.id, false);
-                            setIsVisible(false);
-                        }}
-                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
-                    >
-                        No
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSelect(firstResult.id, true);
-                            setIsVisible(false);
-                        }}
-                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
-                    >
-                        Yes
-                    </button>
-                </div>
+                {isSearchMode ? (
+                    <>
+                        <h3 className="text-lg font-semibold">
+                            Find the correct manga
+                        </h3>
+                        <form onSubmit={handleSearch} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search for manga..."
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isSearching}
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4"
+                            >
+                                {isSearching ? "Searching..." : "Search"}
+                            </button>
+                        </form>
+
+                        {searchResults.length > 0 && (
+                            <div className="max-h-80 overflow-auto">
+                                {searchResults.map((result) => (
+                                    <div
+                                        key={result.id}
+                                        className="flex items-center gap-3 p-2 hover:bg-accent rounded cursor-pointer"
+                                        onClick={() => {
+                                            onSelect(result.id, true);
+                                            setIsVisible(false);
+                                        }}
+                                    >
+                                        <Image
+                                            src={result.image_url}
+                                            alt={result.name}
+                                            className="w-10 h-auto object-cover rounded"
+                                            width={40}
+                                            height={60}
+                                        />
+                                        <div>
+                                            <p className="font-medium">
+                                                {result.name}
+                                            </p>
+                                            {result.payload?.score && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    Score:{" "}
+                                                    {result.payload.score}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </>
+                ) : firstResult ? (
+                    <>
+                        <div className="flex items-center gap-4">
+                            <Image
+                                src={firstResult.image_url}
+                                alt={firstResult.name}
+                                className="w-16 h-auto object-cover rounded"
+                                width={64}
+                                height={64}
+                            />
+                            <div className="space-y-1.5">
+                                <Link
+                                    href={`https://myanimelist.net/manga/${firstResult.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-lg font-semibold leading-none tracking-tight hover:underline"
+                                >
+                                    {firstResult.name}
+                                </Link>
+                                <p className="text-sm text-muted-foreground">
+                                    Is this the correct manga?
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                            <button
+                                onClick={() => {
+                                    onSelect(firstResult.id, false);
+                                    setIsSearchMode(true);
+                                }}
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                            >
+                                No
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onSelect(firstResult.id, true);
+                                    setIsVisible(false);
+                                }}
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
+                            >
+                                Yes
+                            </button>
+                        </div>
+                    </>
+                ) : null}
             </div>
         </div>
     );
