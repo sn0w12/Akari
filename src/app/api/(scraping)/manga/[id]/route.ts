@@ -11,7 +11,7 @@ import {
     performanceMetrics,
     clearPerformanceMetrics,
 } from "@/lib/utils";
-import { env } from "process";
+import { formatDate } from "@/lib/mangaNato";
 
 export async function GET(
     req: Request,
@@ -101,13 +101,15 @@ export async function GET(
                 genres.push($(element).text().trim());
             });
 
-            const updated = $(".manga-info-text li")
-                .filter((_, element) =>
-                    $(element).text().trim().startsWith("Last updated"),
-                )
-                .text()
-                .replace("Last updated :", "")
-                .trim();
+            const updated = formatDate(
+                $(".manga-info-text li")
+                    .filter((_, element) =>
+                        $(element).text().trim().startsWith("Last updated"),
+                    )
+                    .text()
+                    .replace("Last updated :", "")
+                    .trim(),
+            );
             const view = $(".manga-info-text li")
                 .filter((_, element) =>
                     $(element).text().trim().startsWith("View"),
@@ -126,9 +128,9 @@ export async function GET(
                     .find("span:nth-child(2)")
                     .text()
                     .trim();
-                const chapterTime = chapterElement
-                    .find("span:last-child")
-                    .attr("title");
+                const chapterTime = formatDate(
+                    chapterElement.find("span:last-child").attr("title") || "",
+                );
 
                 if (!chapterTime) {
                     return;

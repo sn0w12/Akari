@@ -3,8 +3,6 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import { getMangaArrayFromSupabase } from "./supabase";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import db from "./db";
-import { checkIfBookmarked } from "./bookmarks";
 import { time, timeEnd } from "@/lib/utils";
 
 export function getUserData(
@@ -29,6 +27,17 @@ export async function replaceImages(manga: SmallManga[]) {
             m.image = malData.imageUrl;
         }
     });
+}
+
+export function formatDate(date: string) {
+    const dateObj = new Date(date);
+    const formattedDate = dateObj.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour12: true,
+    });
+    return formattedDate;
 }
 
 export async function processMangaList(url: string, page: string) {

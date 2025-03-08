@@ -81,11 +81,34 @@ export async function GET(request: Request): Promise<Response> {
                 currentChapterText.match(/Chapter (\d+)/)?.[1] || "";
 
             // Get last update time
-            const lastUpdated = $element
+            const rawLastUpdated = $element
                 .find(".chapter-datecreate")
                 .text()
                 .replace("Last updated :", "")
                 .trim();
+
+            // Format the last updated time
+            let lastUpdated = rawLastUpdated;
+            if (rawLastUpdated.includes("-")) {
+                // Handle date format "03-02 14:47"
+                const [datePart] = rawLastUpdated.split(" "); // Take only the date part
+                const [month, day] = datePart.split("-");
+                const date = new Date();
+                date.setMonth(parseInt(month) - 1);
+                date.setDate(parseInt(day));
+                lastUpdated = date.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                });
+            } else if (rawLastUpdated.includes("hour")) {
+                // Handle "n hour ago" format
+                const hours = parseInt(rawLastUpdated);
+                lastUpdated = `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+            } else if (rawLastUpdated.includes("day")) {
+                // Handle "n day ago" format
+                const days = parseInt(rawLastUpdated);
+                lastUpdated = `${days} day${days !== 1 ? "s" : ""} ago`;
+            }
 
             const bookmark: Bookmark = {
                 up_to_date:
