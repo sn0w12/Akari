@@ -17,10 +17,10 @@ export async function POST(request: Request): Promise<Response> {
             mangaIdentifier,
             mangaTitle,
             image,
-            userId,
         } = chapter;
 
         const cookieStore = await cookies();
+        const userId = cookieStore.get("user_id")?.value;
 
         const functionalConsent = hasConsentFor(cookieStore, "functional");
         const canSaveMangaCookie = cookieStore.get(
@@ -52,7 +52,7 @@ export async function POST(request: Request): Promise<Response> {
         formData.append("comic_id", mangaId);
         formData.append("chapter_id", chapterId);
 
-        const response = await fetch(
+        const historyResponse = await fetch(
             `https://${process.env.NEXT_MANGA_URL}/action/add-history`,
             {
                 method: "POST",
@@ -72,24 +72,29 @@ export async function POST(request: Request): Promise<Response> {
             },
         );
 
-        /*
         await saveReadingHistoryEntry(userId, canSaveManga, {
             mangaIdentifier,
             mangaTitle,
             image,
             chapterIdentifier,
             chapterTitle,
+            mangaId,
+            chapterId,
         }).catch((err) => {
             // Log error but don't fail the request
             console.error("Failed to save reading history to database:", err);
-            return null;
         });
-        */
 
-        const data = await response.text();
+        const data = await historyResponse.text();
         const result = JSON.parse(data);
+        const setCookieHeaders = historyResponse.headers.getSetCookie();
+        const response = NextResponse.json(result);
 
-        return NextResponse.json(result);
+        setCookieHeaders.forEach((cookie) => {
+            response.headers.append("Set-Cookie", cookie);
+        });
+
+        return response;
     } catch (error) {
         console.error("Error in /api/bookmarks/update:", error);
         return NextResponse.json(

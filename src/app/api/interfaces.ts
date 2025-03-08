@@ -83,6 +83,7 @@ export interface HqMangaCacheItem {
     is_strip: boolean | undefined;
     up_to_date: boolean | undefined;
     updated_at?: string | undefined;
+    should_show_popup?: boolean;
 }
 
 export interface Bookmark {
@@ -107,16 +108,19 @@ export interface Bookmark {
 }
 
 export interface MalSync {
-    identifier: string;
+    success: boolean;
+    data: MalData;
+}
+
+export interface MalData {
+    id: string;
+    mal_id: number;
     image: string;
-    malId: number;
-    aniId: number;
-    page: string;
-    title: string;
-    type: string;
-    url: string;
-    malUrl: string;
-    aniUrl: string;
+    description: string;
+    score: number;
+    created_at: string;
+    updated_at: string;
+    should_show_popup: boolean;
 }
 
 export interface Chapter {

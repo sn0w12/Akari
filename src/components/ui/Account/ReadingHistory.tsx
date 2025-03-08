@@ -132,16 +132,14 @@ export default function ReadingHistory() {
                                 Reading Activity
                             </CardTitle>
                             <CardDescription>
-                                <p>
-                                    View your reading patterns over time. See{" "}
-                                    <Link
-                                        className="text-primary hover:underline hover:text-accent-color"
-                                        href={"/settings?id=saveReadingHistory"}
-                                    >
-                                        settings
-                                    </Link>{" "}
-                                    to turn off tracking.
-                                </p>
+                                View your reading patterns over time. See{" "}
+                                <Link
+                                    className="text-primary hover:underline hover:text-accent-color"
+                                    href={"/settings?id=saveReadingHistory"}
+                                >
+                                    settings
+                                </Link>{" "}
+                                to turn off tracking.
                             </CardDescription>
                         </div>
                         <Combo

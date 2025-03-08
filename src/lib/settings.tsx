@@ -64,6 +64,11 @@ export const generalSettings = {
         description: "Open settings page instead of the settings dialog.",
         type: "checkbox",
         default: false,
+        onChange: (value: boolean) => {
+            if (value && !window.location.pathname.includes("/settings")) {
+                window.location.assign("/settings");
+            }
+        },
     },
 };
 

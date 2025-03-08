@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import { HqMangaCacheItem, MalSync } from "@/app/api/interfaces";
+import { HqMangaCacheItem, MalSync, MalData } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
 import { akariUrls } from "./consts";
 
@@ -89,50 +89,14 @@ async function getAniData(identifier: number) {
     }
 }
 
-async function getHqData(malSyncData: MalSync) {
+async function getHqData(malSyncData: MalData) {
     let data = null;
 
-    if (malSyncData.malId) {
-        data = await getMalData(malSyncData.malId);
-    } else if (malSyncData.aniId) {
-        data = await getAniData(malSyncData.aniId);
+    if (malSyncData.mal_id) {
+        data = await getMalData(malSyncData.mal_id);
     } else return null;
 
     return data;
-}
-
-export async function updateMalSync(
-    identifier: string,
-    data: HqMangaCacheItem,
-) {
-    if (!akariUrls.includes(window.location.hostname)) {
-        console.log("Skipping MAL Sync update - unauthorized hostname");
-        return null;
-    }
-
-    try {
-        const response = await fetch("/api/manga/malsync/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                identifier,
-                mangaData: data,
-            }),
-        });
-
-        if (!response.ok) {
-            console.error(`API error: ${response.status}`);
-            return null;
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error("Error updating MAL Sync:", error);
-    }
-    return null;
 }
 
 export async function fetchMalData(
@@ -156,7 +120,7 @@ export async function fetchMalData(
     for (let attempt = 0; attempt <= retryCount; attempt++) {
         try {
             const malSyncResponse = await fetch(
-                `https://api.malsync.moe/page/MangaNato/${encodeURIComponent(identifier)}`,
+                `api/mal/${encodeURIComponent(identifier)}`,
             );
 
             if (malSyncResponse.status === 429 && attempt < retryCount) {
@@ -171,21 +135,20 @@ export async function fetchMalData(
                 return null;
             }
 
-            const malSyncResponseData: MalSync = await malSyncResponse.json();
-            if (!malSyncResponseData) {
+            const malSyncResponseJson: MalSync = await malSyncResponse.json();
+            if (!malSyncResponseJson.success) {
                 return null;
             }
+            const malSyncResponseData = malSyncResponseJson.data;
 
             const data = await getHqData(malSyncResponseData);
             if (!data) {
                 return null;
             }
 
-            if (malSyncResponseData.malUrl) {
-                data["malUrl"] = malSyncResponseData.malUrl;
-            }
-            if (malSyncResponseData.aniUrl) {
-                data["aniUrl"] = malSyncResponseData.aniUrl;
+            if (malSyncResponseData.mal_id) {
+                data["malUrl"] =
+                    `https://myanimelist.net/manga/${malSyncResponseData.mal_id}`;
             }
             if (data.description != null) {
                 data.description = data.description
@@ -196,7 +159,6 @@ export async function fetchMalData(
             if (useCache) {
                 await db.updateCache(db.hqMangaCache, identifier, data);
             }
-            updateMalSync(identifier, data);
             return data;
         } catch (error) {
             console.error(error);

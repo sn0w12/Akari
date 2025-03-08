@@ -1,12 +1,22 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Link as LinkIcon, ArrowLeftCircle } from "lucide-react";
+import { Link as LinkIcon } from "lucide-react";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
-import db from "@/lib/db";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMalAuth, isAccountValid } from "@/lib/secondaryAccounts";
 import Link from "next/link";
@@ -29,6 +39,18 @@ import {
     logoutSecondaryAccount,
 } from "@/lib/auth";
 
+const formSchema = z.object({
+    username: z.string().min(2, {
+        message: "Username must be at least 2 characters.",
+    }),
+    password: z.string().min(1, {
+        message: "Password is required.",
+    }),
+    captcha: z.string().min(1, {
+        message: "CAPTCHA is required.",
+    }),
+});
+
 export default function AccountClient() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -46,6 +68,15 @@ export default function AccountClient() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const tabParam = searchParams.get("tab");
     const [activeTab, setActiveTab] = useState<string>("account");
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            username: "",
+            password: "",
+            captcha: "",
+        },
+    });
 
     useEffect(() => {
         // Check if user is logged in
@@ -133,15 +164,14 @@ export default function AccountClient() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true);
 
         try {
             const response = await submitLogin(
-                username,
-                password,
-                captcha,
+                values.username,
+                values.password,
+                values.captcha,
                 token,
                 sessionCookies,
             );
@@ -330,101 +360,102 @@ export default function AccountClient() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label
-                                    htmlFor="username"
-                                    className="block text-sm font-medium mb-2"
-                                >
-                                    Username
-                                </label>
-                                <Input
-                                    id="username"
-                                    type="text"
-                                    placeholder="Username..."
-                                    value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block text-sm font-medium mb-2"
-                                >
-                                    Password
-                                </label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="Password..."
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="captcha"
-                                    className="block text-sm font-medium mb-2"
-                                >
-                                    CAPTCHA
-                                </label>
-                                <div className="flex items-center w-full">
-                                    {!captchaUrl ? (
-                                        <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
-                                            <Skeleton className="w-full h-full" />
-                                        </div>
-                                    ) : (
-                                        <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
-                                            <Image
-                                                src={captchaUrl}
-                                                loading="eager"
-                                                alt="CAPTCHA"
-                                                className="object-contain"
-                                                width={100}
-                                                height={45}
-                                            />
-                                        </div>
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-4"
+                            >
+                                <FormField
+                                    control={form.control}
+                                    name="username"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Username</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Username..."
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                    <Input
-                                        id="captcha"
-                                        type="text"
-                                        placeholder="Enter CAPTCHA..."
-                                        value={captcha}
-                                        onChange={(e) =>
-                                            setCaptcha(e.target.value)
-                                        }
-                                        required
-                                    />
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Password</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="Password..."
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="captcha"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>CAPTCHA</FormLabel>
+                                            <div className="flex items-center w-full">
+                                                {!captchaUrl ? (
+                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
+                                                        <Skeleton className="w-full h-full" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
+                                                        <Image
+                                                            src={captchaUrl}
+                                                            loading="eager"
+                                                            alt="CAPTCHA"
+                                                            className="object-contain"
+                                                            width={100}
+                                                            height={45}
+                                                        />
+                                                    </div>
+                                                )}
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Enter CAPTCHA..."
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {loginError && (
+                                    <p className="text-red-500 text-sm">
+                                        {loginError}
+                                    </p>
+                                )}
+
+                                <Button type="submit" className="w-full">
+                                    Login
+                                </Button>
+
+                                <div className="text-center pt-2">
+                                    <Link
+                                        href="/register"
+                                        className="text-blue-500 hover:text-blue-400 text-sm"
+                                    >
+                                        Don&apos;t have an account? Register
+                                        here
+                                    </Link>
                                 </div>
-                            </div>
-
-                            {loginError && (
-                                <p className="text-red-500 text-sm">
-                                    {loginError}
-                                </p>
-                            )}
-
-                            <Button type="submit" className="w-full">
-                                Login
-                            </Button>
-
-                            <div className="text-center pt-2">
-                                <Link
-                                    href="/register"
-                                    className="text-blue-500 hover:text-blue-400 text-sm"
-                                >
-                                    Don&apos;t have an account? Register here
-                                </Link>
-                            </div>
-                        </form>
+                            </form>
+                        </Form>
                     </CardContent>
                 </Card>
             )}

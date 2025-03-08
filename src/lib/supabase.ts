@@ -37,18 +37,21 @@ export function encodeUserId(userId: string): string {
 function transformMangaData(data: any): HqMangaCacheItem | null {
     if (!data) return null;
     return {
-        identifier: data.identifier,
-        titles: data.titles,
-        imageUrl: data.image_url,
-        smallImageUrl: data.small_image_url,
-        url: data.url,
+        identifier: data.id,
+        titles: [], // MAL data doesn't include titles
+        imageUrl: data.image,
+        smallImageUrl: data.image,
+        url: "",
         score: data.score,
         description: data.description,
-        malUrl: data.mal_url,
-        aniUrl: data.ani_url,
+        malUrl: data.mal_id
+            ? `https://myanimelist.net/manga/${data.mal_id}`
+            : "",
+        aniUrl: "",
         up_to_date: undefined,
         is_strip: undefined,
         updated_at: data.updated_at,
+        should_show_popup: data.should_show_popup,
     };
 }
 
@@ -60,9 +63,9 @@ export async function getMangaFromSupabase(identifier: string) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("mal_data")
+            .from("manga_mal_data")
             .select("*")
-            .eq("identifier", identifier)
+            .eq("id", identifier)
             .single();
 
         if (error) {
@@ -87,10 +90,10 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("mal_data")
-            .select("identifier, image_url")
-            .in("identifier", identifiers)
-            .order("identifier", { ascending: true });
+            .from("manga_mal_data")
+            .select("id, image")
+            .in("id", identifiers)
+            .order("id", { ascending: true });
 
         if (error) {
             if (error.code !== "PGRST116") {
@@ -99,45 +102,14 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
             return [];
         }
 
-        // Return a simplified structure
         return data.map((item) => ({
-            identifier: item.identifier,
-            imageUrl: item.image_url,
+            identifier: item.id,
+            imageUrl: item.image,
         }));
     } catch (e) {
         console.error("Supabase query error:", e);
         return [];
     }
-}
-
-export async function saveMangaToSupabase(identifier: string, mangaData: any) {
-    if (!supabaseAdmin) {
-        console.warn("Supabase not initialized, skipping query");
-        return null;
-    }
-    const { data, error } = await supabaseAdmin
-        .from("mal_data")
-        .upsert([
-            {
-                identifier,
-                titles: mangaData.titles,
-                image_url: mangaData.imageUrl,
-                small_image_url: mangaData.smallImageUrl,
-                url: mangaData.url,
-                score: mangaData.score,
-                description: mangaData.description,
-                mal_url: mangaData.malUrl,
-                ani_url: mangaData.aniUrl,
-                updated_at: new Date().toISOString(),
-            },
-        ])
-        .select();
-
-    if (error) {
-        console.error("Error saving to Supabase:", error);
-        return null;
-    }
-    return data;
 }
 
 /**
@@ -165,10 +137,10 @@ export async function saveReadingHistoryEntry(
             .from("reading_history")
             .upsert({
                 user_id: encodedUserId,
-                manga_id: entry.mangaId,
+                manga_id: entry.mangaIdentifier,
                 manga_title: entry.mangaTitle,
                 image: entry.image,
-                chapter_id: entry.chapterId,
+                chapter_id: entry.chapterIdentifier,
                 chapter_title: entry.chapterTitle,
                 read_at: new Date().toISOString(),
             })
@@ -233,18 +205,18 @@ export async function getUserReadingHistory(
         // Get unique manga IDs to fetch high-quality images
         const mangaIds = [...new Set(data.map((entry) => entry.manga_id))];
 
-        // Fetch high-quality images from mal_data
+        // Fetch high-quality images from manga_mal_data
         const { data: malData, error: malError } = await supabaseAdmin
-            .from("mal_data")
-            .select("identifier, image_url")
-            .in("identifier", mangaIds);
+            .from("manga_mal_data")
+            .select("id, image")
+            .in("id", mangaIds);
 
         // Create a map of manga_id to high-quality image URL
         const highQualityImages: Record<string, string> = {};
         if (malData && !malError) {
             malData.forEach((item) => {
-                if (item.image_url) {
-                    highQualityImages[item.identifier] = item.image_url;
+                if (item.image) {
+                    highQualityImages[item.id] = item.image;
                 }
             });
         }
@@ -464,5 +436,82 @@ export async function deleteAllReadingHistory(
     } catch (e) {
         console.error("Exception deleting all reading history:", e);
         return false;
+    }
+}
+
+interface MangaMalData {
+    id: string;
+    mal_id: number;
+    image: string;
+    description: string;
+    score: number;
+}
+
+/**
+ * Save MAL data for a manga
+ */
+export async function saveMangaMalData(
+    data: MangaMalData,
+): Promise<MangaMalData | null> {
+    if (!supabaseAdmin) {
+        console.warn("Supabase admin not initialized");
+        return null;
+    }
+
+    try {
+        const { data: savedData, error } = await supabaseAdmin
+            .from("manga_mal_data")
+            .upsert({
+                id: data.id,
+                mal_id: data.mal_id,
+                image: data.image,
+                description: data.description,
+                score: data.score,
+                updated_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error saving MAL data:", error);
+            return null;
+        }
+
+        return savedData;
+    } catch (e) {
+        console.error("Exception saving MAL data:", e);
+        return null;
+    }
+}
+
+/**
+ * Get MAL data for a manga
+ */
+export async function getMangaMalData(
+    mangaId: string,
+): Promise<MangaMalData | null> {
+    if (!supabasePublic) {
+        console.warn("Supabase not initialized");
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabasePublic
+            .from("manga_mal_data")
+            .select("*")
+            .eq("id", mangaId)
+            .single();
+
+        if (error) {
+            if (error.code !== "PGRST116") {
+                console.error("Error fetching MAL data:", error);
+            }
+            return null;
+        }
+
+        return data;
+    } catch (e) {
+        console.error("Exception fetching MAL data:", e);
+        return null;
     }
 }
