@@ -34,6 +34,9 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<MalSearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [originalSuggestionId, setOriginalSuggestionId] = useState<
+        number | null
+    >(null);
 
     useEffect(() => {
         if (isSearchMode && mangaTitle && !searchQuery) {
@@ -67,7 +70,9 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
 
             try {
                 // First try to get data directly using mangaId
-                const directResponse = await fetch(`/api/mal/${mangaId}`);
+                const directResponse = await fetch(
+                    `/api/mal/${mangaId}?includeVotes=true`,
+                );
 
                 if (directResponse.ok) {
                     const directData = await directResponse.json();
@@ -90,6 +95,7 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                         };
 
                         setFirstResult(result);
+                        setOriginalSuggestionId(directData.data.mal_id);
                         setIsVisible(
                             directData.data.should_show_popup !== false,
                         );
@@ -115,6 +121,7 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
 
                 if (firstItem) {
                     setFirstResult(firstItem);
+                    setOriginalSuggestionId(firstItem.id);
                     setIsVisible(true);
                 }
             } catch (error) {
@@ -205,7 +212,13 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
             className="fixed right-0 sm:right-4 top-4 z-50 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-lg"
         >
             <button
-                onClick={() => setIsVisible(false)}
+                onClick={() => {
+                    // When closing the popup in search mode, send a negative vote for the original suggestion
+                    if (isSearchMode && originalSuggestionId !== null) {
+                        onSelect(originalSuggestionId, false);
+                    }
+                    setIsVisible(false);
+                }}
                 className="absolute right-4 top-4 p-1 hover:bg-accent rounded-full"
                 aria-label="Close popup"
             >
@@ -258,6 +271,17 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                                         key={result.id}
                                         className="flex items-center gap-3 p-2 hover:bg-accent rounded cursor-pointer"
                                         onClick={() => {
+                                            // If user selects a different result, send a negative vote for the original
+                                            if (
+                                                originalSuggestionId !== null &&
+                                                originalSuggestionId !==
+                                                    result.id
+                                            ) {
+                                                onSelect(
+                                                    originalSuggestionId,
+                                                    false,
+                                                );
+                                            }
                                             onSelect(result.id, true);
                                             setIsVisible(false);
                                         }}
@@ -284,6 +308,21 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                                 ))}
                             </div>
                         )}
+
+                        <div className="flex justify-end mt-2">
+                            <button
+                                onClick={() => {
+                                    // User explicitly confirms none of the results match
+                                    if (originalSuggestionId !== null) {
+                                        onSelect(originalSuggestionId, false);
+                                    }
+                                    setIsVisible(false);
+                                }}
+                                className="text-sm text-muted-foreground hover:underline"
+                            >
+                                None of these match
+                            </button>
+                        </div>
                     </>
                 ) : firstResult ? (
                     <>
