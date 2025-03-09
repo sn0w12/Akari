@@ -36,6 +36,13 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
     const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
+        if (isSearchMode && mangaTitle && !searchQuery) {
+            setSearchQuery(mangaTitle);
+            handleSearch(null);
+        }
+    }, [isSearchMode, mangaTitle, searchQuery]);
+
+    useEffect(() => {
         const checkVoteStatus = async () => {
             try {
                 const response = await fetch(
@@ -97,6 +104,15 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                 const data = await response.json();
                 const firstItem = data.categories[0]?.items[0] || null;
 
+                const allItems: MalSearchResult[] = [];
+                data.categories?.forEach((category: any) => {
+                    if (category.items && category.items.length > 0) {
+                        allItems.push(...category.items);
+                    }
+                });
+
+                setSearchResults(allItems);
+
                 if (firstItem) {
                     setFirstResult(firstItem);
                     setIsVisible(true);
@@ -154,8 +170,8 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         }
     }
 
-    async function handleSearch(e: React.FormEvent) {
-        e.preventDefault();
+    async function handleSearch(e: React.FormEvent | null) {
+        if (e) e.preventDefault();
         if (!searchQuery.trim()) return;
 
         setIsSearching(true);
@@ -215,7 +231,10 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                         <h3 className="text-lg font-semibold">
                             Find the correct manga
                         </h3>
-                        <form onSubmit={handleSearch} className="flex gap-2">
+                        <form
+                            onSubmit={(e) => handleSearch(e)}
+                            className="flex gap-2"
+                        >
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -293,7 +312,6 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
                             <button
                                 onClick={() => {
-                                    onSelect(firstResult.id, false);
                                     setIsSearchMode(true);
                                 }}
                                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
