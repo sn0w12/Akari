@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { generateCacheHeaders } from "@/lib/cache";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -18,20 +19,29 @@ export async function GET(request: Request) {
                 headers: {
                     "User-Agent":
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
-                    Accept: "image/avif,image/jxl,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
+                    Accept: "application/json, text/javascript, */*; q=0.01",
                     "Accept-Language": "en-US,en;q=0.5",
                     "Accept-Encoding": "gzip, deflate, br, zstd",
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8",
+                    "X-Requested-With": "XMLHttpRequest",
                     "Sec-GPC": "1",
                     Connection: "keep-alive",
+                    Host: `${process.env.NEXT_MANGA_URL}`,
                     Referer: `https://${process.env.NEXT_MANGA_URL}/`,
-                    "Sec-Fetch-Dest": "image",
-                    "Sec-Fetch-Mode": "no-cors",
-                    "Sec-Fetch-Site": "cross-site",
+                    "Sec-Fetch-Dest": "empty",
+                    "Sec-Fetch-Mode": "cors",
+                    "Sec-Fetch-Site": "same-origin",
+                    TE: "trailers",
                 },
             },
         );
         const data = await response.json();
-        return NextResponse.json(data);
+        return NextResponse.json(data, {
+            headers: {
+                ...generateCacheHeaders(600),
+            },
+        });
     } catch (error) {
         return NextResponse.json(
             { error: "Failed to fetch search results" },
