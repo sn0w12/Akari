@@ -13,6 +13,9 @@ export async function GET() {
                 method: "GET",
                 headers: {
                     cookie: cookieStore.toString(),
+                    referer: `https://${process.env.NEXT_MANGA_URL}`,
+                    host: `${process.env.NEXT_MANGA_URL}`,
+                    origin: `${process.env.NEXT_MANGA_URL}`,
                 },
             },
         );
@@ -42,6 +45,7 @@ export async function GET() {
         const res = NextResponse.json(unreadBookmarks, {
             headers: {
                 "Content-Type": "application/json",
+                ...generateClientCacheHeaders(300),
             },
         });
 
