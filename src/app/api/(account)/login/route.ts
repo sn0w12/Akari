@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
 
         response.headers.append(
             "Set-Cookie",
-            `user_id=${loginResponse.data.data.id}; Path=/;`,
+            `user_id=${loginResponse.data.data.id}; Path=/; Max-Age=2592000;`,
         );
 
         return response;
