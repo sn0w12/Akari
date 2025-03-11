@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
+import { fetchRegisterCaptcha } from "@/lib/auth";
 
 export default function Register() {
     const [username, setUsername] = useState("");
@@ -18,27 +19,31 @@ export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
     const [captcha, setCaptcha] = useState("");
     const [captchaUrl, setCaptchaUrl] = useState("");
-    const [ciSessionCookie, setCiSessionCookie] = useState("");
+    const [token, setToken] = useState("");
+    const [sessionCookies, setSessionCookies] = useState([]);
     const router = useRouter();
 
-    const fetchCaptcha = async () => {
-        if (captchaUrl && ciSessionCookie) {
+    const handleFetchCaptcha = async () => {
+        if (captchaUrl && sessionCookies.length > 0) {
             return;
         }
 
         try {
-            const response = await fetch("/api/register/captcha");
-            const data = await response.json();
-            setCaptchaUrl(data.captchaUrl);
-            setCiSessionCookie(data.ciSessionCookie[0]);
+            const {
+                captchaUrl: url,
+                sessionCookies: cookies,
+                token,
+            } = await fetchRegisterCaptcha();
+            setCaptchaUrl(url);
+            setToken(token);
+            setSessionCookies(cookies);
         } catch (error) {
-            console.error("Failed to fetch CAPTCHA:", error);
             setError("Failed to fetch CAPTCHA.");
         }
     };
 
     useEffect(() => {
-        fetchCaptcha();
+        handleFetchCaptcha();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -52,32 +57,33 @@ export default function Register() {
         }
 
         try {
-            const response = await fetch("/api/register/submit", {
+            const response = await fetch("/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    cookie: ciSessionCookie,
+                    cookie: sessionCookies.join("; "),
                 },
                 body: JSON.stringify({
                     username,
                     password,
-                    display,
+                    displayname: display,
                     email,
                     captcha,
-                    ciSessionCookie,
+                    cookies: sessionCookies,
+                    token,
                 }),
             });
 
             if (response.ok) {
-                router.push("/?account=true");
+                router.push("/account");
             } else {
                 const data = await response.json();
                 setError(data.message || "Registration failed");
-                fetchCaptcha(); // Refresh captcha on error
+                handleFetchCaptcha(); // Refresh captcha on error
             }
         } catch (err) {
             setError("An error occurred during registration");
-            fetchCaptcha(); // Refresh captcha on error
+            handleFetchCaptcha(); // Refresh captcha on error
         }
         setIsLoading(false);
     };
@@ -150,16 +156,16 @@ export default function Register() {
                 <label className="text-sm font-medium">CAPTCHA</label>
                 <div className="flex items-center gap-2">
                     {!captchaUrl ? (
-                        <div className="w-[100px] h-[45px] flex-shrink-0">
+                        <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
                             <Skeleton className="w-full h-full" />
                         </div>
                     ) : (
-                        <div className="w-[100px] h-[45px] flex-shrink-0">
+                        <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
                             <Image
-                                src={`/api/image-proxy?imageUrl=${captchaUrl}`}
+                                src={captchaUrl}
                                 loading="eager"
                                 alt="CAPTCHA"
-                                className="max-w-full max-h-full object-contain"
+                                className="object-contain"
                                 width={100}
                                 height={45}
                             />

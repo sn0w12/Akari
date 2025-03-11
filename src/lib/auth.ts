@@ -86,3 +86,18 @@ export async function logoutSecondaryAccount(account: SecondaryAccount) {
     sessionStorage.removeItem(account.sessionKey);
     await fetch(account.apiEndpoint);
 }
+
+export async function fetchRegisterCaptcha() {
+    try {
+        const response = await fetch("/api/register");
+        const data = await response.json();
+        return {
+            captchaUrl: data.captcha,
+            token: data.token,
+            sessionCookies: data.cookies,
+        };
+    } catch (error) {
+        console.error("Failed to fetch CAPTCHA:", error);
+        throw new Error("Failed to fetch CAPTCHA.");
+    }
+}
