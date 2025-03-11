@@ -8,6 +8,17 @@ import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "./LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
 import { imageUrl } from "@/lib/utils";
+import { ChevronsUpDownIcon, Loader2Icon } from "lucide-react";
+import { useRef, useState } from "react";
+import { ChaptersPopup } from "./ChaptersPopup";
+
+interface Chapter {
+    id: string;
+    name: string;
+    path: string;
+    view: string;
+    createdAt: string;
+}
 
 const DesktopBookmarkCard: React.FC<{
     bookmark: Bookmark;
@@ -18,6 +29,38 @@ const DesktopBookmarkCard: React.FC<{
         continueReadingText,
         buttonColor,
     } = getButtonInfo(bookmark);
+    const [chapters, setChapters] = useState<Chapter[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    async function showChapters() {
+        if (!mangaIdentifier) return;
+
+        const newShowState = !showPopup;
+        setShowPopup(!showPopup);
+        if (newShowState && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            setPopupPosition({
+                top: rect.bottom,
+                left: rect.right,
+            });
+        }
+
+        if (chapters.length === 0 && !showPopup) {
+            setIsLoading(true);
+            try {
+                const response = await fetch(`/api/manga/${mangaIdentifier}`);
+                const mangaData = await response.json();
+                setChapters(mangaData.data.chapterList);
+            } catch (error) {
+                console.error("Error loading chapters:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    }
 
     return (
         <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
@@ -37,29 +80,53 @@ const DesktopBookmarkCard: React.FC<{
                     />
                 </HoverLink>
             </div>
-            <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
+            <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between relative">
                 <div className="mb-4">
                     <HoverLink
                         href={`/manga/${mangaIdentifier}`}
                         prefetch={false}
                     >
-                        <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
+                        <h3 className="font-bold text-2xl mb-2 mr-20 hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
                     </HoverLink>
-                    {/* Continue Reading Button */}
-                    <HoverLink
-                        href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
-                        rel="noopener noreferrer"
-                        className="block mt-4 w-fit"
-                        prefetch={false}
-                    >
-                        <Button
-                            className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
+                    <div className="flex flex-row gap-2 mt-4">
+                        {/* Continue Reading Button */}
+                        <HoverLink
+                            href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
+                            rel="noopener noreferrer"
+                            className="block w-fit"
+                            prefetch={false}
                         >
-                            {continueReadingText}
+                            <Button
+                                className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
+                            >
+                                {continueReadingText}
+                            </Button>
+                        </HoverLink>
+                        <Button
+                            ref={buttonRef}
+                            className="w-10 p-0"
+                            onClick={showChapters}
+                            disabled={isLoading}
+                        >
+                            {isLoading && !showPopup ? (
+                                <Loader2Icon className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <ChevronsUpDownIcon className="h-5 w-5" />
+                            )}
                         </Button>
-                    </HoverLink>
+                    </div>
+
+                    {showPopup && (
+                        <ChaptersPopup
+                            chapters={chapters}
+                            onClose={() => setShowPopup(false)}
+                            mangaIdentifier={mangaIdentifier || ""}
+                            isLoading={isLoading}
+                            position={popupPosition}
+                        />
+                    )}
                 </div>
                 {LatestChapterInfo({
                     bookmark,
