@@ -20,6 +20,8 @@ import ErrorComponent from "./ui/error";
 import { MalPopup } from "./ui/MangaDetails/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { MangaDetails } from "@/app/api/interfaces";
+import { ReportMalLink } from "./ui/MangaDetails/ReportMalLink";
+import { imageUrl } from "@/lib/utils";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -109,10 +111,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={
-                            "/api/image-proxy?imageUrl=" +
-                            (manga.malData?.imageUrl ?? manga.imageUrl)
-                        }
+                        src={imageUrl(
+                            manga.malData?.imageUrl ?? manga.imageUrl,
+                        )}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
@@ -174,20 +175,23 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 </Link>
                             )}
                             {manga.malData?.malUrl && (
-                                <Link
-                                    href={manga.malData.malUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    prefetch={false}
-                                >
-                                    <Image
-                                        src="/img/MAL-logo.webp"
-                                        alt="MyAnimeList Logo"
-                                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                                        width={40}
-                                        height={40}
-                                    />
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <Link
+                                        href={manga.malData.malUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        prefetch={false}
+                                    >
+                                        <Image
+                                            src="/img/MAL-logo.webp"
+                                            alt="MyAnimeList Logo"
+                                            className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
+                                            width={40}
+                                            height={40}
+                                        />
+                                    </Link>
+                                    <ReportMalLink mangaId={manga.identifier} />
+                                </div>
                             )}
                         </div>
                     </div>

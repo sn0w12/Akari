@@ -297,7 +297,7 @@ export default function ReadingHistory() {
                                 >
                                     <div className="w-28 h-full mb-0 shrink-0">
                                         <Link
-                                            href={`/manga/${entry.mangaId}`}
+                                            href={`/manga/${entry.mangaIdentifier}`}
                                             className="block"
                                         >
                                             <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
@@ -313,7 +313,7 @@ export default function ReadingHistory() {
                                     <CardContent className="ml-4 flex flex-col flex-grow justify-between p-0">
                                         <div className="mb-4">
                                             <Link
-                                                href={`/manga/${entry.mangaId}`}
+                                                href={`/manga/${entry.mangaIdentifier}`}
                                             >
                                                 <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
                                                     {entry.mangaTitle}
@@ -327,7 +327,7 @@ export default function ReadingHistory() {
                                                 )}
                                             </p>
                                             <Link
-                                                href={`/manga/${entry.mangaId}/${entry.chapterId}`}
+                                                href={`/manga/${entry.mangaIdentifier}/${entry.chapterIdentifier}`}
                                                 className="block mt-2"
                                             >
                                                 <Button className="py-1 px-4 text-sm font-medium text-white bg-accent-color hover:bg-accent-color/70 transition-colors">

@@ -90,3 +90,11 @@ export function clearPerformanceMetrics() {
         delete performanceMetrics[key];
     });
 }
+
+export function imageUrl(url: string) {
+    if (url.includes("myanimelist")) {
+        return url;
+    }
+
+    return `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+}

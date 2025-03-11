@@ -15,15 +15,15 @@ export async function GET(request: NextRequest) {
         }),
     );
 
-    const loginPage = await client.get(
-        `https://${process.env.NEXT_MANGA_URL}/login`,
+    const registerPage = await client.get(
+        `https://${process.env.NEXT_MANGA_URL}/register`,
         {
             withCredentials: true,
         },
     );
 
-    const $ = cheerio.load(loginPage.data);
-    const form = $("#login_form");
+    const $ = cheerio.load(registerPage.data);
+    const form = $("#register_form");
     const token = form.find('input[name="_token"]').attr("value");
     const captchaDiv = $(".captchar");
     const captchaUrl = captchaDiv.find("img").attr("src");
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     );
 
     const response = NextResponse.json({
-        token,
+        token: token,
         captcha: captchaBase64,
         cookies: cookies.map((cookie) => cookie.toString()),
     });
@@ -64,7 +64,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const { username, password, captcha, cookies } = await request.json();
+        const {
+            username,
+            password,
+            displayname,
+            email,
+            captcha,
+            cookies,
+            token,
+        } = await request.json();
 
         const jar = new CookieJar();
         const client = wrapper(
@@ -84,14 +92,6 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const tokenResponse = await client.get(
-            `https://${process.env.NEXT_MANGA_URL}/user_auth/csrf_token`,
-            {
-                withCredentials: true,
-            },
-        );
-        const token = tokenResponse.data._token;
-
         if (!token) {
             return NextResponse.json(
                 { error: "Failed to retrieve token" },
@@ -106,11 +106,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const loginResponse = await client.post(
-            `https://${process.env.NEXT_MANGA_URL}/login`,
+        const registerResponse = await client.post(
+            `https://${process.env.NEXT_MANGA_URL}/register`,
             new URLSearchParams({
                 username: username,
                 password: password,
+                displayname: displayname,
+                email: email,
                 _token: token,
                 captcha: captcha,
             }),
@@ -119,7 +121,7 @@ export async function POST(request: NextRequest) {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "User-Agent":
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-                    Referer: `https://${process.env.NEXT_MANGA_URL}/login`,
+                    Referer: `https://${process.env.NEXT_MANGA_URL}/register`,
                     Origin: `https://${process.env.NEXT_MANGA_URL}`,
                     "Accept-Language": "en-US,en;q=0.5",
                 },
@@ -127,14 +129,21 @@ export async function POST(request: NextRequest) {
             },
         );
 
-        if (loginResponse.data.success != true) {
-            return NextResponse.json(
-                { error: "Invalid credentials or token" },
-                { status: 400 },
-            );
+        if (registerResponse.data.success != true) {
+            let error = "Invalid credentials or token";
+            if (registerResponse.data.errors) {
+                error = Object.entries(registerResponse.data.errors)
+                    .map(
+                        ([field, messages]) =>
+                            `${field}: ${(messages as string[]).join(", ")}`,
+                    )
+                    .join("; ");
+            }
+
+            return NextResponse.json({ error: error }, { status: 400 });
         }
 
-        const response = NextResponse.json(loginResponse.data);
+        const response = NextResponse.json(registerResponse.data);
         const responseCookies = await jar.getCookies(
             `https://${process.env.NEXT_MANGA_URL}`,
         );
@@ -144,14 +153,14 @@ export async function POST(request: NextRequest) {
 
         response.headers.append(
             "Set-Cookie",
-            `user_id=${loginResponse.data.data.id}; Path=/; Max-Age=2592000;`,
+            `user_id=${registerResponse.data.data.id}; Path=/; Max-Age=2592000;`,
         );
 
         return response;
     } catch (error) {
         return NextResponse.json(
             {
-                error: "Error processing login",
+                error: "Error processing register",
                 details: (error as Error).message,
             },
             { status: 500 },
