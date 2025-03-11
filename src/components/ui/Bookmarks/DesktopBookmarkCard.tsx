@@ -42,9 +42,19 @@ const DesktopBookmarkCard: React.FC<{
         setShowPopup(!showPopup);
         if (newShowState && buttonRef.current) {
             const rect = buttonRef.current.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+
+            // Check if popup would extend beyond the right edge
+            const popupWidth = 140;
+            const idealLeft = rect.right;
+            const adjustedLeft = Math.min(
+                idealLeft,
+                viewportWidth - popupWidth - 20,
+            ); // 20px safety margin
+
             setPopupPosition({
                 top: rect.bottom,
-                left: rect.right,
+                left: adjustedLeft,
             });
         }
 
