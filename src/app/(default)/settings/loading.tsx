@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import SettingsSkeleton from "@/components/ui/Settings/skeleton";
 import { Search } from "lucide-react";
 
-export default async function Loading() {
+export default function Loading() {
     return (
         <div className="container mx-auto py-8 px-4">
             <h1 className="text-3xl font-bold mb-8">Settings</h1>
