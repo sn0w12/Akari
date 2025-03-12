@@ -230,66 +230,84 @@ export default function PageReader({
         };
 
         try {
-            const processed: string[] = [];
+            const processed: string[] = Array(chapter.images.length);
             const skipped: number[] = [];
+            let imagesLoaded = 0;
+            const initialBatchSize = Math.min(4, chapter.images.length);
 
-            // First, process the initial 3 pages
-            const initialBatch = chapter.images.slice(0, 3);
-            const initialImages = await Promise.all(
-                initialBatch.map((url) => loadImage(url)),
-            );
+            // Create processing order - prioritize images around current page
+            const processingOrder: number[] = [];
 
-            // Process initial images
-            for (let i = 0; i < initialImages.length; i++) {
-                if (skipped.includes(i)) continue;
-
-                const img = initialImages[i];
-                if (img.height === 1500 && i < initialImages.length - 1) {
-                    const nextImg = initialImages[i + 1];
-                    canvas.width = img.width;
-                    canvas.height = img.height + nextImg.height;
-                    ctx.drawImage(img, 0, 0);
-                    ctx.drawImage(nextImg, 0, img.height);
-                    processed[i] = canvas.toDataURL("image/jpeg");
-                    skipped.push(i + 1);
-                } else {
-                    processed[i] =
-                        `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+            // Start with currentPage - 1, currentPage, currentPage + 1
+            const startIndex = Math.max(0, currentPage - 1);
+            for (let i = 0; i < 3; i++) {
+                const index = startIndex + i;
+                if (index < chapter.images.length) {
+                    processingOrder.push(index);
                 }
             }
 
-            // Make initial pages available
-            setProcessedImages(processed);
-            setSkipPages(skipped);
-            setInitialPagesReady(true);
+            // Add remaining pages in order
+            for (let i = 0; i < chapter.images.length; i++) {
+                if (!processingOrder.includes(i)) {
+                    processingOrder.push(i);
+                }
+            }
 
-            // Process remaining images
-            const remainingImages = await Promise.all(
-                chapter.images.slice(3).map((url) => loadImage(url)),
-            );
+            // Process images in the determined order
+            for (const i of processingOrder) {
+                // Skip already processed pages
+                if (skipped.includes(i)) {
+                    continue;
+                }
 
-            // Process remaining images
-            for (let i = 3; i < chapter.images.length; i++) {
-                if (skipped.includes(i)) continue;
+                // Load the current image
+                const img = await loadImage(chapter.images[i]);
 
-                const img = remainingImages[i - 3];
+                // Check if this page should be combined with the next
                 if (img.height === 1500 && i < chapter.images.length - 1) {
-                    const nextImg = remainingImages[i - 2];
+                    // Load the next image to combine
+                    const nextImg = await loadImage(chapter.images[i + 1]);
+
+                    // Combine the images on canvas
                     canvas.width = img.width;
                     canvas.height = img.height + nextImg.height;
                     ctx.drawImage(img, 0, 0);
                     ctx.drawImage(nextImg, 0, img.height);
+
+                    // Store the combined image
                     processed[i] = canvas.toDataURL("image/jpeg");
-                    skipped.push(i + 1);
+                    skipped.push(i + 1); // Mark the next page as skipped
+
+                    // Update state with each combined image
+                    setProcessedImages((prev) => {
+                        const updated = [...prev];
+                        updated[i] = processed[i];
+                        return updated;
+                    });
+
+                    setSkipPages((prev) => [...prev, i + 1]);
                 } else {
+                    // Store the single image
                     processed[i] =
                         `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+
+                    // Update state with each processed image
+                    setProcessedImages((prev) => {
+                        const updated = [...prev];
+                        updated[i] = processed[i];
+                        return updated;
+                    });
+                }
+
+                // Increment our counter
+                imagesLoaded++;
+
+                // Make initial batch available as soon as it's ready
+                if (imagesLoaded === initialBatchSize && !initialPagesReady) {
+                    setInitialPagesReady(true);
                 }
             }
-
-            // Update with all processed images
-            setProcessedImages(processed);
-            setSkipPages(skipped);
         } catch (error) {
             console.error("Error processing images:", error);
         } finally {
@@ -366,7 +384,6 @@ export default function PageReader({
                                     width={700}
                                     height={1080}
                                     loading="eager"
-                                    priority={index === currentPage}
                                     className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${
                                         effectiveIndex !==
                                         getEffectivePageIndex(currentPage)
@@ -383,31 +400,27 @@ export default function PageReader({
                         className={`${getEffectivePageIndex(currentPage) !== getEffectivePageCount() ? "hidden" : ""}`}
                     />
                 </div>
-                {!isProcessingImages && (
-                    <div
-                        className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
-                            isFooterVisible ? "opacity-100" : "opacity-0"
-                        } ${
-                            getEffectivePageIndex(currentPage) !==
-                            getEffectivePageCount()
-                                ? "block"
-                                : "hidden md:block"
-                        }`}
-                    >
-                        <PageProgress
-                            currentPage={getEffectivePageIndex(currentPage)}
-                            totalPages={getEffectivePageCount()}
-                            setCurrentPage={(page) => {
-                                const adjustedPage =
-                                    page +
-                                    skipPages.filter((skip) => skip <= page)
-                                        .length;
-                                setCurrentPage(adjustedPage);
-                            }}
-                            isFooterVisible={isFooterVisible}
-                        />
-                    </div>
-                )}
+                <div
+                    className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${
+                        getEffectivePageIndex(currentPage) !==
+                        getEffectivePageCount()
+                            ? "block"
+                            : "hidden md:block"
+                    }`}
+                    style={isProcessingImages ? { opacity: 0 } : undefined}
+                >
+                    <PageProgress
+                        currentPage={getEffectivePageIndex(currentPage)}
+                        totalPages={getEffectivePageCount()}
+                        setCurrentPage={(page) => {
+                            const adjustedPage =
+                                page +
+                                skipPages.filter((skip) => skip <= page).length;
+                            setCurrentPage(adjustedPage);
+                        }}
+                        isFooterVisible={isFooterVisible}
+                    />
+                </div>
             </div>
             <div
                 className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapter.images.length ? "hidden" : ""}`}
