@@ -291,94 +291,126 @@ export default function ReadingHistory() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {Object.values(
-                                readingHistory.reduce(
-                                    (groups, entry) => {
-                                        const key = entry.mangaIdentifier;
-                                        if (!groups[key]) {
-                                            groups[key] = [];
-                                        }
-                                        groups[key].push(entry);
-                                        return groups;
-                                    },
-                                    {} as Record<string, ReadingHistoryEntry[]>,
-                                ),
-                            ).map((entries) => {
-                                // Sort entries by read date (newest first)
-                                entries.sort(
+                            {(() => {
+                                // Sort all entries by read date (newest first)
+                                const sortedHistory = [...readingHistory].sort(
                                     (a, b) =>
                                         new Date(b.readAt).getTime() -
                                         new Date(a.readAt).getTime(),
                                 );
 
-                                // Reference the first entry for manga details
-                                const firstEntry = entries[0];
+                                // Group entries
+                                const groups: ReadingHistoryEntry[][] = [];
+                                let currentGroup: ReadingHistoryEntry[] = [];
 
-                                return (
-                                    <Card
-                                        key={firstEntry.mangaIdentifier}
-                                        className="flex flex-row items-start p-4 shadow-sm border border-border rounded-lg"
-                                    >
-                                        <div className="w-28 h-full mb-0 shrink-0">
-                                            <Link
-                                                href={`/manga/${firstEntry.mangaIdentifier}`}
-                                                prefetch={false}
-                                                className="block"
-                                            >
-                                                <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
-                                                    <Image
-                                                        src={imageUrl(
-                                                            firstEntry.image,
-                                                        )}
-                                                        alt={
-                                                            firstEntry.mangaTitle
-                                                        }
-                                                        className="object-cover"
-                                                        fill
-                                                    />
-                                                </div>
-                                            </Link>
-                                        </div>
-                                        <CardContent className="ml-4 flex flex-col flex-grow justify-between p-0">
-                                            <div className="mb-4">
+                                sortedHistory.forEach((entry, index) => {
+                                    if (index === 0) {
+                                        currentGroup = [entry];
+                                        return;
+                                    }
+
+                                    const prevEntry = sortedHistory[index - 1];
+                                    const isSameManga =
+                                        entry.mangaIdentifier ===
+                                        prevEntry.mangaIdentifier;
+                                    const timeDiff = Math.abs(
+                                        new Date(prevEntry.readAt).getTime() -
+                                            new Date(entry.readAt).getTime(),
+                                    );
+                                    const isWithin24Hours =
+                                        timeDiff <= 24 * 60 * 60 * 1000; // 24 hours in ms
+
+                                    if (isSameManga && isWithin24Hours) {
+                                        currentGroup.push(entry);
+                                    } else {
+                                        groups.push([...currentGroup]);
+                                        currentGroup = [entry];
+                                    }
+                                });
+
+                                // Add the last group if not empty
+                                if (currentGroup.length > 0) {
+                                    groups.push(currentGroup);
+                                }
+
+                                return groups.map((entries, groupIndex) => {
+                                    // Reference the first entry for manga details
+                                    const firstEntry = entries[0];
+
+                                    return (
+                                        <Card
+                                            key={`${firstEntry.mangaIdentifier}-${groupIndex}`}
+                                            className="flex flex-row items-start p-4 shadow-sm border border-border rounded-lg"
+                                        >
+                                            <div className="w-28 h-full mb-0 shrink-0">
                                                 <Link
                                                     href={`/manga/${firstEntry.mangaIdentifier}`}
                                                     prefetch={false}
+                                                    className="block"
                                                 >
-                                                    <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
-                                                        {firstEntry.mangaTitle}
-                                                    </h3>
+                                                    <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
+                                                        <Image
+                                                            src={imageUrl(
+                                                                firstEntry.image,
+                                                            )}
+                                                            alt={
+                                                                firstEntry.mangaTitle
+                                                            }
+                                                            className="object-cover"
+                                                            fill
+                                                        />
+                                                    </div>
                                                 </Link>
-                                                <p className="text-sm text-gray-500 mb-3">
-                                                    <Clock className="inline h-3 w-3 mr-1" />
-                                                    Last read on{" "}
-                                                    {formatDate(
-                                                        new Date(
-                                                            firstEntry.readAt,
-                                                        ),
-                                                    )}
-                                                </p>
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    {entries.map((entry) => (
-                                                        <Link
-                                                            key={entry.id}
-                                                            href={`/manga/${entry.mangaIdentifier}/${entry.chapterIdentifier}`}
-                                                            className="block"
-                                                            prefetch={false}
-                                                        >
-                                                            <Button className="py-1 px-4 text-sm font-medium text-white bg-accent-color hover:bg-accent-color/70 transition-colors">
-                                                                {
-                                                                    entry.chapterTitle
-                                                                }
-                                                            </Button>
-                                                        </Link>
-                                                    ))}
-                                                </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
+                                            <CardContent className="ml-4 flex flex-col flex-grow justify-between p-0">
+                                                <div className="mb-4">
+                                                    <Link
+                                                        href={`/manga/${firstEntry.mangaIdentifier}`}
+                                                        prefetch={false}
+                                                    >
+                                                        <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
+                                                            {
+                                                                firstEntry.mangaTitle
+                                                            }
+                                                        </h3>
+                                                    </Link>
+                                                    <p className="text-sm text-gray-500 mb-3">
+                                                        <Clock className="inline h-3 w-3 mr-1" />
+                                                        Last read on{" "}
+                                                        {formatDate(
+                                                            new Date(
+                                                                firstEntry.readAt,
+                                                            ),
+                                                        )}
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                        {entries.map(
+                                                            (entry) => (
+                                                                <Link
+                                                                    key={
+                                                                        entry.id
+                                                                    }
+                                                                    href={`/manga/${entry.mangaIdentifier}/${entry.chapterIdentifier}`}
+                                                                    className="block"
+                                                                    prefetch={
+                                                                        false
+                                                                    }
+                                                                >
+                                                                    <Button className="py-1 px-4 text-sm font-medium text-white bg-accent-color hover:bg-accent-color/70 transition-colors">
+                                                                        {
+                                                                            entry.chapterTitle
+                                                                        }
+                                                                    </Button>
+                                                                </Link>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                });
+                            })()}
 
                             {hasMore && (
                                 <div className="flex justify-center w-full">
