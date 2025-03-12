@@ -328,14 +328,14 @@ export default function PageReader({
 
     const getEffectivePageCount = useCallback(() => {
         return chapter.images.length - skipPages.length;
-    }, [chapter.images.length, skipPages.length]);
+    }, [chapter.images.length, skipPages.length, processedImages.length]);
 
     const getEffectivePageIndex = useCallback(
         (index: number) => {
             if (skipPages.includes(index)) return -1; // Return -1 for skipped pages
             return index - skipPages.filter((skip) => skip < index).length;
         },
-        [skipPages],
+        [skipPages, processedImages],
     );
 
     return (
