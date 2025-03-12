@@ -31,9 +31,9 @@ export const ToastContainer: React.FC = () => {
     // Inline styles for center positions
     const getPositionStyle = (position: ToastPosition): React.CSSProperties => {
         if (position === "top-center" || position === "bottom-center") {
-            return { left: "50%", transform: "translateX(-50%)" };
+            return { left: "50%", transform: "translateX(-50%)", zIndex: 2000 };
         }
-        return {};
+        return { zIndex: 2000 };
     };
 
     return (
