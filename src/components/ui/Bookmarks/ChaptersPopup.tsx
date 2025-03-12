@@ -20,8 +20,16 @@ export const ChaptersPopup: React.FC<{
     onClose: () => void;
     mangaIdentifier: string;
     isLoading: boolean;
+    lastReadChapter?: string;
     position?: { top: number; left: number };
-}> = ({ chapters, onClose, mangaIdentifier, isLoading, position }) => {
+}> = ({
+    chapters,
+    onClose,
+    mangaIdentifier,
+    isLoading,
+    lastReadChapter,
+    position,
+}) => {
     const [isVisible, setIsVisible] = useState(false);
     const ENABLE_ANIMATIONS = getSetting("fancyAnimations");
 
@@ -105,12 +113,14 @@ export const ChaptersPopup: React.FC<{
                             <li key={chapter.id}>
                                 <HoverLink
                                     href={`/manga/${mangaIdentifier}/${chapter.id}`}
-                                    className="block p-2 hover:bg-accent rounded text-sm"
+                                    className={`block p-2 mr-1 ${index === 0 ? "bg-green-600 hover:bg-green-700" : "hover:bg-accent"} ${chapter.id === `chapter-${lastReadChapter}` ? "bg-indigo-600 hover:bg-indigo-700" : ""} rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
                                 >
                                     <div className="flex justify-between items-center">
                                         <span>{chapter.name}</span>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span
+                                            className={`text-xs ${index === 0 || chapter.id === `chapter-${lastReadChapter}` ? "text-foreground" : "text-muted-foreground"}`}
+                                        >
                                             {chapter.createdAt}
                                         </span>
                                     </div>

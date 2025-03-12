@@ -134,6 +134,7 @@ const DesktopBookmarkCard: React.FC<{
                             onClose={() => setShowPopup(false)}
                             mangaIdentifier={mangaIdentifier || ""}
                             isLoading={isLoading}
+                            lastReadChapter={bookmark.chapter_numbernow}
                             position={popupPosition}
                         />
                     )}
