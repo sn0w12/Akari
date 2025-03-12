@@ -120,7 +120,7 @@ export async function fetchMalData(
     for (let attempt = 0; attempt <= retryCount; attempt++) {
         try {
             const malSyncResponse = await fetch(
-                `api/mal/${encodeURIComponent(identifier)}`,
+                `/api/mal/${encodeURIComponent(identifier)}`,
             );
 
             if (malSyncResponse.status === 429 && attempt < retryCount) {
