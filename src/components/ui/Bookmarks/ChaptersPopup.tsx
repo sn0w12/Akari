@@ -3,7 +3,7 @@
 import HoverLink from "../hoverLink";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getSetting } from "@/lib/settings";
 import { Skeleton } from "../skeleton";
 
@@ -22,6 +22,7 @@ export const ChaptersPopup: React.FC<{
     isLoading: boolean;
     lastReadChapter?: string;
     position?: { top: number; left: number };
+    buttonRef?: React.RefObject<HTMLButtonElement>;
 }> = ({
     chapters,
     onClose,
@@ -29,23 +30,48 @@ export const ChaptersPopup: React.FC<{
     isLoading,
     lastReadChapter,
     position,
+    buttonRef,
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const ENABLE_ANIMATIONS = getSetting("fancyAnimations");
+    const popupRef = useRef<HTMLDivElement>(null);
+    const animationFrameRef = useRef<number | null>(null);
 
+    // Initial positioning
     const style = position
         ? ({
               position: "fixed",
               top: `${position.top}px`,
               left: `${position.left}px`,
-              transform: "translateX(-57.5%)", // Center horizontally relative to the anchor point
-              zIndex: 50,
+              transform: "translateX(-57.5%)",
+              zIndex: 30,
           } as React.CSSProperties)
         : {};
+
+    // Update popup position relative to the button
+    const updatePosition = () => {
+        if (!buttonRef?.current || !popupRef.current || !position) return;
+
+        // Get current button position
+        const buttonRect = buttonRef.current.getBoundingClientRect();
+
+        // Update popup position to match the button's current position
+        popupRef.current.style.top = `${buttonRect.bottom}px`;
+        popupRef.current.style.left = `${buttonRect.right}px`;
+    };
 
     useEffect(() => {
         // Fade in animation for popup
         setIsVisible(true);
+
+        // Update position on scroll using animation frame for smoothness
+        const handleScroll = () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+
+            animationFrameRef.current = requestAnimationFrame(updatePosition);
+        };
 
         // Handle clicks outside the popup
         const handleOutsideClick = (e: MouseEvent) => {
@@ -55,9 +81,22 @@ export const ChaptersPopup: React.FC<{
             }
         };
 
+        // Initial position update
+        updatePosition();
+
+        // Set up event listeners
         document.body.addEventListener("click", handleOutsideClick);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("resize", handleScroll, { passive: true });
+
         return () => {
             document.body.removeEventListener("click", handleOutsideClick);
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
         };
     }, []);
 
@@ -74,6 +113,7 @@ export const ChaptersPopup: React.FC<{
 
     return (
         <div
+            ref={popupRef}
             className={`absolute right-0 z-10 mt-2 p-4 bg-card border border-border rounded-md shadow-lg w-72 chapters-popup-content ${
                 ENABLE_ANIMATIONS
                     ? `transition-opacity duration-200 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`

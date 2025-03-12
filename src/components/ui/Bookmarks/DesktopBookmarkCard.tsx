@@ -33,7 +33,9 @@ const DesktopBookmarkCard: React.FC<{
     const [isLoading, setIsLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-    const buttonRef = useRef<HTMLButtonElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(
+        null!,
+    ) as React.RefObject<HTMLButtonElement>;
 
     async function showChapters() {
         if (!mangaIdentifier) return;
@@ -136,6 +138,7 @@ const DesktopBookmarkCard: React.FC<{
                             isLoading={isLoading}
                             lastReadChapter={bookmark.chapter_numbernow}
                             position={popupPosition}
+                            buttonRef={buttonRef} // Pass the button ref
                         />
                     )}
                 </div>
