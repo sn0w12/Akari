@@ -373,7 +373,7 @@ export default function PageReader({
                                             ? "hidden"
                                             : ""
                                     }`}
-                                    onLoad={(e) => handlePageLoad(e, index)}
+                                    onLoad={(e) => handlePageLoad(e, offset)}
                                 />
                             );
                         })}
