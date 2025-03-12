@@ -46,7 +46,7 @@ export function ReportMalLink({ mangaId }: { mangaId: string }) {
                         <DialogTrigger asChild>
                             <Button
                                 variant="outline"
-                                className="hover:text-destructive transition-colors w-10 h-10 p-0"
+                                className="hover:text-negative transition-colors w-10 h-10 p-0"
                             >
                                 <Flag className="h-5 w-5" />
                             </Button>
@@ -76,6 +76,7 @@ export function ReportMalLink({ mangaId }: { mangaId: string }) {
                                 variant="destructive"
                                 onClick={handleReport}
                                 disabled={isReported}
+                                className="bg-negative hover:bg-negative/70"
                             >
                                 {isReported ? "Reported" : "Report Link"}
                             </Button>
