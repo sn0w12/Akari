@@ -22,27 +22,8 @@ export function FooterBookmarkButton({
             if (!chapterData) return;
 
             try {
-                let mangaId = null;
-                // Only try to access IndexedDB on client side
-                if (typeof window !== "undefined") {
-                    const cache = await db.getCache(
-                        db.mangaCache,
-                        chapterData.parentId,
-                    );
-                    if (cache && cache.id) {
-                        mangaId = cache.id;
-                    }
-                }
-
-                if (!mangaId) {
-                    const response = await fetch(
-                        `/api/manga/${chapterData.parentId}`,
-                    );
-                    const manga = await response.json();
-                    mangaId = manga.mangaId;
-                }
-
-                const result = await checkIfBookmarked(mangaId);
+                if (!chapterData.mangaId) return;
+                const result = await checkIfBookmarked(chapterData.mangaId);
                 setIsBookmarked((result as boolean) ?? false);
             } catch (error) {
                 console.error("Failed to check bookmark:", error);
