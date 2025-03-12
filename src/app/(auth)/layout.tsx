@@ -1,9 +1,8 @@
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import localFont from "next/font/local";
-import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/lib/toast/ToastContext";
 import "@/app/globals.css";
-import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -32,9 +31,10 @@ export default function MangaReaderLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <AnalyticsWrapper />
-                    {children}
-                    <ToastContainer />
+                    <ToastProvider>
+                        <AnalyticsWrapper />
+                        {children}
+                    </ToastProvider>
                 </ThemeProvider>
             </body>
         </html>

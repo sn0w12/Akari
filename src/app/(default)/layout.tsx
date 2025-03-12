@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
-import { ToastContainer } from "react-toastify";
 import { HeaderComponent } from "@/components/Header";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import { CookieConsent } from "@/components/ui/cookieConsent";
+import { ToastProvider } from "@/lib/toast/ToastContext";
 import "@/app/globals.css";
-import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -50,12 +49,13 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <AnalyticsWrapper />
-                    <HeaderComponent />
-                    <main className="flex-grow">{children}</main>
-                    <ToastContainer />
-                    <CookieConsent />
-                    <Footer />
+                    <ToastProvider>
+                        <AnalyticsWrapper />
+                        <HeaderComponent />
+                        <main className="flex-grow">{children}</main>
+                        <CookieConsent />
+                        <Footer />
+                    </ToastProvider>
                 </ThemeProvider>
             </body>
         </html>
