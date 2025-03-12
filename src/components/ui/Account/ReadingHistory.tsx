@@ -22,6 +22,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Combo } from "../combo";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
+import { imageUrl } from "@/lib/utils";
 
 export default function ReadingHistory() {
     const [readingHistory, setReadingHistory] = useState<ReadingHistoryEntry[]>(
@@ -302,7 +303,7 @@ export default function ReadingHistory() {
                                         >
                                             <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
                                                 <Image
-                                                    src={`/api/image-proxy?imageUrl=${entry.image}`}
+                                                    src={imageUrl(entry.image)}
                                                     alt={entry.mangaTitle}
                                                     className="object-cover"
                                                     fill
