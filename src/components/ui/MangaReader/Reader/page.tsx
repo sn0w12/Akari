@@ -48,6 +48,17 @@ export default function PageReader({
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
 
+    // Add effective page count as a derived state
+    const [effectivePageCount, setEffectivePageCount] = useState(
+        chapter?.images?.length || 0,
+    );
+
+    // Update effective page count when skipPages changes
+    useEffect(() => {
+        if (!chapter?.images) return;
+        setEffectivePageCount(chapter.images.length - skipPages.length);
+    }, [chapter, skipPages]);
+
     const resetInactivityTimer = useCallback(() => {
         if (inactivityTimer.current) {
             clearTimeout(inactivityTimer.current);
@@ -326,16 +337,12 @@ export default function PageReader({
         handleImageLoad(e, index);
     };
 
-    const getEffectivePageCount = useCallback(() => {
-        return chapter.images.length - skipPages.length;
-    }, [chapter.images.length, skipPages.length, processedImages.length]);
-
     const getEffectivePageIndex = useCallback(
         (index: number) => {
-            if (skipPages.includes(index)) return -1; // Return -1 for skipped pages
+            if (!chapter || skipPages.includes(index)) return -1; // Return -1 for skipped pages
             return index - skipPages.filter((skip) => skip < index).length;
         },
-        [skipPages, processedImages],
+        [chapter, skipPages],
     );
 
     return (
@@ -397,13 +404,13 @@ export default function PageReader({
                     <EndOfManga
                         title={chapter.title}
                         identifier={chapter.parentId}
-                        className={`${getEffectivePageIndex(currentPage) !== getEffectivePageCount() ? "hidden" : ""}`}
+                        className={`${getEffectivePageIndex(currentPage) !== effectivePageCount ? "hidden" : ""}`}
                     />
                 </div>
                 <div
                     className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${
                         getEffectivePageIndex(currentPage) !==
-                        getEffectivePageCount()
+                        effectivePageCount
                             ? "block"
                             : "hidden md:block"
                     }`}
@@ -411,12 +418,15 @@ export default function PageReader({
                 >
                     <PageProgress
                         currentPage={getEffectivePageIndex(currentPage)}
-                        totalPages={getEffectivePageCount()}
+                        totalPages={effectivePageCount}
                         setCurrentPage={(page) => {
+                            // Convert the 1-based page number to 0-based index
+                            const pageIndex = page - 1;
                             const adjustedPage =
-                                page +
-                                skipPages.filter((skip) => skip <= page).length;
-                            setCurrentPage(adjustedPage);
+                                pageIndex +
+                                skipPages.filter((skip) => skip <= pageIndex)
+                                    .length;
+                            setPageWithUrlUpdate(adjustedPage);
                         }}
                         isFooterVisible={isFooterVisible}
                     />
