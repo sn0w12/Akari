@@ -18,13 +18,14 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
     return (
         <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg md:hidden">
             <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
-                <div className="mb-4">
+                <div className="mb-2">
                     <div className="flex items-center gap-2">
-                        <div className="w-20 h-full mb-0 shrink-0">
-                            <a
+                        <div className="w-20 h-full shrink-0">
+                            <Link
                                 href={`/manga/${mangaIdentifier}`}
                                 rel="noopener noreferrer"
                                 className="block"
+                                prefetch={false}
                             >
                                 <Image
                                     src={imageUrl(bookmark.image)}
@@ -33,7 +34,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                                     height={450}
                                     className="w-full h-auto object-cover rounded"
                                 />
-                            </a>
+                            </Link>
                         </div>
                         <Link
                             className="w-full"
@@ -49,7 +50,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                     <a
                         href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                         rel="noopener noreferrer"
-                        className="block mt-4"
+                        className="block mt-2"
                     >
                         <Button
                             className={`py-4 px-6 w-full text-lg font-bold text-white ${buttonColor} transition-colors`}

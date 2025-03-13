@@ -92,17 +92,17 @@ const DesktopBookmarkCard: React.FC<{
                     />
                 </HoverLink>
             </div>
-            <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between relative">
-                <div className="mb-4">
+            <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
+                <div className="flex flex-col gap-2">
                     <HoverLink
                         href={`/manga/${mangaIdentifier}`}
                         prefetch={false}
                     >
-                        <h3 className="font-bold text-2xl mb-2 mr-20 hover:underline text-left">
+                        <h3 className="font-bold text-2xl mr-20 hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
                     </HoverLink>
-                    <div className="flex flex-row gap-2 mt-4">
+                    <div className="flex flex-row gap-2 mb-1">
                         {/* Continue Reading Button */}
                         <HoverLink
                             href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
@@ -129,6 +129,10 @@ const DesktopBookmarkCard: React.FC<{
                             )}
                         </Button>
                     </div>
+                    {LatestChapterInfo({
+                        bookmark,
+                        colors: buttonColor,
+                    })}
 
                     {showPopup && (
                         <ChaptersPopup
@@ -142,10 +146,6 @@ const DesktopBookmarkCard: React.FC<{
                         />
                     )}
                 </div>
-                {LatestChapterInfo({
-                    bookmark,
-                    colors: buttonColor,
-                })}
             </CardContent>
         </Card>
     );
