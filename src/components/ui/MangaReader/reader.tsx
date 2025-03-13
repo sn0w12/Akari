@@ -58,9 +58,11 @@ export default function Reader({ chapter }: ReaderProps) {
         await db.updateCache(db.hqMangaCache, chapter!.parentId, mangaCache);
     }
 
-    async function toggleReaderMode() {
+    async function toggleReaderMode(override: boolean = true) {
         if (isStripMode !== undefined) {
             setReaderMode(!isStripMode);
+        } else {
+            setReaderMode(override);
         }
     }
 

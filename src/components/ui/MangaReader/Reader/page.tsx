@@ -8,6 +8,7 @@ import EndOfManga from "../endOfManga";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
+import db from "@/lib/db";
 
 interface PageReaderProps {
     chapter: Chapter;
@@ -47,6 +48,10 @@ export default function PageReader({
     const [processedImages, setProcessedImages] = useState<string[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
+    const [checkedForStripManga, setCheckedForStripManga] = useState(false);
+    const stripCheckCountRef = useRef(0);
+    const stripDetectionThreshold = 3; // Number of consecutive 1500px images to consider it a strip manga
+    const hasToggledReaderModeRef = useRef(false);
 
     // Add effective page count as a derived state
     const [effectivePageCount, setEffectivePageCount] = useState(
@@ -222,6 +227,79 @@ export default function PageReader({
         }
     };
 
+    // Load manga cache once on mount
+    useEffect(() => {
+        if (!chapter) return;
+
+        async function checkCacheOnMount() {
+            try {
+                const mangaCache = await db.getCache(
+                    db.hqMangaCache,
+                    chapter.parentId,
+                );
+
+                // If we have cache data and it's marked as strip manga
+                if (
+                    mangaCache?.is_strip !== undefined &&
+                    !hasToggledReaderModeRef.current
+                ) {
+                    hasToggledReaderModeRef.current = true;
+                }
+
+                // Mark as checked regardless of result
+                setCheckedForStripManga(true);
+            } catch (error) {
+                console.error("Error checking manga cache:", error);
+                setCheckedForStripManga(true); // Mark as checked even on error
+            }
+        }
+
+        checkCacheOnMount();
+    }, [chapter, toggleReaderMode]);
+
+    // Simplified track image heights for strip manga detection
+    const handleImageHeight = useCallback(
+        (height: number) => {
+            // Only track if we haven't toggled yet
+            if (hasToggledReaderModeRef.current) return;
+
+            if (height === 1500) {
+                stripCheckCountRef.current++;
+
+                // Check if we've seen enough 1500px images
+                if (stripCheckCountRef.current >= stripDetectionThreshold) {
+                    // Toggle reader mode if we haven't already
+                    if (!hasToggledReaderModeRef.current) {
+                        requestAnimationFrame(() => {
+                            toggleReaderMode();
+                            hasToggledReaderModeRef.current = true;
+
+                            // Update the cache for future reference
+                            if (chapter) {
+                                db.updateCache(
+                                    db.hqMangaCache,
+                                    chapter.parentId,
+                                    {
+                                        is_strip: true,
+                                    },
+                                ).catch((error) => {
+                                    console.error(
+                                        "Error updating manga cache:",
+                                        error,
+                                    );
+                                });
+                            }
+                        });
+                    }
+                }
+            } else {
+                // Reset counter if we encounter a non-1500px image
+                stripCheckCountRef.current = 0;
+            }
+        },
+        [chapter, toggleReaderMode],
+    );
+
     const processImages = useCallback(async () => {
         if (!chapter?.images?.length) return;
 
@@ -234,7 +312,13 @@ export default function PageReader({
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
-                img.onload = () => resolve(img);
+                img.onload = () => {
+                    // Check for strip manga detection during image processing
+                    if (!hasToggledReaderModeRef.current) {
+                        handleImageHeight(img.height);
+                    }
+                    resolve(img);
+                };
                 img.onerror = reject;
                 img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
             });
@@ -324,17 +408,26 @@ export default function PageReader({
         } finally {
             setIsProcessingImages(false);
         }
-    }, [chapter?.images]);
+    }, [chapter?.images, handleImageHeight]);
 
     useEffect(() => {
         processImages();
     }, [processImages]);
 
+    // Modified handlePageLoad to check image height
     const handlePageLoad = (
         e: React.SyntheticEvent<HTMLImageElement>,
         index: number,
     ) => {
         handleImageLoad(e, index);
+
+        // Check image height for strip manga detection
+        if (
+            !hasToggledReaderModeRef.current &&
+            e.currentTarget instanceof HTMLImageElement
+        ) {
+            handleImageHeight(e.currentTarget.naturalHeight);
+        }
     };
 
     const getEffectivePageIndex = useCallback(
