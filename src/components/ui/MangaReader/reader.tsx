@@ -208,7 +208,7 @@ export default function Reader({ chapter }: ReaderProps) {
                 );
             }
         };
-    }, [isHoveringHeader, isHoveringFooter]);
+    }, [isHoveringHeader, isHoveringFooter, isStripMode]);
 
     return (
         <>
