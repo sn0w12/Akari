@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { User, ArrowLeftCircle } from "lucide-react";
 import Link from "next/link";
 
-export default async function Loading() {
+export default function Loading() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="flex items-center justify-between mb-8">

@@ -8,6 +8,7 @@ import EndOfManga from "../endOfManga";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
+import db from "@/lib/db";
 
 interface PageReaderProps {
     chapter: Chapter;
@@ -47,6 +48,15 @@ export default function PageReader({
     const [processedImages, setProcessedImages] = useState<string[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
+    const [checkedForStripManga, setCheckedForStripManga] = useState(false);
+    const stripCheckCountRef = useRef(0);
+    const stripDetectionThreshold = 3; // Number of consecutive 1500px images to consider it a strip manga
+    const hasToggledReaderModeRef = useRef(false);
+
+    // Add effective page count as a derived state
+    const [effectivePageCount, setEffectivePageCount] = useState(
+        chapter?.images?.length || 0,
+    );
 
     const resetInactivityTimer = useCallback(() => {
         if (inactivityTimer.current) {
@@ -211,6 +221,79 @@ export default function PageReader({
         }
     };
 
+    // Load manga cache once on mount
+    useEffect(() => {
+        if (!chapter) return;
+
+        async function checkCacheOnMount() {
+            try {
+                const mangaCache = await db.getCache(
+                    db.hqMangaCache,
+                    chapter.parentId,
+                );
+
+                // If we have cache data and it's marked as strip manga
+                if (
+                    mangaCache?.is_strip !== undefined &&
+                    !hasToggledReaderModeRef.current
+                ) {
+                    hasToggledReaderModeRef.current = true;
+                }
+
+                // Mark as checked regardless of result
+                setCheckedForStripManga(true);
+            } catch (error) {
+                console.error("Error checking manga cache:", error);
+                setCheckedForStripManga(true); // Mark as checked even on error
+            }
+        }
+
+        checkCacheOnMount();
+    }, [chapter, toggleReaderMode]);
+
+    // Simplified track image heights for strip manga detection
+    const handleImageHeight = useCallback(
+        (height: number) => {
+            // Only track if we haven't toggled yet
+            if (hasToggledReaderModeRef.current) return;
+
+            if (height === 1500) {
+                stripCheckCountRef.current++;
+
+                // Check if we've seen enough 1500px images
+                if (stripCheckCountRef.current >= stripDetectionThreshold) {
+                    // Toggle reader mode if we haven't already
+                    if (!hasToggledReaderModeRef.current) {
+                        requestAnimationFrame(() => {
+                            toggleReaderMode();
+                            hasToggledReaderModeRef.current = true;
+
+                            // Update the cache for future reference
+                            if (chapter) {
+                                db.updateCache(
+                                    db.hqMangaCache,
+                                    chapter.parentId,
+                                    {
+                                        is_strip: true,
+                                    },
+                                ).catch((error) => {
+                                    console.error(
+                                        "Error updating manga cache:",
+                                        error,
+                                    );
+                                });
+                            }
+                        });
+                    }
+                }
+            } else {
+                // Reset counter if we encounter a non-1500px image
+                stripCheckCountRef.current = 0;
+            }
+        },
+        [chapter, toggleReaderMode],
+    );
+
     const processImages = useCallback(async () => {
         if (!chapter?.images?.length) return;
 
@@ -223,101 +306,178 @@ export default function PageReader({
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
-                img.onload = () => resolve(img);
+                img.onload = () => {
+                    // Check for strip manga detection during image processing
+                    if (!hasToggledReaderModeRef.current) {
+                        handleImageHeight(img.height);
+                    }
+                    resolve(img);
+                };
                 img.onerror = reject;
                 img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
             });
         };
 
         try {
-            const processed: string[] = [];
+            const processed: string[] = Array(chapter.images.length);
             const skipped: number[] = [];
+            let imagesLoaded = 0;
+            const initialBatchSize = Math.min(4, chapter.images.length);
 
-            // First, process the initial 3 pages
-            const initialBatch = chapter.images.slice(0, 3);
-            const initialImages = await Promise.all(
-                initialBatch.map((url) => loadImage(url)),
-            );
+            // Create processing order - prioritize images around current page
+            const processingOrder: number[] = [];
 
-            // Process initial images
-            for (let i = 0; i < initialImages.length; i++) {
-                if (skipped.includes(i)) continue;
-
-                const img = initialImages[i];
-                if (img.height === 1500 && i < initialImages.length - 1) {
-                    const nextImg = initialImages[i + 1];
-                    canvas.width = img.width;
-                    canvas.height = img.height + nextImg.height;
-                    ctx.drawImage(img, 0, 0);
-                    ctx.drawImage(nextImg, 0, img.height);
-                    processed[i] = canvas.toDataURL("image/jpeg");
-                    skipped.push(i + 1);
-                } else {
-                    processed[i] =
-                        `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+            // Start with currentPage - 1, currentPage, currentPage + 1
+            const startIndex = Math.max(0, currentPage - 1);
+            for (let i = 0; i < 3; i++) {
+                const index = startIndex + i;
+                if (index < chapter.images.length) {
+                    processingOrder.push(index);
                 }
             }
 
-            // Make initial pages available
-            setProcessedImages(processed);
-            setSkipPages(skipped);
-            setInitialPagesReady(true);
+            // Add remaining pages in order
+            for (let i = 0; i < chapter.images.length; i++) {
+                if (!processingOrder.includes(i)) {
+                    processingOrder.push(i);
+                }
+            }
 
-            // Process remaining images
-            const remainingImages = await Promise.all(
-                chapter.images.slice(3).map((url) => loadImage(url)),
-            );
+            // Process images in the determined order
+            for (const i of processingOrder) {
+                // Skip already processed pages
+                if (skipped.includes(i)) {
+                    continue;
+                }
 
-            // Process remaining images
-            for (let i = 3; i < chapter.images.length; i++) {
-                if (skipped.includes(i)) continue;
+                // Load the current image
+                const img = await loadImage(chapter.images[i]);
 
-                const img = remainingImages[i - 3];
+                // Check if this page should be combined with the next
                 if (img.height === 1500 && i < chapter.images.length - 1) {
-                    const nextImg = remainingImages[i - 2];
+                    // Load the next image to combine
+                    const nextImg = await loadImage(chapter.images[i + 1]);
+
+                    // Combine the images on canvas
                     canvas.width = img.width;
                     canvas.height = img.height + nextImg.height;
                     ctx.drawImage(img, 0, 0);
                     ctx.drawImage(nextImg, 0, img.height);
+
+                    // Store the combined image
                     processed[i] = canvas.toDataURL("image/jpeg");
-                    skipped.push(i + 1);
+                    skipped.push(i + 1); // Mark the next page as skipped
+
+                    // Update state with each combined image
+                    setProcessedImages((prev) => {
+                        const updated = [...prev];
+                        updated[i] = processed[i];
+                        return updated;
+                    });
+
+                    // Update skip pages and effective page count together
+                    setSkipPages((prev) => {
+                        const newSkipPages = [...prev, i + 1];
+                        // Update effective page count whenever skip pages changes
+                        setEffectivePageCount(
+                            chapter.images.length - newSkipPages.length,
+                        );
+                        return newSkipPages;
+                    });
                 } else {
+                    // Store the single image
                     processed[i] =
                         `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+
+                    // Update state with each processed image
+                    setProcessedImages((prev) => {
+                        const updated = [...prev];
+                        updated[i] = processed[i];
+                        return updated;
+                    });
+                }
+
+                // Increment our counter
+                imagesLoaded++;
+
+                // Make initial batch available as soon as it's ready
+                if (imagesLoaded === initialBatchSize && !initialPagesReady) {
+                    setInitialPagesReady(true);
                 }
             }
 
-            // Update with all processed images
-            setProcessedImages(processed);
-            setSkipPages(skipped);
+            // Final update of effective page count after all processing is done
+            setEffectivePageCount(chapter.images.length - skipped.length);
         } catch (error) {
             console.error("Error processing images:", error);
         } finally {
-            setIsProcessingImages(false);
+            setTimeout(() => {
+                setIsProcessingImages(false);
+            }, 500);
         }
-    }, [chapter?.images]);
+    }, [chapter?.images, handleImageHeight]);
 
     useEffect(() => {
         processImages();
     }, [processImages]);
 
+    // Modified handlePageLoad to check image height
     const handlePageLoad = (
         e: React.SyntheticEvent<HTMLImageElement>,
         index: number,
     ) => {
         handleImageLoad(e, index);
-    };
 
-    const getEffectivePageCount = useCallback(() => {
-        return chapter.images.length - skipPages.length;
-    }, [chapter.images.length, skipPages.length]);
+        // Check image height for strip manga detection
+        if (
+            !hasToggledReaderModeRef.current &&
+            e.currentTarget instanceof HTMLImageElement
+        ) {
+            handleImageHeight(e.currentTarget.naturalHeight);
+        }
+    };
 
     const getEffectivePageIndex = useCallback(
         (index: number) => {
-            if (skipPages.includes(index)) return -1; // Return -1 for skipped pages
-            return index - skipPages.filter((skip) => skip < index).length;
+            if (!chapter) return 0;
+            if (skipPages.includes(index)) return -1;
+
+            // Simply count non-skipped pages up to this index
+            let effectiveIndex = 0;
+            for (let i = 0; i < index; i++) {
+                if (!skipPages.includes(i)) {
+                    effectiveIndex++;
+                }
+            }
+
+            return effectiveIndex;
         },
-        [skipPages],
+        [chapter, skipPages],
+    );
+
+    const getActualPageIndex = useCallback(
+        (effectiveIndex: number) => {
+            if (!chapter) return 0;
+            if (effectiveIndex < 0) return 0;
+
+            // Count up through actual pages until we find the matching effective index
+            let currentEffectiveIndex = 0;
+            let actualIndex = 0;
+
+            while (actualIndex < chapter.images.length) {
+                if (!skipPages.includes(actualIndex)) {
+                    if (currentEffectiveIndex === effectiveIndex) {
+                        return actualIndex;
+                    }
+                    currentEffectiveIndex++;
+                }
+                actualIndex++;
+            }
+
+            // If we didn't find a match, return the last valid page
+            return Math.max(0, chapter.images.length - 1);
+        },
+        [chapter, skipPages],
     );
 
     return (
@@ -366,48 +526,44 @@ export default function PageReader({
                                     width={700}
                                     height={1080}
                                     loading="eager"
-                                    priority={index === currentPage}
                                     className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${
                                         effectiveIndex !==
                                         getEffectivePageIndex(currentPage)
                                             ? "hidden"
                                             : ""
                                     }`}
-                                    onLoad={(e) => handlePageLoad(e, index)}
+                                    onLoad={(e) => handlePageLoad(e, offset)}
                                 />
                             );
                         })}
                     <EndOfManga
                         title={chapter.title}
                         identifier={chapter.parentId}
-                        className={`${getEffectivePageIndex(currentPage) !== getEffectivePageCount() ? "hidden" : ""}`}
+                        className={`${getEffectivePageIndex(currentPage) !== effectivePageCount ? "hidden" : ""}`}
                     />
                 </div>
-                {!isProcessingImages && (
-                    <div
-                        className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
-                            isFooterVisible ? "opacity-100" : "opacity-0"
-                        } ${
-                            getEffectivePageIndex(currentPage) !==
-                            getEffectivePageCount()
-                                ? "block"
-                                : "hidden md:block"
-                        }`}
-                    >
-                        <PageProgress
-                            currentPage={getEffectivePageIndex(currentPage)}
-                            totalPages={getEffectivePageCount()}
-                            setCurrentPage={(page) => {
-                                const adjustedPage =
-                                    page +
-                                    skipPages.filter((skip) => skip <= page)
-                                        .length;
-                                setCurrentPage(adjustedPage);
-                            }}
-                            isFooterVisible={isFooterVisible}
-                        />
-                    </div>
-                )}
+                <div
+                    className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${isFooterVisible ? "opacity-100" : "opacity-0"} ${
+                        getEffectivePageIndex(currentPage) !==
+                        effectivePageCount
+                            ? "block"
+                            : "hidden md:block"
+                    }`}
+                    style={isProcessingImages ? { opacity: 0 } : undefined}
+                >
+                    <PageProgress
+                        currentPage={Math.max(
+                            0,
+                            getEffectivePageIndex(currentPage),
+                        )}
+                        totalPages={effectivePageCount}
+                        setCurrentPage={(page) => {
+                            console.log(page);
+                            setPageWithUrlUpdate(getActualPageIndex(page));
+                        }}
+                        isFooterVisible={isFooterVisible}
+                    />
+                </div>
             </div>
             <div
                 className={`footer ${isFooterVisible ? "footer-visible" : ""} ${currentPage === chapter.images.length ? "hidden" : ""}`}

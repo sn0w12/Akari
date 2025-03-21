@@ -217,7 +217,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     {manga.authors.map(
                                         (author: string, index: number) => (
                                             <Link
-                                                href={`/author/${encodeURIComponent(author)}`}
+                                                href={`/author/${encodeURIComponent(author.replaceAll(" ", "-"))}`}
                                                 key={index}
                                                 prefetch={false}
                                             >

@@ -14,6 +14,18 @@ const config: Config = {
         "hover:bg-green-700",
         "bg-cyan-600",
         "hover:bg-cyan-700",
+        "bg-positive",
+        "border-positive",
+        "text-positive",
+        "bg-negative",
+        "border-negative",
+        "text-negative",
+        "bg-info",
+        "border-info",
+        "text-info",
+        "bg-warning",
+        "border-warning",
+        "text-warning",
     ],
     theme: {
         extend: {
@@ -47,25 +59,17 @@ const config: Config = {
                 "accent-color": "#6366F1",
                 positive: "#6366F1",
                 negative: "#db5363",
+                info: "#53b7db",
+                warning: "#ebd278",
                 success: {
                     DEFAULT: "#10B981",
                     light: "#6EE7B7",
                     dark: "#047857",
                 },
-                warning: {
-                    DEFAULT: "#F59E0B",
-                    light: "#FDE68A",
-                    dark: "#B45309",
-                },
                 danger: {
                     DEFAULT: "#DC2626",
                     light: "#F87171",
                     dark: "#991B1B",
-                },
-                info: {
-                    DEFAULT: "#0EA5E9",
-                    light: "#7DD3FC",
-                    dark: "#0369A1",
                 },
                 destructive: {
                     DEFAULT: "hsl(var(--destructive))",

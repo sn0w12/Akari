@@ -34,10 +34,10 @@ async function bookmark(manga: MangaDetails, isBookmarked: boolean) {
 
     const data = await response.json();
 
-    if (data.result === "error") {
+    if (data.success !== true) {
         new Toast("Failed to bookmark.", "error");
         return;
-    } else if (data.result === "ok") {
+    } else {
         new Toast("Bookmark added.", "success");
     }
 
@@ -56,13 +56,13 @@ async function removeBookmark(manga: MangaDetails) {
     });
     const data = await response.json();
 
-    if (data.result === "error") {
+    if (data.success !== true) {
         new Toast(
             "Failed to remove bookmark.\nPlease find the manga in your bookmarks first.",
             "error",
         );
         return false;
-    } else if (data.result === "ok") {
+    } else {
         new Toast("Bookmark removed.", "success");
     }
 

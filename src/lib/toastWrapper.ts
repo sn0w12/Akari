@@ -1,4 +1,7 @@
-import { toast } from "react-toastify";
+"use client";
+
+import { useEffect } from "react";
+import { useToast } from "./toast/ToastContext";
 
 // Utility function to get the user's theme
 const getUserTheme = (): "light" | "dark" => {
@@ -7,7 +10,7 @@ const getUserTheme = (): "light" | "dark" => {
 
 /**
  * A wrapper class for handling toast notifications with customizable options.
- * Integrates with a toast notification system and respects user preferences for displaying notifications.
+ * Integrates with a custom toast notification system and respects user preferences for displaying notifications.
  *
  * @class Toast
  *
@@ -33,6 +36,7 @@ class Toast {
     private toastId: string = "toast";
     private theme: "light" | "dark" = "dark";
     private showToast: boolean;
+    private static toastManager: any = null;
 
     constructor(
         message: string,
@@ -45,9 +49,14 @@ class Toast {
         if (!this.showToast) return;
 
         this.theme = getUserTheme();
-        this.toastId = `toast-${Math.random().toString(36).substr(2, 9)}`; // Generate a custom ID
 
+        // We'll update the toastId when the toast is actually shown
         this.show(message, type, options);
+    }
+
+    // Method to initialize the toast manager (to be called from the component that has access to the hook)
+    static initToastManager(manager: any) {
+        Toast.toastManager = manager;
     }
 
     private show(
@@ -55,42 +64,45 @@ class Toast {
         type: "success" | "error" | "info" | "warning",
         options = {},
     ) {
+        if (!Toast.toastManager) {
+            // In case we try to use toast before the manager is initialized,
+            // we can fallback to console or queue the toasts
+            console.warn(
+                "Toast manager not initialized. Toast message:",
+                message,
+            );
+            return;
+        }
+
         const defaultOptions = {
-            position: "top-right" as
-                | "top-right"
-                | "top-center"
-                | "top-left"
-                | "bottom-right"
-                | "bottom-center"
-                | "bottom-left",
+            position: "top-right",
             theme: this.theme,
             autoClose: 5000,
-            toastId: this.toastId,
             ...options,
         };
 
-        switch (type) {
-            case "success":
-                toast.success(message, defaultOptions);
-                break;
-            case "error":
-                toast.error(message, defaultOptions);
-                break;
-            case "info":
-                toast.info(message, defaultOptions);
-                break;
-            case "warning":
-                toast.warning(message, defaultOptions);
-                break;
-            default:
-                toast(message, defaultOptions);
-        }
+        // Use the custom toast manager to show the toast
+        this.toastId = Toast.toastManager.addToast(
+            message,
+            type,
+            defaultOptions,
+        );
     }
 
     close() {
-        console.log(this.toastId);
-        toast.dismiss(this.toastId);
+        if (this.toastId && Toast.toastManager) {
+            Toast.toastManager.removeToast(this.toastId);
+        }
     }
 }
 
 export default Toast;
+
+// Hook wrapper to initialize Toast with the toast manager
+export function useToastInitializer() {
+    const toastManager = useToast();
+
+    useEffect(() => {
+        Toast.initToastManager(toastManager);
+    }, [toastManager]);
+}

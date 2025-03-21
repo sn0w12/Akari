@@ -16,19 +16,19 @@ function desktopCard(index: number) {
                 <Skeleton className="w-full h-60 object-cover rounded" />
             </div>
 
-            <CardContent className="ml-4 mr-4 flex flex-col flex-shrink justify-between">
-                <div className="mb-4">
+            <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
+                <div className="flex flex-col gap-2">
                     {/* Skeleton for the story name (title) */}
-                    <Skeleton className="w-48 h-8 mb-2" />
+                    <Skeleton className="w-48 h-8" />
 
                     {/* Skeleton for the button */}
-                    <Skeleton className="w-72 h-10 mt-4" />
-                </div>
+                    <Skeleton className="w-72 h-10 mb-1" />
 
-                {/* Skeleton for Latest Chapter Info */}
-                <div className="flex flex-col gap-1">
-                    <Skeleton className="w-44 h-5" />
-                    <Skeleton className="w-28 h-3" />
+                    {/* Skeleton for Latest Chapter Info */}
+                    <div className="flex flex-col gap-1">
+                        <Skeleton className="w-44 h-5" />
+                        <Skeleton className="w-28 h-3" />
+                    </div>
                 </div>
             </CardContent>
         </Card>
@@ -42,7 +42,7 @@ function mobileCard(index: number) {
             className="flex md:hidden flex-col items-start shadow-lg bg-card border border-border rounded-lg"
         >
             <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
-                <div className="mb-4">
+                <div className="mb-2">
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full mb-0 shrink-0">
                             <Skeleton className="w-full h-[120px] object-cover rounded" />
@@ -52,7 +52,7 @@ function mobileCard(index: number) {
                         </div>
                     </div>
                     {/* Continue Reading Button */}
-                    <Skeleton className="w-full h-10 mt-4" />
+                    <Skeleton className="w-full h-10 mt-2" />
                 </div>
                 <div className="flex flex-col gap-1">
                     <Skeleton className="w-44 h-5" />

@@ -1,10 +1,9 @@
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import localFont from "next/font/local";
-import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CookieConsent } from "@/components/ui/cookieConsent";
+import { ToastProvider } from "@/lib/toast/ToastContext";
 import "@/app/globals.css";
-import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -25,7 +24,7 @@ export default function MangaReaderLayout({
     const isDevelopment = process.env.NODE_ENV === "development";
 
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 {isDevelopment && (
                     <script
@@ -43,10 +42,11 @@ export default function MangaReaderLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <AnalyticsWrapper />
-                    {children}
-                    <ToastContainer />
-                    <CookieConsent />
+                    <ToastProvider>
+                        <AnalyticsWrapper />
+                        {children}
+                        <CookieConsent />
+                    </ToastProvider>
                 </ThemeProvider>
             </body>
         </html>

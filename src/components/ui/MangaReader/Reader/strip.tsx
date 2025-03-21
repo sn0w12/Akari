@@ -7,14 +7,24 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
 
-// Add throttle function
 function throttle(this: any, func: Function, limit: number) {
-    let inThrottle: boolean;
+    let lastFunc: number;
+    let lastRan: number;
     return function (this: any, ...args: any[]) {
-        if (!inThrottle) {
+        if (!lastRan) {
             func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => (inThrottle = false), limit);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = window.setTimeout(
+                () => {
+                    if (Date.now() - lastRan >= limit) {
+                        func.apply(this, args);
+                        lastRan = Date.now();
+                    }
+                },
+                limit - (Date.now() - lastRan),
+            );
         }
     };
 }
@@ -40,9 +50,11 @@ export default function StripReader({
     const bookmarkUpdatedRef = useRef(false);
     const router = useRouter();
     const hasPrefetchedRef = useRef(false);
+    const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
 
     useEffect(() => {
-        const handleScroll = throttle(() => {
+        // Use requestAnimationFrame for smoother performance
+        const calculateScrollMetrics = () => {
             const element = document.documentElement;
             const scrollTop = element.scrollTop || document.body.scrollTop;
             const scrollHeight =
@@ -57,13 +69,21 @@ export default function StripReader({
             // Calculate pixels from bottom
             const bottomDistance = scrollHeight - (scrollTop + clientHeight);
             setDistanceFromBottom(Math.max(0, bottomDistance));
-        }, 100); // Throttle to 100ms
+        };
 
-        window.addEventListener("scroll", handleScroll);
+        const handleScroll = throttle(() => {
+            requestAnimationFrame(calculateScrollMetrics);
+        }, 300);
+
+        scrollHandlerRef.current = handleScroll;
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
         handleScroll(); // Initial calculation
 
         return () => {
-            window.removeEventListener("scroll", handleScroll);
+            if (scrollHandlerRef.current) {
+                window.removeEventListener("scroll", scrollHandlerRef.current);
+            }
             bookmarkUpdatedRef.current = false;
             hasPrefetchedRef.current = false;
         };
