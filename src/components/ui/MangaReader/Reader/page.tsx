@@ -58,12 +58,6 @@ export default function PageReader({
         chapter?.images?.length || 0,
     );
 
-    // Update effective page count when skipPages changes
-    useEffect(() => {
-        if (!chapter?.images) return;
-        setEffectivePageCount(chapter.images.length - skipPages.length);
-    }, [chapter, skipPages]);
-
     const resetInactivityTimer = useCallback(() => {
         if (inactivityTimer.current) {
             clearTimeout(inactivityTimer.current);
@@ -381,7 +375,15 @@ export default function PageReader({
                         return updated;
                     });
 
-                    setSkipPages((prev) => [...prev, i + 1]);
+                    // Update skip pages and effective page count together
+                    setSkipPages((prev) => {
+                        const newSkipPages = [...prev, i + 1];
+                        // Update effective page count whenever skip pages changes
+                        setEffectivePageCount(
+                            chapter.images.length - newSkipPages.length,
+                        );
+                        return newSkipPages;
+                    });
                 } else {
                     // Store the single image
                     processed[i] =
@@ -403,10 +405,15 @@ export default function PageReader({
                     setInitialPagesReady(true);
                 }
             }
+
+            // Final update of effective page count after all processing is done
+            setEffectivePageCount(chapter.images.length - skipped.length);
         } catch (error) {
             console.error("Error processing images:", error);
         } finally {
-            setIsProcessingImages(false);
+            setTimeout(() => {
+                setIsProcessingImages(false);
+            }, 500);
         }
     }, [chapter?.images, handleImageHeight]);
 
@@ -432,8 +439,43 @@ export default function PageReader({
 
     const getEffectivePageIndex = useCallback(
         (index: number) => {
-            if (!chapter || skipPages.includes(index)) return -1; // Return -1 for skipped pages
-            return index - skipPages.filter((skip) => skip < index).length;
+            if (!chapter) return 0;
+            if (skipPages.includes(index)) return -1;
+
+            // Simply count non-skipped pages up to this index
+            let effectiveIndex = 0;
+            for (let i = 0; i < index; i++) {
+                if (!skipPages.includes(i)) {
+                    effectiveIndex++;
+                }
+            }
+
+            return effectiveIndex;
+        },
+        [chapter, skipPages],
+    );
+
+    const getActualPageIndex = useCallback(
+        (effectiveIndex: number) => {
+            if (!chapter) return 0;
+            if (effectiveIndex < 0) return 0;
+
+            // Count up through actual pages until we find the matching effective index
+            let currentEffectiveIndex = 0;
+            let actualIndex = 0;
+
+            while (actualIndex < chapter.images.length) {
+                if (!skipPages.includes(actualIndex)) {
+                    if (currentEffectiveIndex === effectiveIndex) {
+                        return actualIndex;
+                    }
+                    currentEffectiveIndex++;
+                }
+                actualIndex++;
+            }
+
+            // If we didn't find a match, return the last valid page
+            return Math.max(0, chapter.images.length - 1);
         },
         [chapter, skipPages],
     );
@@ -510,16 +552,14 @@ export default function PageReader({
                     style={isProcessingImages ? { opacity: 0 } : undefined}
                 >
                     <PageProgress
-                        currentPage={getEffectivePageIndex(currentPage)}
+                        currentPage={Math.max(
+                            0,
+                            getEffectivePageIndex(currentPage),
+                        )}
                         totalPages={effectivePageCount}
                         setCurrentPage={(page) => {
-                            // Convert the 1-based page number to 0-based index
-                            const pageIndex = page - 1;
-                            const adjustedPage =
-                                pageIndex +
-                                skipPages.filter((skip) => skip <= pageIndex)
-                                    .length;
-                            setPageWithUrlUpdate(adjustedPage);
+                            console.log(page);
+                            setPageWithUrlUpdate(getActualPageIndex(page));
                         }}
                         isFooterVisible={isFooterVisible}
                     />
