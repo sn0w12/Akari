@@ -17,6 +17,11 @@ export async function fetchBookmarks(page: number) {
             generateFetchCacheOptions(60),
         );
 
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
         const responseText = await response.text();
         let data;
         try {

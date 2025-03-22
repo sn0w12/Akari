@@ -177,6 +177,10 @@ export async function GET(request: Request): Promise<Response> {
     } catch (error) {
         console.error("Error fetching bookmarks:", error);
         if (axios.isAxiosError(error)) {
+            if (error.response?.status === 401) {
+                return NextResponse.redirect(new URL("/account", request.url));
+            }
+
             return NextResponse.json(
                 {
                     result: "error",
