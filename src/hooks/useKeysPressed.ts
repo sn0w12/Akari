@@ -10,7 +10,7 @@ export function useKeyPressed() {
                 if (e.ctrlKey) next.add("ctrl");
                 if (e.shiftKey) next.add("shift");
                 if (e.altKey) next.add("alt");
-                next.add(e.key.toLowerCase());
+                if (e.key) next.add(e.key.toLowerCase());
                 return next;
             });
         };
@@ -21,7 +21,7 @@ export function useKeyPressed() {
                 if (!e.ctrlKey) next.delete("ctrl");
                 if (!e.shiftKey) next.delete("shift");
                 if (!e.altKey) next.delete("alt");
-                next.delete(e.key.toLowerCase());
+                if (e.key) next.delete(e.key.toLowerCase());
                 return next;
             });
         };
