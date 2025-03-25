@@ -19,15 +19,11 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export const metadata: Metadata = {
-    title: "灯 - Akari",
-};
+export const metadata: Metadata = { title: "灯 - Akari" };
 
 export default function RootLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
     const isDevelopment = process.env.NODE_ENV === "development";
 
     return (
@@ -41,7 +37,7 @@ export default function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased bg-background`}
             >
                 <ThemeProvider
                     attribute="class"

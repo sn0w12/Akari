@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Icon() {
     return (
-        <Card className="w-10">
+        <Card className="w-10 shadow-none">
             <Button
                 variant="ghost"
                 size="icon"

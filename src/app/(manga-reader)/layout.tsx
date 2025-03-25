@@ -18,9 +18,7 @@ const geistMono = localFont({
 
 export default function MangaReaderLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
     const isDevelopment = process.env.NODE_ENV === "development";
 
     return (
@@ -34,7 +32,7 @@ export default function MangaReaderLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
             >
                 <ThemeProvider
                     attribute="class"
