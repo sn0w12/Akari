@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
-import { useSidebar } from "@/hooks/useSidebar";
 import { renderInput, Setting, SettingsMap } from "@/lib/settings";
 
 interface SettingsFormProps {
@@ -17,7 +16,6 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
     const defaultTab = Object.keys(settingsTabs)[0];
     const isProduction = process.env.NODE_ENV === "production";
     const { closeSettings } = useSettingsDialog();
-    const { closeSidebar } = useSidebar();
 
     const shouldShowSetting = (setting: Setting) => {
         if (
@@ -38,7 +36,6 @@ function SettingsForm({ settingsTabs }: SettingsFormProps) {
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     onClick={() => {
                         closeSettings();
-                        closeSidebar();
                     }}
                 >
                     Open in full page
