@@ -23,12 +23,17 @@ import {
     SidebarSection,
     SidebarFooter,
     useSidebar,
+    SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Separator } from "./ui/separator";
 import { GENRE_CATEGORIES } from "@/lib/search";
 import { BookmarksContextMenu } from "./ui/Bookmarks/BookmarksContextMenu";
 import { fetchNotification } from "@/lib/bookmarks";
 import { useEffect, useState } from "react";
+import SettingsDialog from "@/components/ui/Header/SettingsDialog";
+import { useSetting } from "@/lib/settings";
+import { useSettingsDialog } from "@/hooks/useSettingsDialog";
+import { useRouter } from "next/navigation";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -45,9 +50,24 @@ export function BaseLayout({
     children: React.ReactNode;
     gutter?: boolean;
 }) {
+    const router = useRouter();
     const [notification, setNotification] = useState<string>("");
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = sidebarState === "collapsed";
+
+    const { openSettings } = useSettingsDialog();
+    const preferSettingsPage = useSetting("preferSettingsPage");
+
+    const handleSettingsClick = () => {
+        if (preferSettingsPage) {
+            router.push("/settings");
+            return;
+        }
+
+        setTimeout(() => {
+            openSettings();
+        }, 100);
+    };
 
     useEffect(() => {
         fetchNotification().then(setNotification);
@@ -118,13 +138,22 @@ export function BaseLayout({
                     <SidebarFooter>
                         <Separator />
                         <SidebarMenuItem>
-                            <SidebarMenuLink
-                                tooltip="Settings"
-                                href="/settings"
-                            >
-                                <SettingsIcon />
-                                <span>Settings</span>
-                            </SidebarMenuLink>
+                            {preferSettingsPage ? (
+                                <SidebarMenuLink
+                                    tooltip="Settings"
+                                    href="/settings"
+                                >
+                                    <SettingsIcon />
+                                    <span>Settings</span>
+                                </SidebarMenuLink>
+                            ) : (
+                                <SidebarMenuButton
+                                    onClick={handleSettingsClick}
+                                >
+                                    <SettingsIcon />
+                                    <span>Settings</span>
+                                </SidebarMenuButton>
+                            )}
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                             <SidebarMenuLink tooltip="Account" href="/account">
@@ -140,6 +169,7 @@ export function BaseLayout({
                 >
                     {children}
                 </main>
+                <SettingsDialog />
             </div>
         </div>
     );
