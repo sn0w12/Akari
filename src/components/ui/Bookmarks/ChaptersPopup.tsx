@@ -63,6 +63,8 @@ export const ChaptersPopup: React.FC<{
     useEffect(() => {
         // Fade in animation for popup
         setIsVisible(true);
+        const mainElement = document.querySelector("main") as HTMLElement;
+        if (!mainElement) return;
 
         // Update position on scroll using animation frame for smoothness
         const handleScroll = () => {
@@ -86,12 +88,12 @@ export const ChaptersPopup: React.FC<{
 
         // Set up event listeners
         document.body.addEventListener("click", handleOutsideClick);
-        window.addEventListener("scroll", handleScroll, { passive: true });
+        mainElement.addEventListener("scroll", handleScroll, { passive: true });
         window.addEventListener("resize", handleScroll, { passive: true });
 
         return () => {
             document.body.removeEventListener("click", handleOutsideClick);
-            window.removeEventListener("scroll", handleScroll);
+            mainElement.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", handleScroll);
 
             if (animationFrameRef.current) {
