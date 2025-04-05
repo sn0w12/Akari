@@ -1067,7 +1067,9 @@ function SidebarSection({
                         isActive={isActive}
                         tooltip={title}
                         labelClassName={
-                            isSidebarCollapsed ? "" : "w-full justify-between"
+                            isSidebarCollapsed || !isMobile
+                                ? ""
+                                : "w-full justify-between"
                         }
                     >
                         <div className="flex max-w-[85%] items-center gap-2">
