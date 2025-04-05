@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import nextBase64 from "next-base64";
 import AuthorPage from "@/components/Author";
 
 interface PageProps {
