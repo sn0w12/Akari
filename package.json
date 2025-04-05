@@ -31,7 +31,7 @@
         "@supabase/supabase-js": "^2.48.1",
         "@tailwindcss/postcss": "^4.0.16",
         "@vercel/analytics": "^1.5.0",
-        "@vercel/speed-insights": "^1.1.0",
+        "@vercel/speed-insights": "^1.2.0",
         "aka": "file:",
         "akari": "file:",
         "axios": "^1.8.4",
