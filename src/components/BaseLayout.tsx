@@ -31,9 +31,10 @@ import { BookmarksContextMenu } from "./ui/Bookmarks/BookmarksContextMenu";
 import { fetchNotification } from "@/lib/bookmarks";
 import { useEffect, useState } from "react";
 import SettingsDialog from "@/components/ui/Header/SettingsDialog";
-import { useSetting } from "@/lib/settings";
+import { getSettings, useSetting } from "@/lib/settings";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
 import { useRouter } from "next/navigation";
+import { useShortcut } from "@/hooks/useShortcut";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -58,6 +59,19 @@ export function BaseLayout({
     const { openSettings } = useSettingsDialog();
     const preferSettingsPage = useSetting("preferSettingsPage");
 
+    type ShortcutSettings = {
+        toggleSidebar: string | null;
+        openSettings: string | null;
+        openAccount: string | null;
+        navigateBookmarks: string | null;
+    };
+    const [shortcuts, setShortcuts] = useState<ShortcutSettings>({
+        toggleSidebar: null,
+        openSettings: null,
+        openAccount: null,
+        navigateBookmarks: null,
+    });
+
     const handleSettingsClick = () => {
         if (preferSettingsPage) {
             router.push("/settings");
@@ -68,6 +82,36 @@ export function BaseLayout({
             openSettings();
         }, 100);
     };
+
+    useEffect(() => {
+        const settings = getSettings([
+            "toggleSidebar",
+            "openSettings",
+            "openAccount",
+            "navigateBookmarks",
+        ]);
+        setShortcuts(
+            (settings as ShortcutSettings) ?? {
+                toggleSidebar: null,
+                openSettings: null,
+                openAccount: null,
+                navigateBookmarks: null,
+            },
+        );
+    }, []);
+    useShortcut(shortcuts.openSettings || "", handleSettingsClick, {
+        preventDefault: true,
+    });
+    useShortcut(shortcuts.openAccount || "", () => router.push("/account"), {
+        preventDefault: true,
+    });
+    useShortcut(
+        shortcuts.navigateBookmarks || "",
+        () => {
+            router.push("/bookmarks");
+        },
+        { preventDefault: true },
+    );
 
     useEffect(() => {
         fetchNotification().then(setNotification);
