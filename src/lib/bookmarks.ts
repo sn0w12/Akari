@@ -1,5 +1,6 @@
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import { isSignedIn } from "./utils";
+import { useMemo } from "react";
 
 export function compareVersions(str1: string, str2: string): boolean {
     // Replace "-" with "." in both strings
@@ -114,3 +115,41 @@ export function bookmarksToCacheItems(bookmarks: Bookmark[]): MangaCacheItem[] {
         last_update: bookmark.chapterlastdateupdate,
     }));
 }
+
+export const fetchNotification = async () => {
+    // Check local storage first
+    const cached = localStorage.getItem("notification");
+    const timestamp = localStorage.getItem("notificationTimestamp");
+    const now = Date.now();
+
+    // If we have cached data and it's less than 24 hours old
+    if (
+        cached &&
+        timestamp &&
+        now - parseInt(timestamp) < 24 * 60 * 60 * 1000
+    ) {
+        return cached;
+    }
+
+    try {
+        const res = await fetch(`/api/bookmarks/notification`);
+
+        if (!res.ok) {
+            localStorage.removeItem("notification");
+            localStorage.removeItem("notificationTimestamp");
+            if (res.status === 401) {
+                localStorage.removeItem("auth");
+                localStorage.removeItem("accountName");
+            }
+            return "";
+        }
+
+        const data = await res.json();
+        localStorage.setItem("notification", data);
+        localStorage.setItem("notificationTimestamp", now.toString());
+        return data;
+    } catch (error) {
+        console.error("Error fetching notification:", error);
+        return "";
+    }
+};

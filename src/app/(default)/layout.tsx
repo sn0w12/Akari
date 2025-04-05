@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
-import { HeaderComponent } from "@/components/Header";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import { CookieConsent } from "@/components/ui/cookieConsent";
 import { ToastProvider } from "@/lib/toast/ToastContext";
+import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -19,15 +20,11 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export const metadata: Metadata = {
-    title: "灯 - Akari",
-};
+export const metadata: Metadata = { title: "灯 - Akari" };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
     const isDevelopment = process.env.NODE_ENV === "development";
 
     return (
@@ -41,22 +38,30 @@ export default function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden fixed inset-0`}
             >
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="system"
-                    enableSystem
-                    disableTransitionOnChange
+                <SidebarProvider
+                    defaultOpen={false}
+                    className="overflow-hidden"
                 >
-                    <ToastProvider>
-                        <AnalyticsWrapper />
-                        <HeaderComponent />
-                        <main className="flex-grow">{children}</main>
-                        <CookieConsent />
-                        <Footer />
-                    </ToastProvider>
-                </ThemeProvider>
+                    <BaseLayout>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            <ToastProvider>
+                                <AnalyticsWrapper />
+                                <div className="flex-grow pt-2 md:p-4 md:pb-0">
+                                    {children}
+                                </div>
+                                <CookieConsent />
+                                <Footer />
+                            </ToastProvider>
+                        </ThemeProvider>
+                    </BaseLayout>
+                </SidebarProvider>
             </body>
         </html>
     );

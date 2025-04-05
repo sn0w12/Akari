@@ -40,15 +40,11 @@ import {
 } from "@/lib/auth";
 
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    password: z.string().min(1, {
-        message: "Password is required.",
-    }),
-    captcha: z.string().min(1, {
-        message: "CAPTCHA is required.",
-    }),
+    username: z
+        .string()
+        .min(2, { message: "Username must be at least 2 characters." }),
+    password: z.string().min(1, { message: "Password is required." }),
+    captcha: z.string().min(1, { message: "CAPTCHA is required." }),
 });
 
 export default function AccountClient() {
@@ -71,11 +67,7 @@ export default function AccountClient() {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: "",
-            password: "",
-            captcha: "",
-        },
+        defaultValues: { username: "", password: "", captcha: "" },
     });
 
     useEffect(() => {
@@ -346,7 +338,7 @@ export default function AccountClient() {
 
     // Login form (not logged in)
     return (
-        <div className="container mx-auto px-4 py-8 max-w-md">
+        <div className="mx-auto px-4 py-1 max-w-md">
             {isLoading ? (
                 <div className="min-h-[400px] flex items-center justify-center">
                     <CenteredSpinner />

@@ -42,7 +42,7 @@ export const ToastContainer: React.FC = () => {
                 <div
                     key={position}
                     className={cn(
-                        "fixed z-50 flex p-4 gap-2 max-w-md w-full",
+                        "fixed z-50 flex p-1 pr-2 gap-2 max-w-md w-full",
                         position.includes("bottom")
                             ? "flex-col-reverse"
                             : "flex-col",

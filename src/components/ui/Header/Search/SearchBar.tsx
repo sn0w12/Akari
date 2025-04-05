@@ -18,11 +18,7 @@ export default function SearchBar() {
     const router = useRouter();
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState<
-        {
-            id: string;
-            title: string;
-            image: string;
-        }[]
+        { id: string; title: string; image: string }[]
     >([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -93,7 +89,7 @@ export default function SearchBar() {
 
     return (
         <div
-            className={`relative transition-all w-auto flex-grow ml-6 lg:grow-0 lg:w-96 xl:w-128 ${
+            className={`relative transition-all w-auto flex-grow lg:grow-0 lg:w-96 xl:w-128 ${
                 isFocused ? "xl:w-[40rem] lg:w-128" : ""
             }`}
         >
@@ -110,19 +106,19 @@ export default function SearchBar() {
                         setIsFocused(true);
                         searchResults.length > 0 && setShowPopup(true);
                     }}
-                    className="w-full hidden sm:block"
+                    className="w-full hidden md:block h-8"
                 />
                 {shortcut && (
                     <KeyboardShortcut
                         keys={shortcut.split("+")}
-                        className={`hidden sm:flex transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
+                        className={`hidden md:flex transition-opacity ${isFocused ? "opacity-0" : "opacity-100"}`}
                     />
                 )}
             </div>
             {showPopup && (
                 <Card
                     ref={popupRef}
-                    className="hidden absolute p-2 z-10 mt-1 m-auto sm:w-full sm:block"
+                    className="hidden absolute p-2 z-10 mt-1 m-auto md:w-full md:block"
                 >
                     <CardContent className="p-2">
                         {isSearchLoading ? (

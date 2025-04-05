@@ -20,9 +20,9 @@ interface Chapter {
     createdAt: string;
 }
 
-const DesktopBookmarkCard: React.FC<{
-    bookmark: Bookmark;
-}> = ({ bookmark }) => {
+const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
+    bookmark,
+}) => {
     const {
         mangaIdentifier,
         continueReading,
@@ -54,10 +54,7 @@ const DesktopBookmarkCard: React.FC<{
                 viewportWidth - popupWidth - 20,
             ); // 20px safety margin
 
-            setPopupPosition({
-                top: rect.bottom,
-                left: adjustedLeft,
-            });
+            setPopupPosition({ top: rect.bottom, left: adjustedLeft });
         }
 
         if (chapters.length === 0 && !showPopup) {
@@ -97,8 +94,9 @@ const DesktopBookmarkCard: React.FC<{
                     <HoverLink
                         href={`/manga/${mangaIdentifier}`}
                         prefetch={false}
+                        className="mr-20"
                     >
-                        <h3 className="font-bold text-2xl mr-20 hover:underline text-left">
+                        <h3 className="font-bold text-2xl hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
                     </HoverLink>
@@ -129,10 +127,7 @@ const DesktopBookmarkCard: React.FC<{
                             )}
                         </Button>
                     </div>
-                    {LatestChapterInfo({
-                        bookmark,
-                        colors: buttonColor,
-                    })}
+                    {LatestChapterInfo({ bookmark, colors: buttonColor })}
 
                     {showPopup && (
                         <ChaptersPopup

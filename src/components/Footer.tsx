@@ -14,7 +14,7 @@ export default async function Footer() {
     const version = pkg.version;
     return (
         <footer className="border-t">
-            <div className="mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto pt-8.75 pb-8 px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-2">
                     <div className="flex justify-center md:order-2 space-x-6">
                         <Link

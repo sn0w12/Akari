@@ -17,13 +17,11 @@ const geistMono = localFont({
 
 export default function MangaReaderLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
             >
                 <ThemeProvider
                     attribute="class"

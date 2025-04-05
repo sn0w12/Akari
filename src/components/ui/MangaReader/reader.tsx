@@ -8,6 +8,7 @@ import MangaReaderSkeleton from "./mangaReaderSkeleton";
 import { HeaderComponent } from "@/components/Header";
 import StripReader from "./Reader/strip";
 import PageReader from "./Reader/page";
+import { useSidebar } from "../sidebar";
 
 interface ReaderProps {
     chapter: Chapter;
@@ -18,12 +19,12 @@ export default function Reader({ chapter }: ReaderProps) {
         undefined,
     );
     const [firstImageLoaded, setFirstImageLoaded] = useState<boolean>(false);
-    const [isHeaderVisible, setHeaderVisible] = useState(false);
-    const [isHoveringHeader, setHoveringHeader] = useState(false);
     const [isFooterVisible, setFooterVisible] = useState(false);
     const [isHoveringFooter, setHoveringFooter] = useState(false);
     const longImageCountRef = useRef(0);
     const imageCountRef = useRef(0);
+    const { state: sidebarState } = useSidebar();
+    const isSidebarCollapsed = sidebarState === "collapsed";
 
     // Detect if the majority of images have a long aspect ratio
     useEffect(() => {
@@ -100,12 +101,6 @@ export default function Reader({ chapter }: ReaderProps) {
             const sidebarContextVisible = isSidebarContextPresent();
             const chapterSelectorVisible = isChapterSelectorPresent();
 
-            if ((e.clientY < 175 && !sidebarVisible) || sidebarContextVisible) {
-                setHeaderVisible(true);
-            } else if (!isHoveringHeader) {
-                setHeaderVisible(false);
-            }
-
             if (
                 (e.clientY > window.innerHeight - 175 && !sidebarVisible) ||
                 chapterSelectorVisible
@@ -114,14 +109,6 @@ export default function Reader({ chapter }: ReaderProps) {
             } else if (!isHoveringFooter) {
                 setFooterVisible(false);
             }
-        };
-
-        const handleHeaderMouseEnter = () => {
-            setHoveringHeader(true);
-        };
-
-        const handleHeaderMouseLeave = () => {
-            setHoveringHeader(false);
         };
 
         const handleFooterMouseEnter = () => {
@@ -133,18 +120,6 @@ export default function Reader({ chapter }: ReaderProps) {
         };
 
         window.addEventListener("mousemove", handleMouseMove);
-
-        const headerElement = document.querySelector(".header");
-        if (headerElement) {
-            headerElement.addEventListener(
-                "mouseenter",
-                handleHeaderMouseEnter,
-            );
-            headerElement.addEventListener(
-                "mouseleave",
-                handleHeaderMouseLeave,
-            );
-        }
 
         const footerElement = document.querySelector(".footer");
         if (footerElement) {
@@ -158,36 +133,8 @@ export default function Reader({ chapter }: ReaderProps) {
             );
         }
 
-        const checkForPopupElement = () => {
-            const popupElement = document.querySelector(".manga-title");
-            if (popupElement) {
-                popupElement.addEventListener(
-                    "mouseenter",
-                    handleHeaderMouseEnter,
-                );
-                popupElement.addEventListener(
-                    "mouseleave",
-                    handleHeaderMouseLeave,
-                );
-            } else {
-                setTimeout(checkForPopupElement, 100);
-            }
-        };
-
-        checkForPopupElement();
-
         return () => {
             window.removeEventListener("mousemove", handleMouseMove);
-            if (headerElement) {
-                headerElement.removeEventListener(
-                    "mouseenter",
-                    handleHeaderMouseEnter,
-                );
-                headerElement.removeEventListener(
-                    "mouseleave",
-                    handleHeaderMouseLeave,
-                );
-            }
             if (footerElement) {
                 footerElement.removeEventListener(
                     "mouseenter",
@@ -198,27 +145,11 @@ export default function Reader({ chapter }: ReaderProps) {
                     handleFooterMouseLeave,
                 );
             }
-            const popupElement = document.querySelector(".manga-title");
-            if (popupElement) {
-                popupElement.removeEventListener(
-                    "mouseenter",
-                    handleHeaderMouseEnter,
-                );
-                popupElement.removeEventListener(
-                    "mouseleave",
-                    handleHeaderMouseLeave,
-                );
-            }
         };
-    }, [isHoveringHeader, isHoveringFooter, isStripMode]);
+    }, [isHoveringFooter, isStripMode]);
 
     return (
         <>
-            <div
-                className={`header ${isHeaderVisible ? "header-visible" : ""}`}
-            >
-                <HeaderComponent />
-            </div>
             <div className={`${firstImageLoaded ? "hidden" : ""}`}>
                 <MangaReaderSkeleton />
             </div>
@@ -229,6 +160,7 @@ export default function Reader({ chapter }: ReaderProps) {
                         isFooterVisible={isFooterVisible}
                         handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
+                        isSidebarCollapsed={isSidebarCollapsed}
                     />
                 ) : (
                     <PageReader
@@ -236,6 +168,7 @@ export default function Reader({ chapter }: ReaderProps) {
                         isFooterVisible={isFooterVisible}
                         handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
+                        isSidebarCollapsed={isSidebarCollapsed}
                     />
                 )}
             </div>

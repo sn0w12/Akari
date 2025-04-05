@@ -74,12 +74,18 @@ export async function GET(
         }
 
         // Construct the search URL
-        const searchUrl = `https://nelomanga.com/author/${authorId}?page=${page}&orby=${orderBy}`;
+        const searchUrl = `https://mangakakalot.gg/author/${authorId}?page=${page}&orby=${orderBy}`;
 
         time("Fetch HTML");
         // Fetch the data from Manganato
         const { data } = await axios.get(searchUrl, {
             timeout: 10000,
+            headers: {
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+                referer: `https://www.mangakakalot.gg/`,
+                host: "www.mangakakalot.gg",
+            },
         });
         timeEnd("Fetch HTML");
 
