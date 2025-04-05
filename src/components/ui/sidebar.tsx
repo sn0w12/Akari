@@ -944,6 +944,7 @@ function SidebarSection({
 }: SidebarSectionProps) {
     const { isPinned, togglePin } = usePinnedItems(title);
     const isMobile = useIsMobile();
+    const { setOpen } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState(isActive);
     const hoverIndexRef = React.useRef<number | null>(null);
     const isHoveringRef = React.useRef<boolean>(false);
@@ -1034,6 +1035,7 @@ function SidebarSection({
         e.stopPropagation();
         e.preventDefault();
         setIsExpanded(!isExpanded);
+        setOpen(true);
     };
 
     const sortedItems = React.useMemo(() => {
@@ -1072,7 +1074,7 @@ function SidebarSection({
                             <div className="min-w-6">{icon}</div>
                             <span className="truncate">{title}</span>
                         </div>
-                        {!isSidebarCollapsed && (
+                        {(!isSidebarCollapsed || isMobile) && (
                             <ChevronDown
                                 className={cn(
                                     "ease-snappy h-4 w-4 transition-transform duration-200",
