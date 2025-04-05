@@ -39,9 +39,5 @@ export const metadata: Metadata = {
 
 export default async function Home(props: HomeProps) {
     const searchParams = await props.searchParams;
-    return (
-        <div className="min-h-screen bg-background text-foreground">
-            <MangaReaderHome searchParams={searchParams} />
-        </div>
-    );
+    return <MangaReaderHome searchParams={searchParams} />;
 }

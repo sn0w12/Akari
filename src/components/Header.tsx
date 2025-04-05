@@ -1,87 +1,119 @@
 "use client";
 
-import HoverLink from "./ui/hoverLink";
-import Icon from "./ui/Header/Icon";
 import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
-import { SideBar } from "./SideBar";
 import { TrackLogin } from "./ui/Header/TrackLogin";
 import { validateSecondaryAccounts } from "@/lib/secondaryAccounts";
 import BookmarksButton from "./ui/Bookmarks/BookmarksButton";
+import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { fetchNotification } from "@/lib/bookmarks";
 
 export function HeaderComponent() {
+    const pathname = usePathname();
     const [notification, setNotification] = useState<string>("");
-
-    const fetchNotification = useMemo(
-        () => async () => {
-            // Check local storage first
-            const cached = localStorage.getItem("notification");
-            const timestamp = localStorage.getItem("notificationTimestamp");
-            const now = Date.now();
-
-            // If we have cached data and it's less than 24 hours old
-            if (
-                cached &&
-                timestamp &&
-                now - parseInt(timestamp) < 24 * 60 * 60 * 1000
-            ) {
-                setNotification(cached);
-            }
-
-            try {
-                const res = await fetch(`/api/bookmarks/notification`);
-
-                if (!res.ok) {
-                    setNotification("");
-                    localStorage.removeItem("notification");
-                    localStorage.removeItem("notificationTimestamp");
-                    if (res.status === 401) {
-                        localStorage.removeItem("auth");
-                        localStorage.removeItem("accountName");
-                    }
-                    return;
-                }
-
-                const data = await res.json();
-                setNotification(data);
-                // Cache the new data
-                localStorage.setItem("notification", data);
-                localStorage.setItem("notificationTimestamp", now.toString());
-            } catch (error) {
-                console.error("Error fetching notification:", error);
-            }
-        },
-        [],
-    );
+    const [segments, setSegments] = useState<string[]>([]);
+    const { state: sidebarState } = useSidebar();
+    const isSidebarCollapsed = sidebarState === "collapsed";
 
     useEffect(() => {
-        fetchNotification();
+        const pathSegments = pathname.split("/").filter(Boolean);
+        if (pathSegments.length === 0) {
+            pathSegments.push("manga");
+        }
+
+        setSegments(pathSegments);
+    }, [pathname]);
+
+    useEffect(() => {
+        fetchNotification().then(setNotification);
         validateSecondaryAccounts();
     }, [fetchNotification]);
 
-    return (
-        <header className="sticky top-0 z-50 bg-background border-b">
-            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                <HoverLink
-                    href="/"
-                    className="text-2xl font-bold title"
-                    prefetch={false}
-                >
-                    <Icon />
-                </HoverLink>
+    const getSegmentDisplayName = (
+        segment: string,
+        index: number,
+        segments: string[],
+        maxLength: number = 35,
+    ) => {
+        segment = segment.replace(/-s-/g, "'s ");
+        segment = segment.replace(/-/g, " ");
 
-                <div className="flex items-center space-x-4 flex-grow justify-end">
+        const capitalizedSegment =
+            segment.charAt(0).toUpperCase() + segment.slice(1);
+
+        return capitalizedSegment.length > maxLength
+            ? `${capitalizedSegment.substring(0, maxLength)}...`
+            : capitalizedSegment;
+    };
+
+    return (
+        <header className="sticky top-0 z-50 bg-sidebar">
+            <div className="py-1 pr-7 md:pr-10 pl-11 mx-auto flex items-center justify-between">
+                <SidebarTrigger className="absolute left-3 md:left-2" />
+                {notification && notification !== "0" ? (
+                    <>
+                        <span
+                            className={`hidden md:block bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${isSidebarCollapsed ? "ml-1" : ""}`}
+                        >
+                            {notification}
+                        </span>
+                    </>
+                ) : null}
+                <div
+                    className={`hidden md:block flex h-full items-center pr-2 transition-all pl-4 ${isSidebarCollapsed && notification ? "md:pl-3" : "md:pl-2"}`}
+                >
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            {segments.map((segment, index) => (
+                                <React.Fragment key={index}>
+                                    {index != 0 && <BreadcrumbSeparator />}
+                                    <BreadcrumbItem>
+                                        {index != 0 ? (
+                                            <BreadcrumbLink
+                                                href={`/${segments
+                                                    .slice(0, index + 1)
+                                                    .join("/")}`}
+                                            >
+                                                {getSegmentDisplayName(
+                                                    segment,
+                                                    index,
+                                                    segments,
+                                                )}
+                                            </BreadcrumbLink>
+                                        ) : (
+                                            <span>
+                                                {getSegmentDisplayName(
+                                                    segment,
+                                                    index,
+                                                    segments,
+                                                )}
+                                            </span>
+                                        )}
+                                    </BreadcrumbItem>
+                                </React.Fragment>
+                            ))}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+                <div className="flex items-center flex-grow justify-end">
                     <SearchBar />
-                    <div className="flex gap-4">
+                    <div className="flex gap-2">
                         <SearchButton />
                         <BookmarksButton notification={notification} />
 
                         {/* Theme Handler */}
                         <ThemeSetting />
-                        {/* Sidebar */}
-                        <SideBar />
                         <TrackLogin />
                     </div>
                 </div>

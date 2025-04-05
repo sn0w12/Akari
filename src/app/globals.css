@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 @config '../../tailwind.config.ts';
 
 body {
@@ -47,6 +50,7 @@ body {
         --sidebar-border: oklch(0.922 0 0);
         --sidebar-ring: oklch(0.708 0 0);
         --accent-color: #6366f1;
+        --reader-offset: 49px;
     }
 
     .dark {
@@ -99,6 +103,11 @@ body {
     a {
         @apply cursor-pointer;
     }
+}
+
+.ease-snappy {
+    animation-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
+    transition-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
 }
 
 input:-webkit-autofill,
@@ -209,27 +218,75 @@ input[type="search"]::-webkit-search-cancel-button {
     background-size: contain;
 }
 
+ul,
+ol,
+li {
+    list-style: none;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: calc(var(--spacing) * 3);
 }
 
-::-webkit-scrollbar-thumb {
-    background-color: var(--primary);
-    border-radius: 10px;
-    border: 3px solid var(--background);
-}
-
+/* Track */
 ::-webkit-scrollbar-track {
-    background-color: var(--muted);
-    border-radius: 10px;
+    background-color: var(--background);
+    opacity: 0.01;
 }
 
-/* For Firefox */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) var(--muted);
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--sidebar);
+    border: var(--border) solid 1px;
+    border-right: unset;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: var(--sidebar);
+}
+
+[data-scrollbar-custom="true"]::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+[data-scrollbar-custom="true"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[data-scrollbar-custom="true"]::-webkit-scrollbar-thumb {
+    background: var(--sidebar-border);
+    border-radius: 10px;
+    border: none;
+}
+
+[data-scrollbar-custom="true"]::-webkit-scrollbar-thumb:hover {
+    background: var(--sidebar-ring);
+}
+
+/* Hide scrollbar unless hovering for a cleaner look */
+[data-scrollbar-custom="true"]:not(:hover)::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Firefox scrollbar styling */
+@-moz-document url-prefix() {
+    * {
+        scrollbar-width: auto;
+        scrollbar-color: var(--sidebar) var(--background);
+    }
+
+    [data-scrollbar-custom="true"] {
+        scrollbar-width: auto;
+        scrollbar-color: var(--sidebar-border) transparent;
+    }
+
+    /* Special hover state handling using JavaScript */
+    /* Firefox doesn't support :hover on scrollbars directly */
+    [data-scrollbar-custom="true"]:not(:hover) {
+        scrollbar-color: transparent transparent;
+    }
 }
 
 .setting-highlight {
@@ -251,5 +308,53 @@ input[type="search"]::-webkit-search-cancel-button {
     100% {
         background-color: transparent;
         box-shadow: 0 0 0 0px transparent;
+    }
+}
+
+:root {
+    --sidebar: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --reader-offset: 41px;
     }
 }

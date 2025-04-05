@@ -18,6 +18,7 @@ interface PageReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
+    isSidebarCollapsed: boolean;
 }
 
 export default function PageReader({
@@ -25,6 +26,7 @@ export default function PageReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
+    isSidebarCollapsed,
 }: PageReaderProps) {
     const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(() => {
@@ -484,7 +486,10 @@ export default function PageReader({
         <>
             <canvas ref={canvasRef} style={{ display: "none" }} />
             <div
-                className={`flex flex-col justify-center items-center h-dvh w-screen bg-transparent relative`}
+                className={`flex flex-col justify-center items-center w-screen bg-transparent relative`}
+                style={{
+                    height: "calc(100dvh - var(--reader-offset))",
+                }}
                 onClick={handleClick}
             >
                 <div
@@ -508,7 +513,10 @@ export default function PageReader({
                         </div>
                     </div>
                 </div>
-                <div id="reader" className="relative max-h-dvh w-auto">
+                <div
+                    id="reader"
+                    className={`relative max-h-full w-auto md:pr-12`}
+                >
                     {initialPagesReady &&
                         [-1, 0, 1].map((offset) => {
                             const index = currentPage + offset;
@@ -526,7 +534,7 @@ export default function PageReader({
                                     width={700}
                                     height={1080}
                                     loading="eager"
-                                    className={`object-contain max-h-dvh w-full h-full lg:h-dvh cursor-pointer z-20 relative ${
+                                    className={`object-contain max-h-full w-full h-full cursor-pointer z-20 relative ${
                                         effectiveIndex !==
                                         getEffectivePageIndex(currentPage)
                                             ? "hidden"

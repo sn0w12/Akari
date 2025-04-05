@@ -8,7 +8,7 @@ const details = ["Authors", "Status", "Updated", "Views"];
 
 export default function MangaDetailsSkeleton() {
     return (
-        <main className="container mx-auto px-4 py-8">
+        <main className="mx-auto p-4">
             <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-8 mb-8 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center">
                     <Skeleton

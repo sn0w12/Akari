@@ -9,10 +9,7 @@ import { unstable_cacheLife as cacheLife } from "next/cache";
 interface MangaListResponse {
     mangaList: SmallManga[];
     popular: SmallManga[];
-    metaData: {
-        totalStories: number;
-        totalPages: number;
-    };
+    metaData: { totalStories: number; totalPages: number };
 }
 
 async function getMangaData(page: number): Promise<MangaListResponse> {
@@ -61,7 +58,7 @@ export default async function MangaReaderHome({
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 py-8">
+            <main className="mx-auto px-4 pt-1 pb-4">
                 {currentPage === 1 && (
                     <div>
                         <h2 className="text-3xl font-bold mb-6">

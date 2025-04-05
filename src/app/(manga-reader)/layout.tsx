@@ -1,9 +1,13 @@
-import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
+import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import Footer from "@/components/Footer";
 import { CookieConsent } from "@/components/ui/cookieConsent";
 import { ToastProvider } from "@/lib/toast/ToastContext";
+import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -16,7 +20,9 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export default function MangaReaderLayout({
+export const metadata: Metadata = { title: "灯 - Akari" };
+
+export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     const isDevelopment = process.env.NODE_ENV === "development";
@@ -32,20 +38,27 @@ export default function MangaReaderLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden fixed inset-0`}
             >
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="system"
-                    enableSystem
-                    disableTransitionOnChange
+                <SidebarProvider
+                    defaultOpen={false}
+                    className="overflow-hidden"
                 >
-                    <ToastProvider>
-                        <AnalyticsWrapper />
-                        {children}
-                        <CookieConsent />
-                    </ToastProvider>
-                </ThemeProvider>
+                    <BaseLayout gutter={false}>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            <ToastProvider>
+                                <AnalyticsWrapper />
+                                <div className="flex-grow">{children}</div>
+                                <CookieConsent />
+                            </ToastProvider>
+                        </ThemeProvider>
+                    </BaseLayout>
+                </SidebarProvider>
             </body>
         </html>
     );

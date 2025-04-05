@@ -138,7 +138,7 @@ export default function BookmarksGrid({
             <PaginationElement
                 currentPage={page}
                 totalPages={totalPages}
-                className="mt-6 mb-0"
+                className="mt-4 mb-0"
             />
         </>
     );

@@ -94,7 +94,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await getMangaData(id);
     if ("error" in manga) {
         return (
-            <main className="container mx-auto px-4 py-8">
+            <main className="mx-auto p-4">
                 <ErrorComponent message={manga.error.message} />
             </main>
         );
@@ -106,8 +106,8 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
     return (
-        <main className="container mx-auto px-4 py-8">
-            <div className="flex flex-col justify-center gap-4 lg:flex-row lg:gap-8 mb-8 items-stretch h-auto">
+        <main className="mx-auto p-4 pb-0">
+            <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage

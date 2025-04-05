@@ -1,8 +1,6 @@
 import { useEffect, useCallback } from "react";
 
-type ShortcutOptions = {
-    preventDefault?: boolean;
-};
+type ShortcutOptions = { preventDefault?: boolean };
 
 export function useShortcut(
     shortcutKey: string,
@@ -44,7 +42,7 @@ export function useShortcut(
             }
 
             if (matchesShortcut(event, keys)) {
-                if (options.preventDefault) {
+                if (options.preventDefault !== false) {
                     event.preventDefault();
                 }
                 callback();

@@ -66,7 +66,7 @@ function mobileCard(index: number) {
 export default function BookmarksSkeleton() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 pt-6 pb-8">
+            <main className="mx-auto p-4">
                 <div className="relative mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <Button

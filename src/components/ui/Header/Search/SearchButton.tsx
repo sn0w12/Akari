@@ -60,7 +60,7 @@ export default function SearchButton() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="sm:hidden border"
+                    className="md:hidden border"
                 >
                     <Search className="h-5 w-5" />
                 </Button>
@@ -76,7 +76,7 @@ export default function SearchButton() {
                             placeholder="Search manga..."
                             value={searchText}
                             onChange={handleSearchInputChange}
-                            className="w-full block sm:hidden mt-4"
+                            className="w-full block md:hidden mt-4"
                         />
                     </div>
                     {isSearchLoading ? (

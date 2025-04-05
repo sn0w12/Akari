@@ -37,6 +37,7 @@ interface StripReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
+    isSidebarCollapsed: boolean;
 }
 
 export default function StripReader({
@@ -44,6 +45,7 @@ export default function StripReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
+    isSidebarCollapsed,
 }: StripReaderProps) {
     const [scrollPercentage, setScrollPercentage] = useState(0);
     const [distanceFromBottom, setDistanceFromBottom] = useState(1000);

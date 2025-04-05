@@ -8,10 +8,7 @@ import { SimpleError, SmallManga } from "@/app/api/interfaces";
 interface MangaListResponse {
     mangaList: SmallManga[];
     popular: SmallManga[];
-    metaData: {
-        totalStories: number;
-        totalPages: number;
-    };
+    metaData: { totalStories: number; totalPages: number };
 }
 
 interface PageProps {
@@ -62,7 +59,7 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 py-8">
+            <main className="mx-auto px-4 pt-1 pb-4">
                 <div className="flex gap-4">
                     <h2 className={`text-3xl font-bold mb-6`}>
                         {params.id.replaceAll("-", " ")}

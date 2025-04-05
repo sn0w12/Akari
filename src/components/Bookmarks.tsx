@@ -78,7 +78,7 @@ export default function BookmarksPage({ page }: BookmarksPageProps) {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="container mx-auto px-4 pt-6 pb-8">
+            <main className="mx-auto p-4">
                 <BookmarksBody
                     bookmarks={bookmarks}
                     page={page}

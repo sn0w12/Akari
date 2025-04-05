@@ -7,7 +7,7 @@ import MangaCardSkeleton from "./MangaCardSkeleton";
 export default function HomeSkeleton({ currentPage }: { currentPage: number }) {
     return (
         <>
-            <main className="container mx-auto px-4 py-8">
+            <main className="mx-auto px-4 py-1">
                 {currentPage === 1 && (
                     <>
                         <h2 className="text-3xl font-bold mb-6">

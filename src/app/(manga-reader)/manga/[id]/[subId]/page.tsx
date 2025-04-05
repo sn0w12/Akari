@@ -44,7 +44,7 @@ export async function generateMetadata({
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
     const mangaParams = await params;
     return (
-        <div className="min-h-dvh bg-background text-foreground">
+        <div className="bg-background text-foreground">
             <ChapterReader id={mangaParams.id} subId={mangaParams.subId} />
         </div>
     );
