@@ -1047,6 +1047,15 @@ function SidebarSection({
         });
     }, [items, isPinned]);
 
+    const handleLinkClick = () => {
+        const escEvent = new KeyboardEvent("keydown", {
+            key: "Escape",
+            code: "Escape",
+            bubbles: true,
+        });
+        document.dispatchEvent(escEvent);
+    };
+
     return (
         <SidebarMenuItem>
             <ContextMenu>
@@ -1096,6 +1105,7 @@ function SidebarSection({
                                             key={"link" + item.id}
                                             href={`${basePath}/${item.id}`}
                                             className="flex items-center w-full"
+                                            onClick={handleLinkClick}
                                         >
                                             {item.name}
                                         </HoverLink>
