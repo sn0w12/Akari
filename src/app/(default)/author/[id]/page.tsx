@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import nextBase64 from "next-base64";
 import AuthorPage from "@/components/Author";
 
 interface PageProps {
@@ -13,13 +12,7 @@ interface PageProps {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
-    const name = nextBase64
-        .decode(params.id)
-        .replaceAll("_", " ")
-        .replaceAll("|", " ")
-        .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+    const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name}`;
 
     return {

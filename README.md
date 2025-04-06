@@ -7,11 +7,11 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-1.1.0-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/version-1.2.1-indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
+Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.gg/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
 
 ## Table of Contents
 
@@ -92,9 +92,9 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 Visit the [Akari Website](https://akari-psi.vercel.app/) to start reading manga instantly.
 
-If you have a [Manganato](https://manganato.com/) account, press the account button in the top right and sign in to your account as normal.
+If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
 
-![Login](https://i.imgur.com/FqBrXCJ.png)
+![Login](./images/LoginForm.png)
 
 After you've been logged in, you can use it as you normally would.
 
@@ -103,19 +103,23 @@ After you've been logged in, you can use it as you normally would.
 
 ### Front Page
 
-![FrontPage](https://i.imgur.com/4c5yLKB.png)
+![FrontPage](./images/Homepage.png)
 
 ### Bookmarks
 
-![Bookmarks](https://i.imgur.com/Jub6Dbg.png)
+![Bookmarks](./images/Bookmarks.png)
 
 ### Manga
 
-![Manga](https://i.imgur.com/1zyTaW1.png)
+![Manga](./images/Manga.png)
+
+### Author
+
+![Author](./images/Author.png)
 
 ### Genre
 
-![Genre](https://i.imgur.com/AxchlG8.png)
+![Genre](./images/Genre.png)
 
 </details>
 
