@@ -11,7 +11,7 @@
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.com/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
+Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.gg/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
 
 ## Table of Contents
 
@@ -92,7 +92,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 Visit the [Akari Website](https://akari-psi.vercel.app/) to start reading manga instantly.
 
-If you have a [Manganato](https://manganato.com/) account, press the account button in the top right and sign in to your account as normal.
+If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
 
 ![Login](./images/LoginForm.png)
 
