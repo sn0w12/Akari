@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import React from "react";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import { X, Check } from "lucide-react";
-import ConfirmDialog from "@/components/ui/confirmDialog";
 import { Bookmark } from "@/app/api/interfaces";
-import DesktopBookmarkCard from "./DesktopBookmarkCard";
-import MobileBookmarkCard from "./MobileBookmarkCard";
+import DesktopBookmarkCard from "./Cards/DesktopBookmarkCard";
+import MobileBookmarkCard from "./Cards/MobileBookmarkCard";
 import { getHqImage } from "@/lib/utils";
 import db from "@/lib/db";
-import { syncAllServices } from "@/lib/sync";
 
 interface BookmarksGridProps {
     bookmarks: Bookmark[];
@@ -25,33 +21,6 @@ export default function BookmarksGrid({
     totalPages,
 }: BookmarksGridProps) {
     const [updatedBookmarks, setUpdatedBookmarks] = useState<Bookmark[]>([]);
-
-    async function removeBookmark(noteid: string) {
-        const response = await fetch("/api/bookmarks/delete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: noteid }),
-        });
-        const data = await response.json();
-
-        if (data.result === "ok") {
-            // Update the bookmarks state to remove the deleted bookmark
-            setUpdatedBookmarks((prev) =>
-                prev.filter((bookmark) => bookmark.noteid !== noteid),
-            );
-        }
-    }
-
-    async function updateBookmark(id: string, subId: string) {
-        const response = await fetch(`/api/manga/${id}/${subId}`);
-        if (!response.ok) {
-            throw new Error(
-                `Network response was not ok: ${response.statusText}`,
-            );
-        }
-        const data = await response.json();
-        return await syncAllServices(data);
-    }
 
     const updateBookmarks = async (bookmarks: Bookmark[]) => {
         await Promise.all(
@@ -87,51 +56,15 @@ export default function BookmarksGrid({
         <>
             <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 xl:gap-6">
                 {updatedBookmarks.map((bookmark) => (
-                    <div key={bookmark.noteid} className="block relative">
-                        {/* X button in top-right corner */}
-                        <ConfirmDialog
-                            triggerButton={
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-2 bg-negative text-accent hover:text-negative focus:outline-none z-10"
-                                >
-                                    <X className="h-5 w-5" />
-                                </Button>
-                            }
-                            title="Confirm Bookmark Removal"
-                            message="Are you sure you want to remove this bookmark?"
-                            confirmLabel="Remove"
-                            confirmColor="bg-negative border-negative hover:bg-negative/70"
-                            cancelLabel="Cancel"
-                            onConfirm={() => removeBookmark(bookmark.noteid)}
+                    <div key={bookmark.noteid}>
+                        <DesktopBookmarkCard
+                            bookmark={bookmark}
+                            setUpdatedBookmarks={setUpdatedBookmarks}
                         />
-                        <ConfirmDialog
-                            triggerButton={
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="w-5 h-5 md:w-10 md:h-10 absolute top-2 right-8 md:right-14 bg-positive text-accent hover:text-positive focus:outline-none z-10"
-                                >
-                                    <Check className="h-5 w-5" />
-                                </Button>
-                            }
-                            title="Mark as read"
-                            message="Are you sure you want to mark the latest chapter as read?"
-                            confirmLabel="Confirm"
-                            confirmColor="bg-positive border-positive hover:bg-positive/70"
-                            cancelLabel="Cancel"
-                            onConfirm={() =>
-                                updateBookmark(
-                                    bookmark.link_story?.split("/").pop() || "",
-                                    bookmark.link_chapter_last
-                                        .split("/")
-                                        .pop() || "",
-                                )
-                            }
+                        <MobileBookmarkCard
+                            bookmark={bookmark}
+                            setUpdatedBookmarks={setUpdatedBookmarks}
                         />
-                        <DesktopBookmarkCard bookmark={bookmark} />
-                        <MobileBookmarkCard bookmark={bookmark} />
                     </div>
                 ))}
             </div>
