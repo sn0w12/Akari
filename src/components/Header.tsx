@@ -59,8 +59,8 @@ export function HeaderComponent() {
 
     return (
         <header className="fixed top-0 left-0 right-0 md:sticky z-50 bg-sidebar border-b md:border-b-0">
-            <div className="py-1 pr-7 md:pr-11 pl-11 mx-auto flex items-center justify-between">
-                <SidebarTrigger className="absolute left-3 md:left-2" />
+            <div className="py-1 pr-4 md:pr-11 pl-11 mx-auto flex items-center justify-between">
+                <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
                     <>
                         <span
