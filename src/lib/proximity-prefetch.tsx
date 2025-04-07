@@ -8,12 +8,14 @@ interface ProximityPrefetchProps {
     children: ReactNode;
     threshold?: number;
     predictionInterval?: number;
+    noPrefetchAttribute?: string;
 }
 
 export function ProximityPrefetch({
     children,
     threshold = 200,
     predictionInterval = 0,
+    noPrefetchAttribute = "data-no-prefetch",
 }: ProximityPrefetchProps) {
     const router = useRouter();
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -32,6 +34,10 @@ export function ProximityPrefetch({
             anchors
                 .map((el) => {
                     const href = el.getAttribute("href");
+                    // Skip links with the no-prefetch attribute
+                    if (el.hasAttribute(noPrefetchAttribute)) {
+                        return null;
+                    }
                     if (href?.startsWith("/") && !href.includes("#")) {
                         return {
                             el,
@@ -47,7 +53,7 @@ export function ProximityPrefetch({
                 rect: DOMRect;
             }[],
         );
-    }, []);
+    }, [noPrefetchAttribute]);
 
     const calculateDistance = (
         x1: number,
