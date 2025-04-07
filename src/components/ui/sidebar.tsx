@@ -657,7 +657,7 @@ function SidebarMenuLink({
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : Link;
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state, setOpenMobile } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -682,6 +682,11 @@ function SidebarMenuLink({
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
             )}
+            onClick={() => {
+                if (isMobile) {
+                    setOpenMobile(false);
+                }
+            }}
             {...props}
         >
             {wrappedChildren}
