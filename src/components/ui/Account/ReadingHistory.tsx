@@ -126,7 +126,7 @@ export default function ReadingHistory() {
         <TabsContent value="history" className="space-y-2">
             <Card>
                 <CardHeader>
-                    <div className="flex flex-row justify-between">
+                    <div className="flex flex-col sm:flex-row justify-between gap-1">
                         <div className="flex flex-col">
                             <CardTitle className="flex items-center gap-2">
                                 <BarChart3 className="h-5 w-5" />
@@ -160,7 +160,7 @@ export default function ReadingHistory() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[300px] w-full">
+                    <div className="h-[150px] md:h-[300px] w-full">
                         {statsLoading ? (
                             <div className="h-full flex items-center justify-center">
                                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -342,7 +342,7 @@ export default function ReadingHistory() {
                                             key={`${firstEntry.mangaIdentifier}-${groupIndex}`}
                                             className="flex flex-row items-start p-4 shadow-sm border border-border rounded-lg"
                                         >
-                                            <div className="w-28 h-full mb-0 shrink-0">
+                                            <div className="w-16 sm:w-28 h-full mb-0 shrink-0 self-center">
                                                 <Link
                                                     href={`/manga/${firstEntry.mangaIdentifier}`}
                                                     prefetch={false}
@@ -368,7 +368,7 @@ export default function ReadingHistory() {
                                                         href={`/manga/${firstEntry.mangaIdentifier}`}
                                                         prefetch={false}
                                                     >
-                                                        <h3 className="font-bold text-2xl mb-2 mr-10 hover:underline text-left">
+                                                        <h3 className="font-bold text-2xl mb-2 hover:underline text-left">
                                                             {
                                                                 firstEntry.mangaTitle
                                                             }
