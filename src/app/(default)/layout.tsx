@@ -39,13 +39,10 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden fixed inset-0`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden fixed inset-0`}
             >
                 <ProximityPrefetch>
-                    <SidebarProvider
-                        defaultOpen={false}
-                        className="overflow-hidden"
-                    >
+                    <SidebarProvider defaultOpen={false}>
                         <BaseLayout>
                             <ThemeProvider
                                 attribute="class"
