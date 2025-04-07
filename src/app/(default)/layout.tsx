@@ -53,7 +53,7 @@ export default async function RootLayout({
                             >
                                 <ToastProvider>
                                     <AnalyticsWrapper />
-                                    <div className="flex-grow pt-2 md:p-4 md:pb-0 overflow-y-auto">
+                                    <div className="flex-grow pt-2 md:p-4 md:pb-0">
                                         {children}
                                     </div>
                                     <CookieConsent />
