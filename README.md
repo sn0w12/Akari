@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/img/icon.png" alt="Icon" width="100" />
+  <img src="./images/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
 </p>
 
 <h1 align="center">灯 - Akari</h1>
