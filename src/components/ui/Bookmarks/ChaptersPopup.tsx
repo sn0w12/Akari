@@ -157,6 +157,7 @@ export const ChaptersPopup: React.FC<{
                                     href={`/manga/${mangaIdentifier}/${chapter.id}`}
                                     className={`block p-2 mr-1 ${index === 0 ? "bg-green-600 hover:bg-green-700" : "hover:bg-accent"} ${chapter.id === `chapter-${lastReadChapter}` ? "bg-indigo-600 hover:bg-indigo-700" : ""} rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
+                                    data-no-prefetch
                                 >
                                     <div className="flex justify-between items-center">
                                         <span>{chapter.name}</span>

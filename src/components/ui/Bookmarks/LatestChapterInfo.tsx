@@ -19,6 +19,8 @@ export default function LatestChapterInfo({
                     rel="noopener noreferrer"
                     className={`box-decoration-clone text-white p-0.5 md:pr-1 rounded-sm ${colors} transition-colors`}
                     style={{ WebkitBoxDecorationBreak: "clone" }}
+                    prefetch={false}
+                    data-no-prefetch
                 >
                     {bookmark.chapterlastname}
                 </Link>
