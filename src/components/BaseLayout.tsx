@@ -118,7 +118,7 @@ export function BaseLayout({
     }, [setNotification]);
 
     return (
-        <div className="flex flex-col w-full overflow-y-auto md:overflow-hidden">
+        <div className="flex flex-col w-full md:overflow-hidden">
             <HeaderComponent />
             <div className="bg-sidebar flex flex-1 md:overflow-y-auto">
                 <Sidebar collapsible="icon">
