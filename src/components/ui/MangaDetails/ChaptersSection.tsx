@@ -130,6 +130,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                         href={`/manga/${manga.identifier}/${chapter.id}`}
                         key={chapter.id}
                         id={chapter.id}
+                        prefetch={false}
                     >
                         <Card
                             className={`h-full transition-colors ${
