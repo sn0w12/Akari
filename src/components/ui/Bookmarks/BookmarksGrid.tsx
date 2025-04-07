@@ -85,7 +85,7 @@ export default function BookmarksGrid({
 
     return (
         <>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
+            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 xl:gap-6">
                 {updatedBookmarks.map((bookmark) => (
                     <div key={bookmark.noteid} className="block relative">
                         {/* X button in top-right corner */}
