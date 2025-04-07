@@ -9,7 +9,7 @@ import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProximityPrefetch } from "@/lib/proximity-prefetch";
-import { HeaderComponent } from "@/components/Header";
+import type { Viewport } from "next";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -23,6 +23,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = { title: "灯 - Akari" };
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+};
 
 export default async function RootLayout({
     children,
