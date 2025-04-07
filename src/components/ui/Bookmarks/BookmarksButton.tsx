@@ -1,6 +1,6 @@
 "use client";
 
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bookmark as BookmarkIcon } from "lucide-react";
 import { BookmarksContextMenu } from "./BookmarksContextMenu";
@@ -12,7 +12,7 @@ export default function BookmarksButton({
 }) {
     return (
         <BookmarksContextMenu>
-            <HoverLink href="/bookmarks">
+            <Link href="/bookmarks">
                 <div className="relative group md:hidden">
                     <Button
                         id="bookmarks-button"
@@ -32,7 +32,7 @@ export default function BookmarksButton({
                         </span>
                     ) : null}
                 </div>
-            </HoverLink>
+            </Link>
         </BookmarksContextMenu>
     );
 }

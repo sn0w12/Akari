@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import React from "react";
 import { MangaDetails } from "@/app/api/interfaces";
 
@@ -43,9 +43,7 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga, lastRead }) => {
             disabled={!manga.chapterList.length}
         >
             {manga.chapterList.length ? (
-                <HoverLink href={`${window.location.pathname}/${link}`}>
-                    {text}
-                </HoverLink>
+                <Link href={`${window.location.pathname}/${link}`}>{text}</Link>
             ) : (
                 <p>No Chapters</p>
             )}

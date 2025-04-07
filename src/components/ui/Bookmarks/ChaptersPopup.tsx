@@ -1,6 +1,6 @@
 "use client";
 
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -153,7 +153,7 @@ export const ChaptersPopup: React.FC<{
                     <ul className="space-y-1">
                         {chapters.map((chapter, index) => (
                             <li key={chapter.id}>
-                                <HoverLink
+                                <Link
                                     href={`/manga/${mangaIdentifier}/${chapter.id}`}
                                     className={`block p-2 mr-1 ${index === 0 ? "bg-green-600 hover:bg-green-700" : "hover:bg-accent"} ${chapter.id === `chapter-${lastReadChapter}` ? "bg-indigo-600 hover:bg-indigo-700" : ""} rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
@@ -166,7 +166,7 @@ export const ChaptersPopup: React.FC<{
                                             {chapter.createdAt}
                                         </span>
                                     </div>
-                                </HoverLink>
+                                </Link>
                             </li>
                         ))}
                     </ul>

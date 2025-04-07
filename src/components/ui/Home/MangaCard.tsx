@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { SmallManga } from "@/app/api/interfaces";
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import { imageUrl } from "@/lib/utils";
 
 interface MangaCardProps {
@@ -20,7 +20,7 @@ export function MangaCard({
     isBookmarked = false,
 }: MangaCardProps) {
     return (
-        <HoverLink href={`/manga/${manga.id}`} className="block h-fit">
+        <Link href={`/manga/${manga.id}`} className="block h-fit" prefetch={false}>
             <Card
                 className={`group relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 ${isBookmarked ? "border-[3px] border-accent-color" : ""}`}
             >
@@ -59,6 +59,6 @@ export function MangaCard({
                     </div>
                 </CardContent>
             </Card>
-        </HoverLink>
+        </Link>
     );
 }

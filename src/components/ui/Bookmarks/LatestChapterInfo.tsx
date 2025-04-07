@@ -1,5 +1,5 @@
 import { Bookmark } from "@/app/api/interfaces";
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 
 export default function LatestChapterInfo({
     bookmark,
@@ -12,7 +12,7 @@ export default function LatestChapterInfo({
         <div className="text-sm text-muted-foreground">
             <p>
                 Latest Chapter:{" "}
-                <HoverLink
+                <Link
                     href={`/manga/${bookmark.link_story
                         .split("/")
                         .pop()}/${bookmark.link_chapter_last.split("/").pop()}`}
@@ -21,7 +21,7 @@ export default function LatestChapterInfo({
                     style={{ WebkitBoxDecorationBreak: "clone" }}
                 >
                     {bookmark.chapterlastname}
-                </HoverLink>
+                </Link>
             </p>
             <p className="text-xs text-gray-400">
                 Updated: {bookmark.chapterlastdateupdate}

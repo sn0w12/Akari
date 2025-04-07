@@ -10,15 +10,12 @@ import db from "@/lib/db";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { DetailsChapter } from "@/app/api/interfaces";
-import { useRouter } from "next/navigation";
-import HoverLink from "../hoverLink";
 
 interface ChaptersSectionProps {
     manga: MangaDetails;
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
-    const router = useRouter();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
     const [sortedChapters, setSortedChapters] = useState<DetailsChapter[]>([]);
@@ -129,7 +126,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             {/* Chapters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
                 {currentChapters?.map((chapter) => (
-                    <HoverLink
+                    <Link
                         href={`/manga/${manga.identifier}/${chapter.id}`}
                         key={chapter.id}
                         id={chapter.id}
@@ -171,7 +168,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                 </p>
                             </CardContent>
                         </Card>
-                    </HoverLink>
+                    </Link>
                 ))}
             </div>
 

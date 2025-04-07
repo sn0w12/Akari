@@ -42,7 +42,7 @@ import {
 import { useShortcut } from "@/hooks/useShortcut";
 import { useSetting } from "@/lib/settings";
 import { ScrollArea } from "./scroll-area";
-import HoverLink from "./hoverLink";
+import Link from "next/link";
 import { ContextMenuLabel } from "@radix-ui/react-context-menu";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -656,7 +656,7 @@ function SidebarMenuLink({
     href: string;
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-    const Comp = asChild ? Slot : HoverLink;
+    const Comp = asChild ? Slot : Link;
     const { isMobile, state } = useSidebar();
 
     const wrappedChildren = (
@@ -1105,14 +1105,14 @@ function SidebarSection({
                             <>
                                 {sortedItems.map((item) => (
                                     <ContextMenuItem key={item.id}>
-                                        <HoverLink
+                                        <Link
                                             key={"link" + item.id}
                                             href={`${basePath}/${item.id}`}
                                             className="flex items-center w-full"
                                             onClick={handleLinkClick}
                                         >
                                             {item.name}
-                                        </HoverLink>
+                                        </Link>
                                     </ContextMenuItem>
                                 ))}
                             </>

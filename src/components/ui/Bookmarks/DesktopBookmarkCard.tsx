@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
@@ -74,7 +74,7 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
     return (
         <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
             <div className="w-40 h-full mb-0 shrink-0">
-                <HoverLink
+                <Link
                     href={`/manga/${mangaIdentifier}`}
                     rel="noopener noreferrer"
                     className="block"
@@ -87,11 +87,11 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
                         height={450}
                         className="w-full h-auto object-cover rounded"
                     />
-                </HoverLink>
+                </Link>
             </div>
             <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
                 <div className="flex flex-col gap-2">
-                    <HoverLink
+                    <Link
                         href={`/manga/${mangaIdentifier}`}
                         prefetch={false}
                         className="mr-20"
@@ -99,10 +99,10 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
                         <h3 className="font-bold text-2xl hover:underline text-left">
                             {bookmark.storyname}
                         </h3>
-                    </HoverLink>
+                    </Link>
                     <div className="flex flex-row gap-2 mb-1">
                         {/* Continue Reading Button */}
-                        <HoverLink
+                        <Link
                             href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                             rel="noopener noreferrer"
                             className="block w-fit"
@@ -113,7 +113,7 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
                             >
                                 {continueReadingText}
                             </Button>
-                        </HoverLink>
+                        </Link>
                         <Button
                             ref={buttonRef}
                             className="w-10 p-0"
