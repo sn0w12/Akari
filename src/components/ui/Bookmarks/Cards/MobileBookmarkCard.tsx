@@ -52,7 +52,7 @@ const MobileBookmarkCard: React.FC<{
                         <ConfirmDialogs
                             bookmark={bookmark}
                             setUpdatedBookmarks={setUpdatedBookmarks}
-                            className="gap-1 self-start"
+                            className="gap-1"
                         />
                     </div>
                     {/* Continue Reading Button */}

@@ -75,7 +75,7 @@ const DesktopBookmarkCard: React.FC<{
 
     return (
         <Card className="hidden md:flex flex-row items-start p-6 pr-2 shadow-lg bg-card border border-border rounded-lg xl:h-full">
-            <div className="w-40 h-full mb-0 shrink-0">
+            <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
                 <Link
                     href={`/manga/${mangaIdentifier}`}
                     rel="noopener noreferrer"
@@ -98,7 +98,7 @@ const DesktopBookmarkCard: React.FC<{
                             href={`/manga/${mangaIdentifier}`}
                             prefetch={false}
                         >
-                            <h3 className="font-bold text-2xl hover:underline text-left">
+                            <h3 className="font-bold text-2xl hover:underline text-left text-ellipsis">
                                 {bookmark.storyname}
                             </h3>
                         </Link>

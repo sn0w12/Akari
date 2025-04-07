@@ -42,7 +42,12 @@ export function ConfirmDialogs({
     }
 
     return (
-        <div className={cn("flex flex-row items-center gap-2", className)}>
+        <div
+            className={cn(
+                "flex flex-row items-center gap-2 self-start",
+                className,
+            )}
+        >
             <ConfirmDialog
                 triggerButton={
                     <Button
