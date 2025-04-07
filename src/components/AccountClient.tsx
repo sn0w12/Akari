@@ -366,6 +366,7 @@ export default function AccountClient() {
                                             <FormControl>
                                                 <Input
                                                     placeholder="Username..."
+                                                    className="touch-manipulation"
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -384,6 +385,7 @@ export default function AccountClient() {
                                                 <Input
                                                     type="password"
                                                     placeholder="Password..."
+                                                    className="touch-manipulation"
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -418,6 +420,7 @@ export default function AccountClient() {
                                                 <FormControl>
                                                     <Input
                                                         placeholder="Enter CAPTCHA..."
+                                                        className="touch-manipulation"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -433,7 +436,10 @@ export default function AccountClient() {
                                     </p>
                                 )}
 
-                                <Button type="submit" className="w-full">
+                                <Button
+                                    type="submit"
+                                    className="w-full touch-manipulation"
+                                >
                                     Login
                                 </Button>
 

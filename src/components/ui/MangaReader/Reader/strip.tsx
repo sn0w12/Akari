@@ -37,7 +37,6 @@ interface StripReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
-    isSidebarCollapsed: boolean;
 }
 
 export default function StripReader({
@@ -45,7 +44,6 @@ export default function StripReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
-    isSidebarCollapsed,
 }: StripReaderProps) {
     const [scrollPercentage, setScrollPercentage] = useState(0);
     const [distanceFromBottom, setDistanceFromBottom] = useState(1000);
@@ -55,20 +53,17 @@ export default function StripReader({
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
 
     useEffect(() => {
-        const mainElement = document.querySelector("main") as HTMLElement;
-        if (!mainElement) return;
-
         // Use requestAnimationFrame for smoother performance
         const calculateScrollMetrics = () => {
-            const scrollTop = mainElement.scrollTop || document.body.scrollTop;
+            const element = document.documentElement;
+            const scrollTop = element.scrollTop || document.body.scrollTop;
             const scrollHeight =
-                mainElement.scrollHeight || document.body.scrollHeight;
-            const clientHeight = mainElement.clientHeight;
+                element.scrollHeight || document.body.scrollHeight;
+            const clientHeight = element.clientHeight;
 
             // Calculate percentage
             const percentage =
                 (scrollTop / (scrollHeight - clientHeight)) * 100;
-            console.log(percentage);
             setScrollPercentage(Math.min(100, Math.max(0, percentage)));
 
             // Calculate pixels from bottom
@@ -82,15 +77,12 @@ export default function StripReader({
 
         scrollHandlerRef.current = handleScroll;
 
-        mainElement.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("scroll", handleScroll, { passive: true });
         handleScroll(); // Initial calculation
 
         return () => {
             if (scrollHandlerRef.current) {
-                mainElement.removeEventListener(
-                    "scroll",
-                    scrollHandlerRef.current,
-                );
+                window.removeEventListener("scroll", scrollHandlerRef.current);
             }
             bookmarkUpdatedRef.current = false;
             hasPrefetchedRef.current = false;
