@@ -118,9 +118,9 @@ export function BaseLayout({
     }, [setNotification]);
 
     return (
-        <div className="flex flex-col w-full overflow-y-auto md:overflow-hidden">
+        <div className="flex flex-col w-full md:overflow-hidden">
             <HeaderComponent />
-            <div className="bg-sidebar flex flex-1 md:overflow-y-auto">
+            <div className="bg-sidebar flex flex-1 mt-12 md:mt-0 md:overflow-y-auto">
                 <Sidebar collapsible="icon">
                     <SidebarContent data-scrollbar-custom="true">
                         <SidebarMenu className="p-2 pt-3">
@@ -208,7 +208,7 @@ export function BaseLayout({
                     </SidebarFooter>
                 </Sidebar>
                 <main
-                    className="bg-background flex-1 flex flex-col md:border-t md:rounded-tl-xl md:border-l"
+                    className="bg-background flex-1 flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto"
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                 >
                     {children}
