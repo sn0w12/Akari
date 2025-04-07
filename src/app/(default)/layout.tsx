@@ -9,6 +9,7 @@ import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProximityPrefetch } from "@/lib/proximity-prefetch";
+import { HeaderComponent } from "@/components/Header";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -39,11 +40,11 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden`}
             >
                 <ProximityPrefetch>
                     <SidebarProvider defaultOpen={false}>
-                        <BaseLayout>
+                        <BaseLayout gutter={true}>
                             <ThemeProvider
                                 attribute="class"
                                 defaultTheme="system"
@@ -52,7 +53,7 @@ export default async function RootLayout({
                             >
                                 <ToastProvider>
                                     <AnalyticsWrapper />
-                                    <div className="flex-grow pt-2 md:p-4 md:pb-0">
+                                    <div className="flex-grow pt-2 md:p-4 md:pb-0 overflow-y-auto">
                                         {children}
                                     </div>
                                     <CookieConsent />
