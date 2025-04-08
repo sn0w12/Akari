@@ -35,6 +35,7 @@ import { getSettings, useSetting } from "@/lib/settings";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
 import { useRouter } from "next/navigation";
 import { useShortcut } from "@/hooks/useShortcut";
+import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -140,6 +141,14 @@ export function BaseLayout({
                                     >
                                         <Bookmark />
                                         <span>Bookmarks</span>
+                                        <KeyboardShortcut
+                                            keys={
+                                                shortcuts.navigateBookmarks?.split(
+                                                    "+",
+                                                ) || [""]
+                                            }
+                                            className={`gap-1 ${isSidebarCollapsed ? "opacity-0" : "transition-opacity transition-duration-200 opacity-100"}`}
+                                        />
                                     </SidebarMenuLink>
                                 </SidebarMenuItem>
                             </BookmarksContextMenu>
@@ -189,6 +198,14 @@ export function BaseLayout({
                                 >
                                     <SettingsIcon />
                                     <span>Settings</span>
+                                    <KeyboardShortcut
+                                        keys={
+                                            shortcuts.openSettings?.split(
+                                                "+",
+                                            ) || [""]
+                                        }
+                                        className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                    />
                                 </SidebarMenuLink>
                             ) : (
                                 <SidebarMenuButton
@@ -196,6 +213,14 @@ export function BaseLayout({
                                 >
                                     <SettingsIcon />
                                     <span>Settings</span>
+                                    <KeyboardShortcut
+                                        keys={
+                                            shortcuts.openSettings?.split(
+                                                "+",
+                                            ) || [""]
+                                        }
+                                        className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                    />
                                 </SidebarMenuButton>
                             )}
                         </SidebarMenuItem>
@@ -203,6 +228,14 @@ export function BaseLayout({
                             <SidebarMenuLink tooltip="Account" href="/account">
                                 <User />
                                 <span>Account</span>
+                                <KeyboardShortcut
+                                    keys={
+                                        shortcuts.openAccount?.split("+") || [
+                                            "",
+                                        ]
+                                    }
+                                    className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                />
                             </SidebarMenuLink>
                         </SidebarMenuItem>
                     </SidebarFooter>

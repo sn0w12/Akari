@@ -1,4 +1,5 @@
 import { useKeyPressed } from "@/hooks/useKeysPressed";
+import { cn } from "@/lib/utils";
 
 interface KeyboardShortcutProps {
     keys: string[];
@@ -13,7 +14,10 @@ export function KeyboardShortcut({
 
     return (
         <span
-            className={`pointer-events-none flex gap-2 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm ${className}`}
+            className={cn(
+                `pointer-events-none flex gap-2 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm`,
+                className,
+            )}
         >
             {keys.map((key, index) => (
                 <kbd
