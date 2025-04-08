@@ -11,7 +11,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link as LinkIcon } from "lucide-react";
@@ -67,7 +67,7 @@ export default function AccountClient() {
         defaultValues: { username: "", password: "", captcha: "" },
     });
 
-    const handleFetchCaptcha = useCallback(async () => {
+    const handleFetchCaptcha = async () => {
         if (captchaUrl && sessionCookies.length > 0) {
             return;
         }
@@ -84,7 +84,7 @@ export default function AccountClient() {
         } catch {
             setLoginError("Failed to fetch CAPTCHA.");
         }
-    }, [captchaUrl, sessionCookies]);
+    };
 
     useEffect(() => {
         // Check if user is logged in
@@ -134,7 +134,7 @@ export default function AccountClient() {
         if (!accountName) {
             handleFetchCaptcha();
         }
-    }, [tabParam, secondaryAccounts, handleFetchCaptcha]);
+    }, []);
 
     const handleLogout = async () => {
         await logout(secondaryAccounts);
@@ -243,10 +243,7 @@ export default function AccountClient() {
                                 <div className="pt-4 border-t mt-6">
                                     <ConfirmDialog
                                         triggerButton={
-                                            <Button
-                                                variant="outline"
-                                                className="bg-red-600 hover:bg-red-500"
-                                            >
+                                            <Button variant="destructive">
                                                 Logout from all accounts
                                             </Button>
                                         }
