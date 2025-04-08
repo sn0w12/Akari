@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import ChapterReader from "@/components/MangaReader";
-import { Chapter } from "@/app/api/interfaces";
 import { fetchChapterData } from "@/lib/scraping";
 
 interface MangaReaderProps {

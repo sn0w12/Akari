@@ -38,7 +38,7 @@ export function HeaderComponent() {
     useEffect(() => {
         fetchNotification().then(setNotification);
         validateSecondaryAccounts();
-    }, [fetchNotification]);
+    }, []);
 
     const getSegmentDisplayName = (
         segment: string,

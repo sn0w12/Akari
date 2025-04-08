@@ -11,7 +11,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link as LinkIcon } from "lucide-react";
@@ -53,10 +53,7 @@ export default function AccountClient() {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
     const [loading, setLoading] = useState(true);
-    const [username, setUsername] = useState("");
     const [savedUsername, setSavedUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [captcha, setCaptcha] = useState("");
     const [captchaUrl, setCaptchaUrl] = useState("");
     const [token, setToken] = useState("");
     const [sessionCookies, setSessionCookies] = useState([""]);
@@ -69,6 +66,25 @@ export default function AccountClient() {
         resolver: zodResolver(formSchema),
         defaultValues: { username: "", password: "", captcha: "" },
     });
+
+    const handleFetchCaptcha = useCallback(async () => {
+        if (captchaUrl && sessionCookies.length > 0) {
+            return;
+        }
+
+        try {
+            const {
+                captchaUrl: url,
+                sessionCookies: cookies,
+                token: newToken,
+            } = await fetchCaptcha();
+            setCaptchaUrl(url);
+            setSessionCookies(cookies);
+            setToken(newToken);
+        } catch {
+            setLoginError("Failed to fetch CAPTCHA.");
+        }
+    }, [captchaUrl, sessionCookies]);
 
     useEffect(() => {
         // Check if user is logged in
@@ -118,11 +134,10 @@ export default function AccountClient() {
         if (!accountName) {
             handleFetchCaptcha();
         }
-    }, []);
+    }, [tabParam, secondaryAccounts, handleFetchCaptcha]);
 
     const handleLogout = async () => {
         await logout(secondaryAccounts);
-        setUsername("");
         setSavedUsername("");
         window.location.reload();
     };
@@ -135,25 +150,6 @@ export default function AccountClient() {
             ),
         );
         window.location.reload();
-    };
-
-    const handleFetchCaptcha = async () => {
-        if (captchaUrl && sessionCookies.length > 0) {
-            return;
-        }
-
-        try {
-            const {
-                captchaUrl: url,
-                sessionCookies: cookies,
-                token: newToken,
-            } = await fetchCaptcha();
-            setCaptchaUrl(url);
-            setSessionCookies(cookies);
-            setToken(newToken);
-        } catch (error) {
-            setLoginError("Failed to fetch CAPTCHA.");
-        }
     };
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -173,7 +169,7 @@ export default function AccountClient() {
             } else {
                 setLoginError(response.error || "Login failed");
             }
-        } catch (error) {
+        } catch {
             setLoginError("An error occurred during login.");
         }
 

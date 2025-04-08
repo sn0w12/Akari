@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Bookmark, Home, List, ArrowLeft } from "lucide-react";
+import { Bookmark, Home, List } from "lucide-react";
 import Link from "next/link";
 import { CSSProperties, MouseEvent } from "react";
 

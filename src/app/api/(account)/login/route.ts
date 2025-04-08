@@ -6,7 +6,7 @@ import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     const jar = new CookieJar();
     const client = wrapper(
         axios.create({
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         const client = wrapper(
             axios.create({
                 jar,
-                validateStatus: (status) => true, // Allow any status code to be handled in the response
+                validateStatus: () => true, // Allow any status code to be handled in the response
             }),
         );
         await jar.removeAllCookies();

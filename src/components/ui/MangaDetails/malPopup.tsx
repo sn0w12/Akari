@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getSetting } from "@/lib/settings";
@@ -38,12 +38,44 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         number | null
     >(null);
 
+    const handleSearch = useCallback(
+        async (e: React.FormEvent | null) => {
+            if (e) e.preventDefault();
+            if (!searchQuery.trim()) return;
+
+            setIsSearching(true);
+            try {
+                const response = await fetch(
+                    `/api/mal/search?q=${encodeURIComponent(searchQuery)}&v=1`,
+                );
+                const data = await response.json();
+
+                // Extract all items from categories
+                const allItems: MalSearchResult[] = [];
+                data.categories?.forEach(
+                    (category: { items?: MalSearchResult[] }) => {
+                        if (category.items && category.items.length > 0) {
+                            allItems.push(...category.items);
+                        }
+                    },
+                );
+
+                setSearchResults(allItems);
+            } catch (error) {
+                console.error("Error searching MAL:", error);
+            } finally {
+                setIsSearching(false);
+            }
+        },
+        [searchQuery],
+    );
+
     useEffect(() => {
         if (isSearchMode && mangaTitle && !searchQuery) {
             setSearchQuery(mangaTitle);
             handleSearch(null);
         }
-    }, [isSearchMode, mangaTitle, searchQuery]);
+    }, [isSearchMode, mangaTitle, searchQuery, handleSearch]);
 
     useEffect(() => {
         const checkVoteStatus = async () => {
@@ -111,11 +143,13 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
                 const firstItem = data.categories[0]?.items[0] || null;
 
                 const allItems: MalSearchResult[] = [];
-                data.categories?.forEach((category: any) => {
-                    if (category.items && category.items.length > 0) {
-                        allItems.push(...category.items);
-                    }
-                });
+                data.categories?.forEach(
+                    (category: { items?: MalSearchResult[] }) => {
+                        if (category.items && category.items.length > 0) {
+                            allItems.push(...category.items);
+                        }
+                    },
+                );
 
                 setSearchResults(allItems);
 
@@ -174,33 +208,6 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
             }
         } catch (error) {
             console.error("Error submitting vote:", error);
-        }
-    }
-
-    async function handleSearch(e: React.FormEvent | null) {
-        if (e) e.preventDefault();
-        if (!searchQuery.trim()) return;
-
-        setIsSearching(true);
-        try {
-            const response = await fetch(
-                `/api/mal/search?q=${encodeURIComponent(searchQuery)}&v=1`,
-            );
-            const data = await response.json();
-
-            // Extract all items from categories
-            const allItems: MalSearchResult[] = [];
-            data.categories?.forEach((category: any) => {
-                if (category.items && category.items.length > 0) {
-                    allItems.push(...category.items);
-                }
-            });
-
-            setSearchResults(allItems);
-        } catch (error) {
-            console.error("Error searching MAL:", error);
-        } finally {
-            setIsSearching(false);
         }
     }
 

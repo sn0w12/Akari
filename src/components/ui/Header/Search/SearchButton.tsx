@@ -29,8 +29,8 @@ export default function SearchButton() {
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const debouncedFetchResults = useCallback(
-        debounce(async (query) => {
+    const debouncedFetchResults = useCallback(() => {
+        const fetchResults = debounce(async (query: string) => {
             if (query) {
                 setIsSearchLoading(true);
                 try {
@@ -44,14 +44,15 @@ export default function SearchButton() {
             } else {
                 setSearchResults([]);
             }
-        }, 300), // 300ms debounce delay
-        [],
-    );
+        }, 300); // 300ms debounce delay
+
+        return fetchResults;
+    }, [setSearchResults, setIsSearchLoading]);
 
     const handleSearchInputChange = (e: { target: { value: string } }) => {
         const query = e.target.value;
         setSearchText(query);
-        debouncedFetchResults(query);
+        debouncedFetchResults()(query);
     };
 
     return (

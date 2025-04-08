@@ -123,7 +123,7 @@ export default function PageProgress({
         window.addEventListener("resize", updateBackgroundStyle);
         return () =>
             window.removeEventListener("resize", updateBackgroundStyle);
-    }, [currentPage, totalPages]);
+    }, [currentPage, totalPages, windowWidth]);
 
     return mounted ? (
         <div

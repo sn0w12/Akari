@@ -9,8 +9,6 @@ import {
     Menu,
     PanelLeftClose,
     PanelLeftOpen,
-    Pin,
-    PinOff,
 } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -943,11 +941,9 @@ function SidebarSection({
     isSidebarCollapsed,
     basePath,
     isItemActive,
-    contextMenuItems,
-    onPinItem,
     maxHeight = 320,
 }: SidebarSectionProps) {
-    const { isPinned, togglePin } = usePinnedItems(title);
+    const { isPinned } = usePinnedItems(title);
     const isMobile = useIsMobile();
     const { setOpen } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState(isActive);
@@ -968,7 +964,7 @@ function SidebarSection({
         } else if (!isActive && isExpanded) {
             setIsExpanded(false);
         }
-    }, [isActive]);
+    }, [isActive, isExpanded]);
 
     React.useLayoutEffect(() => {
         if (contentRef.current) {
@@ -976,7 +972,7 @@ function SidebarSection({
                 Math.min(contentRef.current.scrollHeight, maxHeight),
             );
         }
-    }, [items, isExpanded]);
+    }, [items, isExpanded, maxHeight]);
 
     const getItemRef = (index: number) => (el: HTMLElement | null) => {
         itemRefs.current[index] = el;

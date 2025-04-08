@@ -14,7 +14,6 @@ import { getMangaFromSupabase } from "@/lib/supabase";
 import { formatDate } from "@/lib/mangaNato";
 import { time, timeEnd, clearPerformanceMetrics, cleanText } from "@/lib/utils";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { processMangaList } from "@/lib/mangaNato";
 
 export async function getLatestManga(page: string) {
     "use cache";

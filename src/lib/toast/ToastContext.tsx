@@ -33,7 +33,7 @@ export interface Toast {
     createdAt: number;
 }
 
-interface ToastContextType {
+export interface ToastContextType {
     toasts: Toast[];
     addToast: (
         message: string,

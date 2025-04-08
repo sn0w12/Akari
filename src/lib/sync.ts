@@ -33,8 +33,8 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data)),
     );
 
-    let authorizedServices: string[] = [];
-    let unAuthorizedServices: string[] = [];
+    const authorizedServices: string[] = [];
+    const unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
         if (result.status === "rejected") {
             const error = result.reason;

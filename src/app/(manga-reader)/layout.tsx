@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Footer from "@/components/Footer";
 import { CookieConsent } from "@/components/ui/cookieConsent";
 import { ToastProvider } from "@/lib/toast/ToastContext";
 import { BaseLayout } from "@/components/BaseLayout";

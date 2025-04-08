@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getSetting } from "@/lib/settings";
 import { Skeleton } from "../skeleton";
 
@@ -48,8 +48,8 @@ export const ChaptersPopup: React.FC<{
           } as React.CSSProperties)
         : {};
 
-    // Update popup position relative to the button
-    const updatePosition = () => {
+    // Update popup position relative to the button - wrapped with useCallback
+    const updatePosition = useCallback(() => {
         if (!buttonRef?.current || !popupRef.current || !position) return;
 
         // Get current button position
@@ -58,7 +58,21 @@ export const ChaptersPopup: React.FC<{
         // Update popup position to match the button's current position
         popupRef.current.style.top = `${buttonRect.bottom}px`;
         popupRef.current.style.left = `${buttonRect.right}px`;
-    };
+    }, [buttonRef, popupRef, position]);
+
+    const handleClose = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (ENABLE_ANIMATIONS) {
+                setIsVisible(false);
+                // Allow time for fade out animation before closing
+                setTimeout(() => onClose(), 200);
+            } else {
+                onClose();
+            }
+        },
+        [ENABLE_ANIMATIONS, onClose],
+    );
 
     useEffect(() => {
         // Fade in animation for popup
@@ -79,7 +93,8 @@ export const ChaptersPopup: React.FC<{
         const handleOutsideClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (!target.closest(".chapters-popup-content")) {
-                handleClose(e);
+                // Convert the native MouseEvent to a format compatible with our handler
+                handleClose(e as unknown as React.MouseEvent);
             }
         };
 
@@ -100,18 +115,7 @@ export const ChaptersPopup: React.FC<{
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, []);
-
-    const handleClose = (e: any) => {
-        e.stopPropagation();
-        if (ENABLE_ANIMATIONS) {
-            setIsVisible(false);
-            // Allow time for fade out animation before closing
-            setTimeout(() => onClose(), 200);
-        } else {
-            onClose();
-        }
-    };
+    }, [updatePosition, handleClose]);
 
     return (
         <div

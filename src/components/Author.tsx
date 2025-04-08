@@ -2,15 +2,9 @@ import { SortSelect } from "./ui/SortSelect";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
 import { MangaGrid } from "./MangaGrid";
-import { SimpleError, SmallManga } from "@/app/api/interfaces";
+import { SmallManga } from "@/app/api/interfaces";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { fetchAuthorData } from "@/lib/scraping";
-
-interface MangaListResponse {
-    mangaList: SmallManga[];
-    popular: SmallManga[];
-    metaData: { totalStories: number; totalPages: number };
-}
 
 interface PageProps {
     params: { id: string };

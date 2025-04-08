@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import db from "@/lib/db";
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
-import { numberArraysEqual } from "@/lib/utils";
 import { bookmarksToCacheItems, getAllBookmarks } from "@/lib/bookmarks";
-
 import BookmarksHeader from "./BookmarksHeader";
 import BookmarksGrid from "./BookmarksGrid";
 
@@ -27,7 +25,24 @@ export default function BookmarksBody({
     const [allBookmarks, setAllBookmarks] = useState<MangaCacheItem[]>([]);
     const [workerFinished, setWorkerFinished] = useState(false);
 
-    async function updateBookmark(bookmark: Bookmark) {
+    const generateBookmarksHash = (bookmarks: Bookmark[]): string => {
+        return bookmarks
+            .map((b) => `${b.storyid}:${b.chapter_numbernow}`)
+            .sort()
+            .join("|");
+    };
+
+    const calculateSimilarity = (
+        currentHash: string,
+        cachedHash: string,
+    ): number => {
+        const current = new Set(currentHash.split("|"));
+        const cached = new Set(cachedHash.split("|"));
+        const intersection = new Set([...current].filter((x) => cached.has(x)));
+        return intersection.size / Math.max(current.size, cached.size);
+    };
+
+    const updateBookmark = useCallback(async (bookmark: Bookmark) => {
         const cacheObject = {
             name: bookmark.note_story_name,
             link: bookmark.link_story,
@@ -50,104 +65,89 @@ export default function BookmarksBody({
                 });
             }
         }
-    }
+    }, []);
 
-    // Add this utility function at the top of file
-    const generateBookmarksHash = (bookmarks: Bookmark[]): string => {
-        return bookmarks
-            .map((b) => `${b.storyid}:${b.chapter_numbernow}`)
-            .sort()
-            .join("|");
-    };
+    const isCacheValid = useCallback(
+        async (
+            bookmarkFirstPage: Bookmark[],
+            similarityThreshold: number = 0.6,
+        ) => {
+            const currentHash = generateBookmarksHash(bookmarkFirstPage);
+            const cachedHash = (await db.replaceCache(
+                db.bookmarkCache,
+                "firstPageHash",
+                currentHash,
+            )) as string;
+            if (!cachedHash) return false;
 
-    const calculateSimilarity = (
-        currentHash: string,
-        cachedHash: string,
-    ): number => {
-        const current = new Set(currentHash.split("|"));
-        const cached = new Set(cachedHash.split("|"));
-        const intersection = new Set([...current].filter((x) => cached.has(x)));
-        return intersection.size / Math.max(current.size, cached.size);
-    };
+            const similarity = calculateSimilarity(currentHash, cachedHash);
+            console.debug(`Cache similarity: ${similarity * 100}%`);
+            return similarity >= similarityThreshold;
+        },
+        [],
+    );
 
-    async function isCacheValid(
-        bookmarkFirstPage: Bookmark[],
-        similarityThreshold: number = 0.6,
-    ) {
-        const currentHash = generateBookmarksHash(bookmarkFirstPage);
-        const cachedHash = (await db.replaceCache(
-            db.bookmarkCache,
-            "firstPageHash",
-            currentHash,
-        )) as string;
-        if (!cachedHash) return false;
-
-        const similarity = calculateSimilarity(currentHash, cachedHash);
-        console.debug(`Cache similarity: ${similarity * 100}%`);
-        return similarity >= similarityThreshold;
-    }
-
-    const fetchAllBookmarks = async (
-        bookmarkFirstPage: Bookmark[],
-        page: number,
-    ) => {
-        if (page !== 1) {
-            const bookmarkCache = (await db.getAllCacheValues(
-                db.mangaCache,
-            )) as MangaCacheItem[];
-            setAllBookmarks(bookmarkCache);
-            setWorkerFinished(true);
-            return;
-        }
-
-        // Handle empty bookmarks case
-        if (bookmarkFirstPage.length === 0) {
-            if (error) {
-                new Toast(error, "error");
-            } else {
-                new Toast("No bookmarks found.", "info");
+    const fetchAllBookmarks = useCallback(
+        async (bookmarkFirstPage: Bookmark[], page: number) => {
+            if (page !== 1) {
+                const bookmarkCache = (await db.getAllCacheValues(
+                    db.mangaCache,
+                )) as MangaCacheItem[];
+                setAllBookmarks(bookmarkCache);
+                setWorkerFinished(true);
+                return;
             }
-            setAllBookmarks([]);
-            setWorkerFinished(true);
-            return;
-        }
 
-        if (await isCacheValid(bookmarkFirstPage)) {
-            const bookmarkCache = (await db.getAllCacheValues(
-                db.mangaCache,
-            )) as MangaCacheItem[];
+            // Handle empty bookmarks case
+            if (bookmarkFirstPage.length === 0) {
+                if (error) {
+                    new Toast(error, "error");
+                } else {
+                    new Toast("No bookmarks found.", "info");
+                }
+                setAllBookmarks([]);
+                setWorkerFinished(true);
+                return;
+            }
 
-            // Update only first page items
-            for (const bookmark of bookmarkFirstPage) {
+            if (await isCacheValid(bookmarkFirstPage)) {
+                const bookmarkCache = (await db.getAllCacheValues(
+                    db.mangaCache,
+                )) as MangaCacheItem[];
+
+                // Update only first page items
+                for (const bookmark of bookmarkFirstPage) {
+                    updateBookmark(bookmark);
+                }
+
+                setAllBookmarks(bookmarkCache);
+                setWorkerFinished(true);
+                return;
+            }
+
+            // Cache miss - fetch all bookmarks
+            const bookmarkToast = new Toast("Processing bookmarks...", "info", {
+                autoClose: false,
+            });
+
+            const allBookmarks = await getAllBookmarks();
+            const mangaCache = bookmarksToCacheItems(bookmarkFirstPage);
+
+            allBookmarks.forEach((bookmark: Bookmark) => {
                 updateBookmark(bookmark);
-            }
+            });
 
-            setAllBookmarks(bookmarkCache);
+            setAllBookmarks(mangaCache);
             setWorkerFinished(true);
-            return;
-        }
-
-        // Cache miss - fetch all bookmarks
-        const bookmarkToast = new Toast("Processing bookmarks...", "info", {
-            autoClose: false,
-        });
-
-        const allBookmarks = await getAllBookmarks();
-        const mangaCache = bookmarksToCacheItems(bookmarkFirstPage);
-
-        allBookmarks.forEach((bookmark: Bookmark) => {
-            updateBookmark(bookmark);
-        });
-
-        setAllBookmarks(mangaCache);
-        setWorkerFinished(true);
-        new Toast("Bookmarks processed.", "success");
-        bookmarkToast.close();
-    };
+            new Toast("Bookmarks processed.", "success");
+            bookmarkToast.close();
+        },
+        [error, updateBookmark, isCacheValid],
+    );
 
     useEffect(() => {
         fetchAllBookmarks(bookmarks, page);
-    }, []);
+    }, [bookmarks, page, fetchAllBookmarks]);
 
     return (
         <>

@@ -1,7 +1,6 @@
 import db from "@/lib/db";
 import { HqMangaCacheItem, MalSync, MalData } from "@/app/api/interfaces";
 import { getSetting } from "./settings";
-import { akariUrls } from "./consts";
 
 async function getMalData(identifier: number) {
     const apiEndpoint = `https://api.jikan.moe/v4/manga/${identifier}`;
@@ -18,68 +17,6 @@ async function getMalData(identifier: number) {
             url: manga.url,
             score: manga.scored / 2,
             description: manga.synopsis,
-        } as HqMangaCacheItem;
-
-        return response;
-    } catch (error) {
-        console.error("Error searching for manga:", error);
-        return null;
-    }
-}
-
-async function getAniData(identifier: number) {
-    const query = `
-        query ExampleQuery($mediaId: Int!) {
-          Media(id: $mediaId) {
-            id
-            title {
-              romaji
-              english
-              native
-            }
-            description
-            coverImage {
-              extraLarge
-              medium
-            }
-            genres
-            averageScore
-            siteUrl
-          }
-        }
-      `;
-
-    const variables = {
-        mediaId: identifier,
-    };
-    try {
-        const request = await fetch("https://graphql.anilist.co", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query,
-                variables,
-            }),
-        });
-
-        const data = await request.json();
-        const manga = data.data.Media;
-
-        const titles = [
-            { type: "Romaji", title: manga.title.romaji },
-            { type: "English", title: manga.title.english },
-            { type: "Native", title: manga.title.native },
-        ].filter((title) => title.title !== null);
-
-        const response = {
-            titles: titles,
-            imageUrl: manga.coverImage.extraLarge,
-            smallImageUrl: manga.coverImage.medium,
-            url: manga.siteUrl,
-            score: manga.averageScore / 20,
-            description: manga.description,
         } as HqMangaCacheItem;
 
         return response;

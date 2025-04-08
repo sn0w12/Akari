@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { saveReadingHistoryEntry, userDataToUserId } from "@/lib/supabase";
+import { saveReadingHistoryEntry } from "@/lib/supabase";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
 import { hasConsentFor } from "@/lib/cookies";
 

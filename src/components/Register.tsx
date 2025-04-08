@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -23,7 +23,7 @@ export default function Register() {
     const [sessionCookies, setSessionCookies] = useState([]);
     const router = useRouter();
 
-    const handleFetchCaptcha = async () => {
+    const handleFetchCaptcha = useCallback(async () => {
         if (captchaUrl && sessionCookies.length > 0) {
             return;
         }
@@ -37,14 +37,21 @@ export default function Register() {
             setCaptchaUrl(url);
             setToken(token);
             setSessionCookies(cookies);
-        } catch (error) {
+        } catch {
             setError("Failed to fetch CAPTCHA.");
         }
-    };
+    }, [
+        captchaUrl,
+        sessionCookies,
+        setError,
+        setCaptchaUrl,
+        setToken,
+        setSessionCookies,
+    ]);
 
     useEffect(() => {
         handleFetchCaptcha();
-    }, []);
+    }, [handleFetchCaptcha]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,7 +88,7 @@ export default function Register() {
                 setError(data.message || "Registration failed");
                 handleFetchCaptcha(); // Refresh captcha on error
             }
-        } catch (err) {
+        } catch {
             setError("An error occurred during registration");
             handleFetchCaptcha(); // Refresh captcha on error
         }

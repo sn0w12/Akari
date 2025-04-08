@@ -31,13 +31,13 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         } else if (manga.mangaId) {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
         }
-    }, [id]);
+    }, [id, manga.mangaId]);
 
     useEffect(() => {
         loadManga();
-    }, [manga]);
+    }, [manga, loadManga]);
 
-    const getSortedChapters = () => {
+    const getSortedChapters = useCallback(() => {
         const uniqueChapters = manga?.chapterList.filter(
             (chapter, index, self) => {
                 const ids = self.map((ch) => ch.id);
@@ -57,12 +57,12 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             const numB = extractNumber(b.id);
             return sortOrder === "asc" ? numA - numB : numB - numA;
         });
-    };
+    }, [manga?.chapterList, sortOrder]);
 
     useEffect(() => {
         const sortedChapters = getSortedChapters();
         setSortedChapters(sortedChapters);
-    }, [sortOrder]);
+    }, [getSortedChapters]);
 
     const navigateToLastRead = () => {
         if (!lastRead || !manga) {
@@ -88,11 +88,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                 block: "center",
             });
         }, 100);
-    };
-
-    const formatChapterDate = (date: string) => {
-        const dateArray = date.split(",");
-        return `${dateArray[0]}, ${dateArray[1].split(" ").shift()}`;
     };
 
     const totalPages = Math.ceil(sortedChapters.length / chaptersPerPage);

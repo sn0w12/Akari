@@ -25,7 +25,7 @@ export const setCookie = (
 };
 
 export function getServerCookieConsent(cookieStore: {
-    get: (arg0: string) => any;
+    get: (arg0: string) => { value: string } | undefined;
 }): CookieConsent {
     const consentCookie = cookieStore.get("cookie-consent");
 
@@ -41,7 +41,7 @@ export function getServerCookieConsent(cookieStore: {
 }
 
 export function hasConsentFor(
-    cookieStore: { get: (arg0: string) => any },
+    cookieStore: { get: (arg0: string) => { value: string } | undefined },
     category: keyof CookieConsent,
 ): boolean {
     const consent = getServerCookieConsent(cookieStore);

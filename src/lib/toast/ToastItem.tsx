@@ -114,7 +114,7 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
                 clearInterval(intervalRef.current);
             }
         };
-    }, []);
+    }, [autoClose, shouldAutoClose, toast.options.delay]);
 
     const handleAnimationEnd = () => {
         if (shouldAutoClose) {

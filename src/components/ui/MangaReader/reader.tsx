@@ -5,10 +5,8 @@ import { Chapter } from "@/app/api/interfaces";
 import db from "@/lib/db";
 import { HqMangaCacheItem } from "@/app/api/interfaces";
 import MangaReaderSkeleton from "./mangaReaderSkeleton";
-import { HeaderComponent } from "@/components/Header";
 import StripReader from "./Reader/strip";
 import PageReader from "./Reader/page";
-import { useSidebar } from "../sidebar";
 
 interface ReaderProps {
     chapter: Chapter;
@@ -23,9 +21,6 @@ export default function Reader({ chapter }: ReaderProps) {
     const [isHoveringFooter, setHoveringFooter] = useState(false);
     const longImageCountRef = useRef(0);
     const imageCountRef = useRef(0);
-    const { state: sidebarState } = useSidebar();
-    const isSidebarCollapsed = sidebarState === "collapsed";
-
     // Detect if the majority of images have a long aspect ratio
     useEffect(() => {
         if (chapter && chapter.images.length > 0) {
@@ -91,14 +86,11 @@ export default function Reader({ chapter }: ReaderProps) {
     useEffect(() => {
         const isSidebarPresent = () =>
             document.getElementById("sidebar") !== null;
-        const isSidebarContextPresent = () =>
-            document.getElementById("sidebar-context") !== null;
         const isChapterSelectorPresent = () =>
             document.getElementById("chapter-selector") !== null;
 
         const handleMouseMove = (e: MouseEvent) => {
             const sidebarVisible = isSidebarPresent();
-            const sidebarContextVisible = isSidebarContextPresent();
             const chapterSelectorVisible = isChapterSelectorPresent();
 
             if (
@@ -160,7 +152,6 @@ export default function Reader({ chapter }: ReaderProps) {
                         isFooterVisible={isFooterVisible}
                         handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
-                        isSidebarCollapsed={isSidebarCollapsed}
                     />
                 ) : (
                     <PageReader
@@ -168,7 +159,6 @@ export default function Reader({ chapter }: ReaderProps) {
                         isFooterVisible={isFooterVisible}
                         handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
-                        isSidebarCollapsed={isSidebarCollapsed}
                     />
                 )}
             </div>

@@ -47,7 +47,7 @@ export function BookmarksContextMenu({
 
         setIsLoading(true);
         const data = await fetchBookmarks(1);
-        let processedBookmarks: ProcessedBookmark[] = [];
+        const processedBookmarks: ProcessedBookmark[] = [];
         data?.bookmarks.forEach((bookmark: Bookmark) => {
             const upToDate =
                 bookmark.chapterlastnumber === bookmark.chapter_numbernow;

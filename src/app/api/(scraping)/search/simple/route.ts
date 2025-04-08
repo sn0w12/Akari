@@ -42,7 +42,7 @@ export async function GET(request: Request) {
                 ...generateCacheHeaders(600),
             },
         });
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to fetch search results" },
             { status: 500 },

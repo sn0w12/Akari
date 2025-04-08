@@ -50,7 +50,7 @@ export default function BookmarksGrid({
         };
 
         init();
-    }, [page]);
+    }, [page, bookmarks]);
 
     return (
         <>

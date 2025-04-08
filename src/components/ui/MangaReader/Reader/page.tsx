@@ -18,7 +18,6 @@ interface PageReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
-    isSidebarCollapsed: boolean;
 }
 
 export default function PageReader({
@@ -26,7 +25,6 @@ export default function PageReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
-    isSidebarCollapsed,
 }: PageReaderProps) {
     const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(() => {
@@ -50,7 +48,6 @@ export default function PageReader({
     const [processedImages, setProcessedImages] = useState<string[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
-    const [checkedForStripManga, setCheckedForStripManga] = useState(false);
     const stripCheckCountRef = useRef(0);
     const stripDetectionThreshold = 3; // Number of consecutive 1500px images to consider it a strip manga
     const hasToggledReaderModeRef = useRef(false);
@@ -132,7 +129,7 @@ export default function PageReader({
             updatePageUrl(newPage);
             resetInactivityTimer();
         },
-        [updatePageUrl],
+        [updatePageUrl, resetInactivityTimer],
     );
 
     const nextPage = useCallback(() => {
@@ -241,12 +238,8 @@ export default function PageReader({
                 ) {
                     hasToggledReaderModeRef.current = true;
                 }
-
-                // Mark as checked regardless of result
-                setCheckedForStripManga(true);
             } catch (error) {
                 console.error("Error checking manga cache:", error);
-                setCheckedForStripManga(true); // Mark as checked even on error
             }
         }
 
@@ -453,7 +446,7 @@ export default function PageReader({
                 setIsProcessingImages(false);
             }, 500);
         }
-    }, [chapter?.images, handleImageHeight, currentPage]);
+    }, [chapter?.images, handleImageHeight, currentPage, initialPagesReady]);
 
     useEffect(() => {
         processImages();
