@@ -958,14 +958,6 @@ function SidebarSection({
     const itemsContainerRef = React.useRef<HTMLDivElement>(null);
     const itemRefs = React.useRef<(HTMLElement | null)[]>([]);
 
-    React.useEffect(() => {
-        if (isActive && !isExpanded) {
-            setIsExpanded(true);
-        } else if (!isActive && isExpanded) {
-            setIsExpanded(false);
-        }
-    }, [isActive, isExpanded]);
-
     React.useLayoutEffect(() => {
         if (contentRef.current) {
             setContentHeight(
@@ -1068,9 +1060,7 @@ function SidebarSection({
                         isActive={isActive}
                         tooltip={title}
                         labelClassName={
-                            isSidebarCollapsed || !isMobile
-                                ? ""
-                                : "w-full justify-between"
+                            isSidebarCollapsed ? "" : "w-full justify-between"
                         }
                     >
                         <div className="flex max-w-[85%] items-center gap-2">
