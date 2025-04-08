@@ -153,6 +153,12 @@ export const dataSettings = {
 
 export const shortcutsSettings = {
     label: "Shortcuts",
+    showShortcuts: {
+        type: "checkbox",
+        label: "Show Shortcuts",
+        value: true,
+        default: true,
+    },
     searchManga: {
         type: "shortcut",
         label: "Search Manga",

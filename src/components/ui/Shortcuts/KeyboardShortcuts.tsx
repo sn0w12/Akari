@@ -1,5 +1,8 @@
+"use client";
+
 import { useKeyPressed } from "@/hooks/useKeysPressed";
 import { cn } from "@/lib/utils";
+import { useSetting } from "@/lib/settings";
 
 interface KeyboardShortcutProps {
     keys: string[];
@@ -11,6 +14,9 @@ export function KeyboardShortcut({
     className = "",
 }: KeyboardShortcutProps) {
     const pressedKeys = useKeyPressed();
+    const shouldShowShortcuts = useSetting("showShortcuts");
+
+    if (!shouldShowShortcuts) return null;
 
     return (
         <span
