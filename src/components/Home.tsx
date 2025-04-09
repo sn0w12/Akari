@@ -1,39 +1,9 @@
 import ErrorComponent from "./ui/error";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import { getProductionUrl } from "@/app/api/baseUrl";
 import { PopularManga } from "./ui/Home/PopularManga";
-import { SmallManga } from "@/app/api/interfaces";
 import { MangaGrid } from "./MangaGrid";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-
-interface MangaListResponse {
-    mangaList: SmallManga[];
-    popular: SmallManga[];
-    metaData: { totalStories: number; totalPages: number };
-}
-
-async function getMangaData(page: number): Promise<MangaListResponse> {
-    "use cache";
-    cacheLife("minutes");
-
-    const baseUrl = getProductionUrl();
-    const url = `${baseUrl}/api/manga-list/latest?page=${page}`;
-
-    const res = await fetch(url);
-    if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Fetch error details:", {
-            error: errorText,
-            status: res.status,
-            url,
-        });
-        throw new Error(
-            `Failed to fetch manga data: ${res.status} ${res.statusText}`,
-        );
-    }
-
-    return res.json();
-}
+import { getLatestManga } from "@/lib/scraping";
 
 export default async function MangaReaderHome({
     searchParams,
@@ -44,12 +14,13 @@ export default async function MangaReaderHome({
     cacheLife("minutes");
 
     const currentPage = Number(searchParams.page) || 1;
-    let mangaData: MangaListResponse;
-    try {
-        mangaData = await getMangaData(currentPage);
-    } catch (error) {
+    const mangaData = await getLatestManga(currentPage.toString());
+
+    if ("error" in mangaData) {
         return (
-            <ErrorComponent message={`Failed to load manga data: ${error}`} />
+            <ErrorComponent
+                message={`Failed to load manga data: ${mangaData.error}`}
+            />
         );
     }
 

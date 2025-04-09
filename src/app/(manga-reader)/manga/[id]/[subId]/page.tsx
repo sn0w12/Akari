@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import ChapterReader, { fetchChapter } from "@/components/MangaReader";
-import { Chapter } from "@/app/api/interfaces";
+import ChapterReader from "@/components/MangaReader";
+import { fetchChapterData } from "@/lib/scraping";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -10,10 +10,11 @@ export async function generateMetadata({
     params,
 }: MangaReaderProps): Promise<Metadata> {
     const mangaParams = await params;
-    const chapter: Chapter = await fetchChapter(
-        mangaParams.id,
-        mangaParams.subId,
-    );
+    const chapter = await fetchChapterData(mangaParams.id, mangaParams.subId);
+
+    if ("result" in chapter) {
+        throw new Error(chapter.data);
+    }
 
     const title = `${chapter.title} - ${chapter.chapter}`;
     const description = `Read ${chapter.title} ${chapter.chapter}`;

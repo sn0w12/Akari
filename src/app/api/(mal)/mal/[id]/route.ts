@@ -64,7 +64,7 @@ export async function GET(
                 // Find the MAL ID with the most positive votes
                 const entries = Object.entries(voteCount);
                 const positiveEntries = entries.filter(
-                    ([_, votes]) => votes > 0,
+                    ([, votes]) => votes > 0,
                 );
 
                 if (positiveEntries.length > 0) {

@@ -5,7 +5,7 @@ export interface LoginResponse {
     success: boolean;
     data?: {
         username: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
     error?: string;
 }

@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Footer from "@/components/Footer";
 import { CookieConsent } from "@/components/ui/cookieConsent";
 import { ToastProvider } from "@/lib/toast/ToastContext";
 import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ProximityPrefetch } from "@/lib/proximity-prefetch";
+import type { Viewport } from "next";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -21,6 +22,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = { title: "灯 - Akari" };
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+};
 
 export default async function RootLayout({
     children,
@@ -38,27 +44,28 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden fixed inset-0`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background`}
             >
-                <SidebarProvider
-                    defaultOpen={false}
-                    className="overflow-hidden"
-                >
-                    <BaseLayout gutter={false}>
-                        <ThemeProvider
-                            attribute="class"
-                            defaultTheme="system"
-                            enableSystem
-                            disableTransitionOnChange
-                        >
-                            <ToastProvider>
-                                <AnalyticsWrapper />
-                                <div className="flex-grow">{children}</div>
-                                <CookieConsent />
-                            </ToastProvider>
-                        </ThemeProvider>
-                    </BaseLayout>
-                </SidebarProvider>
+                <ProximityPrefetch>
+                    <SidebarProvider defaultOpen={false}>
+                        <BaseLayout gutter={true}>
+                            <ThemeProvider
+                                attribute="class"
+                                defaultTheme="system"
+                                enableSystem
+                                disableTransitionOnChange
+                            >
+                                <ToastProvider>
+                                    <AnalyticsWrapper />
+                                    <div className="flex-grow overflow-hidden">
+                                        {children}
+                                    </div>
+                                    <CookieConsent />
+                                </ToastProvider>
+                            </ThemeProvider>
+                        </BaseLayout>
+                    </SidebarProvider>
+                </ProximityPrefetch>
             </body>
         </html>
     );

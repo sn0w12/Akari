@@ -1,16 +1,17 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
-import LatestChapterInfo from "./LatestChapterInfo";
+import LatestChapterInfo from "../LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
 import { imageUrl } from "@/lib/utils";
 import { ChevronsUpDownIcon, Loader2Icon } from "lucide-react";
 import { useRef, useState } from "react";
-import { ChaptersPopup } from "./ChaptersPopup";
+import { ChaptersPopup } from "../ChaptersPopup";
+import { ConfirmDialogs } from "./ConfirmDialogs";
 
 interface Chapter {
     id: string;
@@ -20,9 +21,10 @@ interface Chapter {
     createdAt: string;
 }
 
-const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
-    bookmark,
-}) => {
+const DesktopBookmarkCard: React.FC<{
+    bookmark: Bookmark;
+    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+}> = ({ bookmark, setUpdatedBookmarks }) => {
     const {
         mangaIdentifier,
         continueReading,
@@ -72,9 +74,9 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
     }
 
     return (
-        <Card className="hidden md:flex flex-row items-start p-6 shadow-lg bg-card border border-border rounded-lg xl:h-full">
-            <div className="w-40 h-full mb-0 shrink-0">
-                <HoverLink
+        <Card className="hidden md:flex flex-row items-start p-6 pr-2 shadow-lg bg-card border border-border rounded-lg xl:h-full">
+            <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
+                <Link
                     href={`/manga/${mangaIdentifier}`}
                     rel="noopener noreferrer"
                     className="block"
@@ -87,22 +89,27 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
                         height={450}
                         className="w-full h-auto object-cover rounded"
                     />
-                </HoverLink>
+                </Link>
             </div>
-            <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
-                <div className="flex flex-col gap-2">
-                    <HoverLink
-                        href={`/manga/${mangaIdentifier}`}
-                        prefetch={false}
-                        className="mr-20"
-                    >
-                        <h3 className="font-bold text-2xl hover:underline text-left">
-                            {bookmark.storyname}
-                        </h3>
-                    </HoverLink>
+            <CardContent className="px-4 flex flex-col flex-shrink justify-between relative w-full">
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex items-top gap-2 mb-2 w-full justify-between">
+                        <Link
+                            href={`/manga/${mangaIdentifier}`}
+                            prefetch={false}
+                        >
+                            <h3 className="font-bold text-2xl hover:underline text-left text-ellipsis">
+                                {bookmark.storyname}
+                            </h3>
+                        </Link>
+                        <ConfirmDialogs
+                            bookmark={bookmark}
+                            setUpdatedBookmarks={setUpdatedBookmarks}
+                        />
+                    </div>
                     <div className="flex flex-row gap-2 mb-1">
                         {/* Continue Reading Button */}
-                        <HoverLink
+                        <Link
                             href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                             rel="noopener noreferrer"
                             className="block w-fit"
@@ -111,9 +118,12 @@ const DesktopBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({
                             <Button
                                 className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
                             >
-                                {continueReadingText}
+                                <span className="hidden lg:inline lg:mr-1.5">
+                                    {continueReadingText.split("-")[0]}
+                                </span>
+                                <span>{continueReadingText.split("-")[1]}</span>
                             </Button>
-                        </HoverLink>
+                        </Link>
                         <Button
                             ref={buttonRef}
                             className="w-10 p-0"

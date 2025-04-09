@@ -37,11 +37,11 @@ export default function Buttons({ manga }: ButtonsProps) {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
         }
         setIsLoading(false);
-    }, [id]);
+    }, [id, manga.mangaId]);
 
     useEffect(() => {
         loadManga();
-    }, [manga]);
+    }, [manga, loadManga]);
 
     if (isLoading) {
         return (

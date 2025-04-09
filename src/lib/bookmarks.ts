@@ -1,6 +1,4 @@
 import { Bookmark, MangaCacheItem } from "@/app/api/interfaces";
-import { isSignedIn } from "./utils";
-import { useMemo } from "react";
 
 export function compareVersions(str1: string, str2: string): boolean {
     // Replace "-" with "." in both strings

@@ -14,14 +14,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { getProductionUrl } from "@/app/api/baseUrl";
-import { UpdateManga } from "./ui/MangaDetails/updateManga";
 import ErrorComponent from "./ui/error";
 import { MalPopup } from "./ui/MangaDetails/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { MangaDetails } from "@/app/api/interfaces";
 import { ReportMalLink } from "./ui/MangaDetails/ReportMalLink";
 import { imageUrl } from "@/lib/utils";
+import { fetchMangaDetails } from "@/lib/scraping";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -53,45 +51,11 @@ const getViewsColor = (views: string) => {
     return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
-export async function getMangaData(
-    id: string,
-): Promise<MangaDetails | { error: { message: string } }> {
-    "use cache";
-    cacheLife("minutes");
-
-    try {
-        const response = await fetch(`${getProductionUrl()}/api/manga/${id}`);
-
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error! status: ${response.status}, ${response.statusText}`,
-            );
-        }
-
-        const text = await response.text();
-        try {
-            return JSON.parse(text).data;
-        } catch (e) {
-            console.error("Failed to parse JSON:", text.substring(0, 100)); // Log start of response
-            throw new Error("Invalid JSON response from server");
-        }
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to fetch manga data",
-            },
-        };
-    }
-}
-
 export async function MangaDetailsComponent({ id }: { id: string }) {
     "use cache";
     cacheLife("minutes");
 
-    const manga = await getMangaData(id);
+    const manga = await fetchMangaDetails(id);
     if ("error" in manga) {
         return (
             <main className="mx-auto p-4">

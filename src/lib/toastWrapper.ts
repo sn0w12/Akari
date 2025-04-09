@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useToast } from "./toast/ToastContext";
+import { ToastContextType, ToastPosition } from "./toast/ToastContext";
 
 // Utility function to get the user's theme
 const getUserTheme = (): "light" | "dark" => {
@@ -36,7 +37,7 @@ class Toast {
     private toastId: string = "toast";
     private theme: "light" | "dark" = "dark";
     private showToast: boolean;
-    private static toastManager: any = null;
+    private static toastManager: ToastContextType | null = null;
 
     constructor(
         message: string,
@@ -55,7 +56,7 @@ class Toast {
     }
 
     // Method to initialize the toast manager (to be called from the component that has access to the hook)
-    static initToastManager(manager: any) {
+    static initToastManager(manager: ToastContextType) {
         Toast.toastManager = manager;
     }
 
@@ -75,7 +76,7 @@ class Toast {
         }
 
         const defaultOptions = {
-            position: "top-right",
+            position: "top-right" as ToastPosition,
             theme: this.theme,
             autoClose: 5000,
             ...options,

@@ -12,7 +12,7 @@ export function TrackLogin() {
             const accountName = localStorage.getItem("accountName");
             track("User Sign-In Status", { signedIn: !!accountName });
         }
-    }, []);
+    });
 
     return null;
 }

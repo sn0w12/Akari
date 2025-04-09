@@ -32,7 +32,7 @@ export default async function SettingsSkeleton() {
                             >
                                 <div className="space-y-6">
                                     {Object.entries(categorySettings).map(
-                                        ([key, setting], index) => (
+                                        ([key, setting]) => (
                                             <div
                                                 key={key}
                                                 className="border-b pb-4 last:border-b-0 last:pb-0"

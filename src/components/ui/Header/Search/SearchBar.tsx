@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { debounce } from "lodash";
 import CenteredSpinner from "@/components/ui/spinners/centeredSpinner";
 import Image from "next/image";
-import { SmallManga } from "@/app/api/interfaces";
 import { getSearchResults } from "./searchFunctions";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "../../Shortcuts/KeyboardShortcuts";
@@ -35,26 +34,37 @@ export default function SearchBar() {
         setShortcut(getSetting("searchManga"));
     }, []);
 
-    const debouncedFetchResults = useCallback(
-        debounce(async (query) => {
-            if (query) {
-                setIsSearchLoading(true);
-                setShowPopup(true);
-                try {
-                    const firstFiveResults = await getSearchResults(query, 5);
-                    setSearchResults(firstFiveResults);
-                } catch (error) {
-                    console.error("Error fetching search results:", error);
-                } finally {
-                    setIsSearchLoading(false);
-                }
-            } else {
-                setSearchResults([]);
-                setShowPopup(false);
+    // Create a memoized fetch function without debounce
+    const fetchResults = useCallback(async (query: string) => {
+        if (query) {
+            setIsSearchLoading(true);
+            setShowPopup(true);
+            try {
+                const firstFiveResults = await getSearchResults(query, 5);
+                setSearchResults(firstFiveResults);
+            } catch (error) {
+                console.error("Error fetching search results:", error);
+            } finally {
+                setIsSearchLoading(false);
             }
-        }, 300), // 300ms debounce delay
-        [],
+        } else {
+            setSearchResults([]);
+            setShowPopup(false);
+        }
+    }, []);
+
+    // Create debounced version of the fetch function
+    const debouncedFetchResults = useMemo(
+        () => debounce(fetchResults, 300),
+        [fetchResults],
     );
+
+    // Clean up the debounce on component unmount
+    useEffect(() => {
+        return () => {
+            debouncedFetchResults.cancel();
+        };
+    }, [debouncedFetchResults]);
 
     const handleSearchInputChange = (e: { target: { value: string } }) => {
         const query = e.target.value;

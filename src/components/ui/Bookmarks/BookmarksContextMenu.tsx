@@ -1,10 +1,7 @@
 "use client";
 
-import HoverLink from "../hoverLink";
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Bookmark as BookmarkIcon } from "lucide-react";
+import Image from "next/image";
 import {
     ContextMenu,
     ContextMenuContent,
@@ -50,7 +47,7 @@ export function BookmarksContextMenu({
 
         setIsLoading(true);
         const data = await fetchBookmarks(1);
-        let processedBookmarks: ProcessedBookmark[] = [];
+        const processedBookmarks: ProcessedBookmark[] = [];
         data?.bookmarks.forEach((bookmark: Bookmark) => {
             const upToDate =
                 bookmark.chapterlastnumber === bookmark.chapter_numbernow;
@@ -164,7 +161,7 @@ export function BookmarksContextMenu({
                                               <div className="flex gap-1 justify-between">
                                                   {bookmark.up_to_date ||
                                                   bookmark.has_new_chapter ? (
-                                                      <HoverLink
+                                                      <Link
                                                           className={`${bookmark.color} flex-grow text-center px-2 py-1.5 rounded-md transition-colors`}
                                                           href={
                                                               bookmark.last_chapter_link
@@ -177,10 +174,10 @@ export function BookmarksContextMenu({
                                                           {
                                                               bookmark.last_chapter
                                                           }
-                                                      </HoverLink>
+                                                      </Link>
                                                   ) : (
                                                       <>
-                                                          <HoverLink
+                                                          <Link
                                                               className="bg-accent-color hover:bg-accent-color/70 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
                                                               href={
                                                                   bookmark.current_chapter_link
@@ -193,8 +190,8 @@ export function BookmarksContextMenu({
                                                               {
                                                                   bookmark.current_chapter
                                                               }
-                                                          </HoverLink>
-                                                          <HoverLink
+                                                          </Link>
+                                                          <Link
                                                               className="bg-green-600 hover:bg-green-700 flex-grow text-center px-2 py-1.5 rounded-md transition-colors"
                                                               href={
                                                                   bookmark.last_chapter_link
@@ -207,7 +204,7 @@ export function BookmarksContextMenu({
                                                               {
                                                                   bookmark.last_chapter
                                                               }
-                                                          </HoverLink>
+                                                          </Link>
                                                       </>
                                                   )}
                                               </div>

@@ -1,10 +1,10 @@
 import { SortSelect } from "./ui/SortSelect";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import ErrorComponent from "./ui/error";
-import { getProductionUrl } from "@/app/api/baseUrl";
-import { SimpleError, SmallManga } from "@/app/api/interfaces";
+import { SmallManga } from "@/app/api/interfaces";
 import { MangaGrid } from "./MangaGrid";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import { fetchGenreData } from "@/lib/scraping";
 
 interface MangaListResponse {
     mangaList: SmallManga[];
@@ -17,25 +17,6 @@ interface PageProps {
     searchParams: { page?: string; sort?: string };
 }
 
-async function getMangaList(genreId: string, page: number, sort: string) {
-    "use cache";
-    cacheLife("minutes");
-
-    try {
-        const response = await fetch(
-            `${getProductionUrl()}/api/genre/${genreId}?orderBy=${sort}&page=${page}`,
-        );
-
-        if (!response.ok) {
-            return (await response.json()) as SimpleError;
-        }
-
-        return (await response.json()) as MangaListResponse;
-    } catch (error) {
-        throw new Error(`Error fetching manga list: ${error}`);
-    }
-}
-
 export default async function GenrePage({ params, searchParams }: PageProps) {
     "use cache";
     cacheLife("minutes");
@@ -43,22 +24,22 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     const currentPage = Number(searchParams.page) || 1;
     const currentSort = searchParams.sort || "latest";
 
-    let mangaList: SmallManga[] = [];
-    let totalPages = 1;
-    let error: string | null = null;
+    const data = await fetchGenreData(
+        params.id,
+        String(currentPage),
+        currentSort,
+    );
 
-    try {
-        const data = await getMangaList(params.id, currentPage, currentSort);
-
-        if ("result" in data) {
-            error = String(data.data);
-        } else {
-            mangaList = data.mangaList;
-            totalPages = data.metaData.totalPages;
-        }
-    } catch (err) {
-        error = err instanceof Error ? err.message : String(err);
+    if ("error" in data) {
+        return (
+            <ErrorComponent
+                message={`Failed to load manga data: ${data.error}`}
+            />
+        );
     }
+
+    const { mangaList, metaData } = data as MangaListResponse;
+    const totalPages = metaData.totalPages;
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -70,18 +51,14 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                     <SortSelect currentSort={currentSort} />
                 </div>
 
-                {error && <ErrorComponent message={error} />}
-
                 <MangaGrid mangaList={mangaList} />
             </main>
 
-            {!error && (
-                <PaginationElement
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    searchParams={[{ key: "sort", value: currentSort }]}
-                />
-            )}
+            <PaginationElement
+                currentPage={currentPage}
+                totalPages={totalPages}
+                searchParams={[{ key: "sort", value: currentSort }]}
+            />
         </div>
     );
 }

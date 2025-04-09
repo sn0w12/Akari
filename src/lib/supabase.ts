@@ -34,7 +34,25 @@ export function encodeUserId(userId: string): string {
         .digest("hex");
 }
 
-function transformMangaData(data: any): HqMangaCacheItem | null {
+/**
+ * Interface for the raw manga data from database
+ */
+interface MangaDatabaseRecord {
+    id: string;
+    image: string;
+    score?: number;
+    description?: string;
+    mal_id?: number;
+    updated_at?: string;
+    should_show_popup?: boolean;
+}
+
+/**
+ * Transform manga data from database format to application format
+ */
+function transformMangaData(
+    data: MangaDatabaseRecord | null,
+): HqMangaCacheItem | null {
     if (!data) return null;
     return {
         identifier: data.id,
@@ -42,8 +60,8 @@ function transformMangaData(data: any): HqMangaCacheItem | null {
         imageUrl: data.image,
         smallImageUrl: data.image,
         url: "",
-        score: data.score,
-        description: data.description,
+        score: data.score || 0,
+        description: data.description || "",
         malUrl: data.mal_id
             ? `https://myanimelist.net/manga/${data.mal_id}`
             : "",
@@ -259,27 +277,23 @@ export async function getUserReadingStats(
     // Calculate start date based on period
     const now = new Date();
     let startDate: Date;
-    let interval: "hour" | "day" | "day"; // Interval type for generating timeslots
     let timeSlots: number; // Number of time slots to generate
 
     switch (period) {
         case "24h":
             startDate = new Date(now);
             startDate.setHours(now.getHours() - 24);
-            interval = "hour";
             timeSlots = 24;
             break;
         case "7d":
             startDate = new Date(now);
             startDate.setDate(now.getDate() - 7);
-            interval = "day";
             timeSlots = 7;
             break;
         case "30d":
         default:
             startDate = new Date(now);
             startDate.setDate(now.getDate() - 30);
-            interval = "day";
             timeSlots = 30;
             break;
     }
@@ -404,15 +418,6 @@ export async function deleteReadingHistoryEntry(
 export async function deleteAllReadingHistory(
     userId: string,
 ): Promise<boolean> {
-    // Import supabaseAdmin directly in this file as a temporary solution
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const { createClient } = require("@supabase/supabase-js");
-
-    const supabaseAdmin =
-        process.env.SUPABASE_SERVICE_ROLE_KEY && supabaseUrl
-            ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
-            : null;
-
     if (!supabaseAdmin) {
         console.warn("Supabase admin not initialized");
         return false;

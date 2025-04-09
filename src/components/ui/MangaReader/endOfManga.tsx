@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Bookmark, Home, List, ArrowLeft } from "lucide-react";
+import { Bookmark, Home, List } from "lucide-react";
 import Link from "next/link";
 import { CSSProperties, MouseEvent } from "react";
 
@@ -29,7 +29,7 @@ export default function EndOfManga({
 
     return (
         <Card
-            className={`flex flex-col w-full h-[90svh] max-w-[600px] mx-auto my-8 ${className}`.trim()}
+            className={`flex flex-col w-full h-[70svh] md:h-[90svh] mx-auto my-8 ${className}`.trim()}
             style={style}
         >
             <CardHeader>

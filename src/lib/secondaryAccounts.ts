@@ -6,7 +6,7 @@ export interface SecondaryAccount {
     id: string;
     name: string;
     displayName: string;
-    user: any | null;
+    user: { name: string } | null;
     authUrl?: string;
     buttonColor: string;
     hoverColor: string;

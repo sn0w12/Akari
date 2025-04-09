@@ -7,7 +7,7 @@ interface PageProps {
     }>;
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
     const description = `View all popular manga`;
 
     return {

@@ -35,6 +35,7 @@ import { getSettings, useSetting } from "@/lib/settings";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
 import { useRouter } from "next/navigation";
 import { useShortcut } from "@/hooks/useShortcut";
+import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -118,10 +119,10 @@ export function BaseLayout({
     }, [setNotification]);
 
     return (
-        <div className="flex flex-col w-full overflow-hidden">
+        <div className="flex flex-col w-full md:overflow-hidden">
             <HeaderComponent />
-            <div className="bg-sidebar flex flex-1 overflow-hidden">
-                <Sidebar collapsible="icon">
+            <div className="bg-sidebar flex flex-1 mt-12 md:mt-0 md:overflow-y-auto">
+                <Sidebar collapsible="icon" className="z-50">
                     <SidebarContent data-scrollbar-custom="true">
                         <SidebarMenu className="p-2 pt-3">
                             <Separator className="hidden md:block" />
@@ -140,6 +141,14 @@ export function BaseLayout({
                                     >
                                         <Bookmark />
                                         <span>Bookmarks</span>
+                                        <KeyboardShortcut
+                                            keys={
+                                                shortcuts.navigateBookmarks?.split(
+                                                    "+",
+                                                ) || [""]
+                                            }
+                                            className={`gap-1 ${isSidebarCollapsed ? "opacity-0" : "transition-opacity transition-duration-200 opacity-100"}`}
+                                        />
                                     </SidebarMenuLink>
                                 </SidebarMenuItem>
                             </BookmarksContextMenu>
@@ -189,6 +198,14 @@ export function BaseLayout({
                                 >
                                     <SettingsIcon />
                                     <span>Settings</span>
+                                    <KeyboardShortcut
+                                        keys={
+                                            shortcuts.openSettings?.split(
+                                                "+",
+                                            ) || [""]
+                                        }
+                                        className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                    />
                                 </SidebarMenuLink>
                             ) : (
                                 <SidebarMenuButton
@@ -196,6 +213,14 @@ export function BaseLayout({
                                 >
                                     <SettingsIcon />
                                     <span>Settings</span>
+                                    <KeyboardShortcut
+                                        keys={
+                                            shortcuts.openSettings?.split(
+                                                "+",
+                                            ) || [""]
+                                        }
+                                        className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                    />
                                 </SidebarMenuButton>
                             )}
                         </SidebarMenuItem>
@@ -203,12 +228,20 @@ export function BaseLayout({
                             <SidebarMenuLink tooltip="Account" href="/account">
                                 <User />
                                 <span>Account</span>
+                                <KeyboardShortcut
+                                    keys={
+                                        shortcuts.openAccount?.split("+") || [
+                                            "",
+                                        ]
+                                    }
+                                    className={`gap-1 transition-opacity transition-duration-200 ${isSidebarCollapsed ? "opacity-0" : "opacity-100"}`}
+                                />
                             </SidebarMenuLink>
                         </SidebarMenuItem>
                     </SidebarFooter>
                 </Sidebar>
                 <main
-                    className="bg-background flex-1 flex flex-col overflow-auto overflow-x-hidden border-t md:rounded-tl-xl md:border-l"
+                    className="bg-background flex-1 flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto"
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                 >
                     {children}

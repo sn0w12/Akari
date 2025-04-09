@@ -3,11 +3,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
-import LatestChapterInfo from "./LatestChapterInfo";
+import LatestChapterInfo from "../LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
 import { imageUrl } from "@/lib/utils";
+import { ConfirmDialogs } from "./ConfirmDialogs";
 
-const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
+const MobileBookmarkCard: React.FC<{
+    bookmark: Bookmark;
+    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+}> = ({ bookmark, setUpdatedBookmarks }) => {
     const {
         mangaIdentifier,
         continueReading,
@@ -17,7 +21,7 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
 
     return (
         <Card className="flex flex-row items-start shadow-lg bg-card border border-border rounded-lg md:hidden">
-            <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
+            <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
                 <div className="mb-2">
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full shrink-0">
@@ -45,6 +49,11 @@ const MobileBookmarkCard: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
                                 {bookmark.storyname}
                             </h3>
                         </Link>
+                        <ConfirmDialogs
+                            bookmark={bookmark}
+                            setUpdatedBookmarks={setUpdatedBookmarks}
+                            className="gap-1"
+                        />
                     </div>
                     {/* Continue Reading Button */}
                     <a

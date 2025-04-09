@@ -1,9 +1,9 @@
 "use client";
 
-import HoverLink from "../hoverLink";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getSetting } from "@/lib/settings";
 import { Skeleton } from "../skeleton";
 
@@ -48,8 +48,8 @@ export const ChaptersPopup: React.FC<{
           } as React.CSSProperties)
         : {};
 
-    // Update popup position relative to the button
-    const updatePosition = () => {
+    // Update popup position relative to the button - wrapped with useCallback
+    const updatePosition = useCallback(() => {
         if (!buttonRef?.current || !popupRef.current || !position) return;
 
         // Get current button position
@@ -58,7 +58,21 @@ export const ChaptersPopup: React.FC<{
         // Update popup position to match the button's current position
         popupRef.current.style.top = `${buttonRect.bottom}px`;
         popupRef.current.style.left = `${buttonRect.right}px`;
-    };
+    }, [buttonRef, popupRef, position]);
+
+    const handleClose = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (ENABLE_ANIMATIONS) {
+                setIsVisible(false);
+                // Allow time for fade out animation before closing
+                setTimeout(() => onClose(), 200);
+            } else {
+                onClose();
+            }
+        },
+        [ENABLE_ANIMATIONS, onClose],
+    );
 
     useEffect(() => {
         // Fade in animation for popup
@@ -79,7 +93,8 @@ export const ChaptersPopup: React.FC<{
         const handleOutsideClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (!target.closest(".chapters-popup-content")) {
-                handleClose(e);
+                // Convert the native MouseEvent to a format compatible with our handler
+                handleClose(e as unknown as React.MouseEvent);
             }
         };
 
@@ -100,18 +115,7 @@ export const ChaptersPopup: React.FC<{
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, []);
-
-    const handleClose = (e: any) => {
-        e.stopPropagation();
-        if (ENABLE_ANIMATIONS) {
-            setIsVisible(false);
-            // Allow time for fade out animation before closing
-            setTimeout(() => onClose(), 200);
-        } else {
-            onClose();
-        }
-    };
+    }, [updatePosition, handleClose]);
 
     return (
         <div
@@ -153,10 +157,11 @@ export const ChaptersPopup: React.FC<{
                     <ul className="space-y-1">
                         {chapters.map((chapter, index) => (
                             <li key={chapter.id}>
-                                <HoverLink
+                                <Link
                                     href={`/manga/${mangaIdentifier}/${chapter.id}`}
                                     className={`block p-2 mr-1 ${index === 0 ? "bg-green-600 hover:bg-green-700" : "hover:bg-accent"} ${chapter.id === `chapter-${lastReadChapter}` ? "bg-indigo-600 hover:bg-indigo-700" : ""} rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
+                                    data-no-prefetch
                                 >
                                     <div className="flex justify-between items-center">
                                         <span>{chapter.name}</span>
@@ -166,7 +171,7 @@ export const ChaptersPopup: React.FC<{
                                             {chapter.createdAt}
                                         </span>
                                     </div>
-                                </HoverLink>
+                                </Link>
                             </li>
                         ))}
                     </ul>

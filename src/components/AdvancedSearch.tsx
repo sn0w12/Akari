@@ -72,7 +72,7 @@ export default function AdvancedSearch() {
         if (currentPage > 1) params.set("p", currentPage.toString());
 
         router.push(`/search?${params.toString()}`);
-    }, [searchQuery, genres, currentPage]);
+    }, [searchQuery, genres, currentPage, router]);
 
     const toggleCategory = (category: string, event: React.MouseEvent) => {
         if (event.shiftKey) {
@@ -123,41 +123,65 @@ export default function AdvancedSearch() {
         }
     };
 
-    const executeSearch = async () => {
-        setIsLoading(true);
-        const included = genres
-            .filter((g) => g.status === "included")
-            .map((g) => g.id);
-        const excluded = genres
-            .filter((g) => g.status === "excluded")
-            .map((g) => g.id);
+    const debouncedSearch = useCallback(() => {
+        const performSearch = async () => {
+            setIsLoading(true);
+            const included = genres
+                .filter((g) => g.status === "included")
+                .map((g) => g.id);
+            const excluded = genres
+                .filter((g) => g.status === "excluded")
+                .map((g) => g.id);
 
-        const results = await advancedSearch(
-            searchQuery,
-            included,
-            excluded,
-            currentPage,
-        );
-        setSearchResults(results.mangaList);
-        setTotalPages(Number(results.metaData.totalPages));
-        setIsLoading(false);
-    };
-
-    const debouncedSearch = useCallback(debounce(executeSearch, 500), [
-        searchQuery,
-        genres,
-    ]);
-
-    useEffect(() => {
-        debouncedSearch();
-        return () => {
-            debouncedSearch.cancel();
+            const results = await advancedSearch(
+                searchQuery,
+                included,
+                excluded,
+                currentPage,
+            );
+            setSearchResults(results.mangaList);
+            setTotalPages(Number(results.metaData.totalPages));
+            setIsLoading(false);
         };
-    }, [searchQuery, genres]);
+
+        performSearch();
+    }, [searchQuery, genres, currentPage]);
 
     useEffect(() => {
-        executeSearch();
-    }, [currentPage]);
+        const handler = debounce(() => {
+            debouncedSearch();
+        }, 500);
+
+        handler();
+
+        return () => {
+            handler.cancel();
+        };
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        const performSearch = async () => {
+            setIsLoading(true);
+            const included = genres
+                .filter((g) => g.status === "included")
+                .map((g) => g.id);
+            const excluded = genres
+                .filter((g) => g.status === "excluded")
+                .map((g) => g.id);
+
+            const results = await advancedSearch(
+                searchQuery,
+                included,
+                excluded,
+                currentPage,
+            );
+            setSearchResults(results.mangaList);
+            setTotalPages(Number(results.metaData.totalPages));
+            setIsLoading(false);
+        };
+
+        performSearch();
+    }, [currentPage, genres, searchQuery]);
 
     return (
         <div className="container mx-auto px-4 pt-4">

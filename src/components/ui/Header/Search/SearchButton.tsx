@@ -29,8 +29,8 @@ export default function SearchButton() {
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const debouncedFetchResults = useCallback(
-        debounce(async (query) => {
+    const debouncedFetchResults = useCallback(() => {
+        const fetchResults = debounce(async (query: string) => {
             if (query) {
                 setIsSearchLoading(true);
                 try {
@@ -44,14 +44,15 @@ export default function SearchButton() {
             } else {
                 setSearchResults([]);
             }
-        }, 300), // 300ms debounce delay
-        [],
-    );
+        }, 300); // 300ms debounce delay
+
+        return fetchResults;
+    }, [setSearchResults, setIsSearchLoading]);
 
     const handleSearchInputChange = (e: { target: { value: string } }) => {
         const query = e.target.value;
         setSearchText(query);
-        debouncedFetchResults(query);
+        debouncedFetchResults()(query);
     };
 
     return (
@@ -60,7 +61,7 @@ export default function SearchButton() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden border"
+                    className="md:hidden border touch-manipulation"
                 >
                     <Search className="h-5 w-5" />
                 </Button>
@@ -76,7 +77,7 @@ export default function SearchButton() {
                             placeholder="Search manga..."
                             value={searchText}
                             onChange={handleSearchInputChange}
-                            className="w-full block md:hidden mt-4"
+                            className="w-full block md:hidden mt-4 touch-manipulation"
                         />
                     </div>
                     {isSearchLoading ? (

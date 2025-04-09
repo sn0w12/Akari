@@ -18,7 +18,6 @@ interface PageReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
-    isSidebarCollapsed: boolean;
 }
 
 export default function PageReader({
@@ -26,7 +25,6 @@ export default function PageReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
-    isSidebarCollapsed,
 }: PageReaderProps) {
     const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(() => {
@@ -50,7 +48,6 @@ export default function PageReader({
     const [processedImages, setProcessedImages] = useState<string[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
-    const [checkedForStripManga, setCheckedForStripManga] = useState(false);
     const stripCheckCountRef = useRef(0);
     const stripDetectionThreshold = 3; // Number of consecutive 1500px images to consider it a strip manga
     const hasToggledReaderModeRef = useRef(false);
@@ -132,7 +129,7 @@ export default function PageReader({
             updatePageUrl(newPage);
             resetInactivityTimer();
         },
-        [updatePageUrl],
+        [updatePageUrl, resetInactivityTimer],
     );
 
     const nextPage = useCallback(() => {
@@ -241,12 +238,8 @@ export default function PageReader({
                 ) {
                     hasToggledReaderModeRef.current = true;
                 }
-
-                // Mark as checked regardless of result
-                setCheckedForStripManga(true);
             } catch (error) {
                 console.error("Error checking manga cache:", error);
-                setCheckedForStripManga(true); // Mark as checked even on error
             }
         }
 
@@ -352,46 +345,82 @@ export default function PageReader({
                     continue;
                 }
 
-                // Load the current image
-                const img = await loadImage(chapter.images[i]);
+                try {
+                    // Load the current image
+                    const img = await loadImage(chapter.images[i]);
 
-                // Check if this page should be combined with the next
-                if (img.height === 1500 && i < chapter.images.length - 1) {
-                    // Load the next image to combine
-                    const nextImg = await loadImage(chapter.images[i + 1]);
+                    // Check if this page should be combined with the next
+                    if (img.height === 1500 && i < chapter.images.length - 1) {
+                        try {
+                            // Load the next image to combine
+                            const nextImg = await loadImage(
+                                chapter.images[i + 1],
+                            );
 
-                    // Combine the images on canvas
-                    canvas.width = img.width;
-                    canvas.height = img.height + nextImg.height;
-                    ctx.drawImage(img, 0, 0);
-                    ctx.drawImage(nextImg, 0, img.height);
+                            // Combine the images on canvas
+                            canvas.width = img.width;
+                            canvas.height = img.height + nextImg.height;
+                            ctx.drawImage(img, 0, 0);
+                            ctx.drawImage(nextImg, 0, img.height);
 
-                    // Store the combined image
-                    processed[i] = canvas.toDataURL("image/jpeg");
-                    skipped.push(i + 1); // Mark the next page as skipped
+                            // Store the combined image
+                            processed[i] = canvas.toDataURL("image/jpeg");
+                            skipped.push(i + 1); // Mark the next page as skipped
 
-                    // Update state with each combined image
-                    setProcessedImages((prev) => {
-                        const updated = [...prev];
-                        updated[i] = processed[i];
-                        return updated;
-                    });
+                            // Update state with each combined image
+                            setProcessedImages((prev) => {
+                                const updated = [...prev];
+                                updated[i] = processed[i];
+                                return updated;
+                            });
 
-                    // Update skip pages and effective page count together
-                    setSkipPages((prev) => {
-                        const newSkipPages = [...prev, i + 1];
-                        // Update effective page count whenever skip pages changes
-                        setEffectivePageCount(
-                            chapter.images.length - newSkipPages.length,
-                        );
-                        return newSkipPages;
-                    });
-                } else {
-                    // Store the single image
-                    processed[i] =
-                        `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+                            // Update skip pages and effective page count together
+                            setSkipPages((prev) => {
+                                const newSkipPages = [...prev, i + 1];
+                                // Update effective page count whenever skip pages changes
+                                setEffectivePageCount(
+                                    chapter.images.length - newSkipPages.length,
+                                );
+                                return newSkipPages;
+                            });
+                        } catch (nextImgError) {
+                            // If next image fails, just use the current one
+                            console.error(
+                                `Error loading next image at index ${i + 1}:`,
+                                nextImgError,
+                            );
+                            processed[i] =
+                                `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
 
-                    // Update state with each processed image
+                            setProcessedImages((prev) => {
+                                const updated = [...prev];
+                                updated[i] = processed[i];
+                                return updated;
+                            });
+                        }
+                    } else {
+                        // Store the single image
+                        processed[i] =
+                            `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
+
+                        // Update state with each processed image
+                        setProcessedImages((prev) => {
+                            const updated = [...prev];
+                            updated[i] = processed[i];
+                            return updated;
+                        });
+                    }
+                } catch (imgError) {
+                    console.error(
+                        `Error loading image at index ${i}:`,
+                        imgError,
+                    );
+
+                    const errorImage =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' text-anchor='middle' fill='%23888'%3EImage failed to load%3C/text%3E%3C/svg%3E";
+                    processed[i] = errorImage;
+
+                    // Update state with error placeholder
                     setProcessedImages((prev) => {
                         const updated = [...prev];
                         updated[i] = processed[i];
@@ -411,13 +440,13 @@ export default function PageReader({
             // Final update of effective page count after all processing is done
             setEffectivePageCount(chapter.images.length - skipped.length);
         } catch (error) {
-            console.error("Error processing images:", error);
+            console.error("Error in image processing:", error);
         } finally {
             setTimeout(() => {
                 setIsProcessingImages(false);
             }, 500);
         }
-    }, [chapter?.images, handleImageHeight]);
+    }, [chapter?.images, handleImageHeight, currentPage, initialPagesReady]);
 
     useEffect(() => {
         processImages();

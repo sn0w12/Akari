@@ -1,11 +1,11 @@
 import { generateCacheHeaders } from "@/lib/cache";
-import { processMangaList } from "@/lib/mangaNato";
 import {
     time,
     timeEnd,
     performanceMetrics,
     clearPerformanceMetrics,
 } from "@/lib/utils";
+import { getLatestManga } from "@/lib/scraping";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +17,12 @@ export async function GET(req: Request): Promise<Response> {
         const page: string = searchParams.get("page") || "1";
 
         time("Process Manga List");
-        // Construct the URL with the page number
-        const url = `https://${process.env.NEXT_MANGA_URL}/genre/all?page=${page}&type=newest`;
-        const result = await processMangaList(url, page);
+        const result = await getLatestManga(page);
+        timeEnd("Process Manga List");
+        if ("error" in result) {
+            throw new Error(result.error);
+        }
+        timeEnd("Total API Request");
 
         return new Response(
             JSON.stringify({

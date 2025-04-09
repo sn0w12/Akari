@@ -11,5 +11,6 @@ export const useSettingsDialog = create<SettingsDialogStore>((set) => ({
     isSettingsOpen: false,
     openSettings: () => set({ isSettingsOpen: true }),
     closeSettings: () => set({ isSettingsOpen: false }),
-    toggleSettings: () => set((state) => ({ isSettingsOpen: !state.isSettingsOpen })),
+    toggleSettings: () =>
+        set((state) => ({ isSettingsOpen: !state.isSettingsOpen })),
 }));

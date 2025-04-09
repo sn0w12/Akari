@@ -216,7 +216,8 @@ export default function SettingsClient() {
                                 )
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
-                                    No settings found matching "{searchQuery}"
+                                    No settings found matching &quot
+                                    {searchQuery}&quot
                                 </div>
                             )}
                         </CardContent>
@@ -255,7 +256,7 @@ export default function SettingsClient() {
                                             {Object.entries(categorySettings)
                                                 .slice(1)
                                                 .map(
-                                                    ([key, setting], index) =>
+                                                    ([key, setting]) =>
                                                         shouldShowSetting(
                                                             setting,
                                                         ) && (

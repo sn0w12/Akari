@@ -1,4 +1,8 @@
+"use client";
+
 import { useKeyPressed } from "@/hooks/useKeysPressed";
+import { cn } from "@/lib/utils";
+import { useSetting } from "@/lib/settings";
 
 interface KeyboardShortcutProps {
     keys: string[];
@@ -10,10 +14,16 @@ export function KeyboardShortcut({
     className = "",
 }: KeyboardShortcutProps) {
     const pressedKeys = useKeyPressed();
+    const shouldShowShortcuts = useSetting("showShortcuts");
+
+    if (!shouldShowShortcuts) return null;
 
     return (
         <span
-            className={`pointer-events-none flex gap-2 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm ${className}`}
+            className={cn(
+                `pointer-events-none flex gap-2 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm`,
+                className,
+            )}
         >
             {keys.map((key, index) => (
                 <kbd

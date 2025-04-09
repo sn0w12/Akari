@@ -10,15 +10,12 @@ import db from "@/lib/db";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { DetailsChapter } from "@/app/api/interfaces";
-import { useRouter } from "next/navigation";
-import HoverLink from "../hoverLink";
 
 interface ChaptersSectionProps {
     manga: MangaDetails;
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
-    const router = useRouter();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
     const [sortedChapters, setSortedChapters] = useState<DetailsChapter[]>([]);
@@ -34,13 +31,13 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         } else if (manga.mangaId) {
             db.updateCache(db.mangaCache, id, { id: manga.mangaId });
         }
-    }, [id]);
+    }, [id, manga.mangaId]);
 
     useEffect(() => {
         loadManga();
-    }, [manga]);
+    }, [manga, loadManga]);
 
-    const getSortedChapters = () => {
+    const getSortedChapters = useCallback(() => {
         const uniqueChapters = manga?.chapterList.filter(
             (chapter, index, self) => {
                 const ids = self.map((ch) => ch.id);
@@ -60,12 +57,12 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             const numB = extractNumber(b.id);
             return sortOrder === "asc" ? numA - numB : numB - numA;
         });
-    };
+    }, [manga?.chapterList, sortOrder]);
 
     useEffect(() => {
         const sortedChapters = getSortedChapters();
         setSortedChapters(sortedChapters);
-    }, [sortOrder]);
+    }, [getSortedChapters]);
 
     const navigateToLastRead = () => {
         if (!lastRead || !manga) {
@@ -91,11 +88,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                 block: "center",
             });
         }, 100);
-    };
-
-    const formatChapterDate = (date: string) => {
-        const dateArray = date.split(",");
-        return `${dateArray[0]}, ${dateArray[1].split(" ").shift()}`;
     };
 
     const totalPages = Math.ceil(sortedChapters.length / chaptersPerPage);
@@ -129,10 +121,11 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             {/* Chapters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
                 {currentChapters?.map((chapter) => (
-                    <HoverLink
+                    <Link
                         href={`/manga/${manga.identifier}/${chapter.id}`}
                         key={chapter.id}
                         id={chapter.id}
+                        prefetch={false}
                     >
                         <Card
                             className={`h-full transition-colors ${
@@ -171,7 +164,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                 </p>
                             </CardContent>
                         </Card>
-                    </HoverLink>
+                    </Link>
                 ))}
             </div>
 

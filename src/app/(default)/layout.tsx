@@ -8,6 +8,8 @@ import { ToastProvider } from "@/lib/toast/ToastContext";
 import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ProximityPrefetch } from "@/lib/proximity-prefetch";
+import type { Viewport } from "next";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -21,6 +23,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = { title: "灯 - Akari" };
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+};
 
 export default async function RootLayout({
     children,
@@ -38,30 +45,29 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-hidden fixed inset-0`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto`}
             >
-                <SidebarProvider
-                    defaultOpen={false}
-                    className="overflow-hidden"
-                >
-                    <BaseLayout>
-                        <ThemeProvider
-                            attribute="class"
-                            defaultTheme="system"
-                            enableSystem
-                            disableTransitionOnChange
-                        >
-                            <ToastProvider>
-                                <AnalyticsWrapper />
-                                <div className="flex-grow pt-2 md:p-4 md:pb-0">
-                                    {children}
-                                </div>
-                                <CookieConsent />
-                                <Footer />
-                            </ToastProvider>
-                        </ThemeProvider>
-                    </BaseLayout>
-                </SidebarProvider>
+                <ProximityPrefetch>
+                    <SidebarProvider defaultOpen={false}>
+                        <BaseLayout gutter={true}>
+                            <ThemeProvider
+                                attribute="class"
+                                defaultTheme="system"
+                                enableSystem
+                                disableTransitionOnChange
+                            >
+                                <ToastProvider>
+                                    <AnalyticsWrapper />
+                                    <div className="flex-grow pt-2 md:p-4 md:pb-0">
+                                        {children}
+                                    </div>
+                                    <CookieConsent />
+                                    <Footer />
+                                </ToastProvider>
+                            </ThemeProvider>
+                        </BaseLayout>
+                    </SidebarProvider>
+                </ProximityPrefetch>
             </body>
         </html>
     );

@@ -7,19 +7,23 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
 
-function throttle(this: any, func: Function, limit: number) {
-    let lastFunc: number;
-    let lastRan: number;
-    return function (this: any, ...args: any[]) {
+function throttle<T extends (...args: unknown[]) => unknown>(
+    func: T,
+    limit: number,
+): (...args: Parameters<T>) => void {
+    let lastFunc: number | undefined;
+    let lastRan: number | undefined;
+
+    return function (...args: Parameters<T>): void {
         if (!lastRan) {
-            func.apply(this, args);
+            func(...args);
             lastRan = Date.now();
         } else {
             clearTimeout(lastFunc);
             lastFunc = window.setTimeout(
                 () => {
-                    if (Date.now() - lastRan >= limit) {
-                        func.apply(this, args);
+                    if (Date.now() - lastRan! >= limit) {
+                        func(...args);
                         lastRan = Date.now();
                     }
                 },
@@ -37,7 +41,6 @@ interface StripReaderProps {
         index: number,
     ) => void;
     toggleReaderMode: () => void;
-    isSidebarCollapsed: boolean;
 }
 
 export default function StripReader({
@@ -45,7 +48,6 @@ export default function StripReader({
     isFooterVisible,
     handleImageLoad,
     toggleReaderMode,
-    isSidebarCollapsed,
 }: StripReaderProps) {
     const [scrollPercentage, setScrollPercentage] = useState(0);
     const [distanceFromBottom, setDistanceFromBottom] = useState(1000);
@@ -111,7 +113,7 @@ export default function StripReader({
             router.prefetch(`/manga/${chapter.nextChapter}`);
             hasPrefetchedRef.current = true;
         }
-    }, [scrollPercentage, chapter]);
+    }, [scrollPercentage, chapter, router]);
 
     return (
         <div>

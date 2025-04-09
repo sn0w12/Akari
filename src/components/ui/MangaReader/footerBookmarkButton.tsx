@@ -5,7 +5,7 @@ import { checkIfBookmarked } from "@/lib/bookmarks";
 import { Button } from "../button";
 import Toast from "@/lib/toastWrapper";
 import db from "@/lib/db";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "@/components/ui/spinners/puffLoader";
 
 export function FooterBookmarkButton({
@@ -34,7 +34,7 @@ export function FooterBookmarkButton({
         };
 
         checkBookmark();
-    }, [chapterData.parentId]);
+    }, [chapterData.parentId, chapterData]);
 
     async function bookmarkManga() {
         setIsLoading(true);

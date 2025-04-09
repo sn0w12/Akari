@@ -22,7 +22,7 @@ export function UpdateManga({ manga, lastUpdate }: UpdateMangaProps) {
         }
 
         update();
-    }, [manga]);
+    }, [manga, lastUpdate]);
 
     return null;
 }

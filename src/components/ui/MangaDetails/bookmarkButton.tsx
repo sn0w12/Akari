@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { MangaDetails } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
-import db from "@/lib/db";
 import { getSetting } from "@/lib/settings";
 import { useSettingsVersion } from "@/lib/settings";
 

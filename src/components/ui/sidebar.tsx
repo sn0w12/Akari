@@ -9,8 +9,6 @@ import {
     Menu,
     PanelLeftClose,
     PanelLeftOpen,
-    Pin,
-    PinOff,
 } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -42,7 +40,7 @@ import {
 import { useShortcut } from "@/hooks/useShortcut";
 import { useSetting } from "@/lib/settings";
 import { ScrollArea } from "./scroll-area";
-import HoverLink from "./hoverLink";
+import Link from "next/link";
 import { ContextMenuLabel } from "@radix-ui/react-context-menu";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -260,7 +258,7 @@ function Sidebar({
 
     return (
         <div
-            className="group peer text-sidebar-foreground hidden md:block"
+            className="group peer text-sidebar-foreground hidden md:block z-50 bg-sidebar"
             data-state={state}
             data-collapsible={state === "collapsed" ? collapsible : ""}
             data-variant={variant}
@@ -656,8 +654,8 @@ function SidebarMenuLink({
     href: string;
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-    const Comp = asChild ? Slot : HoverLink;
-    const { isMobile, state } = useSidebar();
+    const Comp = asChild ? Slot : Link;
+    const { isMobile, state, setOpenMobile } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -682,6 +680,11 @@ function SidebarMenuLink({
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
             )}
+            onClick={() => {
+                if (isMobile) {
+                    setOpenMobile(false);
+                }
+            }}
             {...props}
         >
             {wrappedChildren}
@@ -938,11 +941,9 @@ function SidebarSection({
     isSidebarCollapsed,
     basePath,
     isItemActive,
-    contextMenuItems,
-    onPinItem,
     maxHeight = 320,
 }: SidebarSectionProps) {
-    const { isPinned, togglePin } = usePinnedItems(title);
+    const { isPinned } = usePinnedItems(title);
     const isMobile = useIsMobile();
     const { setOpen } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState(isActive);
@@ -957,21 +958,13 @@ function SidebarSection({
     const itemsContainerRef = React.useRef<HTMLDivElement>(null);
     const itemRefs = React.useRef<(HTMLElement | null)[]>([]);
 
-    React.useEffect(() => {
-        if (isActive && !isExpanded) {
-            setIsExpanded(true);
-        } else if (!isActive && isExpanded) {
-            setIsExpanded(false);
-        }
-    }, [isActive]);
-
     React.useLayoutEffect(() => {
         if (contentRef.current) {
             setContentHeight(
                 Math.min(contentRef.current.scrollHeight, maxHeight),
             );
         }
-    }, [items, isExpanded]);
+    }, [items, isExpanded, maxHeight]);
 
     const getItemRef = (index: number) => (el: HTMLElement | null) => {
         itemRefs.current[index] = el;
@@ -1067,9 +1060,7 @@ function SidebarSection({
                         isActive={isActive}
                         tooltip={title}
                         labelClassName={
-                            isSidebarCollapsed || !isMobile
-                                ? ""
-                                : "w-full justify-between"
+                            isSidebarCollapsed ? "" : "w-full justify-between"
                         }
                     >
                         <div className="flex max-w-[85%] items-center gap-2">
@@ -1105,14 +1096,14 @@ function SidebarSection({
                             <>
                                 {sortedItems.map((item) => (
                                     <ContextMenuItem key={item.id}>
-                                        <HoverLink
+                                        <Link
                                             key={"link" + item.id}
                                             href={`${basePath}/${item.id}`}
                                             className="flex items-center w-full"
                                             onClick={handleLinkClick}
                                         >
                                             {item.name}
-                                        </HoverLink>
+                                        </Link>
                                     </ContextMenuItem>
                                 ))}
                             </>

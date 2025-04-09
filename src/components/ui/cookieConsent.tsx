@@ -94,8 +94,7 @@ function CookieConsentBody({
 }
 
 export function CookieConsent() {
-    const { consent, setConsent, hasInteracted, setInteracted } =
-        useCookieConsent();
+    const { setConsent, hasInteracted, setInteracted } = useCookieConsent();
 
     useEffect(() => {
         const isLocalEnv =
@@ -108,7 +107,7 @@ export function CookieConsent() {
             setConsent("analytics", false);
             setInteracted();
         }
-    }, []);
+    }, [setConsent, setInteracted, hasInteracted]);
 
     const handleAcceptAll = () => {
         setConsent("necessary", true);

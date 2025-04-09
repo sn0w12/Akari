@@ -40,7 +40,7 @@ export async function GET(req: Request) {
         });
 
         return response;
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { message: "Invalid request" },
             { status: 400 },

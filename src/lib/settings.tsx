@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 let settingsVersion = 0;
 export const useSettingsVersion = () =>
-    React.useMemo(() => settingsVersion, [settingsVersion]);
+    React.useMemo(() => settingsVersion, []);
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
     key: keyof SettingsInterface;
@@ -153,6 +153,12 @@ export const dataSettings = {
 
 export const shortcutsSettings = {
     label: "Shortcuts",
+    showShortcuts: {
+        type: "checkbox",
+        label: "Show Shortcuts",
+        value: true,
+        default: true,
+    },
     searchManga: {
         type: "shortcut",
         label: "Search Manga",
@@ -196,16 +202,16 @@ type ExcludeLabel<T> = Omit<T, "label">;
 type MergeSettings<T extends readonly unknown[]> = ExcludeLabel<
     UnionToIntersection<T[number]>
 >;
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-    k: infer I,
-) => void
+type UnionToIntersection<U> = (
+    U extends unknown ? (k: U) => void : never
+) extends (k: infer I) => void
     ? I
     : never;
 
 const settings: MergeSettings<typeof allSettings> = Object.assign(
     {},
     ...allSettings.map((settingGroup) => {
-        const { label, ...rest } = settingGroup;
+        const { ...rest } = settingGroup;
         return rest;
     }),
 );
