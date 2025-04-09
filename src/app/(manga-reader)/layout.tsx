@@ -44,7 +44,7 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto`}
+                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background`}
             >
                 <ProximityPrefetch>
                     <SidebarProvider defaultOpen={false}>
@@ -57,7 +57,7 @@ export default async function RootLayout({
                             >
                                 <ToastProvider>
                                     <AnalyticsWrapper />
-                                    <div className="flex-grow pt-2 md:p-4 md:pb-0">
+                                    <div className="flex-grow overflow-hidden">
                                         {children}
                                     </div>
                                     <CookieConsent />
