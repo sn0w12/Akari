@@ -53,7 +53,7 @@ export function ConfirmDialogs({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-negative text-accent hover:text-negative focus:outline-none z-10"
+                        className="w-5 h-5 md:w-10 md:h-10 bg-negative text-accent hover:text-negative focus:outline-none"
                     >
                         <X className="h-5 w-5" />
                     </Button>
@@ -70,7 +70,7 @@ export function ConfirmDialogs({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-positive text-accent hover:text-positive focus:outline-none z-10"
+                        className="w-5 h-5 md:w-10 md:h-10 bg-positive text-accent hover:text-positive focus:outline-none"
                     >
                         <Check className="h-5 w-5" />
                     </Button>

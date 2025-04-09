@@ -13,6 +13,7 @@ import Image from "next/image";
 import { MangaCacheItem } from "@/app/api/interfaces";
 import Toast from "@/lib/toastWrapper";
 import { fetchMalData, syncMal } from "@/lib/malSync";
+import { imageUrl } from "@/lib/utils";
 
 const fuseOptions = {
     keys: ["name"],
@@ -190,7 +191,7 @@ export default function BookmarksHeader({
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center">
                                         <Image
-                                            src={result.image}
+                                            src={imageUrl(result.image)}
                                             alt={result.name}
                                             width={300}
                                             height={450}
