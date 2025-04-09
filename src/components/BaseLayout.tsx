@@ -122,7 +122,7 @@ export function BaseLayout({
         <div className="flex flex-col w-full md:overflow-hidden">
             <HeaderComponent />
             <div className="bg-sidebar flex flex-1 mt-12 md:mt-0 md:overflow-y-auto">
-                <Sidebar collapsible="icon">
+                <Sidebar collapsible="icon" className="z-50">
                     <SidebarContent data-scrollbar-custom="true">
                         <SidebarMenu className="p-2 pt-3">
                             <Separator className="hidden md:block" />

@@ -147,7 +147,7 @@ input:-webkit-autofill:active {
     transition:
         bottom 0.3s ease,
         opacity 0.3s ease; /* Smooth scroll effect */
-    z-index: 1000;
+    z-index: 40;
     pointer-events: none;
 }
 
