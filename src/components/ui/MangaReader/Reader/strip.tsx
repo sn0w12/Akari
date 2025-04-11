@@ -119,7 +119,7 @@ export default function StripReader({
         <div>
             <div
                 id="reader"
-                className="flex flex-col items-center bg-transparent"
+                className="flex flex-col items-center bg-transparent overflow-auto"
             >
                 {chapter.images.map((image, index) => (
                     <Image
