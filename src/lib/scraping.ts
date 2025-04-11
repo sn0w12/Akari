@@ -20,7 +20,7 @@ export async function getLatestManga(page: string) {
     cacheLife("minutes");
 
     try {
-        const url = `https://${process.env.NEXT_MANGA_URL}/genre/all?page=${page}&type=newest`;
+        const url = `https://${process.env.NEXT_MANGA_URL}/manga-list/latest-manga?page=${page}&type=newest`;
         const result = await processMangaListTest(url, page);
 
         return result;
