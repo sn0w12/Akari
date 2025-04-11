@@ -57,7 +57,10 @@ export default async function RootLayout({
                             >
                                 <ToastProvider>
                                     <AnalyticsWrapper />
-                                    <div className="flex-grow overflow-x-hidden">
+                                    <div
+                                        id="scroll-element"
+                                        className="flex-grow overflow-x-hidden"
+                                    >
                                         {children}
                                     </div>
                                     <CookieConsent />
