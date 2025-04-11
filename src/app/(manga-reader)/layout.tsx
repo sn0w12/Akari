@@ -48,7 +48,7 @@ export default async function RootLayout({
             >
                 <ProximityPrefetch>
                     <SidebarProvider defaultOpen={false}>
-                        <BaseLayout gutter={true}>
+                        <BaseLayout gutter={false}>
                             <ThemeProvider
                                 attribute="class"
                                 defaultTheme="system"
@@ -57,7 +57,10 @@ export default async function RootLayout({
                             >
                                 <ToastProvider>
                                     <AnalyticsWrapper />
-                                    <div className="flex-grow overflow-hidden">
+                                    <div
+                                        id="scroll-element"
+                                        className="flex-grow overflow-x-hidden"
+                                    >
                                         {children}
                                     </div>
                                     <CookieConsent />
