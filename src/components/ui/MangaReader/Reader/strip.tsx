@@ -55,6 +55,7 @@ export default function StripReader({
     const router = useRouter();
     const hasPrefetchedRef = useRef(false);
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
+    const mountTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
         const mainElement = document.getElementById(
@@ -121,8 +122,15 @@ export default function StripReader({
         if (!chapter) return;
         const halfWay = scrollPercentage > 50;
         const prefetch = scrollPercentage > 80;
+        const currentTime = Date.now();
+        const timeElapsed = currentTime - mountTimeRef.current;
+        const minSyncTime = 5000; // 5 seconds minimum before syncing
 
-        if (halfWay && !bookmarkUpdatedRef.current) {
+        if (
+            halfWay &&
+            !bookmarkUpdatedRef.current &&
+            timeElapsed >= minSyncTime
+        ) {
             syncAllServices(chapter);
             bookmarkUpdatedRef.current = true;
         }
