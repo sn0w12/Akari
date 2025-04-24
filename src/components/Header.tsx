@@ -84,6 +84,12 @@ export function HeaderComponent() {
                                                 href={`/${segments
                                                     .slice(0, index + 1)
                                                     .join("/")}`}
+                                                title={getSegmentDisplayName(
+                                                    segment,
+                                                    index,
+                                                    segments,
+                                                    9999,
+                                                )}
                                             >
                                                 {getSegmentDisplayName(
                                                     segment,
