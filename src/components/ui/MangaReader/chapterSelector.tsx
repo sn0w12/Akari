@@ -35,7 +35,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
         const currentUrl = window.location.href;
         const newUrl = currentUrl.replace(
             /\/[^\/]*$/,
-            `/chapter-${currentValue}`,
+            `/chapter-${currentValue.replaceAll(".", "-")}`,
         );
         router.push(newUrl);
         setOpen(false);
