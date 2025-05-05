@@ -410,7 +410,7 @@ export async function fetchChapterData(
                             "Sec-Fetch-Mode": "no-cors",
                             "Sec-Fetch-Site": "cross-site",
                         },
-                        timeout: 2000,
+                        timeout: 10000,
                     });
 
                     const mimeType =
