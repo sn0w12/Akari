@@ -140,7 +140,7 @@ export interface Chapter {
     parentId: string;
     nextChapter: string;
     lastChapter: string;
-    images: ChapterImage[];
+    images: ChapterImage[] | string[];
     mangaId: string | null;
     chapterId: string | null;
     token: string;

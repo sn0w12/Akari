@@ -48,7 +48,6 @@ export default function PageReader({
     const [processedImages, setProcessedImages] = useState<string[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [initialPagesReady, setInitialPagesReady] = useState(false);
-    const stripCheckCountRef = useRef(0);
     const stripDetectionThreshold = 3; // Number of consecutive 1500px images to consider it a strip manga
     const hasToggledReaderModeRef = useRef(false);
 
@@ -299,6 +298,7 @@ export default function PageReader({
                 const image = chapter.images[index];
 
                 // Skip if no data available
+                if (typeof image === "string") continue;
                 if (!image.data) continue;
 
                 // Check for strip manga detection
@@ -325,6 +325,7 @@ export default function PageReader({
                     ctx
                 ) {
                     const nextImage = chapter.images[index + 1];
+                    if (typeof nextImage === "string") continue;
                     if (nextImage.data && nextImage.height) {
                         // We can directly combine the images since we know dimensions
                         canvas.width = image.width || 700;
@@ -377,6 +378,7 @@ export default function PageReader({
                 const image = chapter.images[index];
 
                 // Skip if no data available
+                if (typeof image === "string") continue;
                 if (!image.data) continue;
 
                 // Check if this page can be combined with the next
@@ -387,6 +389,7 @@ export default function PageReader({
                     ctx
                 ) {
                     const nextImage = chapter.images[index + 1];
+                    if (typeof nextImage === "string") continue;
                     if (nextImage.data && nextImage.height) {
                         // We can directly combine the images since we know dimensions
                         canvas.width = image.width || 700;
@@ -547,13 +550,23 @@ export default function PageReader({
 
                             // Get dimensions from source image for proper sizing
                             const sourceImage = chapter.images[index];
-                            const width = sourceImage.width || 700;
-                            const height = sourceImage.height || 1080;
+                            const width =
+                                typeof sourceImage === "object" &&
+                                sourceImage.width
+                                    ? sourceImage.width
+                                    : 700;
+                            const height =
+                                typeof sourceImage === "object" &&
+                                sourceImage.height
+                                    ? sourceImage.height
+                                    : 1080;
 
                             // Use processed image (combined) or fall back to direct base64 data
                             const imageSource =
                                 processedImages[index] ||
-                                sourceImage.data ||
+                                (typeof sourceImage === "object"
+                                    ? sourceImage.data
+                                    : sourceImage) ||
                                 "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' text-anchor='middle' fill='%23888'%3EImage data unavailable%3C/text%3E%3C/svg%3E";
 
                             return (
