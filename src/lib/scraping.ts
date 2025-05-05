@@ -9,11 +9,13 @@ import {
     Chapter,
     SimpleError,
     SmallManga,
+    ChapterImage,
 } from "@/app/api/interfaces";
 import { getMangaFromSupabase } from "@/lib/supabase";
 import { formatDate } from "@/lib/mangaNato";
 import { time, timeEnd, clearPerformanceMetrics, cleanText } from "@/lib/utils";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import probe from "probe-image-size";
 
 export async function getLatestManga(page: string) {
     "use cache";
@@ -339,13 +341,13 @@ export async function fetchChapterData(
 
         // Extract all image URLs from the container-chapter-reader div
         const imageElements = $(".container-chapter-reader img");
-        const images: string[] = [];
+        const imageUrls: string[] = [];
         imageElements.each((index, element) => {
             const imageUrl = $(element).attr("src");
-            if (imageUrl) images.push(imageUrl);
+            if (imageUrl) imageUrls.push(imageUrl);
         });
 
-        const pages = images.length;
+        const pages = imageUrls.length;
 
         const nextChapterLink = $(".back").attr("href");
         const nextChapter = nextChapterLink
@@ -387,6 +389,69 @@ export async function fetchChapterData(
                 }
             }
         });
+
+        let images: ChapterImage[] = [];
+        time("Download Images");
+        images = await Promise.all(
+            imageUrls.map(async (url): Promise<ChapterImage> => {
+                try {
+                    const imageResponse = await wrappedInstance.get(url, {
+                        responseType: "arraybuffer",
+                        headers: {
+                            "User-Agent":
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+                            Accept: "image/avif,image/jxl,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
+                            "Accept-Language": "en-US,en;q=0.5",
+                            "Accept-Encoding": "gzip, deflate, br, zstd",
+                            "Sec-GPC": "1",
+                            Connection: "keep-alive",
+                            Referer: `https://${process.env.NEXT_MANGA_URL}/`,
+                            "Sec-Fetch-Dest": "image",
+                            "Sec-Fetch-Mode": "no-cors",
+                            "Sec-Fetch-Site": "cross-site",
+                        },
+                        timeout: 2000,
+                    });
+
+                    const mimeType =
+                        imageResponse.headers["content-type"] || "image/jpeg";
+                    const imageBuffer = Buffer.from(
+                        imageResponse.data,
+                        "binary",
+                    );
+                    const base64Data = `data:${mimeType};base64,${imageBuffer.toString("base64")}`;
+
+                    // Extract image dimensions using sharp or image-size
+                    let width: number | undefined;
+                    let height: number | undefined;
+
+                    try {
+                        const dimensions = probe.sync(imageBuffer);
+                        if (dimensions) {
+                            width = dimensions.width;
+                            height = dimensions.height;
+                        }
+                    } catch (dimensionError) {
+                        console.error(
+                            `Failed to extract image dimensions: ${url}`,
+                            dimensionError,
+                        );
+                    }
+
+                    return {
+                        url,
+                        data: base64Data,
+                        mimeType,
+                        width,
+                        height,
+                    };
+                } catch (error) {
+                    console.error(`Failed to download image: ${url}`, error);
+                    return { url }; // Return just the URL if download fails
+                }
+            }),
+        );
+        timeEnd("Download Images");
 
         const responseData: Chapter = {
             id: subId,

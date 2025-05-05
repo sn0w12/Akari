@@ -123,6 +123,14 @@ export interface MalData {
     should_show_popup: boolean;
 }
 
+export interface ChapterImage {
+    url: string;
+    data?: string;
+    mimeType?: string;
+    width?: number;
+    height?: number;
+}
+
 export interface Chapter {
     id: string;
     title: string;
@@ -132,7 +140,7 @@ export interface Chapter {
     parentId: string;
     nextChapter: string;
     lastChapter: string;
-    images: string[];
+    images: ChapterImage[];
     mangaId: string | null;
     chapterId: string | null;
     token: string;

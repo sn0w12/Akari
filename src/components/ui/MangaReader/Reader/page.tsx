@@ -132,6 +132,7 @@ export default function PageReader({
         [updatePageUrl, resetInactivityTimer],
     );
 
+    // Navigation methods
     const nextPage = useCallback(() => {
         if (!chapter) return;
         if (isFooterVisible) return;
@@ -237,6 +238,7 @@ export default function PageReader({
                     !hasToggledReaderModeRef.current
                 ) {
                     hasToggledReaderModeRef.current = true;
+                    toggleReaderMode();
                 }
             } catch (error) {
                 console.error("Error checking manga cache:", error);
@@ -246,90 +248,37 @@ export default function PageReader({
         checkCacheOnMount();
     }, [chapter, toggleReaderMode]);
 
-    // Simplified track image heights for strip manga detection
-    const handleImageHeight = useCallback(
-        (height: number) => {
-            // Only track if we haven't toggled yet
-            if (hasToggledReaderModeRef.current) return;
+    // Helper function to load images for canvas directly from base64 data
+    const loadImageFromBase64 = (
+        base64Data: string,
+    ): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = base64Data;
+        });
+    };
 
-            if (height === 1500) {
-                stripCheckCountRef.current++;
-
-                // Check if we've seen enough 1500px images
-                if (stripCheckCountRef.current >= stripDetectionThreshold) {
-                    // Toggle reader mode if we haven't already
-                    if (!hasToggledReaderModeRef.current) {
-                        requestAnimationFrame(() => {
-                            toggleReaderMode();
-                            hasToggledReaderModeRef.current = true;
-
-                            // Update the cache for future reference
-                            if (chapter) {
-                                db.updateCache(
-                                    db.hqMangaCache,
-                                    chapter.parentId,
-                                    {
-                                        is_strip: true,
-                                    },
-                                ).catch((error) => {
-                                    console.error(
-                                        "Error updating manga cache:",
-                                        error,
-                                    );
-                                });
-                            }
-                        });
-                    }
-                }
-            } else {
-                // Reset counter if we encounter a non-1500px image
-                stripCheckCountRef.current = 0;
-            }
-        },
-        [chapter, toggleReaderMode],
-    );
-
+    // Process images using only the base64 data
     const processImages = useCallback(async () => {
         if (!chapter?.images?.length) return;
 
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        const loadImage = (url: string): Promise<HTMLImageElement> => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.onload = () => {
-                    // Check for strip manga detection during image processing
-                    if (!hasToggledReaderModeRef.current) {
-                        handleImageHeight(img.height);
-                    }
-                    resolve(img);
-                };
-                img.onerror = reject;
-                img.src = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
-            });
-        };
-
         try {
-            const processed: string[] = Array(chapter.images.length);
+            const processed: string[] = Array(chapter.images.length).fill("");
             const skipped: number[] = [];
-            let imagesLoaded = 0;
-            const initialBatchSize = Math.min(4, chapter.images.length);
+            let stripCheckCount = 0;
+            const canvas = canvasRef.current;
+            const ctx = canvas?.getContext("2d");
 
             // Create processing order - prioritize images around current page
             const processingOrder: number[] = [];
 
-            // Start with currentPage - 1, currentPage, currentPage + 1
-            const startIndex = Math.max(0, currentPage - 1);
-            for (let i = 0; i < 3; i++) {
-                const index = startIndex + i;
-                if (index < chapter.images.length) {
-                    processingOrder.push(index);
-                }
-            }
+            // Start with currentPage, currentPage+1, currentPage-1
+            processingOrder.push(currentPage);
+            if (currentPage + 1 < chapter.images.length)
+                processingOrder.push(currentPage + 1);
+            if (currentPage - 1 >= 0) processingOrder.push(currentPage - 1);
 
             // Add remaining pages in order
             for (let i = 0; i < chapter.images.length; i++) {
@@ -338,134 +287,175 @@ export default function PageReader({
                 }
             }
 
-            // Process images in the determined order
-            for (const i of processingOrder) {
+            // Process initial batch immediately to show something quickly
+            const initialBatchSize = Math.min(3, chapter.images.length);
+            for (let i = 0; i < initialBatchSize; i++) {
+                const index = processingOrder[i];
+                if (index === undefined) continue;
+
                 // Skip already processed pages
-                if (skipped.includes(i)) {
-                    continue;
-                }
+                if (skipped.includes(index)) continue;
 
-                try {
-                    // Load the current image
-                    const img = await loadImage(chapter.images[i]);
+                const image = chapter.images[index];
 
-                    // Check if this page should be combined with the next
-                    if (img.height === 1500 && i < chapter.images.length - 1) {
-                        try {
-                            // Load the next image to combine
-                            const nextImg = await loadImage(
-                                chapter.images[i + 1],
-                            );
+                // Skip if no data available
+                if (!image.data) continue;
 
-                            // Combine the images on canvas
-                            canvas.width = img.width;
-                            canvas.height = img.height + nextImg.height;
-                            ctx.drawImage(img, 0, 0);
-                            ctx.drawImage(nextImg, 0, img.height);
+                // Check for strip manga detection
+                if (image.height === 1500 && !hasToggledReaderModeRef.current) {
+                    stripCheckCount++;
+                    if (stripCheckCount >= stripDetectionThreshold) {
+                        toggleReaderMode();
+                        hasToggledReaderModeRef.current = true;
 
-                            // Store the combined image
-                            processed[i] = canvas.toDataURL("image/jpeg");
-                            skipped.push(i + 1); // Mark the next page as skipped
-
-                            // Update state with each combined image
-                            setProcessedImages((prev) => {
-                                const updated = [...prev];
-                                updated[i] = processed[i];
-                                return updated;
-                            });
-
-                            // Update skip pages and effective page count together
-                            setSkipPages((prev) => {
-                                const newSkipPages = [...prev, i + 1];
-                                // Update effective page count whenever skip pages changes
-                                setEffectivePageCount(
-                                    chapter.images.length - newSkipPages.length,
-                                );
-                                return newSkipPages;
-                            });
-                        } catch (nextImgError) {
-                            // If next image fails, just use the current one
-                            console.error(
-                                `Error loading next image at index ${i + 1}:`,
-                                nextImgError,
-                            );
-                            processed[i] =
-                                `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
-
-                            setProcessedImages((prev) => {
-                                const updated = [...prev];
-                                updated[i] = processed[i];
-                                return updated;
-                            });
-                        }
-                    } else {
-                        // Store the single image
-                        processed[i] =
-                            `/api/image-proxy?imageUrl=${encodeURIComponent(chapter.images[i])}`;
-
-                        // Update state with each processed image
-                        setProcessedImages((prev) => {
-                            const updated = [...prev];
-                            updated[i] = processed[i];
-                            return updated;
+                        // Update the cache for future reference
+                        db.updateCache(db.hqMangaCache, chapter.parentId, {
+                            is_strip: true,
+                        }).catch((error) => {
+                            console.error("Error updating manga cache:", error);
                         });
                     }
-                } catch (imgError) {
-                    console.error(
-                        `Error loading image at index ${i}:`,
-                        imgError,
-                    );
-
-                    const errorImage =
-                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' text-anchor='middle' fill='%23888'%3EImage failed to load%3C/text%3E%3C/svg%3E";
-                    processed[i] = errorImage;
-
-                    // Update state with error placeholder
-                    setProcessedImages((prev) => {
-                        const updated = [...prev];
-                        updated[i] = processed[i];
-                        return updated;
-                    });
                 }
 
-                // Increment our counter
-                imagesLoaded++;
+                // Check if this page can be combined with the next
+                if (
+                    image.height === 1500 &&
+                    index < chapter.images.length - 1 &&
+                    canvas &&
+                    ctx
+                ) {
+                    const nextImage = chapter.images[index + 1];
+                    if (nextImage.data && nextImage.height) {
+                        // We can directly combine the images since we know dimensions
+                        canvas.width = image.width || 700;
+                        canvas.height =
+                            (image.height || 1500) + (nextImage.height || 1500);
 
-                // Make initial batch available as soon as it's ready
-                if (imagesLoaded === initialBatchSize && !initialPagesReady) {
-                    setInitialPagesReady(true);
+                        try {
+                            // Load images directly from base64 data
+                            const img1 = await loadImageFromBase64(image.data);
+                            const img2 = await loadImageFromBase64(
+                                nextImage.data,
+                            );
+
+                            ctx.drawImage(img1, 0, 0);
+                            ctx.drawImage(img2, 0, img1.height);
+
+                            processed[index] = canvas.toDataURL("image/jpeg");
+                            skipped.push(index + 1); // Mark the next page as skipped
+                        } catch (error) {
+                            console.error(
+                                `Error combining images ${index} and ${index + 1}:`,
+                                error,
+                            );
+                            // Fallback to using the single image data
+                            processed[index] = image.data;
+                        }
+                    } else {
+                        // Use the base64 data directly
+                        processed[index] = image.data;
+                    }
+                } else {
+                    // Use the base64 data directly
+                    processed[index] = image.data;
                 }
             }
 
-            // Final update of effective page count after all processing is done
+            // Set initial pages batch
+            setProcessedImages(processed);
+            setSkipPages(skipped);
+            setInitialPagesReady(true);
+
+            // Process remaining images
+            for (let i = initialBatchSize; i < processingOrder.length; i++) {
+                const index = processingOrder[i];
+                if (index === undefined) continue;
+
+                // Skip already processed pages
+                if (skipped.includes(index)) continue;
+
+                const image = chapter.images[index];
+
+                // Skip if no data available
+                if (!image.data) continue;
+
+                // Check if this page can be combined with the next
+                if (
+                    image.height === 1500 &&
+                    index < chapter.images.length - 1 &&
+                    canvas &&
+                    ctx
+                ) {
+                    const nextImage = chapter.images[index + 1];
+                    if (nextImage.data && nextImage.height) {
+                        // We can directly combine the images since we know dimensions
+                        canvas.width = image.width || 700;
+                        canvas.height =
+                            (image.height || 1500) + (nextImage.height || 1500);
+
+                        try {
+                            // Load images directly from base64 data
+                            const img1 = await loadImageFromBase64(image.data);
+                            const img2 = await loadImageFromBase64(
+                                nextImage.data,
+                            );
+
+                            ctx.drawImage(img1, 0, 0);
+                            ctx.drawImage(img2, 0, img1.height);
+
+                            processed[index] = canvas.toDataURL("image/jpeg");
+
+                            // Add to skip pages if not already there
+                            if (!skipped.includes(index + 1)) {
+                                skipped.push(index + 1);
+                                setSkipPages((prev) => [...prev, index + 1]);
+                            }
+                        } catch (error) {
+                            console.error(
+                                `Error combining images ${index} and ${index + 1}:`,
+                                error,
+                            );
+                            // Fallback to using the single image data
+                            processed[index] = image.data;
+                        }
+                    } else {
+                        // Use the base64 data directly
+                        processed[index] = image.data;
+                    }
+                } else {
+                    // Use the base64 data directly
+                    processed[index] = image.data;
+                }
+
+                // Update processed images one by one to avoid re-renders
+                setProcessedImages((prev) => {
+                    const updated = [...prev];
+                    updated[index] = processed[index];
+                    return updated;
+                });
+            }
+
+            // Final update of effective page count
             setEffectivePageCount(chapter.images.length - skipped.length);
         } catch (error) {
             console.error("Error in image processing:", error);
         } finally {
             setTimeout(() => {
                 setIsProcessingImages(false);
-            }, 500);
+            }, 300);
         }
-    }, [chapter?.images, handleImageHeight, currentPage, initialPagesReady]);
+    }, [chapter?.images, currentPage, toggleReaderMode]);
 
     useEffect(() => {
         processImages();
     }, [processImages]);
 
-    // Modified handlePageLoad to check image height
+    // Simplified handle page load since we now have dimensions already
     const handlePageLoad = (
         e: React.SyntheticEvent<HTMLImageElement>,
         index: number,
     ) => {
         handleImageLoad(e, index);
-
-        // Check image height for strip manga detection
-        if (
-            !hasToggledReaderModeRef.current &&
-            e.currentTarget instanceof HTMLImageElement
-        ) {
-            handleImageHeight(e.currentTarget.naturalHeight);
-        }
     };
 
     const getEffectivePageIndex = useCallback(
@@ -555,13 +545,24 @@ export default function PageReader({
                             const effectiveIndex = getEffectivePageIndex(index);
                             if (effectiveIndex === -1) return null;
 
+                            // Get dimensions from source image for proper sizing
+                            const sourceImage = chapter.images[index];
+                            const width = sourceImage.width || 700;
+                            const height = sourceImage.height || 1080;
+
+                            // Use processed image (combined) or fall back to direct base64 data
+                            const imageSource =
+                                processedImages[index] ||
+                                sourceImage.data ||
+                                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' text-anchor='middle' fill='%23888'%3EImage data unavailable%3C/text%3E%3C/svg%3E";
+
                             return (
                                 <NextImage
                                     key={index}
-                                    src={processedImages[index]}
+                                    src={imageSource}
                                     alt={`${chapter.title} - ${chapter.chapter} Page ${effectiveIndex + 1}`}
-                                    width={700}
-                                    height={1080}
+                                    width={width}
+                                    height={height}
                                     loading="eager"
                                     className={`object-contain max-h-full w-full h-full cursor-pointer z-20 relative ${
                                         effectiveIndex !==
@@ -595,7 +596,6 @@ export default function PageReader({
                         )}
                         totalPages={effectivePageCount}
                         setCurrentPage={(page) => {
-                            console.log(page);
                             setPageWithUrlUpdate(getActualPageIndex(page));
                         }}
                         isFooterVisible={isFooterVisible}

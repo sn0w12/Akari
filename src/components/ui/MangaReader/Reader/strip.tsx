@@ -150,7 +150,7 @@ export default function StripReader({
                 {chapter.images.map((image, index) => (
                     <Image
                         key={index}
-                        src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                        src={image.data || ""}
                         alt={`${chapter.title} - ${chapter.chapter} Page ${index + 1}`}
                         width={700}
                         height={1080}
