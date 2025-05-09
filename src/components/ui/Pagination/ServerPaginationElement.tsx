@@ -73,7 +73,10 @@ export function PaginationElement({
                 {[...Array(totalPages)].map((_, i) => {
                     if (i + 1 >= currentPage - 1 && i + 1 <= currentPage + 1) {
                         return (
-                            <PaginationItem key={i}>
+                            <PaginationItem
+                                key={i}
+                                className={`${i + 1 === currentPage ? "" : "hidden md:flex"}`}
+                            >
                                 <Link
                                     href={createPageUrl(i + 1)}
                                     passHref
