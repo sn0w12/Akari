@@ -59,7 +59,7 @@ export default function PageReader({
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [chapter, currentPage, router]);
+    }, [chapter, currentPage, router, images.length]);
 
     const updatePageUrl = useCallback((pageNum: number) => {
         const url = new URL(window.location.href);
