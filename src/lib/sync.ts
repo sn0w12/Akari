@@ -89,10 +89,7 @@ async function updateBookmark(data: Chapter) {
         mangaId: data.mangaId || "",
         mangaIdentifier: data.parentId,
         mangaTitle: data.title,
-        image:
-            typeof data.images[0] === "string"
-                ? data.images[0]
-                : data.images[0].url,
+        image: data.images[0],
         readAt: new Date(),
         id: "",
         userId: auth.id,

@@ -126,7 +126,6 @@ export interface MalData {
 export interface ChapterImage {
     url: string;
     data?: string;
-    mimeType?: string;
     width?: number;
     height?: number;
 }
@@ -140,7 +139,7 @@ export interface Chapter {
     parentId: string;
     nextChapter: string;
     lastChapter: string;
-    images: ChapterImage[] | string[];
+    images: string[];
     mangaId: string | null;
     chapterId: string | null;
     token: string;

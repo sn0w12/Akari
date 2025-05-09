@@ -6,6 +6,7 @@ import MangaFooter from "../mangaFooter";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/sync";
+import { useFooterVisibility } from "@/lib/footer-context";
 
 function throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
@@ -35,27 +36,21 @@ function throttle<T extends (...args: unknown[]) => unknown>(
 
 interface StripReaderProps {
     chapter: Chapter;
-    isFooterVisible: boolean;
-    handleImageLoad: (
-        e: React.SyntheticEvent<HTMLImageElement>,
-        index: number,
-    ) => void;
     toggleReaderMode: () => void;
 }
 
 export default function StripReader({
     chapter,
-    isFooterVisible,
-    handleImageLoad,
     toggleReaderMode,
 }: StripReaderProps) {
+    const router = useRouter();
     const [scrollPercentage, setScrollPercentage] = useState(0);
     const [distanceFromBottom, setDistanceFromBottom] = useState(1000);
     const bookmarkUpdatedRef = useRef(false);
-    const router = useRouter();
     const hasPrefetchedRef = useRef(false);
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
     const mountTimeRef = useRef<number>(Date.now());
+    const { isFooterVisible } = useFooterVisibility();
 
     useEffect(() => {
         const mainElement = document.getElementById(
@@ -150,16 +145,13 @@ export default function StripReader({
                 {chapter.images.map((image, index) => (
                     <Image
                         key={index}
-                        src={
-                            typeof image === "string" ? image : image.data || ""
-                        }
+                        src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
                         alt={`${chapter.title} - ${chapter.chapter} Page ${index + 1}`}
                         width={700}
                         height={1080}
                         className="object-contain w-128 z-20 relative"
                         loading={"eager"}
                         priority={index < 3}
-                        onLoad={(e) => handleImageLoad(e, index)}
                     />
                 ))}
             </div>
