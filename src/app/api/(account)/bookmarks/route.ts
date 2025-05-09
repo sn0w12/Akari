@@ -78,7 +78,6 @@ export async function GET(request: Request): Promise<Response> {
                 viewedChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
             const currentChapterNumber =
                 currentChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
-            console.log(currentChapterNumber, viewedChapterNumber);
 
             // Get last update time
             const rawLastUpdated = $element
