@@ -74,11 +74,11 @@ export async function GET(request: Request): Promise<Response> {
                 .text()
                 .trim();
 
-            // Extract chapter numbers
             const viewedChapterNumber =
-                viewedChapterText.match(/Chapter (\d+)/)?.[1] || "";
+                viewedChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
             const currentChapterNumber =
-                currentChapterText.match(/Chapter (\d+)/)?.[1] || "";
+                currentChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
+            console.log(currentChapterNumber, viewedChapterNumber);
 
             // Get last update time
             const rawLastUpdated = $element
