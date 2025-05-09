@@ -110,7 +110,10 @@ export function Reader({ chapter }: ReaderProps) {
 
             setCombinedImages(newCombinedImages);
             if (!hasCachedRef.current) {
-                setIsStripMode(totalCutoffImages >= chapterImages.length / 2);
+                console.log(
+                    `Total images: ${chapterImages.length}, Cutoff images: ${totalCutoffImages}`,
+                );
+                setIsStripMode(totalCutoffImages >= chapterImages.length / 1.5);
             }
             setIsLoading(false);
         }
@@ -142,11 +145,20 @@ export function Reader({ chapter }: ReaderProps) {
         }
     }, [chapter]);
 
+    async function setReaderMode(isStrip: boolean) {
+        setIsStripMode(isStrip);
+        const mangaCache =
+            (await db.getCache(db.hqMangaCache, chapter!.parentId)) ??
+            ({} as HqMangaCacheItem);
+        mangaCache.is_strip = isStrip;
+        await db.updateCache(db.hqMangaCache, chapter!.parentId, mangaCache);
+    }
+
     function toggleReaderMode(override: boolean = true) {
         if (isStripMode !== undefined) {
-            setIsStripMode(!isStripMode);
+            setReaderMode(!isStripMode);
         } else {
-            setIsStripMode(override);
+            setReaderMode(override);
         }
     }
 
