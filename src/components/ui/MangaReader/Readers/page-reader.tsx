@@ -9,6 +9,7 @@ import PageProgress from "../pageProgress";
 import { syncAllServices } from "@/lib/sync";
 import { useFooterVisibility } from "@/lib/footer-context";
 import MangaFooter from "../mangaFooter";
+import EndOfManga from "../endOfManga";
 
 interface PageReaderProps {
     chapter: Chapter;
@@ -171,6 +172,11 @@ export default function PageReader({
                             />
                         );
                     })}
+                    <EndOfManga
+                        title={chapter.title}
+                        identifier={chapter.parentId}
+                        className={`${currentPage !== images.length ? "hidden" : ""}`}
+                    />
                 </div>
                 <div className={"hidden"}>
                     {nextImages.map((img, idx) => (
