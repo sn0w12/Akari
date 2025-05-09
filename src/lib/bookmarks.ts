@@ -17,7 +17,7 @@ export function compareVersions(str1: string, str2: string): boolean {
 
     if (num1 % 1 === 0.5 || num2 % 1 === 0.5) {
         // Compare after rounding down
-        return floorNum1 === floorNum2 + 1;
+        return floorNum1 === floorNum2;
     }
 
     // Check if the first value is 0.1 larger than the second
