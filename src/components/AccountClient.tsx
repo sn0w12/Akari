@@ -399,7 +399,7 @@ export default function AccountClient() {
                                                         <Skeleton className="w-full h-full" />
                                                     </div>
                                                 ) : (
-                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
+                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0 content-center">
                                                         <Image
                                                             src={captchaUrl}
                                                             loading="eager"
