@@ -178,7 +178,15 @@ export async function GET(request: Request): Promise<Response> {
         console.error("Error fetching bookmarks:", error);
         if (axios.isAxiosError(error)) {
             if (error.response?.status === 401) {
-                return NextResponse.redirect(new URL("/account", request.url));
+                return NextResponse.redirect(new URL("/account", request.url), {
+                    headers: {
+                        "Cache-Control":
+                            "no-store, no-cache, must-revalidate, proxy-revalidate",
+                        Pragma: "no-cache",
+                        Expires: "0",
+                        "Surrogate-Control": "no-store",
+                    },
+                });
             }
 
             return NextResponse.json(
