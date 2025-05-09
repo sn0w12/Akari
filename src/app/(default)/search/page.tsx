@@ -1,4 +1,4 @@
-import AdvancedSearch from "@/components/AdvancedSearch";
+import SimpleSearch from "@/components/SimpleSearch";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 export default async function SearchPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <AdvancedSearch />
+            <SimpleSearch />
         </div>
     );
 }
