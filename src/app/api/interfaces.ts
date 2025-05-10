@@ -123,6 +123,13 @@ export interface MalData {
     should_show_popup: boolean;
 }
 
+export interface ChapterImage {
+    url: string;
+    data?: string;
+    width?: number;
+    height?: number;
+}
+
 export interface Chapter {
     id: string;
     title: string;

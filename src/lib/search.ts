@@ -84,25 +84,23 @@ export const GENRE_CATEGORIES: Record<string, readonly string[]> = {
     ],
 };
 
-export async function advancedSearch(
-    query: string,
-    includedGenres: string[] = [],
-    excludedGenres: string[] = [],
-    page: number = 1,
-) {
-    const baseUrl = `/api/search?query=${query.trim().replaceAll(" ", "_")}`;
-    const includedParams =
-        includedGenres.length > 0
-            ? `&included=${includedGenres.join(",")}`
-            : "";
-    const excludedParams =
-        excludedGenres.length > 0
-            ? `&excluded=${excludedGenres.join(",")}`
-            : "";
-    const pageParam = `&page=${page}`;
+/**
+ * Performs a simple search for manga
+ * @param query Search term
+ * @param page Page number
+ * @returns Search results with manga list and pagination data
+ */
+export async function simpleSearch(query: string, page: number = 1) {
+    const baseUrl = `/api/search/simple`;
+    const searchParams = new URLSearchParams({
+        q: query.trim(),
+    });
 
-    const url = `${baseUrl}${includedParams}${excludedParams}${pageParam}`;
+    if (page > 1) {
+        searchParams.set("page", page.toString());
+    }
 
+    const url = `${baseUrl}?${searchParams.toString()}`;
     const res = await fetch(url, generateFetchCacheOptions(180));
     const data = await res.json();
     return data;

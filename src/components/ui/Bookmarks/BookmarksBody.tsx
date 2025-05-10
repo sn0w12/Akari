@@ -68,16 +68,10 @@ export default function BookmarksBody({
     }, []);
 
     const isCacheValid = useCallback(
-        async (
-            bookmarkFirstPage: Bookmark[],
-            similarityThreshold: number = 0.6,
-        ) => {
+        (bookmarkFirstPage: Bookmark[], similarityThreshold: number = 0.6) => {
             const currentHash = generateBookmarksHash(bookmarkFirstPage);
-            const cachedHash = (await db.replaceCache(
-                db.bookmarkCache,
-                "firstPageHash",
-                currentHash,
-            )) as string;
+            const cachedHash = localStorage.getItem("firstPageHash");
+            localStorage.setItem("firstPageHash", currentHash);
             if (!cachedHash) return false;
 
             const similarity = calculateSimilarity(currentHash, cachedHash);
@@ -110,7 +104,7 @@ export default function BookmarksBody({
                 return;
             }
 
-            if (await isCacheValid(bookmarkFirstPage)) {
+            if (isCacheValid(bookmarkFirstPage)) {
                 const bookmarkCache = (await db.getAllCacheValues(
                     db.mangaCache,
                 )) as MangaCacheItem[];
@@ -147,7 +141,7 @@ export default function BookmarksBody({
 
     useEffect(() => {
         fetchAllBookmarks(bookmarks, page);
-    }, [bookmarks, page, fetchAllBookmarks]);
+    }, []);
 
     return (
         <>

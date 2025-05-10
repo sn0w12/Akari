@@ -1,31 +1,129 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Chapter } from "@/app/api/interfaces";
-import db from "@/lib/db";
-import { HqMangaCacheItem } from "@/app/api/interfaces";
+import { Chapter, ChapterImage, HqMangaCacheItem } from "@/app/api/interfaces";
+import { useCallback, useEffect, useRef, useState } from "react";
+import PageReader from "./Readers/page-reader";
+import StripReader from "./Readers/strip-reader";
+import { FooterProvider } from "@/lib/footer-context";
 import MangaReaderSkeleton from "./mangaReaderSkeleton";
-import StripReader from "./Reader/strip";
-import PageReader from "./Reader/page";
+import db from "@/lib/db";
 
 interface ReaderProps {
     chapter: Chapter;
 }
 
-export default function Reader({ chapter }: ReaderProps) {
+export interface ImageGroups {
+    [groupId: number]: ChapterImage[];
+    length: number;
+}
+
+function createImagePromise(url: string): Promise<ChapterImage> {
+    return new Promise((resolve) => {
+        const img = new Image();
+        const proxyUrl = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+
+        img.onload = () => {
+            resolve({
+                url: proxyUrl,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+            });
+        };
+
+        img.onerror = () => {
+            console.error(`Failed to load image: ${url}`);
+            resolve({
+                url: proxyUrl,
+            });
+        };
+
+        img.crossOrigin = "anonymous";
+        img.src = proxyUrl;
+    });
+}
+
+async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
+    try {
+        const images = await Promise.all(
+            chapter.images.map((url) => createImagePromise(url)),
+        );
+
+        return images;
+    } catch (error) {
+        console.error("Failed to get chapter images:", error);
+        return chapter.images.map((url) => ({ url }));
+    }
+}
+
+export function Reader({ chapter }: ReaderProps) {
     const [isStripMode, setIsStripMode] = useState<boolean | undefined>(
         undefined,
     );
-    const [firstImageLoaded, setFirstImageLoaded] = useState<boolean>(false);
-    const [isFooterVisible, setFooterVisible] = useState(false);
-    const [isHoveringFooter, setHoveringFooter] = useState(false);
-    const longImageCountRef = useRef(0);
-    const imageCountRef = useRef(0);
-    // Detect if the majority of images have a long aspect ratio
+    const hasCachedRef = useRef(false);
+    const [combinedImages, setCombinedImages] = useState<ImageGroups>({
+        length: 0,
+    });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const [isInactive, setIsInactive] = useState(false);
+    const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+
+    useEffect(() => {
+        async function calculateImageGroups() {
+            setIsLoading(true);
+            const chapterImages = await getChapterImages(chapter);
+            const newCombinedImages: ImageGroups = { length: 0 };
+            const cutoffHeight = 1500;
+            let totalCutoffImages = 0;
+            let groupIndex = 0;
+
+            for (let i = 0; i < chapterImages.length; i++) {
+                const image = chapterImages[i];
+
+                // Safely access height with optional chaining
+                const imageHeight = image.height;
+                if (imageHeight && imageHeight >= cutoffHeight) {
+                    totalCutoffImages++;
+                }
+
+                const lastImage = chapterImages[i - 1];
+                if (lastImage === undefined) {
+                    // First image - create new group
+                    newCombinedImages[groupIndex] = [image];
+                    newCombinedImages.length++;
+                    groupIndex++;
+                    continue;
+                }
+
+                // Safely check last image's height
+                const lastImageHeight = lastImage.height;
+                if (lastImageHeight && lastImageHeight >= cutoffHeight) {
+                    // Add to the last group if the previous image was tall
+                    newCombinedImages[groupIndex - 1].push(image);
+                } else {
+                    // Create a new group otherwise
+                    newCombinedImages[groupIndex] = [image];
+                    newCombinedImages.length++;
+                    groupIndex++;
+                }
+            }
+
+            setCombinedImages(newCombinedImages);
+            if (!hasCachedRef.current) {
+                console.log(
+                    `Total images: ${chapterImages.length}, Cutoff images: ${totalCutoffImages}`,
+                );
+                setIsStripMode(totalCutoffImages >= chapterImages.length / 1.5);
+            }
+            setIsLoading(false);
+        }
+
+        calculateImageGroups();
+    }, [chapter]);
+
     useEffect(() => {
         if (chapter && chapter.images.length > 0) {
             const checkStripModeCache = async () => {
-                // Fetch strip mode cache from Dexie (asynchronous operation)
                 const mangaCache =
                     (await db.getCache(db.hqMangaCache, chapter.parentId)) ??
                     ({} as HqMangaCacheItem);
@@ -33,9 +131,11 @@ export default function Reader({ chapter }: ReaderProps) {
                 // Check if the chapter's parentId is cached
                 if (mangaCache?.is_strip === true) {
                     setIsStripMode(true);
+                    hasCachedRef.current = true;
                     return;
                 } else if (mangaCache?.is_strip === false) {
                     setIsStripMode(false);
+                    hasCachedRef.current = true;
                     return;
                 }
             };
@@ -54,7 +154,7 @@ export default function Reader({ chapter }: ReaderProps) {
         await db.updateCache(db.hqMangaCache, chapter!.parentId, mangaCache);
     }
 
-    async function toggleReaderMode(override: boolean = true) {
+    function toggleReaderMode(override: boolean = true) {
         if (isStripMode !== undefined) {
             setReaderMode(!isStripMode);
         } else {
@@ -62,106 +162,56 @@ export default function Reader({ chapter }: ReaderProps) {
         }
     }
 
-    const handleImageLoad = async (
-        event: React.SyntheticEvent<HTMLImageElement>,
-        index: number,
-    ) => {
-        if (index === 0) setFirstImageLoaded(true);
-        if (isStripMode !== undefined) return;
-
-        const imgElement = event.currentTarget;
-        const height = imgElement.naturalHeight;
-        imageCountRef.current += 1;
-        if (height >= 1500) {
-            longImageCountRef.current += 1;
+    const resetInactivityTimer = useCallback(() => {
+        if (inactivityTimer.current) {
+            clearTimeout(inactivityTimer.current);
         }
-
-        if (longImageCountRef.current >= 2) {
-            setReaderMode(true);
-        } else {
-            setReaderMode(false);
-        }
-    };
+        setIsInactive(false);
+        inactivityTimer.current = setTimeout(() => {
+            console.log("User is inactive");
+            setIsInactive(true);
+        }, 2000);
+    }, []);
 
     useEffect(() => {
-        const isSidebarPresent = () =>
-            document.getElementById("sidebar") !== null;
-        const isChapterSelectorPresent = () =>
-            document.getElementById("chapter-selector") !== null;
+        // Initialize the inactivity timer
+        resetInactivityTimer();
 
-        const handleMouseMove = (e: MouseEvent) => {
-            const sidebarVisible = isSidebarPresent();
-            const chapterSelectorVisible = isChapterSelectorPresent();
-
-            if (
-                (e.clientY > window.innerHeight - 175 && !sidebarVisible) ||
-                chapterSelectorVisible
-            ) {
-                setFooterVisible(true);
-            } else if (!isHoveringFooter) {
-                setFooterVisible(false);
-            }
-        };
-
-        const handleFooterMouseEnter = () => {
-            setHoveringFooter(true);
-        };
-
-        const handleFooterMouseLeave = () => {
-            setHoveringFooter(false);
-        };
-
-        window.addEventListener("mousemove", handleMouseMove);
-
-        const footerElement = document.querySelector(".footer");
-        if (footerElement) {
-            footerElement.addEventListener(
-                "mouseenter",
-                handleFooterMouseEnter,
-            );
-            footerElement.addEventListener(
-                "mouseleave",
-                handleFooterMouseLeave,
-            );
-        }
+        const events = ["mousemove", "scroll", "touchstart"];
+        events.forEach((event) => {
+            window.addEventListener(event, resetInactivityTimer);
+        });
 
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-            if (footerElement) {
-                footerElement.removeEventListener(
-                    "mouseenter",
-                    handleFooterMouseEnter,
-                );
-                footerElement.removeEventListener(
-                    "mouseleave",
-                    handleFooterMouseLeave,
-                );
+            if (inactivityTimer.current) {
+                clearTimeout(inactivityTimer.current);
             }
+            events.forEach((event) => {
+                window.removeEventListener(event, resetInactivityTimer);
+            });
         };
-    }, [isHoveringFooter, isStripMode]);
+    }, [resetInactivityTimer]);
+
+    if (isLoading) {
+        return <MangaReaderSkeleton />;
+    }
 
     return (
-        <>
-            <div className={`${firstImageLoaded ? "hidden" : ""}`}>
-                <MangaReaderSkeleton />
-            </div>
-            <div className={`${firstImageLoaded ? "" : "hidden"}`}>
+        <FooterProvider>
+            <div className={`${isInactive ? "cursor-none" : "cursor-pointer"}`}>
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
-                        isFooterVisible={isFooterVisible}
-                        handleImageLoad={handleImageLoad}
                         toggleReaderMode={toggleReaderMode}
                     />
                 ) : (
                     <PageReader
                         chapter={chapter}
-                        isFooterVisible={isFooterVisible}
-                        handleImageLoad={handleImageLoad}
+                        images={combinedImages}
                         toggleReaderMode={toggleReaderMode}
                     />
                 )}
             </div>
-        </>
+        </FooterProvider>
     );
 }

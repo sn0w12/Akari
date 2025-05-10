@@ -1,4 +1,4 @@
-import { NeloMangaSearchResult } from "@/app/api/interfaces";
+import { SmallManga } from "@/app/api/interfaces";
 
 export async function getSearchResults(query: string, n: number = 5) {
     const response = await fetch(
@@ -7,12 +7,12 @@ export async function getSearchResults(query: string, n: number = 5) {
     const data = await response.json();
 
     // Convert object to array and take first n results
-    const results = (Object.values(data) as NeloMangaSearchResult[])
+    const results = (Object.values(data.mangaList) as SmallManga[])
         .slice(0, n)
         .map((item) => ({
-            id: item.slug,
-            title: item.name,
-            image: item.thumb,
+            id: item.id,
+            title: item.title,
+            image: item.image,
         }));
 
     return results;

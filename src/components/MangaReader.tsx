@@ -1,5 +1,5 @@
 import { HeaderComponent } from "@/components/Header";
-import Reader from "./ui/MangaReader/reader";
+import { Reader } from "./ui/MangaReader/reader";
 import ErrorComponent from "./ui/error";
 import { getUserHeaders } from "@/lib/serverUtils";
 import { fetchChapterData } from "@/lib/scraping";

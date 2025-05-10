@@ -74,11 +74,10 @@ export async function GET(request: Request): Promise<Response> {
                 .text()
                 .trim();
 
-            // Extract chapter numbers
             const viewedChapterNumber =
-                viewedChapterText.match(/Chapter (\d+)/)?.[1] || "";
+                viewedChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
             const currentChapterNumber =
-                currentChapterText.match(/Chapter (\d+)/)?.[1] || "";
+                currentChapterText.match(/Chapter (\d+(?:\.\d+)?)/)?.[1] || "";
 
             // Get last update time
             const rawLastUpdated = $element
@@ -178,7 +177,15 @@ export async function GET(request: Request): Promise<Response> {
         console.error("Error fetching bookmarks:", error);
         if (axios.isAxiosError(error)) {
             if (error.response?.status === 401) {
-                return NextResponse.redirect(new URL("/account", request.url));
+                return NextResponse.redirect(new URL("/account", request.url), {
+                    headers: {
+                        "Cache-Control":
+                            "no-store, no-cache, must-revalidate, proxy-revalidate",
+                        Pragma: "no-cache",
+                        Expires: "0",
+                        "Surrogate-Control": "no-store",
+                    },
+                });
             }
 
             return NextResponse.json(

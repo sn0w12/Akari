@@ -20,7 +20,7 @@ export async function getLatestManga(page: string) {
     cacheLife("minutes");
 
     try {
-        const url = `https://${process.env.NEXT_MANGA_URL}/genre/all?page=${page}&type=newest`;
+        const url = `https://${process.env.NEXT_MANGA_URL}/manga-list/latest-manga?page=${page}&type=newest`;
         const result = await processMangaListTest(url, page);
 
         return result;
@@ -339,13 +339,13 @@ export async function fetchChapterData(
 
         // Extract all image URLs from the container-chapter-reader div
         const imageElements = $(".container-chapter-reader img");
-        const images: string[] = [];
+        const imageUrls: string[] = [];
         imageElements.each((index, element) => {
             const imageUrl = $(element).attr("src");
-            if (imageUrl) images.push(imageUrl);
+            if (imageUrl) imageUrls.push(imageUrl);
         });
 
-        const pages = images.length;
+        const pages = imageUrls.length;
 
         const nextChapterLink = $(".back").attr("href");
         const nextChapter = nextChapterLink
@@ -397,7 +397,7 @@ export async function fetchChapterData(
             parentId: parent,
             nextChapter: nextChapter,
             lastChapter: lastChapter,
-            images: images,
+            images: imageUrls,
             mangaId: mangaId,
             chapterId: chapterId,
             token: token || "",
@@ -460,6 +460,80 @@ export async function fetchGenreData(
     }
 }
 
+function parseSearchHtml(
+    html: string,
+    orderBy: string,
+): {
+    mangaList: SmallManga[];
+    totalStories: number;
+    totalPages: number;
+} {
+    time("Parse HTML");
+    const $ = cheerio.load(html);
+    const mangaList: SmallManga[] = [];
+
+    // Loop through each .story_item div and extract the relevant information
+    $(".story_item").each((index, element) => {
+        const mangaElement = $(element);
+        const imageUrl = mangaElement.find("img").attr("src");
+        const titleElement = mangaElement.find("h3.story_name a");
+        const title = titleElement.text().trim();
+        const mangaUrl = titleElement.attr("href");
+        const chapterElement = mangaElement.find("em.story_chapter a").first();
+        const latestChapter = chapterElement.text().trim();
+        const chapterUrl = chapterElement.attr("href");
+
+        let author = "";
+        let date = "";
+        let views = "";
+
+        mangaElement.find(".story_item_right span").each((i, span) => {
+            const text = $(span).text().trim();
+            if (text.startsWith("Author")) {
+                author = text.replace("Author(s) : ", "");
+            } else if (text.startsWith("Updated")) {
+                date = text.replace("Updated : ", "");
+            } else if (text.startsWith("View")) {
+                views = text.replace("View : ", "");
+            }
+        });
+
+        mangaList.push({
+            id: mangaUrl?.split("/manga/").pop() || "",
+            image: imageUrl || "",
+            title: title,
+            chapter: latestChapter,
+            chapterUrl: chapterUrl || "",
+            rating: "N/A", // Rating is not present in the new HTML
+            author: author,
+            date: parseDateString(date),
+            views: views,
+            description: "",
+        });
+    });
+    timeEnd("Parse HTML");
+
+    time("Process Results");
+    if (orderBy === "latest") {
+        mangaList.sort((a, b) => {
+            return Number(b.date) - Number(a.date);
+        });
+    }
+    timeEnd("Process Results");
+
+    const totalStories: number = mangaList.length;
+    const lastPageElement = $("a.page-last");
+    const totalPages: number = lastPageElement.length
+        ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
+        : 1;
+
+    return {
+        mangaList,
+        totalStories: totalStories,
+        totalPages: totalPages,
+    };
+}
+
 export async function fetchAuthorData(
     authorId: string,
     page: string = "1",
@@ -496,66 +570,10 @@ export async function fetchAuthorData(
         });
         timeEnd("Fetch HTML");
 
-        time("Parse HTML");
-        const $ = cheerio.load(data);
-        const mangaList: SmallManga[] = [];
-
-        // Loop through each .story_item div and extract the relevant information
-        $(".story_item").each((index, element) => {
-            const mangaElement = $(element);
-            const imageUrl = mangaElement.find("img").attr("src");
-            const titleElement = mangaElement.find("h3.story_name a");
-            const title = titleElement.text().trim();
-            const mangaUrl = titleElement.attr("href");
-            const chapterElement = mangaElement
-                .find("em.story_chapter a")
-                .first();
-            const latestChapter = chapterElement.text().trim();
-            const chapterUrl = chapterElement.attr("href");
-
-            let author = "";
-            let date = "";
-            let views = "";
-
-            mangaElement.find(".story_item_right span").each((i, span) => {
-                const text = $(span).text().trim();
-                if (text.startsWith("Author")) {
-                    author = text.replace("Author(s) : ", "");
-                } else if (text.startsWith("Updated")) {
-                    date = text.replace("Updated : ", "");
-                } else if (text.startsWith("View")) {
-                    views = text.replace("View : ", "");
-                }
-            });
-
-            mangaList.push({
-                id: mangaUrl?.split("/manga/").pop() || "",
-                image: imageUrl || "",
-                title: title,
-                chapter: latestChapter,
-                chapterUrl: chapterUrl || "",
-                rating: "N/A", // Rating is not present in the new HTML
-                author: author,
-                date: parseDateString(date),
-                views: views,
-                description: "",
-            });
-        });
-        timeEnd("Parse HTML");
-
-        time("Process Results");
-        if (orderBy === "latest") {
-            mangaList.sort((a, b) => {
-                return Number(b.date) - Number(a.date);
-            });
-        }
-        timeEnd("Process Results");
-
-        const totalStories: number = mangaList.length;
-        const lastPageElement = $("a.page-last");
-        const totalPages: number = lastPageElement.length
-            ? parseInt(lastPageElement.text().match(/\d+/)?.[0] || "1", 10)
-            : 1;
+        const { mangaList, totalStories, totalPages } = parseSearchHtml(
+            data,
+            orderBy,
+        );
 
         if (Number(page) > totalPages) {
             timeEnd("Total Author Fetch");
@@ -581,6 +599,65 @@ export async function fetchAuthorData(
                 error instanceof Error
                     ? error.message
                     : "Failed to fetch author data",
+        } as SimpleError;
+    }
+}
+
+export async function fetchSearchData(
+    searchTerm: string,
+    page: string = "1",
+    orderBy: string = "latest",
+) {
+    "use cache";
+    cacheLife("minutes");
+
+    clearPerformanceMetrics();
+    time("Total Search Fetch");
+
+    const searchUrl = `https://www.mangakakalot.gg/search/story/${searchTerm}?page=${page}&orby=${orderBy}`;
+    try {
+        time("Fetch HTML");
+        // Fetch the data from Manganato
+        const { data } = await axios.get(searchUrl, {
+            timeout: 10000,
+            headers: {
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+                referer: `https://www.mangakakalot.gg/`,
+                host: "www.mangakakalot.gg",
+            },
+        });
+        timeEnd("Fetch HTML");
+
+        const { mangaList, totalStories, totalPages } = parseSearchHtml(
+            data,
+            orderBy,
+        );
+
+        if (Number(page) > totalPages) {
+            timeEnd("Total Author Fetch");
+            return {
+                result: "error",
+                data: "Page number exceeds total pages",
+            } as SimpleError;
+        }
+
+        const result = {
+            mangaList,
+            metaData: { totalStories, totalPages },
+        };
+        timeEnd("Total Search Fetch");
+
+        return result;
+    } catch (error) {
+        timeEnd("Total Search Fetch");
+        console.error("Error fetching search data:", error);
+        return {
+            result: "error",
+            data:
+                error instanceof Error
+                    ? error.message
+                    : "Failed to fetch search data",
         } as SimpleError;
     }
 }
