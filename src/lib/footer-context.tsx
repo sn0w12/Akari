@@ -11,6 +11,7 @@ import {
 interface FooterContextType {
     isFooterVisible: boolean;
     setFooterVisible: (visible: boolean) => void;
+    isTouchInteractionEnabled: boolean;
 }
 
 const FooterContext = createContext<FooterContextType | undefined>(undefined);
@@ -26,6 +27,25 @@ export function FooterProvider({
 }: FooterProviderProps) {
     const [isFooterVisible, setFooterVisible] = useState(false);
     const [isHoveringFooter, setHoveringFooter] = useState(false);
+    const [isTouchInteractionEnabled, setTouchInteractionEnabled] =
+        useState(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (isFooterVisible) {
+            // Delay enabling touch interactions to prevent accidental clicks
+            timer = setTimeout(() => {
+                setTouchInteractionEnabled(true);
+            }, 100);
+        } else {
+            setTouchInteractionEnabled(false);
+        }
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [isFooterVisible]);
 
     useEffect(() => {
         const isSidebarPresent = () =>
@@ -85,7 +105,13 @@ export function FooterProvider({
     }, [isHoveringFooter, stripMode]);
 
     return (
-        <FooterContext.Provider value={{ isFooterVisible, setFooterVisible }}>
+        <FooterContext.Provider
+            value={{
+                isFooterVisible,
+                setFooterVisible,
+                isTouchInteractionEnabled,
+            }}
+        >
             {children}
         </FooterContext.Provider>
     );
