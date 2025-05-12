@@ -136,7 +136,7 @@ export function BaseLayout({
                             <BookmarksContextMenu>
                                 <SidebarMenuItem>
                                     <SidebarMenuLink
-                                        tooltip={`Bookmarks • ${notification}`}
+                                        tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
                                         href="/bookmarks"
                                     >
                                         <Bookmark />
