@@ -120,9 +120,12 @@ export async function fetchMangaDetails(
                 .end()
                 .text()
                 .trim();
-            const score = parseFloat(
-                $(".rate_row .get_rate").attr("default-stars") || "0",
-            );
+            const rateRowText = $("#rate_row_cmd").text().trim();
+            const scoreMatch = rateRowText.match(/rate\s*:\s*(\d+(\.\d+)?)/i);
+            let score = 0;
+            if (scoreMatch && scoreMatch[1]) {
+                score = parseFloat(scoreMatch[1]);
+            }
 
             const genres: string[] = [];
             $(".manga-info-text li.genres a").each((_, element) => {
