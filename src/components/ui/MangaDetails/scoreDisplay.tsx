@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Star, StarHalf } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ScoreDisplayProps {
     score: number;
@@ -17,55 +18,46 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
 
     return (
         <div className="hidden w-full h-full bg-primary/10 rounded-xl shadow-lg flex flex-col items-center justify-center p-4 lg:flex">
-            <div className="flex items-center justify-center space-x-1">
-                {[...Array(5)].map((_, index) => (
-                    <div
-                        key={index}
-                        className="relative"
-                        onMouseEnter={() => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(null)}
-                    >
-                        {/* Background star in primary color */}
-                        <Star
-                            className={`absolute ${starClasses} text-primary/25 z-10`}
-                        />
-                        {/* Foreground star based on score */}
-                        {index < fullStars ? (
+            <div className="flex flex-col items-center justify-center relative top-2.5">
+                <div className="flex items-center justify-center space-x-1">
+                    {[...Array(5)].map((_, index) => (
+                        <div
+                            key={index}
+                            className="relative"
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                            {/* Background star in primary color */}
                             <Star
-                                className={`relative ${starClasses}
-                                ${
-                                    hoveredIndex !== null &&
-                                    index <= hoveredIndex
-                                        ? "text-yellow-300 scale-110 transition-all"
-                                        : "text-yellow-400"
-                                }
-                                z-20`}
+                                className={`absolute ${starClasses} text-primary/25 z-10`}
                             />
-                        ) : index === fullStars && hasHalfStar ? (
-                            <StarHalf
-                                className={`relative ${starClasses}
-                                ${
-                                    hoveredIndex !== null &&
-                                    index <= hoveredIndex
-                                        ? "text-yellow-300 scale-110 transition-all"
-                                        : "text-yellow-400"
-                                }
-                                z-20`}
-                            />
-                        ) : (
-                            <Star
-                                className={`relative ${starClasses}
-                                ${
-                                    hoveredIndex !== null &&
-                                    index <= hoveredIndex
-                                        ? "text-yellow-300 scale-110 transition-all"
-                                        : "text-primary/0"
-                                }
-                                z-20`}
-                            />
-                        )}
-                    </div>
-                ))}
+                            {/* Foreground star based on score */}
+                            {index < fullStars ||
+                            (hoveredIndex !== null && index <= hoveredIndex) ? (
+                                <Star
+                                    className={cn(
+                                        `relative ${starClasses} z-20`,
+                                        hoveredIndex !== null &&
+                                            index <= hoveredIndex
+                                            ? "text-yellow-300 scale-110 transition-all"
+                                            : "text-yellow-400",
+                                    )}
+                                />
+                            ) : index === fullStars && hasHalfStar ? (
+                                <StarHalf
+                                    className={`relative ${starClasses} text-yellow-400 z-20`}
+                                />
+                            ) : (
+                                <Star
+                                    className={`relative ${starClasses} text-primary/0 z-20`}
+                                />
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <p className="text-sm text-accent-foreground/70 h-5">
+                    {score} / 5
+                </p>
             </div>
         </div>
     );
