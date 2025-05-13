@@ -250,7 +250,13 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     </div>
                                 </div>
                                 <div className="mt-4 flex-grow block lg:hidden xl:block lg:mb-4">
-                                    <ScoreDisplay score={manga.score} />
+                                    <ScoreDisplay
+                                        score={
+                                            (manga.malData?.score !== undefined
+                                                ? manga.malData.score / 2
+                                                : undefined) || manga.score
+                                        }
+                                    />
                                 </div>
                             </div>
 
