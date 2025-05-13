@@ -50,18 +50,18 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
             chapter.images.map((url) => createImagePromise(url)),
         ).then((images) =>
             images.filter((image, index) => {
-                // Only filter first and last images
-                if (
-                    image.width &&
-                    image.height &&
-                    (index === 1 || index === images.length - 1)
-                ) {
+                if (image.width == undefined || image.height == undefined) {
+                    return false;
+                }
+                // Only check first and last images so we don't filter out real images
+                // that are in the middle of the chapter
+                if (index == 0 || index == images.length - 1) {
                     const isBadImage =
                         badWidths.includes(image.width) &&
                         badHeights.includes(image.height);
                     return !isBadImage;
                 }
-                return false;
+                return true;
             }),
         );
     } catch (error) {
