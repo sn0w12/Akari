@@ -76,7 +76,7 @@ export function ReportMalLink({ mangaId }: { mangaId: string }) {
                                 variant="destructive"
                                 onClick={handleReport}
                                 disabled={isReported}
-                                className="bg-negative hover:bg-negative/70"
+                                className="bg-negative hover:bg-negative/70 text-background"
                             >
                                 {isReported ? "Reported" : "Report Link"}
                             </Button>
