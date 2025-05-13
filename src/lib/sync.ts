@@ -11,22 +11,17 @@ const services = ["MangaNato", "MAL"];
 export async function syncAllServices(data: Chapter) {
     const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
     let success = true;
+    console.log(data);
 
-    const cachedManga = await db.getCache(db.mangaCache, data.parentId);
-    let mangaId;
-    if (!cachedManga) {
-        const response: Response = await fetch(`/api/manga/${data.parentId}`);
-        const responseData = await response.json();
-        mangaId = responseData.mangaId;
-
-        db.updateCache(db.mangaCache, data.parentId, { id: mangaId });
-    } else {
-        mangaId = cachedManga.id;
+    const mangaId = data.mangaId;
+    if (!mangaId) {
+        console.error("Manga ID is not available in the data object.");
+        return false;
     }
 
     const isBookmarked = await checkIfBookmarked(mangaId);
     if (!isBookmarked) {
-        return;
+        return null;
     }
 
     const results = await Promise.allSettled(
@@ -38,7 +33,7 @@ export async function syncAllServices(data: Chapter) {
     results.forEach((result, index) => {
         if (result.status === "rejected") {
             const error = result.reason;
-            if (error instanceof Response && error.status === 401) {
+            if (error instanceof Response) {
                 unAuthorizedServices.push(services[index]);
             } else {
                 console.error(`Failed to sync with handler:`, error);
@@ -76,6 +71,11 @@ export async function syncAllServices(data: Chapter) {
     } else {
         new Toast("Failed to update bookmark on some services.", "error");
     }
+
+    if (authorizedServices.includes(services[0])) {
+        return true;
+    }
+    return false;
 }
 
 async function updateBookmark(data: Chapter) {
