@@ -48,14 +48,14 @@ export default async function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
             >
                 <ProximityPrefetch>
-                    <SidebarProvider defaultOpen={false}>
-                        <BaseLayout gutter={true}>
-                            <ThemeProvider
-                                attribute="class"
-                                defaultTheme="system"
-                                enableSystem
-                                disableTransitionOnChange
-                            >
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <SidebarProvider defaultOpen={false}>
+                            <BaseLayout gutter={true}>
                                 <ToastProvider>
                                     <AnalyticsWrapper />
                                     <div className="flex-grow pt-2 md:p-4 md:pb-0">
@@ -64,9 +64,9 @@ export default async function RootLayout({
                                     <CookieConsent />
                                     <Footer />
                                 </ToastProvider>
-                            </ThemeProvider>
-                        </BaseLayout>
-                    </SidebarProvider>
+                            </BaseLayout>
+                        </SidebarProvider>
+                    </ThemeProvider>
                 </ProximityPrefetch>
             </body>
         </html>
