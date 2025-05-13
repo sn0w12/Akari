@@ -37,7 +37,22 @@ export default function PageReader({
     });
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
+    const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
+    const [bgColor, setBgColor] = useState<string>("bg-background");
     const { isFooterVisible } = useFooterVisibility();
+
+    useEffect(() => {
+        switch (bookmarkState) {
+            case true:
+                setBgColor("bg-accent-color/10");
+                break;
+            case false:
+                setBgColor("bg-destructive");
+                break;
+            default:
+                setBgColor("bg-background");
+        }
+    }, [bookmarkState]);
 
     useEffect(() => {
         if (!chapter) return;
@@ -45,8 +60,10 @@ export default function PageReader({
         // Handle bookmark update
         const isHalfwayThrough = currentPage >= Math.floor(images.length / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
-            syncAllServices(chapter);
             bookmarkUpdatedRef.current = true;
+            syncAllServices(chapter).then((success) => {
+                setBookmarkState(success);
+            });
         }
 
         // Handle prefetching next chapter
@@ -143,7 +160,7 @@ export default function PageReader({
     return (
         <>
             <div
-                className={`w-full h-full flex flex-col relative ${currentPage === images.length ? "" : isInactive ? "cursor-none" : "cursor-pointer"}`}
+                className={`w-full h-full flex flex-col relative ${bgColor} ${currentPage === images.length ? "" : isInactive ? "cursor-none" : "cursor-pointer"}`}
                 style={{ height: "calc(100dvh - var(--reader-offset))" }}
                 onClick={handleClick}
             >
