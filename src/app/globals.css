@@ -226,20 +226,23 @@ li {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: calc(var(--spacing) * 3);
+    width: calc(var(--spacing) * 2.5);
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
     background-color: var(--background);
-    opacity: 0.01;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: var(--sidebar);
-    border: var(--border) solid 1px;
-    border-right: unset;
+    border-radius: 10px;
+    border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--sidebar-border);
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
