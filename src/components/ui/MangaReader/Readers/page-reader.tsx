@@ -160,7 +160,7 @@ export default function PageReader({
     return (
         <>
             <div
-                className={`w-full h-full flex flex-col relative ${bgColor} ${currentPage === images.length ? "" : isInactive ? "cursor-none" : "cursor-pointer"}`}
+                className={`w-full h-full flex flex-col relative transition-colors duration-500 ${bgColor} ${currentPage === images.length ? "" : isInactive ? "cursor-none" : "cursor-pointer"}`}
                 style={{ height: "calc(100dvh - var(--reader-offset))" }}
                 onClick={handleClick}
             >
