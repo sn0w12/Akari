@@ -42,13 +42,28 @@ function createImagePromise(url: string): Promise<ChapterImage> {
     });
 }
 
+const badWidths = [1125];
+const badHeights = [404];
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
-        const images = await Promise.all(
+        return await Promise.all(
             chapter.images.map((url) => createImagePromise(url)),
+        ).then((images) =>
+            images.filter((image, index) => {
+                // Only filter first and last images
+                if (
+                    image.width &&
+                    image.height &&
+                    (index === 1 || index === images.length - 1)
+                ) {
+                    const isBadImage =
+                        badWidths.includes(image.width) &&
+                        badHeights.includes(image.height);
+                    return !isBadImage;
+                }
+                return false;
+            }),
         );
-
-        return images;
     } catch (error) {
         console.error("Failed to get chapter images:", error);
         return chapter.images.map((url) => ({ url }));
