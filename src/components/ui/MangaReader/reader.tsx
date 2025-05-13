@@ -213,7 +213,7 @@ export function Reader({ chapter }: ReaderProps) {
 
     return (
         <FooterProvider>
-            <div className={`${isInactive ? "cursor-none" : "cursor-pointer"}`}>
+            <div>
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
@@ -224,6 +224,7 @@ export function Reader({ chapter }: ReaderProps) {
                         chapter={chapter}
                         images={combinedImages}
                         toggleReaderMode={toggleReaderMode}
+                        isInactive={isInactive}
                     />
                 )}
             </div>

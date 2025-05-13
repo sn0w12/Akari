@@ -15,12 +15,14 @@ interface PageReaderProps {
     chapter: Chapter;
     images: ImageGroups;
     toggleReaderMode: (override?: boolean) => void;
+    isInactive: boolean;
 }
 
 export default function PageReader({
     chapter,
     images,
     toggleReaderMode,
+    isInactive,
 }: PageReaderProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -141,7 +143,7 @@ export default function PageReader({
     return (
         <>
             <div
-                className="w-full h-full flex flex-col relative"
+                className={`w-full h-full flex flex-col relative ${currentPage === images.length ? "" : isInactive ? "cursor-none" : "cursor-pointer"}`}
                 style={{ height: "calc(100dvh - var(--reader-offset))" }}
                 onClick={handleClick}
             >
