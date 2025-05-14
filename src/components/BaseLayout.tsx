@@ -143,6 +143,7 @@ export function BaseLayout({
                                         tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
                                         href="/bookmarks"
                                         data-extra-prefetch="/api/bookmarks?page=1&images=true"
+                                        aria-label={`${notification} Unread Bookmarks`}
                                     >
                                         <Bookmark />
                                         <span>Bookmarks</span>
