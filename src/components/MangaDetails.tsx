@@ -69,6 +69,12 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     );
     const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
+    let score = manga.score;
+    const malScore = manga.malData?.score;
+    if (malScore !== undefined) {
+        score = malScore / 2;
+    }
+
     return (
         <main className="mx-auto p-4 pb-0">
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
@@ -250,13 +256,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     </div>
                                 </div>
                                 <div className="mt-4 flex-grow block lg:hidden xl:block lg:mb-4">
-                                    <ScoreDisplay
-                                        score={
-                                            (manga.malData?.score !== undefined
-                                                ? manga.malData.score / 2
-                                                : undefined) || manga.score
-                                        }
-                                    />
+                                    <ScoreDisplay score={score} />
                                 </div>
                             </div>
 
