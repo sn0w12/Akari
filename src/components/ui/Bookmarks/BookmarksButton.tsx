@@ -12,8 +12,8 @@ export default function BookmarksButton({
 }) {
     return (
         <BookmarksContextMenu>
-            <Link href="/bookmarks">
-                <div className="relative group md:hidden">
+            <Link href="/bookmarks" className="md:hidden">
+                <div className="relative group">
                     <Button
                         id="bookmarks-button"
                         variant="ghost"
