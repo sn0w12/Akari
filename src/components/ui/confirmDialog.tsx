@@ -64,11 +64,7 @@ const ConfirmDialog = ({
                         onClick={handleConfirm}
                         className={`w-full ${confirmColor}`}
                     >
-                        {loading ? (
-                            <Spinner aria-label="Loading" size={30} />
-                        ) : (
-                            confirmLabel
-                        )}
+                        {loading ? <Spinner size={30} /> : confirmLabel}
                     </Button>
                 </div>
             </DialogContent>
