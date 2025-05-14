@@ -62,6 +62,7 @@ export function PaginationDialog({
                         min={1}
                         max={totalPages}
                         placeholder={`Enter a page (1-${totalPages})`}
+                        aria-label="Page Number Input"
                     />
                     <Button
                         type="submit"
