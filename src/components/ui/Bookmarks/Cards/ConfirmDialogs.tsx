@@ -54,6 +54,7 @@ export function ConfirmDialogs({
                         variant="ghost"
                         size="icon"
                         className="w-5 h-5 md:w-10 md:h-10 bg-negative text-accent hover:text-negative focus:outline-none"
+                        aria-label="Remove bookmark"
                     >
                         <X className="h-5 w-5" />
                     </Button>
@@ -71,6 +72,7 @@ export function ConfirmDialogs({
                         variant="ghost"
                         size="icon"
                         className="w-5 h-5 md:w-10 md:h-10 bg-positive text-accent hover:text-positive focus:outline-none"
+                        aria-label="Mark as read"
                     >
                         <Check className="h-5 w-5" />
                     </Button>
