@@ -57,6 +57,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                 onChange={(e) => {
                     onChange(e.target.value);
                 }}
+                aria-label="Select chapter"
                 className="mt-2 mb-2 w-auto w-full sm:max-w-64 md:hidden"
             />
             <Popover open={open} onOpenChange={setOpen}>
@@ -65,6 +66,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
+                        aria-label="Select chapter"
                         className="w-[200px] justify-between hidden md:flex"
                     >
                         {value
