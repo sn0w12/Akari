@@ -35,7 +35,11 @@ function CookieConsentBody({
                             Required for basic site functionality
                         </p>
                     </div>
-                    <Switch checked disabled />
+                    <Switch
+                        aria-label="Necessary Cookies, cannot be disabled"
+                        checked
+                        disabled
+                    />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -46,6 +50,7 @@ function CookieConsentBody({
                         </p>
                     </div>
                     <Switch
+                        aria-label="Functional Cookies"
                         checked={consent.functional}
                         onCheckedChange={(checked) =>
                             setConsent("functional", checked)
@@ -61,6 +66,7 @@ function CookieConsentBody({
                         </p>
                     </div>
                     <Switch
+                        aria-label="Analytics Cookies"
                         checked={consent.analytics}
                         disabled={window.location.hostname === "localhost"}
                         onCheckedChange={(checked) =>

@@ -163,6 +163,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
     const button = (
         <Button
+            aria-label={isStateBookmarked ? "Remove Bookmark" : "Bookmark"}
             variant={isStateBookmarked ? "default" : "outline"}
             size="lg"
             className={buttonClass}

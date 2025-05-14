@@ -47,6 +47,7 @@ export function ReportMalLink({ mangaId }: { mangaId: string }) {
                             <Button
                                 variant="outline"
                                 className="hover:text-negative transition-colors w-10 h-10 p-0"
+                                aria-label="Report incorrect MAL link"
                             >
                                 <Flag className="h-5 w-5" />
                             </Button>

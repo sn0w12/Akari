@@ -1068,6 +1068,7 @@ function SidebarSection({
                         labelClassName={
                             isSidebarCollapsed ? "" : "w-full justify-between"
                         }
+                        aria-label={title}
                     >
                         <div className="flex max-w-[85%] items-center gap-2">
                             <div className="min-w-6">{icon}</div>
