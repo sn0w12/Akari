@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "../LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";

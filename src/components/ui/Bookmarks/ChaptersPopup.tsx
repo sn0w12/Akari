@@ -126,7 +126,7 @@ export const ChaptersPopup: React.FC<{
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [updatePosition, handleClose]);
+    }, [updatePosition, handleClose, onClose]);
 
     return (
         <dialog
