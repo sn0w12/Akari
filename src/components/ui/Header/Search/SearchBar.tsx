@@ -23,6 +23,7 @@ export default function SearchBar() {
     const [isFocused, setIsFocused] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [shortcut, setShortcut] = useState<string | null>(null);
+    const [focusedIndex, setFocusedIndex] = useState<number>(-1);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -84,8 +85,26 @@ export default function SearchBar() {
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            router.push(`/search?q=${encodeURIComponent(searchText)}`);
+            if (focusedIndex >= 0 && focusedIndex < searchResults.length) {
+                // Navigate to the selected result
+                router.push(`/manga/${searchResults[focusedIndex].id}`);
+            } else {
+                // Navigate to search page if no result selected
+                router.push(`/search?q=${encodeURIComponent(searchText)}`);
+            }
             setShowPopup(false);
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setFocusedIndex((prev) =>
+                prev < searchResults.length - 1 ? prev + 1 : prev,
+            );
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        } else if (e.key === "Escape") {
+            setShowPopup(false);
+            setFocusedIndex(-1);
+            inputRef.current?.blur();
         }
     };
 
@@ -116,6 +135,14 @@ export default function SearchBar() {
                         setIsFocused(true);
                         searchResults.length > 0 && setShowPopup(true);
                     }}
+                    aria-expanded={showPopup}
+                    aria-controls="search-results"
+                    aria-autocomplete="list"
+                    aria-activedescendant={
+                        focusedIndex >= 0
+                            ? `search-result-${focusedIndex}`
+                            : undefined
+                    }
                     className="w-full hidden md:block h-8"
                 />
                 {shortcut && (
