@@ -217,6 +217,7 @@ export function MalPopup({ mangaTitle, mangaId }: MalPopupProps) {
         <div
             id="mal-popup"
             className="fixed right-0 sm:right-4 top-4 z-70 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-lg"
+            tabIndex={-1}
         >
             <button
                 onClick={() => {
