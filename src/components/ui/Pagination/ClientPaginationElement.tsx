@@ -8,7 +8,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import React, { useState } from "react";
 import { PaginationDialog } from "./PaginationDialog";
 
 interface PaginationElementProps {
