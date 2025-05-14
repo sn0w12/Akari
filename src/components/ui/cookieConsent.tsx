@@ -156,9 +156,12 @@ export function CookieConsentFooter() {
                     <button
                         onClick={() => setOpen(true)}
                         className="text-gray-400 hover:text-gray-500"
+                        aria-labelledby="cookie-preferences"
                     >
                         <Cookie className="h-6 w-6" />
-                        <span className="sr-only">Cookie Preferences</span>
+                        <span id="cookie-preferences" className="sr-only">
+                            Cookie Preferences
+                        </span>
                     </button>
                 </TooltipTrigger>
                 <TooltipContent>Manage cookie preferences</TooltipContent>
