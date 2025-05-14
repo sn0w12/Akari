@@ -21,6 +21,7 @@ export default function LatestChapterInfo({
                     style={{ WebkitBoxDecorationBreak: "clone" }}
                     prefetch={false}
                     data-no-prefetch
+                    aria-label={`Latest chapter ${bookmark.chapterlastnumber}`}
                 >
                     {bookmark.chapterlastname}
                 </Link>
