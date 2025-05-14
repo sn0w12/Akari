@@ -265,7 +265,11 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full">
-                            <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
+                            <Card
+                                className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto"
+                                aria-label="Description"
+                                role="region"
+                            >
                                 <p>
                                     {manga.malData?.description ??
                                         manga.description}
