@@ -8,14 +8,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/input";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import React, { useState } from "react";
 import { PaginationDialog } from "./PaginationDialog";
 
@@ -32,21 +24,6 @@ export default function PaginationElement({
     handlePageChange,
     className,
 }: PaginationElementProps) {
-    const [inputPage, setInputPage] = useState(currentPage);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputPage(Number(e.target.value));
-    };
-
-    const handlePageSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (inputPage >= 1 && inputPage <= totalPages) {
-            handlePageChange(inputPage);
-            setIsDialogOpen(false);
-        }
-    };
-
     return (
         <Pagination
             className={`mb-6 flex items-center justify-center ${className}`}
