@@ -79,6 +79,7 @@ export default function BookmarksPage({ page }: BookmarksPageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <div className="mx-auto p-4">
+                <h1 className="sr-only">Your Manga Bookmarks</h1>
                 <BookmarksBody
                     bookmarks={bookmarks}
                     page={page}
