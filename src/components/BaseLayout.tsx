@@ -142,6 +142,7 @@ export function BaseLayout({
                                     <SidebarMenuLink
                                         tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
                                         href="/bookmarks"
+                                        data-extra-prefetch="/api/bookmarks?page=1&images=true"
                                     >
                                         <Bookmark />
                                         <span>Bookmarks</span>
