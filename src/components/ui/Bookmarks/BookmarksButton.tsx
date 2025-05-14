@@ -19,6 +19,7 @@ export default function BookmarksButton({
                         variant="ghost"
                         size="icon"
                         className="group-hover:bg-accent border"
+                        aria-label="Bookmarks"
                     >
                         <BookmarkIcon className="h-5 w-5" />
                     </Button>

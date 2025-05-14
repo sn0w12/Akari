@@ -324,6 +324,7 @@ function SidebarTrigger({
                     onClick?.(event);
                     toggleSidebar();
                 }}
+                aria-describedby="toggle-sidebar"
                 {...props}
             >
                 {state === "collapsed" ? (
@@ -331,7 +332,9 @@ function SidebarTrigger({
                 ) : (
                     <PanelLeftClose className={"h-6 w-6"} />
                 )}
-                <span className="sr-only">Toggle Sidebar</span>
+                <span id="toggle-sidebar" className="sr-only">
+                    Toggle Sidebar
+                </span>
             </Button>
             <Button
                 variant="ghost"
@@ -344,9 +347,12 @@ function SidebarTrigger({
                     onClick?.(event);
                     toggleSidebar();
                 }}
+                aria-describedby="open-menu"
             >
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
+                <span id="open-menu" className="sr-only">
+                    Open menu
+                </span>
             </Button>
         </>
     );
