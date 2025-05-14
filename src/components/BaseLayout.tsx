@@ -209,6 +209,7 @@ export function BaseLayout({
                                 </SidebarMenuLink>
                             ) : (
                                 <SidebarMenuButton
+                                    tooltip="Settings"
                                     onClick={handleSettingsClick}
                                 >
                                     <SettingsIcon />
