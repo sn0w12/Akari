@@ -29,7 +29,7 @@ export default async function MangaReaderHome({
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="mx-auto px-4 pt-1 pb-4">
+            <div className="mx-auto px-4 pt-1 pb-4">
                 {currentPage === 1 && (
                     <div>
                         <h2 className="text-3xl font-bold mb-6">
@@ -45,7 +45,7 @@ export default async function MangaReaderHome({
                     Latest Releases
                 </h2>
                 <MangaGrid mangaList={mangaList} />
-            </main>
+            </div>
             <PaginationElement
                 currentPage={currentPage}
                 totalPages={totalPages}

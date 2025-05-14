@@ -58,9 +58,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await fetchMangaDetails(id);
     if ("error" in manga) {
         return (
-            <main className="mx-auto p-4">
+            <div className="mx-auto p-4">
                 <ErrorComponent message={manga.error.message} />
-            </main>
+            </div>
         );
     }
 
@@ -76,7 +76,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     }
 
     return (
-        <main className="mx-auto p-4 pb-0">
+        <div className="mx-auto p-4 pb-0">
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
@@ -280,6 +280,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             {shouldShowPopup && (
                 <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
             )}
-        </main>
+        </div>
     );
 }

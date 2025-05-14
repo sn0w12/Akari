@@ -27,9 +27,9 @@ export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
         return (
             <>
                 <HeaderComponent />
-                <main className="p-8">
+                <div className="p-8">
                     <ErrorComponent message={String(error)} />
-                </main>
+                </div>
             </>
         );
     }
