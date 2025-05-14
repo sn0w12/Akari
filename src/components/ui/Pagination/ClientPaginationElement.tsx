@@ -17,6 +17,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import React, { useState } from "react";
+import { PaginationDialog } from "./PaginationDialog";
 
 interface PaginationElementProps {
     currentPage: number;
@@ -70,41 +71,10 @@ export default function PaginationElement({
                         </PaginationItem>
 
                         <PaginationItem>
-                            <Dialog
-                                open={isDialogOpen}
-                                onOpenChange={setIsDialogOpen}
-                            >
-                                <DialogTrigger asChild>
-                                    <span className="mx-2 cursor-pointer">
-                                        ...
-                                    </span>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Go to Page</DialogTitle>
-                                    </DialogHeader>
-                                    <form
-                                        onSubmit={handlePageSubmit}
-                                        className="space-y-4"
-                                    >
-                                        <Input
-                                            type="number"
-                                            value={inputPage}
-                                            onChange={handleInputChange}
-                                            className="w-full"
-                                            min={1}
-                                            max={totalPages}
-                                            placeholder={`Enter a page (1-${totalPages})`}
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
-                                        >
-                                            Go to Page
-                                        </button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                            <PaginationDialog
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                            />
                         </PaginationItem>
                     </>
                 )}
@@ -132,41 +102,10 @@ export default function PaginationElement({
                 {currentPage < totalPages - 1 && (
                     <>
                         <PaginationItem>
-                            <Dialog
-                                open={isDialogOpen}
-                                onOpenChange={setIsDialogOpen}
-                            >
-                                <DialogTrigger asChild>
-                                    <span className="mx-2 cursor-pointer">
-                                        ...
-                                    </span>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Go to Page</DialogTitle>
-                                    </DialogHeader>
-                                    <form
-                                        onSubmit={handlePageSubmit}
-                                        className="space-y-4"
-                                    >
-                                        <Input
-                                            type="number"
-                                            value={inputPage}
-                                            onChange={handleInputChange}
-                                            className="w-full"
-                                            min={1}
-                                            max={totalPages}
-                                            placeholder={`Enter a page (1-${totalPages})`}
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
-                                        >
-                                            Go to Page
-                                        </button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                            <PaginationDialog
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                            />
                         </PaginationItem>
 
                         <PaginationItem>
