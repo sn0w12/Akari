@@ -23,6 +23,7 @@ import Image from "next/image";
 import { Combo } from "../combo";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
 import { imageUrl } from "@/lib/utils";
+import { ButtonLink } from "../button-link";
 
 export default function ReadingHistory() {
     const [readingHistory, setReadingHistory] = useState<ReadingHistoryEntry[]>(
@@ -347,6 +348,7 @@ export default function ReadingHistory() {
                                                     href={`/manga/${firstEntry.mangaIdentifier}`}
                                                     prefetch={false}
                                                     className="block"
+                                                    tabIndex={-1}
                                                 >
                                                     <div className="relative w-full aspect-[2/3] rounded overflow-hidden">
                                                         <Image
@@ -384,24 +386,23 @@ export default function ReadingHistory() {
                                                         )}
                                                     </p>
                                                     <div className="flex flex-wrap gap-2 mt-2">
+                                                        {" "}
                                                         {entries.map(
                                                             (entry) => (
-                                                                <Link
+                                                                <ButtonLink
                                                                     key={
                                                                         entry.id
                                                                     }
                                                                     href={`/manga/${entry.mangaIdentifier}/${entry.chapterIdentifier}`}
-                                                                    className="block"
                                                                     prefetch={
                                                                         false
                                                                     }
+                                                                    className="py-1 px-4 text-sm font-medium text-white bg-accent-color hover:bg-accent-color/70 transition-colors"
                                                                 >
-                                                                    <Button className="py-1 px-4 text-sm font-medium text-white bg-accent-color hover:bg-accent-color/70 transition-colors">
-                                                                        {
-                                                                            entry.chapterTitle
-                                                                        }
-                                                                    </Button>
-                                                                </Link>
+                                                                    {
+                                                                        entry.chapterTitle
+                                                                    }
+                                                                </ButtonLink>
                                                             ),
                                                         )}
                                                     </div>
