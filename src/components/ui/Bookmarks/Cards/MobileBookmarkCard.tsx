@@ -1,12 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "../LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
 import { imageUrl } from "@/lib/utils";
 import { ConfirmDialogs } from "./ConfirmDialogs";
+import { ButtonLink } from "../../button-link";
 
 const MobileBookmarkCard: React.FC<{
     bookmark: Bookmark;
@@ -30,6 +30,8 @@ const MobileBookmarkCard: React.FC<{
                                 rel="noopener noreferrer"
                                 className="block"
                                 prefetch={false}
+                                tabIndex={-1}
+                                aria-hidden="true"
                             >
                                 <Image
                                     src={imageUrl(bookmark.image)}
@@ -56,17 +58,13 @@ const MobileBookmarkCard: React.FC<{
                         />
                     </div>
                     {/* Continue Reading Button */}
-                    <a
+                    <ButtonLink
                         href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                         rel="noopener noreferrer"
-                        className="block mt-2"
+                        className={`mt-2 py-4 px-6 w-full text-lg font-bold text-white ${buttonColor} transition-colors`}
                     >
-                        <Button
-                            className={`py-4 px-6 w-full text-lg font-bold text-white ${buttonColor} transition-colors`}
-                        >
-                            {continueReadingText}
-                        </Button>
-                    </a>
+                        {continueReadingText}
+                    </ButtonLink>
                 </div>
                 {LatestChapterInfo({ bookmark, colors: buttonColor })}
             </CardContent>

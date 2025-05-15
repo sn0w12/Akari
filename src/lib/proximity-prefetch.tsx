@@ -9,6 +9,7 @@ interface ProximityPrefetchProps {
     threshold?: number;
     predictionInterval?: number;
     noPrefetchAttribute?: string;
+    extraPrefetchAttribute?: string;
 }
 
 export function ProximityPrefetch({
@@ -16,6 +17,7 @@ export function ProximityPrefetch({
     threshold = 200,
     predictionInterval = 0,
     noPrefetchAttribute = "data-no-prefetch",
+    extraPrefetchAttribute = "data-extra-prefetch",
 }: ProximityPrefetchProps) {
     const router = useRouter();
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -23,13 +25,19 @@ export function ProximityPrefetch({
         new Set(),
     );
     const [links, setLinks] = useState<
-        { el: HTMLAnchorElement; href: string; rect: DOMRect }[]
+        {
+            el: HTMLAnchorElement;
+            href: string;
+            rect: DOMRect;
+            hasExtraPrefetch?: boolean;
+            extraPrefetchUrl?: string | null;
+        }[]
     >([]);
-
     const updateLinks = useCallback(() => {
         const anchors = Array.from(
             document.querySelectorAll('a[href^="/"]'),
         ) as HTMLAnchorElement[];
+
         setLinks(
             anchors
                 .map((el) => {
@@ -43,6 +51,12 @@ export function ProximityPrefetch({
                             el,
                             href,
                             rect: el.getBoundingClientRect(),
+                            hasExtraPrefetch: el.hasAttribute(
+                                extraPrefetchAttribute,
+                            ),
+                            extraPrefetchUrl: el.getAttribute(
+                                extraPrefetchAttribute,
+                            ),
                         };
                     }
                     return null;
@@ -51,9 +65,11 @@ export function ProximityPrefetch({
                 el: HTMLAnchorElement;
                 href: string;
                 rect: DOMRect;
+                hasExtraPrefetch?: boolean;
+                extraPrefetchUrl?: string | null;
             }[],
         );
-    }, [noPrefetchAttribute]);
+    }, [noPrefetchAttribute, extraPrefetchAttribute]);
 
     const calculateDistance = (
         x1: number,
@@ -70,7 +86,6 @@ export function ProximityPrefetch({
             y: rect.top + rect.height / 2,
         };
     };
-
     const prefetchNearbyRoutes = useCallback(async () => {
         if (!links.length) return;
 
@@ -87,13 +102,15 @@ export function ProximityPrefetch({
         });
 
         // Sort by distance
-        linksWithDistance.sort((a, b) => a.distance - b.distance);
-
-        // Prefetch the closest links that are within threshold
+        linksWithDistance.sort((a, b) => a.distance - b.distance); // Filter links based on threshold
         const closestLinks = linksWithDistance.filter(
             (link) => link.distance < threshold,
+        ); // Separately handle links with extraPrefetchAttribute - only at half the threshold distance
+        const extraPrefetchLinks = linksWithDistance.filter(
+            (link) => link.hasExtraPrefetch && link.distance < threshold / 2,
         );
 
+        // Regular prefetch for normal links
         const routesToPrefetch = closestLinks.map((link) => link.href);
 
         // Prefetch up to 3 routes at a time
@@ -102,6 +119,21 @@ export function ProximityPrefetch({
                 console.log("prefetching", route);
                 router.prefetch(route);
                 setPrefetchedRoutes((prev) => new Set([...prev, route]));
+            }
+        } // Direct fetch for extraPrefetch links
+        for (const link of extraPrefetchLinks) {
+            if (
+                link.extraPrefetchUrl &&
+                !prefetchedRoutes.has(link.extraPrefetchUrl)
+            ) {
+                console.log("extra fetching", link.extraPrefetchUrl);
+                // Use fetch on the URL specified in the extraPrefetchAttribute
+                fetch(link.extraPrefetchUrl).catch((err) => {
+                    console.error("Error fetching extra prefetch link:", err);
+                });
+                setPrefetchedRoutes(
+                    (prev) => new Set([...prev, link.extraPrefetchUrl!]),
+                );
             }
         }
     }, [links, mousePosition, prefetchedRoutes, router, threshold]);
@@ -116,7 +148,6 @@ export function ProximityPrefetch({
             window.removeEventListener("mousemove", handleMouseMove);
         };
     }, []);
-
     useEffect(() => {
         // Update links on mount and when DOM changes
         updateLinks();
@@ -130,13 +161,17 @@ export function ProximityPrefetch({
             childList: true,
             subtree: true,
             attributes: true,
-            attributeFilter: ["href"],
+            attributeFilter: [
+                "href",
+                noPrefetchAttribute,
+                extraPrefetchAttribute,
+            ],
         });
 
         return () => {
             observer.disconnect();
         };
-    }, [updateLinks]);
+    }, [updateLinks, noPrefetchAttribute, extraPrefetchAttribute]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {

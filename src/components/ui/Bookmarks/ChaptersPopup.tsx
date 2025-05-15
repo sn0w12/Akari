@@ -34,7 +34,7 @@ export const ChaptersPopup: React.FC<{
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const ENABLE_ANIMATIONS = getSetting("fancyAnimations");
-    const popupRef = useRef<HTMLDivElement>(null);
+    const popupRef = useRef<HTMLDialogElement>(null);
     const animationFrameRef = useRef<number | null>(null);
 
     // Initial positioning
@@ -98,6 +98,16 @@ export const ChaptersPopup: React.FC<{
             }
         };
 
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+
+        if (popupRef.current) {
+            popupRef.current.focus();
+        }
+
         // Initial position update
         updatePosition();
 
@@ -105,6 +115,7 @@ export const ChaptersPopup: React.FC<{
         document.body.addEventListener("click", handleOutsideClick);
         mainElement.addEventListener("scroll", handleScroll, { passive: true });
         window.addEventListener("resize", handleScroll, { passive: true });
+        document.addEventListener("keydown", handleKeyDown);
 
         return () => {
             document.body.removeEventListener("click", handleOutsideClick);
@@ -115,10 +126,10 @@ export const ChaptersPopup: React.FC<{
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [updatePosition, handleClose]);
+    }, [updatePosition, handleClose, onClose]);
 
     return (
-        <div
+        <dialog
             ref={popupRef}
             className={`absolute right-0 z-10 mt-2 p-4 bg-card border border-border rounded-md shadow-lg w-72 chapters-popup-content ${
                 ENABLE_ANIMATIONS
@@ -127,6 +138,8 @@ export const ChaptersPopup: React.FC<{
             }`}
             style={style}
             onClick={(e) => e.stopPropagation()}
+            open={true}
+            aria-label="Chapter selection"
         >
             <div className="flex justify-between items-center mb-1 pb-1 border-b">
                 <h4 className="font-semibold px-2">Chapters</h4>
@@ -135,6 +148,7 @@ export const ChaptersPopup: React.FC<{
                     size="sm"
                     onClick={handleClose}
                     className="h-8 w-8 p-0"
+                    aria-label="Close chapter popup"
                 >
                     <XIcon className="h-4 w-4" />
                 </Button>
@@ -162,6 +176,7 @@ export const ChaptersPopup: React.FC<{
                                     className={`block p-2 mr-1 ${index === 0 ? "bg-green-600 hover:bg-green-700" : "hover:bg-accent"} ${chapter.id === `chapter-${lastReadChapter}` ? "bg-indigo-600 hover:bg-indigo-700" : ""} rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
                                     data-no-prefetch
+                                    aria-label={`Read ${chapter.name} ${chapter.id === `chapter-${lastReadChapter}` ? "(Last Read)" : ""}`}
                                 >
                                     <div className="flex justify-between items-center">
                                         <span>{chapter.name}</span>
@@ -181,6 +196,6 @@ export const ChaptersPopup: React.FC<{
                     </div>
                 )}
             </div>
-        </div>
+        </dialog>
     );
 };

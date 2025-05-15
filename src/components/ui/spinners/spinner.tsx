@@ -25,7 +25,13 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 15 }) => {
         }
     }, []);
 
-    return <PropagateLoader color={spinnerColor} size={size} />;
+    return (
+        <PropagateLoader
+            aria-label="Loading"
+            color={spinnerColor}
+            size={size}
+        />
+    );
 };
 
 export default Spinner;

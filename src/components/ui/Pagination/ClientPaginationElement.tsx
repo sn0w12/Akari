@@ -4,19 +4,10 @@ import {
     Pagination,
     PaginationContent,
     PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/input";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import React, { useState } from "react";
+import { PaginationDialog } from "./PaginationDialog";
+import { Button } from "../button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationElementProps {
     currentPage: number;
@@ -31,80 +22,39 @@ export default function PaginationElement({
     handlePageChange,
     className,
 }: PaginationElementProps) {
-    const [inputPage, setInputPage] = useState(currentPage);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputPage(Number(e.target.value));
-    };
-
-    const handlePageSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (inputPage >= 1 && inputPage <= totalPages) {
-            handlePageChange(inputPage);
-            setIsDialogOpen(false);
-        }
-    };
-
     return (
         <Pagination
             className={`mb-6 flex items-center justify-center ${className}`}
         >
             <PaginationContent className="flex items-center">
-                <PaginationPrevious
+                <Button
+                    variant={"ghost"}
                     onClick={() =>
                         currentPage > 1 && handlePageChange(currentPage - 1)
                     }
-                    className={`w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
-                />
+                    className={`gap-1 pr-2.5 w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden md:block">Previous</span>
+                </Button>
 
                 {currentPage > 2 && (
                     <>
                         <PaginationItem>
-                            <PaginationLink
+                            <Button
+                                variant={"ghost"}
                                 onClick={() => handlePageChange(1)}
                                 className="cursor-pointer"
                             >
                                 1
-                            </PaginationLink>
+                            </Button>
                         </PaginationItem>
 
                         <PaginationItem>
-                            <Dialog
-                                open={isDialogOpen}
-                                onOpenChange={setIsDialogOpen}
-                            >
-                                <DialogTrigger asChild>
-                                    <span className="mx-2 cursor-pointer">
-                                        ...
-                                    </span>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Go to Page</DialogTitle>
-                                    </DialogHeader>
-                                    <form
-                                        onSubmit={handlePageSubmit}
-                                        className="space-y-4"
-                                    >
-                                        <Input
-                                            type="number"
-                                            value={inputPage}
-                                            onChange={handleInputChange}
-                                            className="w-full"
-                                            min={1}
-                                            max={totalPages}
-                                            placeholder={`Enter a page (1-${totalPages})`}
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
-                                        >
-                                            Go to Page
-                                        </button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                            <PaginationDialog
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                            />
                         </PaginationItem>
                     </>
                 )}
@@ -116,13 +66,13 @@ export default function PaginationElement({
                                 key={i}
                                 className={`${i + 1 === currentPage ? "" : "hidden md:flex"}`}
                             >
-                                <PaginationLink
+                                <Button
+                                    variant={"ghost"}
                                     onClick={() => handlePageChange(i + 1)}
-                                    isActive={currentPage === i + 1}
-                                    className="cursor-pointer"
+                                    className={`cursor-pointer ${currentPage === i + 1 ? "border" : ""}`}
                                 >
                                     {i + 1}
-                                </PaginationLink>
+                                </Button>
                             </PaginationItem>
                         );
                     }
@@ -132,61 +82,35 @@ export default function PaginationElement({
                 {currentPage < totalPages - 1 && (
                     <>
                         <PaginationItem>
-                            <Dialog
-                                open={isDialogOpen}
-                                onOpenChange={setIsDialogOpen}
-                            >
-                                <DialogTrigger asChild>
-                                    <span className="mx-2 cursor-pointer">
-                                        ...
-                                    </span>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Go to Page</DialogTitle>
-                                    </DialogHeader>
-                                    <form
-                                        onSubmit={handlePageSubmit}
-                                        className="space-y-4"
-                                    >
-                                        <Input
-                                            type="number"
-                                            value={inputPage}
-                                            onChange={handleInputChange}
-                                            className="w-full"
-                                            min={1}
-                                            max={totalPages}
-                                            placeholder={`Enter a page (1-${totalPages})`}
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="w-full rounded-md bg-primary py-2 text-primary-foreground"
-                                        >
-                                            Go to Page
-                                        </button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                            <PaginationDialog
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                            />
                         </PaginationItem>
 
                         <PaginationItem>
-                            <PaginationLink
+                            <Button
+                                variant={"ghost"}
                                 onClick={() => handlePageChange(totalPages)}
                                 className="cursor-pointer"
                             >
                                 {totalPages}
-                            </PaginationLink>
+                            </Button>
                         </PaginationItem>
                     </>
                 )}
 
-                <PaginationNext
+                <Button
+                    variant={"ghost"}
                     onClick={() =>
                         currentPage < totalPages &&
                         handlePageChange(currentPage + 1)
                     }
-                    className={`w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
-                />
+                    className={`gap-1 pr-2.5 w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center ${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                >
+                    <span className="hidden md:block">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
             </PaginationContent>
         </Pagination>
     );

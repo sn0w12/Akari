@@ -11,12 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { useEffect, useState } from "react";
-import {
-    Tooltip,
-    TooltipTrigger,
-    TooltipContent,
-    TooltipProvider,
-} from "./tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./tooltip";
+import { Cookie } from "lucide-react";
 
 function CookieConsentBody({
     onAcceptAll,
@@ -39,7 +35,11 @@ function CookieConsentBody({
                             Required for basic site functionality
                         </p>
                     </div>
-                    <Switch checked disabled />
+                    <Switch
+                        aria-label="Necessary Cookies, cannot be disabled"
+                        checked
+                        disabled
+                    />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -50,6 +50,7 @@ function CookieConsentBody({
                         </p>
                     </div>
                     <Switch
+                        aria-label="Functional Cookies"
                         checked={consent.functional}
                         onCheckedChange={(checked) =>
                             setConsent("functional", checked)
@@ -65,6 +66,7 @@ function CookieConsentBody({
                         </p>
                     </div>
                     <Switch
+                        aria-label="Analytics Cookies"
                         checked={consent.analytics}
                         disabled={window.location.hostname === "localhost"}
                         onCheckedChange={(checked) =>
@@ -155,38 +157,21 @@ export function CookieConsentFooter() {
 
     return (
         <>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <button
-                            onClick={() => setOpen(true)}
-                            className="text-gray-400 hover:text-gray-500"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-6 w-6"
-                            >
-                                <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-                                <path d="M8.5 8.5v.01" />
-                                <path d="M16 15.5v.01" />
-                                <path d="M12 12v.01" />
-                                <path d="M11 17v.01" />
-                                <path d="M7 14v.01" />
-                            </svg>
-                            <span className="sr-only">Cookie Preferences</span>
-                        </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Manage cookie preferences</TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="text-gray-400 hover:text-gray-500"
+                        aria-labelledby="cookie-preferences"
+                    >
+                        <Cookie className="h-6 w-6" />
+                        <span id="cookie-preferences" className="sr-only">
+                            Cookie Preferences
+                        </span>
+                    </button>
+                </TooltipTrigger>
+                <TooltipContent>Manage cookie preferences</TooltipContent>
+            </Tooltip>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>

@@ -25,7 +25,7 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 60 }) => {
         }
     }, []);
 
-    return <PuffLoader color={spinnerColor} size={size} />;
+    return <PuffLoader aria-label="Loading" color={spinnerColor} size={size} />;
 };
 
 export default Spinner;

@@ -7,7 +7,7 @@ const imgSize = "w-full h-auto aspect-[8.5/12] xl:h-[260px] 2xl:h-[340px]";
 export default function PopularSkeleton() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="mx-auto px-4 py-1">
+            <div className="mx-auto px-4 py-1">
                 <div className="flex gap-4">
                     <h2 className={`text-3xl font-bold mb-6`}>Popular Manga</h2>
                 </div>
@@ -23,7 +23,7 @@ export default function PopularSkeleton() {
                         </Card>
                     ))}
                 </div>
-            </main>
+            </div>
         </div>
     );
 }

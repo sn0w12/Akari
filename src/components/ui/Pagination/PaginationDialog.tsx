@@ -11,6 +11,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Button } from "../button";
 
 interface PaginationDialogProps {
     totalPages: number;
@@ -40,7 +41,13 @@ export function PaginationDialog({
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                <span className="mx-2 cursor-pointer">...</span>
+                <Button
+                    variant={"ghost"}
+                    className="mx-2 cursor-pointer"
+                    aria-label="Go to Page Dialog"
+                >
+                    ...
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -55,13 +62,14 @@ export function PaginationDialog({
                         min={1}
                         max={totalPages}
                         placeholder={`Enter a page (1-${totalPages})`}
+                        aria-label="Page Number Input"
                     />
-                    <button
+                    <Button
                         type="submit"
                         className="w-full rounded-md bg-primary py-2 text-primary-foreground"
                     >
                         Go to Page
-                    </button>
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>

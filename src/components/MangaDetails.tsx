@@ -58,9 +58,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     const manga = await fetchMangaDetails(id);
     if ("error" in manga) {
         return (
-            <main className="mx-auto p-4">
+            <div className="mx-auto p-4">
                 <ErrorComponent message={manga.error.message} />
-            </main>
+            </div>
         );
     }
 
@@ -69,8 +69,14 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     );
     const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
+    let score = manga.score;
+    const malScore = manga.malData?.score;
+    if (malScore !== undefined) {
+        score = malScore / 2;
+    }
+
     return (
-        <main className="mx-auto p-4 pb-0">
+        <div className="mx-auto p-4 pb-0">
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
@@ -250,7 +256,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     </div>
                                 </div>
                                 <div className="mt-4 flex-grow block lg:hidden xl:block lg:mb-4">
-                                    <ScoreDisplay score={manga.score} />
+                                    <ScoreDisplay score={score} />
                                 </div>
                             </div>
 
@@ -259,7 +265,11 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full">
-                            <Card className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto">
+                            <Card
+                                className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto"
+                                aria-label="Description"
+                                role="region"
+                            >
                                 <p>
                                     {manga.malData?.description ??
                                         manga.description}
@@ -274,6 +284,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             {shouldShowPopup && (
                 <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
             )}
-        </main>
+        </div>
     );
 }

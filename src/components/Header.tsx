@@ -90,6 +90,7 @@ export function HeaderComponent() {
                                                     segments,
                                                     9999,
                                                 )}
+                                                tabIndex={-1}
                                             >
                                                 {getSegmentDisplayName(
                                                     segment,

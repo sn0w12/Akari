@@ -47,14 +47,14 @@ export default async function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background`}
             >
                 <ProximityPrefetch>
-                    <SidebarProvider defaultOpen={false}>
-                        <BaseLayout gutter={false}>
-                            <ThemeProvider
-                                attribute="class"
-                                defaultTheme="system"
-                                enableSystem
-                                disableTransitionOnChange
-                            >
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <SidebarProvider defaultOpen={false}>
+                            <BaseLayout gutter={false}>
                                 <ToastProvider>
                                     <AnalyticsWrapper />
                                     <div
@@ -65,9 +65,9 @@ export default async function RootLayout({
                                     </div>
                                     <CookieConsent />
                                 </ToastProvider>
-                            </ThemeProvider>
-                        </BaseLayout>
-                    </SidebarProvider>
+                            </BaseLayout>
+                        </SidebarProvider>
+                    </ThemeProvider>
                 </ProximityPrefetch>
             </body>
         </html>

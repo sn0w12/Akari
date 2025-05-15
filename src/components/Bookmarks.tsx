@@ -78,14 +78,15 @@ export default function BookmarksPage({ page }: BookmarksPageProps) {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="mx-auto p-4">
+            <div className="mx-auto p-4">
+                <h1 className="sr-only">Your Manga Bookmarks</h1>
                 <BookmarksBody
                     bookmarks={bookmarks}
                     page={page}
                     totalPages={totalPages}
                     error={error}
                 />
-            </main>
+            </div>
         </div>
     );
 }

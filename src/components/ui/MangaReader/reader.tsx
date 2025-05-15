@@ -42,13 +42,28 @@ function createImagePromise(url: string): Promise<ChapterImage> {
     });
 }
 
+const badWidths = [1125, 1115];
+const badHeights = [404, 400];
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
-        const images = await Promise.all(
+        return await Promise.all(
             chapter.images.map((url) => createImagePromise(url)),
+        ).then((images) =>
+            images.filter((image, index) => {
+                if (image.width == undefined || image.height == undefined) {
+                    return false;
+                }
+                // Only check first and last images so we don't filter out real images
+                // that are in the middle of the chapter
+                if (index == 0 || index == images.length - 1) {
+                    const isBadImage =
+                        badWidths.includes(image.width) &&
+                        badHeights.includes(image.height);
+                    return !isBadImage;
+                }
+                return true;
+            }),
         );
-
-        return images;
     } catch (error) {
         console.error("Failed to get chapter images:", error);
         return chapter.images.map((url) => ({ url }));
@@ -198,7 +213,7 @@ export function Reader({ chapter }: ReaderProps) {
 
     return (
         <FooterProvider>
-            <div className={`${isInactive ? "cursor-none" : "cursor-pointer"}`}>
+            <div>
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
@@ -209,6 +224,7 @@ export function Reader({ chapter }: ReaderProps) {
                         chapter={chapter}
                         images={combinedImages}
                         toggleReaderMode={toggleReaderMode}
+                        isInactive={isInactive}
                     />
                 )}
             </div>

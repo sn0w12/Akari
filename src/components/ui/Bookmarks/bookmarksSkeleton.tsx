@@ -66,7 +66,7 @@ function mobileCard(index: number) {
 export default function BookmarksSkeleton() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <main className="mx-auto p-4">
+            <div className="mx-auto p-4">
                 <div className="relative mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <Button
@@ -110,7 +110,7 @@ export default function BookmarksSkeleton() {
                         </React.Fragment>
                     ))}
                 </div>
-            </main>
+            </div>
         </div>
     );
 }

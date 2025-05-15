@@ -53,7 +53,7 @@ export default function BookmarksGrid({
     }, [page, bookmarks]);
 
     return (
-        <>
+        <section>
             <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 xl:gap-6">
                 {updatedBookmarks.map((bookmark) => (
                     <div key={bookmark.noteid}>
@@ -73,6 +73,6 @@ export default function BookmarksGrid({
                 totalPages={totalPages}
                 className="mt-4 mb-0"
             />
-        </>
+        </section>
     );
 }

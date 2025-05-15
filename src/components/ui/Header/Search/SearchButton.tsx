@@ -62,6 +62,7 @@ export default function SearchButton() {
                     variant="ghost"
                     size="icon"
                     className="md:hidden border touch-manipulation"
+                    aria-label="Search Manga"
                 >
                     <Search className="h-5 w-5" />
                 </Button>

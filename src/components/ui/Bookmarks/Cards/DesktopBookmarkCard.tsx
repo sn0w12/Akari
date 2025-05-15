@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Bookmark } from "@/app/api/interfaces";
 import LatestChapterInfo from "../LatestChapterInfo";
 import { getButtonInfo } from "@/lib/bookmarks";
@@ -81,6 +82,8 @@ const DesktopBookmarkCard: React.FC<{
                     rel="noopener noreferrer"
                     className="block"
                     prefetch={false}
+                    tabIndex={-1}
+                    aria-hidden="true"
                 >
                     <Image
                         src={imageUrl(bookmark.image)}
@@ -92,8 +95,8 @@ const DesktopBookmarkCard: React.FC<{
                 </Link>
             </div>
             <CardContent className="px-4 flex flex-col flex-shrink justify-between relative w-full">
-                <div className="flex flex-col gap-2 w-full">
-                    <div className="flex items-top gap-2 mb-2 w-full justify-between">
+                <div className="flex flex-col gap-1 w-full">
+                    <div className="flex items-top gap-2 w-full justify-between">
                         <Link
                             href={`/manga/${mangaIdentifier}`}
                             prefetch={false}
@@ -107,28 +110,25 @@ const DesktopBookmarkCard: React.FC<{
                             setUpdatedBookmarks={setUpdatedBookmarks}
                         />
                     </div>
-                    <div className="flex flex-row gap-2 mb-1">
+                    <div className="flex flex-row gap-2 mb-2">
                         {/* Continue Reading Button */}
-                        <Link
+                        <ButtonLink
                             href={`/manga/${mangaIdentifier}/${continueReading.split("/").pop()}`}
                             rel="noopener noreferrer"
-                            className="block w-fit"
+                            className={`w-fit py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
                             prefetch={false}
                         >
-                            <Button
-                                className={`py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
-                            >
-                                <span className="hidden lg:inline lg:mr-1.5">
-                                    {continueReadingText.split("-")[0]}
-                                </span>
-                                <span>{continueReadingText.split("-")[1]}</span>
-                            </Button>
-                        </Link>
+                            <span className="hidden lg:inline lg:mr-1.5">
+                                {continueReadingText.split("-")[0]}
+                            </span>
+                            <span>{continueReadingText.split("-")[1]}</span>
+                        </ButtonLink>
                         <Button
                             ref={buttonRef}
                             className="w-10 p-0"
                             onClick={showChapters}
                             disabled={isLoading}
+                            aria-label="Browse   chapters"
                         >
                             {isLoading && !showPopup ? (
                                 <Loader2Icon className="h-4 w-4 animate-spin" />

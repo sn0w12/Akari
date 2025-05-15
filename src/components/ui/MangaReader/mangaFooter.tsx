@@ -4,6 +4,8 @@ import { Chapter } from "@/app/api/interfaces";
 import { Button } from "../button";
 import { ChapterSelector } from "./chapterSelector";
 import { FooterBookmarkButton } from "./footerBookmarkButton";
+import { useFooterVisibility } from "@/lib/footer-context";
+import { cn } from "@/lib/utils";
 
 export default function MangaFooter({
     chapterData,
@@ -12,6 +14,7 @@ export default function MangaFooter({
     chapterData: Chapter;
     toggleReaderMode: () => void;
 }) {
+    const { isTouchInteractionEnabled } = useFooterVisibility();
     const lastChapterExists = chapterData.lastChapter.split("/").length === 2;
     const nextChapterExists = chapterData.nextChapter.split("/").length === 2;
     const transformedChapters = chapterData.chapters.map((chapter) => ({
@@ -23,7 +26,13 @@ export default function MangaFooter({
 
     return (
         <div className="bg-background border-t border-border px-4 py-3">
-            <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div
+                className={cn(
+                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2",
+                    !isTouchInteractionEnabled &&
+                        "pointer-events-none md:pointer-events-auto",
+                )}
+            >
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left md:ml-10">
                     <h2 className="text-lg font-semibold">
                         <a
