@@ -42,8 +42,8 @@ function createImagePromise(url: string): Promise<ChapterImage> {
     });
 }
 
-const badWidths = [1125, 1115];
-const badHeights = [404, 400];
+const badWidths = [1125, 1115, 960];
+const badHeights = [404, 400, 345];
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
         return await Promise.all(
