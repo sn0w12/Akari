@@ -58,7 +58,7 @@
         "react-dom": "^19.0.0",
         "react-hook-form": "^7.55.0",
         "react-spinners": "^0.15.0",
-        "recharts": "^2.15.2",
+        "recharts": "^2.15.3",
         "tailwind-merge": "^3.0.2",
         "tailwindcss-animate": "^1.0.7",
         "tough-cookie": "^5.1.2",
