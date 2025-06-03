@@ -42,8 +42,8 @@ function createImagePromise(url: string): Promise<ChapterImage> {
     });
 }
 
-const badWidths = [1125, 1115, 960];
-const badHeights = [404, 400, 345];
+const badAspectRatio = 2.78;
+const aspectRatioTolerance = 0.01;
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
         return await Promise.all(
@@ -56,9 +56,10 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
                 // Only check first and last images so we don't filter out real images
                 // that are in the middle of the chapter
                 if (index == 0 || index == images.length - 1) {
+                    const aspectRatio = image.width / image.height;
                     const isBadImage =
-                        badWidths.includes(image.width) &&
-                        badHeights.includes(image.height);
+                        Math.abs(aspectRatio - badAspectRatio) <=
+                        aspectRatioTolerance;
                     return !isBadImage;
                 }
                 return true;
