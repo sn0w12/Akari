@@ -1,34 +1,15 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { saveReadingHistoryEntry } from "@/lib/supabase";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
-import { hasConsentFor } from "@/lib/cookies";
 
 export async function POST(request: Request): Promise<Response> {
     try {
         const { chapter } = (await request.json()) as {
             chapter: ReadingHistoryEntry;
         };
-        const {
-            chapterId,
-            chapterIdentifier,
-            chapterTitle,
-            mangaId,
-            mangaIdentifier,
-            mangaTitle,
-            image,
-        } = chapter;
+        const { chapterId, mangaId } = chapter;
 
         const cookieStore = await cookies();
-
-        const functionalConsent = hasConsentFor(cookieStore, "functional");
-        const canSaveMangaCookie = cookieStore.get(
-            "save_reading_history",
-        )?.value;
-        let canSaveManga = canSaveMangaCookie === "true";
-        if (canSaveMangaCookie === undefined && functionalConsent) {
-            canSaveManga = true;
-        }
 
         if (!mangaId || !chapterId) {
             return NextResponse.json(
