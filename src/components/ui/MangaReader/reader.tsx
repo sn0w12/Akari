@@ -56,6 +56,9 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
                 // Only check first and last images so we don't filter out real images
                 // that are in the middle of the chapter
                 if (index == 0 || index == images.length - 1) {
+                    if (chapter.images[index].toLowerCase().endsWith(".gif")) {
+                        return false;
+                    }
                     const aspectRatio = image.width / image.height;
                     const isBadImage =
                         Math.abs(aspectRatio - badAspectRatio) <=

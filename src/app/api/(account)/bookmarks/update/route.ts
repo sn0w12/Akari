@@ -1,42 +1,15 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { saveReadingHistoryEntry } from "@/lib/supabase";
 import { ReadingHistoryEntry } from "@/app/api/interfaces";
-import { hasConsentFor } from "@/lib/cookies";
 
 export async function POST(request: Request): Promise<Response> {
     try {
         const { chapter } = (await request.json()) as {
             chapter: ReadingHistoryEntry;
         };
-        const {
-            chapterId,
-            chapterIdentifier,
-            chapterTitle,
-            mangaId,
-            mangaIdentifier,
-            mangaTitle,
-            image,
-        } = chapter;
+        const { chapterId, mangaId } = chapter;
 
         const cookieStore = await cookies();
-        const userId = cookieStore.get("user_id")?.value;
-
-        const functionalConsent = hasConsentFor(cookieStore, "functional");
-        const canSaveMangaCookie = cookieStore.get(
-            "save_reading_history",
-        )?.value;
-        let canSaveManga = canSaveMangaCookie === "true";
-        if (canSaveMangaCookie === undefined && functionalConsent) {
-            canSaveManga = true;
-        }
-
-        if (!userId) {
-            return NextResponse.json(
-                { result: "error", data: "User data is required" },
-                { status: 401 },
-            );
-        }
 
         if (!mangaId || !chapterId) {
             return NextResponse.json(
@@ -72,6 +45,7 @@ export async function POST(request: Request): Promise<Response> {
             },
         );
 
+        /*
         await saveReadingHistoryEntry(userId, canSaveManga, {
             mangaIdentifier,
             mangaTitle,
@@ -84,6 +58,7 @@ export async function POST(request: Request): Promise<Response> {
             // Log error but don't fail the request
             console.error("Failed to save reading history to database:", err);
         });
+        */
 
         const data = await historyResponse.text();
         const result = JSON.parse(data);
