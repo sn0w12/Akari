@@ -49,8 +49,7 @@ export async function submitLogin(
 
         const data = await response.json();
         if (data.success) {
-            localStorage.setItem("accountName", data.data.username);
-            localStorage.setItem("auth", JSON.stringify(data.data));
+            localStorage.setItem("accountName", username);
         }
         return data;
     } catch (error) {

@@ -163,8 +163,8 @@ export default function AccountClient() {
                 token,
                 sessionCookies,
             );
-            if (response.success && response.data) {
-                setSavedUsername(response.data.username);
+            if (response.success) {
+                setSavedUsername(values.username);
                 window.location.reload();
             } else {
                 setLoginError(response.error || "Login failed");

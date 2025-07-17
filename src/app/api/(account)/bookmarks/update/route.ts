@@ -20,7 +20,6 @@ export async function POST(request: Request): Promise<Response> {
         } = chapter;
 
         const cookieStore = await cookies();
-        const userId = cookieStore.get("user_id")?.value;
 
         const functionalConsent = hasConsentFor(cookieStore, "functional");
         const canSaveMangaCookie = cookieStore.get(
@@ -29,13 +28,6 @@ export async function POST(request: Request): Promise<Response> {
         let canSaveManga = canSaveMangaCookie === "true";
         if (canSaveMangaCookie === undefined && functionalConsent) {
             canSaveManga = true;
-        }
-
-        if (!userId) {
-            return NextResponse.json(
-                { result: "error", data: "User data is required" },
-                { status: 401 },
-            );
         }
 
         if (!mangaId || !chapterId) {
@@ -72,6 +64,7 @@ export async function POST(request: Request): Promise<Response> {
             },
         );
 
+        /*
         await saveReadingHistoryEntry(userId, canSaveManga, {
             mangaIdentifier,
             mangaTitle,
@@ -84,6 +77,7 @@ export async function POST(request: Request): Promise<Response> {
             // Log error but don't fail the request
             console.error("Failed to save reading history to database:", err);
         });
+        */
 
         const data = await historyResponse.text();
         const result = JSON.parse(data);

@@ -15,43 +15,25 @@ export async function GET() {
         }),
     );
 
-    const loginPage = await client.get(
-        `https://${process.env.NEXT_MANGA_URL}/login`,
+    // Fetch the actual captcha image
+    const captchaResponse = await client.get(
+        `https://${process.env.NEXT_MANGA_URL}/captcha`,
         {
             withCredentials: true,
         },
     );
 
-    const $ = cheerio.load(loginPage.data);
-    const form = $("#login_form");
-    const token = form.find('input[name="_token"]').attr("value");
-    const captchaDiv = $(".captchar");
-    const captchaUrl = captchaDiv.find("img").attr("src");
-
-    if (!captchaUrl) {
-        return NextResponse.json(
-            { error: "Failed to retrieve captcha image" },
-            { status: 500 },
-        );
-    }
-
-    // Fetch the actual captcha image
-    const captchaResponse = await client.get(captchaUrl, {
-        withCredentials: true,
-        responseType: "arraybuffer",
-    });
-
-    // Convert the image to base64
-    const base64Image = Buffer.from(captchaResponse.data).toString("base64");
-    const captchaBase64 = `data:image/webp;base64,${base64Image}`;
+    // Parse HTML and extract <img> src
+    const $ = cheerio.load(captchaResponse.data.toString());
+    const captchaSrc: string | undefined = $("img").attr("src");
 
     const cookies = await jar.getCookies(
         `https://${process.env.NEXT_MANGA_URL}`,
     );
 
     const response = NextResponse.json({
-        token,
-        captcha: captchaBase64,
+        token: "",
+        captcha: captchaSrc,
         cookies: cookies.map((cookie) => cookie.toString()),
     });
 
@@ -60,6 +42,15 @@ export async function GET() {
     });
 
     return response;
+}
+
+interface LoginResponseData {
+    success: boolean;
+    data?: {
+        success: boolean;
+        message: string;
+    };
+    [key: string]: unknown;
 }
 
 export async function POST(request: NextRequest) {
@@ -84,22 +75,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const tokenResponse = await client.get(
-            `https://${process.env.NEXT_MANGA_URL}/user_auth/csrf_token`,
-            {
-                withCredentials: true,
-            },
-        );
-        const token = tokenResponse.data._token;
-
-        if (!token) {
-            return NextResponse.json(
-                { error: "Failed to retrieve token" },
-                { status: 400 },
-            );
-        }
-
-        if (!username || !password || !token) {
+        if (!username || !password) {
             return NextResponse.json(
                 { error: "Missing required fields" },
                 { status: 400 },
@@ -111,7 +87,6 @@ export async function POST(request: NextRequest) {
             new URLSearchParams({
                 username: username,
                 password: password,
-                _token: token,
                 captcha: captcha,
             }),
             {
@@ -127,25 +102,22 @@ export async function POST(request: NextRequest) {
             },
         );
 
-        if (loginResponse.data.success != true) {
+        const responseData = loginResponse.data as LoginResponseData;
+
+        if (responseData.success !== true) {
             return NextResponse.json(
                 { error: "Invalid credentials or token" },
                 { status: 400 },
             );
         }
 
-        const response = NextResponse.json(loginResponse.data);
+        const response = NextResponse.json(responseData);
         const responseCookies = await jar.getCookies(
             `https://${process.env.NEXT_MANGA_URL}`,
         );
         responseCookies.forEach((cookie) => {
             response.headers.append("Set-Cookie", cookie.toString());
         });
-
-        response.headers.append(
-            "Set-Cookie",
-            `user_id=${loginResponse.data.data.id}; Path=/; Max-Age=2592000;`,
-        );
 
         return response;
     } catch (error) {
