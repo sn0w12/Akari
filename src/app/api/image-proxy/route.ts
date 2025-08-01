@@ -30,7 +30,7 @@ export async function GET(req: Request): Promise<Response> {
                 "Sec-Fetch-Mode": "no-cors",
                 "Sec-Fetch-Site": "cross-site",
             },
-            timeout: 2000,
+            timeout: 500,
         });
 
         const imageBuffer = Buffer.from(response.data);
