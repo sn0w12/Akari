@@ -15,8 +15,6 @@ const size = {
     height: 630,
 };
 
-export const contentType = "image/png";
-
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string }> },
