@@ -36,6 +36,7 @@ import { useSettingsDialog } from "@/hooks/useSettingsDialog";
 import { useRouter } from "next/navigation";
 import { useShortcut } from "@/hooks/useShortcut";
 import { KeyboardShortcut } from "./ui/Shortcuts/KeyboardShortcuts";
+import { Suspense } from "react";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -120,7 +121,9 @@ export function BaseLayout({
 
     return (
         <div className="flex flex-col w-full md:overflow-hidden">
-            <HeaderComponent />
+            <Suspense fallback={null}>
+                <HeaderComponent />
+            </Suspense>
             <div className="bg-sidebar flex flex-1 mt-12 md:mt-0 md:overflow-y-auto">
                 <Sidebar
                     collapsible="icon"
