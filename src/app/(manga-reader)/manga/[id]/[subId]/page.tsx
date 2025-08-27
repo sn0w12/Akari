@@ -31,13 +31,13 @@ export async function generateMetadata({
             description,
             type: "website",
             siteName: "Manga Reader",
-            images: chapter.images?.[0],
+            images: `/api/manga/${mangaParams.id}/og`,
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
-            images: chapter.images?.[0],
+            images: `/api/manga/${mangaParams.id}/og`,
         },
     };
 }

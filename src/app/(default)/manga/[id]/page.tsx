@@ -42,13 +42,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         openGraph: {
             title: manga.name,
             description: manga.malData?.description ?? manga.description,
-            images: [manga.malData?.imageUrl ?? manga.imageUrl],
+            images: `/api/manga/${params.id}/og`,
         },
         twitter: {
             card: "summary_large_image",
             title: manga.name,
             description: manga.malData?.description ?? manga.description,
-            images: [manga.malData?.imageUrl ?? manga.imageUrl],
+            images: `/api/manga/${params.id}/og`,
         },
     };
 }
