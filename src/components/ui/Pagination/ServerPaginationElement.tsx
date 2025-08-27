@@ -37,29 +37,21 @@ export function PaginationElement({
                 {currentPage === 1 ? (
                     <PaginationPrevious className="w-12 px-4 md:pl-2 md:w-28 border justify-center pointer-events-none opacity-50" />
                 ) : (
-                    <Link
+                    <PaginationPrevious
                         href={createPageUrl(currentPage - 1)}
-                        passHref
-                        legacyBehavior
-                        prefetch={true}
-                    >
-                        <PaginationPrevious className="w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center" />
-                    </Link>
+                        className="w-12 px-4 md:pl-2 md:w-28 cursor-pointer border justify-center"
+                    />
                 )}
 
                 {currentPage > 2 && (
                     <>
                         <PaginationItem>
-                            <Link
+                            <PaginationLink
                                 href={createPageUrl(1)}
-                                passHref
-                                legacyBehavior
-                                prefetch={true}
+                                className="cursor-pointer"
                             >
-                                <PaginationLink className="cursor-pointer">
-                                    1
-                                </PaginationLink>
-                            </Link>
+                                1
+                            </PaginationLink>
                         </PaginationItem>
                         <PaginationItem>
                             <PaginationDialog
@@ -77,19 +69,13 @@ export function PaginationElement({
                                 key={i}
                                 className={`${i + 1 === currentPage ? "" : "hidden md:flex"}`}
                             >
-                                <Link
+                                <PaginationLink
+                                    isActive={currentPage === i + 1}
                                     href={createPageUrl(i + 1)}
-                                    passHref
-                                    legacyBehavior
-                                    prefetch={true}
+                                    className="cursor-pointer"
                                 >
-                                    <PaginationLink
-                                        isActive={currentPage === i + 1}
-                                        className="cursor-pointer"
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
-                                </Link>
+                                    {i + 1}
+                                </PaginationLink>
                             </PaginationItem>
                         );
                     }
@@ -105,16 +91,12 @@ export function PaginationElement({
                             />
                         </PaginationItem>
                         <PaginationItem>
-                            <Link
+                            <PaginationLink
                                 href={createPageUrl(totalPages)}
-                                passHref
-                                legacyBehavior
-                                prefetch={false}
+                                className="cursor-pointer"
                             >
-                                <PaginationLink className="cursor-pointer">
-                                    {totalPages}
-                                </PaginationLink>
-                            </Link>
+                                {totalPages}
+                            </PaginationLink>
                         </PaginationItem>
                     </>
                 )}
@@ -122,14 +104,10 @@ export function PaginationElement({
                 {currentPage === totalPages ? (
                     <PaginationNext className="w-12 px-4 md:pr-2 md:w-28 border justify-center pointer-events-none opacity-50" />
                 ) : (
-                    <Link
+                    <PaginationNext
                         href={createPageUrl(currentPage + 1)}
-                        passHref
-                        legacyBehavior
-                        prefetch={true}
-                    >
-                        <PaginationNext className="w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center" />
-                    </Link>
+                        className="w-12 px-4 md:pr-2 md:w-28 cursor-pointer border justify-center"
+                    />
                 )}
             </PaginationContent>
         </Pagination>
