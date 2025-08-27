@@ -63,7 +63,7 @@ module.exports = {
     experimental: {
         reactCompiler: true,
         useCache: true,
-        dynamicIO: true,
+        cacheComponents: true,
     },
     async headers() {
         return [
