@@ -1,8 +1,8 @@
 import { HeaderComponent } from "@/components/Header";
 import { Reader } from "./ui/MangaReader/reader";
 import ErrorComponent from "./ui/error";
-import { getUserHeaders } from "@/lib/serverUtils";
 import { fetchChapterData } from "@/lib/scraping";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface ChapterReaderProps {
     id: string;
@@ -10,13 +10,11 @@ interface ChapterReaderProps {
 }
 
 export default async function ChapterReader({ id, subId }: ChapterReaderProps) {
+    "use cache";
+    cacheLife("days");
+
     try {
-        const headersList = await getUserHeaders();
-        const mangaServer = headersList.cookie
-            .split(";")
-            .find((cookie) => cookie.trim().startsWith("manga_server="))
-            ?.split("=")[1];
-        const chapterData = await fetchChapterData(id, subId, mangaServer);
+        const chapterData = await fetchChapterData(id, subId);
 
         if ("result" in chapterData) {
             throw new Error(chapterData.data);
