@@ -20,6 +20,8 @@ import { unstable_cacheLife as cacheLife } from "next/cache";
 import { ReportMalLink } from "./ui/MangaDetails/ReportMalLink";
 import { imageUrl } from "@/lib/utils";
 import { fetchMangaDetails } from "@/lib/scraping";
+import MalImage from "./img/MAL-logo.webp";
+import AniImage from "./img/AniList-logo.webp";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -136,7 +138,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     prefetch={false}
                                 >
                                     <Image
-                                        src="/img/AniList-logo.webp"
+                                        src={AniImage}
                                         alt="AniList Logo"
                                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                         width={40}
@@ -153,7 +155,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                         prefetch={false}
                                     >
                                         <Image
-                                            src="/img/MAL-logo.webp"
+                                            src={MalImage}
                                             alt="MyAnimeList Logo"
                                             className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
                                             width={40}
