@@ -18,6 +18,10 @@ export async function generateMetadata({
 
     const title = `${chapter.title} - ${chapter.chapter}`;
     const description = `Read ${chapter.title} ${chapter.chapter}`;
+    let image = `/api/manga/${mangaParams.id}/og`;
+    if (process.env.NEXT_HOST) {
+        image = `https://${process.env.NEXT_HOST}/api/manga/${mangaParams.id}/og`;
+    }
 
     return {
         title,
@@ -30,14 +34,14 @@ export async function generateMetadata({
             title,
             description,
             type: "website",
-            siteName: "Manga Reader",
-            images: `/api/manga/${mangaParams.id}/og`,
+            siteName: "Akari Manga",
+            images: image,
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
-            images: `/api/manga/${mangaParams.id}/og`,
+            images: image,
         },
     };
 }

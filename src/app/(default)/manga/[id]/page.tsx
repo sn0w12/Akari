@@ -41,7 +41,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         manga.malData?.description ?? manga.description,
         300,
     );
-    const image = `/api/manga/${params.id}/og`;
+    let image = `/api/manga/${params.id}/og`;
+    if (process.env.NEXT_HOST) {
+        image = `https://${process.env.NEXT_HOST}/api/manga/${params.id}/og`;
+    }
 
     return {
         title: manga.name,
@@ -53,6 +56,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         openGraph: {
             title: manga.name,
             description,
+            type: "website",
+            siteName: "Akari Manga",
             images: image,
         },
         twitter: {
