@@ -36,6 +36,21 @@ export async function GET(
         statusOngoing: "#00a63e",
         statusOther: "#4a5565",
     };
+    const isDevelopment = process.env.NODE_ENV === "development";
+    let host =
+        req.headers.get("x-forwarded-host") ||
+        req.headers.get("host") ||
+        "localhost:3000";
+    let protocol =
+        req.headers.get("x-forwarded-proto") ||
+        (host.startsWith("localhost") ? "http" : "https");
+
+    if (!isDevelopment) {
+        if (process.env.NEXT_HOST) {
+            host = process.env.NEXT_HOST;
+            protocol = "https";
+        }
+    }
 
     const result = await fetchMangaDetails(id, userAgent, acceptLanguage);
 
@@ -92,13 +107,6 @@ export async function GET(
         statusBg = palette.statusOngoing;
 
     // Get absolute URL for favicon
-    const host =
-        req.headers.get("x-forwarded-host") ||
-        req.headers.get("host") ||
-        "localhost:3000";
-    const protocol =
-        req.headers.get("x-forwarded-proto") ||
-        (host.startsWith("localhost") ? "http" : "https");
     const baseUrl = `${protocol}://${host}`;
     const faviconUrl = `${baseUrl}/img/icon.png`;
 
