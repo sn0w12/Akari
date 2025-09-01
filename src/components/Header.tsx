@@ -4,7 +4,6 @@ import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useState } from "react";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
-import { TrackLogin } from "./ui/Header/TrackLogin";
 import { validateSecondaryAccounts } from "@/lib/secondaryAccounts";
 import BookmarksButton from "./ui/Bookmarks/BookmarksButton";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
@@ -121,7 +120,6 @@ export function HeaderComponent() {
 
                         {/* Theme Handler */}
                         <ThemeSetting />
-                        <TrackLogin />
                     </div>
                 </div>
             </div>

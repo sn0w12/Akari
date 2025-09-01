@@ -92,12 +92,6 @@
             "react": "^19.0.0",
             "react-dom": "^19.1.1"
         },
-        "@vercel/analytics": {
-            "next": "15.5.1-canary.11"
-        },
-        "@vercel/speed-insights": {
-            "next": "15.5.1-canary.11"
-        },
         "react-is": "^19.0.0-rc-69d4b800-20241021"
     }
 }
