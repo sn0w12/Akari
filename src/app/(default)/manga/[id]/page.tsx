@@ -6,6 +6,11 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+function truncate(text: string, maxLength: number): string {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength - 1).trimEnd() + "…";
+}
+
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const manga = await fetchMangaDetails(params.id);
@@ -32,23 +37,29 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         };
     }
 
+    const description = truncate(
+        manga.malData?.description ?? manga.description,
+        300,
+    );
+    const image = `/api/manga/${params.id}/og`;
+
     return {
         title: manga.name,
-        description: manga.malData?.description ?? manga.description,
+        description,
         robots: {
             index: false,
             follow: false,
         },
         openGraph: {
             title: manga.name,
-            description: manga.malData?.description ?? manga.description,
-            images: `/api/manga/${params.id}/og`,
+            description,
+            images: image,
         },
         twitter: {
             card: "summary_large_image",
             title: manga.name,
-            description: manga.malData?.description ?? manga.description,
-            images: `/api/manga/${params.id}/og`,
+            description,
+            images: image,
         },
     };
 }

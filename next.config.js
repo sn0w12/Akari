@@ -58,6 +58,11 @@ module.exports = {
                 pathname: "/**",
             },
         ],
+        localPatterns: [
+            {
+                pathname: "/api/image-proxy",
+            },
+        ],
         unoptimized: true,
     },
     experimental: {

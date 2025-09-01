@@ -15,8 +15,6 @@ const size = {
     height: 630,
 };
 
-export const contentType = "image/png";
-
 export async function GET(
     req: Request,
     props: { params: Promise<{ id: string }> },
@@ -40,13 +38,37 @@ export async function GET(
     const result = await fetchMangaDetails(id, userAgent, acceptLanguage);
 
     if ("error" in result) {
-        return new Response(
-            JSON.stringify({
-                error: result.error,
-            }),
+        return new ImageResponse(
+            (
+                <div
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: palette.background,
+                        color: palette.primary,
+                        fontFamily: "Geist",
+                        fontWeight: 900,
+                        fontSize: 64,
+                        letterSpacing: 2,
+                    }}
+                >
+                    Not Found
+                </div>
+            ),
             {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
+                width: size.width,
+                height: size.height,
+                fonts: [
+                    {
+                        name: "Geist",
+                        data: await geistBoldFont,
+                        weight: 700,
+                        style: "normal",
+                    },
+                ],
             },
         );
     }
@@ -85,7 +107,7 @@ export async function GET(
                     height: "100%",
                     display: "flex",
                     background: palette.background,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    fontFamily: "Geist",
                     position: "relative",
                 }}
             >
