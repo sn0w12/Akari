@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { Bookmark } from "../../interfaces";
-import { generateCacheHeaders } from "@/lib/cache";
+import { generateClientCacheHeaders } from "@/lib/cache";
 import { cookies } from "next/headers";
 import { getMangaArrayFromSupabase } from "@/lib/supabase";
 
@@ -164,7 +164,7 @@ export async function GET(request: Request): Promise<Response> {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json",
-                    ...generateCacheHeaders(120),
+                    ...generateClientCacheHeaders(120),
                 },
             },
         );
