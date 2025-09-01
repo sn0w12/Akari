@@ -90,7 +90,7 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## Online Usage
 
-Visit the [Akari Website](https://akari-psi.vercel.app/) to start reading manga instantly.
+Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga instantly.
 
 If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
 
