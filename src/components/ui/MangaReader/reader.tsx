@@ -7,6 +7,7 @@ import StripReader from "./Readers/strip-reader";
 import { FooterProvider } from "@/lib/footer-context";
 import MangaReaderSkeleton from "./mangaReaderSkeleton";
 import db from "@/lib/db";
+import Toast from "@/lib/toastWrapper";
 
 interface ReaderProps {
     chapter: Chapter;
@@ -17,7 +18,7 @@ export interface ImageGroups {
     length: number;
 }
 
-function createImagePromise(url: string): Promise<ChapterImage> {
+function createImagePromise(url: string, index: number): Promise<ChapterImage> {
     return new Promise((resolve) => {
         const img = new Image();
         const proxyUrl = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
@@ -46,6 +47,7 @@ function createImagePromise(url: string): Promise<ChapterImage> {
 
         img.onerror = () => {
             console.error(`Failed to load image: ${url}`);
+            new Toast(`Failed to load image: ${index}`, "error");
             resolve({
                 url: proxyUrl,
             });
@@ -61,7 +63,7 @@ const aspectRatioTolerance = 0.01;
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
         const images = await Promise.all(
-            chapter.images.map((url) => createImagePromise(url)),
+            chapter.images.map((url, index) => createImagePromise(url, index)),
         );
 
         const filteredByGif = images
