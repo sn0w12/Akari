@@ -76,7 +76,7 @@
         "@typescript-eslint/eslint-plugin": "^8.29.1",
         "@typescript-eslint/parser": "^8.32.0",
         "eslint": "^9.21.0",
-        "eslint-config-next": "15.3.2",
+        "eslint-config-next": "15.5.2",
         "eslint-config-prettier": "^10.1.2",
         "eslint-plugin-prettier": "^5.2.6",
         "postcss": "^8",
