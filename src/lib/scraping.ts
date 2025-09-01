@@ -57,7 +57,7 @@ export async function fetchMangaDetails(
 
     try {
         const jar = new CookieJar();
-        const baseUrl = "https://nelomanga.com";
+        const baseUrl = `https://${process.env.NEXT_MANGA_URL}`;
 
         const fetchDetails = async (): Promise<MangaDetails> => {
             time("Fetch Html");
@@ -297,7 +297,7 @@ export async function fetchChapterData(
 
         // Fetch the HTML content of the page
         const response = await wrappedInstance.get(
-            `https://nelomanga.com/manga/${id}/${subId}`,
+            `https://${process.env.NEXT_MANGA_URL}/manga/${id}/${subId}`,
             {
                 headers: {
                     cookie: `content_server=server${mangaServer}`,
@@ -448,7 +448,7 @@ export async function fetchGenreData(
 
     try {
         // Construct the search URL
-        const searchUrl = `https://nelomanga.com/genre/${genre.toLowerCase()}?page=${page}&orby=${orderBy}`;
+        const searchUrl = `https://${process.env.NEXT_MANGA_URL}/genre/${genre.toLowerCase()}?page=${page}&orby=${orderBy}`;
         const result = await processMangaListTest(searchUrl, page);
 
         return result;
