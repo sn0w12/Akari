@@ -91,10 +91,10 @@ export function clearPerformanceMetrics() {
     });
 }
 
-export function imageUrl(url: string) {
+export function imageUrl(url: string, baseUrl?: string): string {
     if (url.includes("myanimelist")) {
         return url;
     }
 
-    return `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+    return `${baseUrl || ""}/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
 }

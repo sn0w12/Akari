@@ -35,7 +35,7 @@ export async function GET(req: Request): Promise<Response> {
 
         const imageBuffer = Buffer.from(response.data);
         const headers = {
-            "Content-Type": "image/webp",
+            "Content-Type": "image/jpeg",
         };
 
         if (cache === "false") {

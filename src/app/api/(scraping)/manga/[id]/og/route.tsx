@@ -1,7 +1,9 @@
 import { fetchMangaDetails } from "@/lib/scraping";
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
+import { imageUrl } from "@/lib/utils";
 import path from "path";
+import sharp from "sharp";
 
 const geistRegularFont = readFile(
     path.resolve(process.cwd(), "public/fonts/Geist-Regular.ttf"),
@@ -97,7 +99,29 @@ export async function GET(
     const protocol =
         req.headers.get("x-forwarded-proto") ||
         (host.startsWith("localhost") ? "http" : "https");
-    const faviconUrl = `${protocol}://${host}/img/icon.png`;
+    const baseUrl = `${protocol}://${host}`;
+    const faviconUrl = `${baseUrl}/img/icon.png`;
+
+    let coverDataUrl = "";
+    try {
+        const coverResponse = await fetch(imageUrl(cover, baseUrl));
+        if (!coverResponse.ok) throw new Error("Failed to fetch cover");
+        const coverBuffer = await coverResponse.arrayBuffer();
+        const image = sharp(Buffer.from(coverBuffer));
+        const metadata = await image.metadata();
+        if (metadata.format === "webp") {
+            // Convert WebP to PNG
+            const pngBuffer = await image.png().toBuffer();
+            coverDataUrl = `data:image/png;base64,${pngBuffer.toString("base64")}`;
+        } else {
+            // Use original if not WebP
+            coverDataUrl = `data:image/${metadata.format};base64,${Buffer.from(coverBuffer).toString("base64")}`;
+        }
+    } catch (error) {
+        console.error("Error processing cover image:", error);
+        // Fallback: Use original URL if conversion fails
+        coverDataUrl = imageUrl(cover, baseUrl);
+    }
 
     return new ImageResponse(
         (
@@ -113,8 +137,7 @@ export async function GET(
             >
                 {/* Cover */}
                 <img
-                    src={cover.replace(".webp", ".jpg")}
-                    alt={title}
+                    src={coverDataUrl}
                     width={size.width}
                     style={{
                         filter: "blur(15px) brightness(0.5)",
@@ -137,8 +160,7 @@ export async function GET(
                     }}
                 >
                     <img
-                        src={cover.replace(".webp", ".jpg")}
-                        alt={title}
+                        src={coverDataUrl}
                         width={420}
                         height={size.height}
                         style={{
