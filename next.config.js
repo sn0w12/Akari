@@ -63,7 +63,7 @@ module.exports = {
                 pathname: "/api/image-proxy",
             },
         ],
-        unoptimized: true,
+        unoptimized: false,
     },
     experimental: {
         reactCompiler: true,
