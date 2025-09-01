@@ -23,11 +23,25 @@ function createImagePromise(url: string): Promise<ChapterImage> {
         const proxyUrl = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
 
         img.onload = () => {
-            resolve({
-                url: proxyUrl,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-            });
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const dataUrl = canvas.toDataURL("image/jpeg");
+                resolve({
+                    url: dataUrl,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                });
+            } else {
+                resolve({
+                    url: proxyUrl,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                });
+            }
         };
 
         img.onerror = () => {
@@ -46,19 +60,27 @@ const badAspectRatio = 2.78;
 const aspectRatioTolerance = 0.01;
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
-        return await Promise.all(
+        const images = await Promise.all(
             chapter.images.map((url) => createImagePromise(url)),
-        ).then((images) =>
-            images.filter((image, index) => {
+        );
+
+        const filteredByGif = images
+            .map((image, index) => ({ image, originalIndex: index }))
+            .filter(
+                ({ image, originalIndex }) =>
+                    !chapter.images[originalIndex]
+                        .toLowerCase()
+                        .split("?")[0]
+                        .endsWith(".gif"),
+            );
+
+        // Then, filter based on aspect ratio for first and last
+        const finalFiltered = filteredByGif
+            .filter(({ image }, index, array) => {
                 if (image.width == undefined || image.height == undefined) {
                     return false;
                 }
-                // Only check first and last images so we don't filter out real images
-                // that are in the middle of the chapter
-                if (index == 0 || index == images.length - 1) {
-                    if (chapter.images[index].toLowerCase().endsWith(".gif")) {
-                        return false;
-                    }
+                if (index === 0 || index === array.length - 1) {
                     const aspectRatio = image.width / image.height;
                     const isBadImage =
                         Math.abs(aspectRatio - badAspectRatio) <=
@@ -66,8 +88,10 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
                     return !isBadImage;
                 }
                 return true;
-            }),
-        );
+            })
+            .map(({ image }) => image);
+
+        return finalFiltered;
     } catch (error) {
         console.error("Failed to get chapter images:", error);
         return chapter.images.map((url) => ({ url }));
@@ -79,6 +103,7 @@ export function Reader({ chapter }: ReaderProps) {
         undefined,
     );
     const hasCachedRef = useRef(false);
+    const [chapterImages, setChapterImages] = useState<ChapterImage[]>([]);
     const [combinedImages, setCombinedImages] = useState<ImageGroups>({
         length: 0,
     });
@@ -91,6 +116,7 @@ export function Reader({ chapter }: ReaderProps) {
         async function calculateImageGroups() {
             setIsLoading(true);
             const chapterImages = await getChapterImages(chapter);
+            setChapterImages(chapterImages);
             const newCombinedImages: ImageGroups = { length: 0 };
             const cutoffHeight = 1500;
             let totalCutoffImages = 0;
@@ -221,6 +247,7 @@ export function Reader({ chapter }: ReaderProps) {
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
+                        images={chapterImages}
                         toggleReaderMode={toggleReaderMode}
                     />
                 ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Chapter } from "@/app/api/interfaces";
+import { Chapter, ChapterImage } from "@/app/api/interfaces";
 import Image from "next/image";
 import MangaFooter from "../mangaFooter";
 import { useEffect, useRef, useState } from "react";
@@ -36,11 +36,13 @@ function throttle<T extends (...args: unknown[]) => unknown>(
 
 interface StripReaderProps {
     chapter: Chapter;
+    images: ChapterImage[];
     toggleReaderMode: () => void;
 }
 
 export default function StripReader({
     chapter,
+    images,
     toggleReaderMode,
 }: StripReaderProps) {
     const router = useRouter();
@@ -142,13 +144,13 @@ export default function StripReader({
                 id="reader"
                 className="flex flex-col items-center bg-transparent overflow-auto"
             >
-                {chapter.images.map((image, index) => (
+                {images.map((img, index) => (
                     <Image
                         key={index}
-                        src={`/api/image-proxy?imageUrl=${encodeURIComponent(image)}`}
+                        src={img.url}
                         alt={`${chapter.title} - ${chapter.chapter} Page ${index + 1}`}
-                        width={700}
-                        height={1080}
+                        width={img.width || 720}
+                        height={img.height || 1500}
                         className="object-contain w-128 z-20 relative"
                         loading={"eager"}
                         priority={index < 3}

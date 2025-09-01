@@ -185,8 +185,8 @@ export default function PageReader({
                                 alt={`Page ${currentPage + 1}, panel ${idx + 1}`}
                                 className="w-full h-auto object-contain"
                                 loading="eager"
-                                width={img.width || 800}
-                                height={img.height || 1200}
+                                width={720}
+                                height={img.height || 1500}
                                 style={{ maxHeight: relativeHeight }}
                             />
                         );
@@ -205,8 +205,8 @@ export default function PageReader({
                             alt={`Next page preview`}
                             className="w-full h-auto object-contain"
                             loading="eager"
-                            width={img.width || 800}
-                            height={img.height || 1200}
+                            width={720}
+                            height={img.height || 1500}
                         />
                     ))}
                 </div>
