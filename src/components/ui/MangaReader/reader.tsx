@@ -69,7 +69,7 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
         const filteredByGif = images
             .map((image, index) => ({ image, originalIndex: index }))
             .filter(
-                ({ image, originalIndex }) =>
+                ({ originalIndex }) =>
                     !chapter.images[originalIndex]
                         .toLowerCase()
                         .split("?")[0]
