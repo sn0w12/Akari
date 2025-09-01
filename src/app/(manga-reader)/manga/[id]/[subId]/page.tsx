@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ChapterReader from "@/components/MangaReader";
 import { fetchChapterData } from "@/lib/scraping";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -9,6 +10,9 @@ interface MangaReaderProps {
 export async function generateMetadata({
     params,
 }: MangaReaderProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const mangaParams = await params;
     const chapter = await fetchChapterData(mangaParams.id, mangaParams.subId);
 

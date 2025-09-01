@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/MangaDetails";
 import { fetchMangaDetails } from "@/lib/scraping";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -12,6 +13,9 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const params = await props.params;
     const manga = await fetchMangaDetails(params.id);
 

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import AuthorPage from "@/components/Author";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 interface PageProps {
     params: Promise<{ id: string; sort?: string }>;
@@ -11,6 +12,9 @@ interface PageProps {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name}`;
