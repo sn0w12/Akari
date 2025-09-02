@@ -15,9 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import ErrorComponent from "./ui/error";
-import { MalPopup } from "./ui/MangaDetails/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { ReportMalLink } from "./ui/MangaDetails/ReportMalLink";
 import { imageUrl } from "@/lib/utils";
 import { fetchMangaDetails } from "@/lib/scraping";
 import MalImage from "./img/MAL-logo.webp";
@@ -69,7 +67,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     manga.alternativeNames = manga.alternativeNames?.filter(
         (name: string) => name.trim() !== "",
     );
-    const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
     let score = manga.score;
     const malScore = manga.malData?.score;
@@ -162,7 +159,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                             height={40}
                                         />
                                     </Link>
-                                    <ReportMalLink mangaId={manga.identifier} />
                                 </div>
                             )}
                         </div>
@@ -283,9 +279,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             <ChaptersSection manga={manga} />
-            {shouldShowPopup && (
-                <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
-            )}
         </div>
     );
 }
