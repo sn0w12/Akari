@@ -57,7 +57,6 @@ export async function GET(req: Request): Promise<Response> {
 
         return new NextResponse(imageBuffer, { headers });
     } catch (error) {
-        console.error("Error fetching image:", error);
         return NextResponse.json(
             { error: "Failed to fetch image" },
             { status: 500 },
