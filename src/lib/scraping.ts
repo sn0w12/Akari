@@ -238,15 +238,13 @@ export async function fetchMangaDetails(
 
         mangaDetails.malData = malData;
         if (mangaDetails.malData) {
-            if (mangaDetails.malData.description === "") {
+            if (mangaDetails.malData.description === null) {
                 mangaDetails.malData.description = mangaDetails.description;
             }
             const removeSourcePattern = /\(Source:.*?\)\s*/gi;
-            mangaDetails.malData.description =
-                mangaDetails.malData.description.replace(
-                    removeSourcePattern,
-                    "",
-                );
+            mangaDetails.malData.description = (
+                mangaDetails.malData.description ?? ""
+            ).replace(removeSourcePattern, "");
         }
 
         timeEnd("Total Manga Fetch");
@@ -283,140 +281,154 @@ export async function fetchChapterData(
     const jar = new CookieJar();
 
     try {
-        time("Fetch HTML");
-        const instance = axios.create({
-            headers: {
-                "User-Agent": "Mozilla/5.0",
-                "Accept-Language": "en-US,en;q=0.9",
-                Referer: "https://ddos-guard.net",
-            },
-        });
-
-        const wrappedInstance = wrapper(instance);
-        wrappedInstance.defaults.jar = jar;
-
-        // Fetch the HTML content of the page
-        const response = await wrappedInstance.get(
-            `https://${process.env.NEXT_MANGA_URL}/manga/${id}/${subId}`,
-            {
+        const fetchChapterDetails = async (): Promise<Chapter> => {
+            time("Fetch HTML");
+            const instance = axios.create({
                 headers: {
-                    cookie: `content_server=server${mangaServer}`,
                     "User-Agent": "Mozilla/5.0",
                     "Accept-Language": "en-US,en;q=0.9",
+                    Referer: "https://ddos-guard.net",
                 },
-                timeout: 10000,
-            },
-        );
-        const html = response.data;
-        timeEnd("Fetch HTML");
+            });
 
-        time("Parse HTML");
-        // Load the HTML into cheerio for parsing
-        const $ = cheerio.load(html);
-        timeEnd("Parse HTML");
+            const wrappedInstance = wrapper(instance);
+            wrappedInstance.defaults.jar = jar;
 
-        time("Extract Data");
-        // Extract the title and chapter name from the panel-breadcrumb
-        const breadcrumbLinks = $(".breadcrumb a");
-        const mangaTitle = $(breadcrumbLinks[1]).text();
-        const parent =
-            $(breadcrumbLinks[1]).attr("href")?.split("/").pop() || "";
-        const chapterTitle = $(breadcrumbLinks[2]).text();
-        const chapters: Chapter["chapters"] = [];
-        const chapterSelect = $(".navi-change-chapter").first();
-        chapterSelect.find("option").each((index, element) => {
-            const chapterValue = $(element).attr("data-c");
-            const chapterText = $(element).text();
-            if (chapterValue) {
-                chapters.push({
-                    value:
-                        chapterValue
-                            .split("/")
-                            .pop()
-                            ?.replace("chapter-", "")
-                            ?.replace("-", ".") || "",
-                    label: cleanText(chapterText),
-                });
-            }
-        });
+            // Fetch the HTML content of the page
+            const response = await wrappedInstance.get(
+                `https://${process.env.NEXT_MANGA_URL}/manga/${id}/${subId}`,
+                {
+                    headers: {
+                        cookie: `content_server=server${mangaServer}`,
+                        "User-Agent": "Mozilla/5.0",
+                        "Accept-Language": "en-US,en;q=0.9",
+                    },
+                    timeout: 10000,
+                },
+            );
+            const html = response.data;
+            timeEnd("Fetch HTML");
 
-        // Extract all image URLs from the container-chapter-reader div
-        const imageElements = $(".container-chapter-reader img");
-        const imageUrls: string[] = [];
-        imageElements.each((index, element) => {
-            const imageUrl = $(element).attr("src");
-            if (imageUrl) imageUrls.push(imageUrl);
-        });
+            time("Parse HTML");
+            // Load the HTML into cheerio for parsing
+            const $ = cheerio.load(html);
+            timeEnd("Parse HTML");
 
-        const pages = imageUrls.length;
+            time("Extract Data");
+            // Extract the title and chapter name from the panel-breadcrumb
+            const breadcrumbLinks = $(".breadcrumb a");
+            const mangaTitle = $(breadcrumbLinks[1]).text();
+            const parent =
+                $(breadcrumbLinks[1]).attr("href")?.split("/").pop() || "";
+            const chapterTitle = $(breadcrumbLinks[2]).text();
+            const chapters: Chapter["chapters"] = [];
+            const chapterSelect = $(".navi-change-chapter").first();
+            chapterSelect.find("option").each((index, element) => {
+                const chapterValue = $(element).attr("data-c");
+                const chapterText = $(element).text();
+                if (chapterValue) {
+                    chapters.push({
+                        value:
+                            chapterValue
+                                .split("/")
+                                .pop()
+                                ?.replace("chapter-", "")
+                                ?.replace("-", ".") || "",
+                        label: cleanText(chapterText),
+                    });
+                }
+            });
 
-        const nextChapterLink = $(".back").attr("href");
-        const nextChapter = nextChapterLink
-            ? `${id}/${nextChapterLink.split("/").pop()}`
-            : id;
-        const lastChapterLink = $(".next").attr("href");
-        const lastChapter = lastChapterLink
-            ? `${id}/${lastChapterLink.split("/").pop()}`
-            : id;
+            // Extract all image URLs from the container-chapter-reader div
+            const imageElements = $(".container-chapter-reader img");
+            const imageUrls: string[] = [];
+            imageElements.each((index, element) => {
+                const imageUrl = $(element).attr("src");
+                if (imageUrl) imageUrls.push(imageUrl);
+            });
 
-        const imageContainer = $(".container-chapter-reader");
-        const token = imageContainer.find('input[name="_token"]').attr("value");
+            const pages = imageUrls.length;
 
-        const scriptTags = $("script");
+            const nextChapterLink = $(".back").attr("href");
+            const nextChapter = nextChapterLink
+                ? `${id}/${nextChapterLink.split("/").pop()}`
+                : id;
+            const lastChapterLink = $(".next").attr("href");
+            const lastChapter = lastChapterLink
+                ? `${id}/${lastChapterLink.split("/").pop()}`
+                : id;
 
-        let mangaId: string | null = null;
-        let chapterId: string | null = null;
+            const imageContainer = $(".container-chapter-reader");
+            const token = imageContainer
+                .find('input[name="_token"]')
+                .attr("value");
 
-        // Loop through script tags to find the one containing glb_story_data
-        scriptTags.each((i, elem) => {
-            const scriptContent = $(elem).html();
+            const scriptTags = $("script");
 
-            if (scriptContent) {
-                // Extract glb_story_data and glb_chapter_data using regex
-                if (scriptContent.includes("window.chapter_data")) {
-                    const comicIdMatch = scriptContent.match(
-                        /"comic_id":\s*"(\d+)"/,
-                    );
-                    const chapterIdMatch = scriptContent.match(
-                        /"chapter_id":\s*"(\d+)"/,
-                    );
+            let mangaId: string | null = null;
+            let chapterId: string | null = null;
 
-                    if (comicIdMatch && comicIdMatch[1]) {
-                        mangaId = comicIdMatch[1];
-                    }
-                    if (chapterIdMatch && chapterIdMatch[1]) {
-                        chapterId = chapterIdMatch[1];
+            // Loop through script tags to find the one containing glb_story_data
+            scriptTags.each((i, elem) => {
+                const scriptContent = $(elem).html();
+
+                if (scriptContent) {
+                    // Extract glb_story_data and glb_chapter_data using regex
+                    if (scriptContent.includes("window.chapter_data")) {
+                        const comicIdMatch = scriptContent.match(
+                            /"comic_id":\s*"(\d+)"/,
+                        );
+                        const chapterIdMatch = scriptContent.match(
+                            /"chapter_id":\s*"(\d+)"/,
+                        );
+
+                        if (comicIdMatch && comicIdMatch[1]) {
+                            mangaId = comicIdMatch[1];
+                        }
+                        if (chapterIdMatch && chapterIdMatch[1]) {
+                            chapterId = chapterIdMatch[1];
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        const responseData: Chapter = {
-            id: subId,
-            title: cleanText(mangaTitle),
-            chapter: cleanText(chapterTitle),
-            chapters: chapters,
-            pages: pages,
-            parentId: parent,
-            nextChapter: nextChapter,
-            lastChapter: lastChapter,
-            images: imageUrls,
-            mangaId: mangaId,
-            chapterId: chapterId,
-            token: token || "",
+            const responseData: Chapter = {
+                id: subId,
+                title: cleanText(mangaTitle),
+                chapter: cleanText(chapterTitle),
+                chapters: chapters,
+                pages: pages,
+                parentId: parent,
+                nextChapter: nextChapter,
+                lastChapter: lastChapter,
+                images: imageUrls,
+                mangaId: mangaId,
+                chapterId: chapterId,
+                token: token || "",
+                type: null,
+            };
+            timeEnd("Extract Data");
+
+            // Process unique chapters after extraction
+            const uniqueChapters: Chapter["chapters"] = Array.from(
+                new Map<string, Chapter["chapters"][0]>(
+                    responseData.chapters.map((item) => [item.value, item]),
+                ).values(),
+            );
+            responseData.chapters = uniqueChapters;
+
+            return responseData;
         };
-        timeEnd("Extract Data");
+
+        const [chapterData, malData] = await Promise.all([
+            fetchChapterDetails(),
+            getMangaFromSupabase(id),
+        ]);
+
+        chapterData.type = malData?.type || null;
+
         timeEnd("Total Chapter Fetch");
-
-        // Process unique chapters after extraction
-        const uniqueChapters: Chapter["chapters"] = Array.from(
-            new Map<string, Chapter["chapters"][0]>(
-                responseData.chapters.map((item) => [item.value, item]),
-            ).values(),
-        );
-        responseData.chapters = uniqueChapters;
-
-        return responseData;
+        return chapterData;
     } catch (error: unknown) {
         timeEnd("Total Chapter Fetch");
         console.error("Error fetching chapter data:", error);

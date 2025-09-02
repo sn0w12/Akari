@@ -91,7 +91,7 @@ export async function GET(
     }
 
     // Prepare data
-    const cover = result.malData?.imageUrl ?? result.imageUrl;
+    const cover = result.malData?.image ?? result.imageUrl;
     const title = result.name;
     const genres = result.genres;
     const score = result.malData?.score

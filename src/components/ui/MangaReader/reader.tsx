@@ -1,12 +1,11 @@
 "use client";
 
-import { Chapter, ChapterImage, HqMangaCacheItem } from "@/app/api/interfaces";
+import { Chapter, ChapterImage } from "@/app/api/interfaces";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PageReader from "./Readers/page-reader";
 import StripReader from "./Readers/strip-reader";
 import { FooterProvider } from "@/lib/footer-context";
 import MangaReaderSkeleton from "./mangaReaderSkeleton";
-import db from "@/lib/db";
 import Toast from "@/lib/toastWrapper";
 
 interface ReaderProps {
@@ -160,7 +159,11 @@ export function Reader({ chapter }: ReaderProps) {
                 console.log(
                     `Total images: ${chapterImages.length}, Cutoff images: ${totalCutoffImages}`,
                 );
-                setIsStripMode(totalCutoffImages >= chapterImages.length / 1.5);
+                const isStrip =
+                    chapter.type !== null
+                        ? chapter.type !== "Manga"
+                        : totalCutoffImages >= chapterImages.length / 1.5;
+                setIsStripMode(isStrip);
             }
             setIsLoading(false);
         }
@@ -171,16 +174,20 @@ export function Reader({ chapter }: ReaderProps) {
     useEffect(() => {
         if (chapter && chapter.images.length > 0) {
             const checkStripModeCache = async () => {
-                const mangaCache =
-                    (await db.getCache(db.hqMangaCache, chapter.parentId)) ??
-                    ({} as HqMangaCacheItem);
+                const userChosenMode = localStorage.getItem("readerMode");
+                const isStrip =
+                    userChosenMode === "strip"
+                        ? true
+                        : userChosenMode === "page"
+                          ? false
+                          : null;
 
                 // Check if the chapter's parentId is cached
-                if (mangaCache?.is_strip === true) {
+                if (isStrip === true) {
                     setIsStripMode(true);
                     hasCachedRef.current = true;
                     return;
-                } else if (mangaCache?.is_strip === false) {
+                } else if (isStrip === false) {
                     setIsStripMode(false);
                     hasCachedRef.current = true;
                     return;
@@ -194,11 +201,7 @@ export function Reader({ chapter }: ReaderProps) {
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
-        const mangaCache =
-            (await db.getCache(db.hqMangaCache, chapter!.parentId)) ??
-            ({} as HqMangaCacheItem);
-        mangaCache.is_strip = isStrip;
-        await db.updateCache(db.hqMangaCache, chapter!.parentId, mangaCache);
+        localStorage.setItem("readerMode", isStrip ? "strip" : "page");
     }
 
     function toggleReaderMode(override: boolean = true) {

@@ -70,7 +70,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
 
     let score = manga.score;
     const malScore = manga.malData?.score;
-    if (malScore !== undefined) {
+    if (malScore !== undefined && malScore !== null) {
         score = malScore / 2;
     }
 
@@ -80,9 +80,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={imageUrl(
-                            manga.malData?.imageUrl ?? manga.imageUrl,
-                        )}
+                        src={imageUrl(manga.malData?.image ?? manga.imageUrl)}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
@@ -127,9 +125,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
-                            {manga.malData?.aniUrl && (
+                            {manga.malData?.ani_id && (
                                 <Link
-                                    href={manga.malData.aniUrl}
+                                    href={`https://anilist.co/manga/${manga.malData.ani_id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     prefetch={false}
@@ -143,10 +141,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     />
                                 </Link>
                             )}
-                            {manga.malData?.malUrl && (
+                            {manga.malData?.mal_id && (
                                 <div className="flex items-center gap-2">
                                     <Link
-                                        href={manga.malData.malUrl}
+                                        href={`https://myanimelist.net/manga/${manga.malData.mal_id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         prefetch={false}

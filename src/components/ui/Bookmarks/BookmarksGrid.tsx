@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
 import { Bookmark } from "@/app/api/interfaces";
 import DesktopBookmarkCard from "./Cards/DesktopBookmarkCard";
 import MobileBookmarkCard from "./Cards/MobileBookmarkCard";
-import { getHqImage } from "@/lib/utils";
-import db from "@/lib/db";
 
 interface BookmarksGridProps {
     bookmarks: Bookmark[];
@@ -20,37 +18,8 @@ export default function BookmarksGrid({
     page,
     totalPages,
 }: BookmarksGridProps) {
-    const [updatedBookmarks, setUpdatedBookmarks] = useState<Bookmark[]>([]);
-
-    const updateBookmarks = async (bookmarks: Bookmark[]) => {
-        await Promise.all(
-            bookmarks.map(async (bookmark: Bookmark) => {
-                const id = bookmark.link_story?.split("/").pop() || "";
-
-                // Fetch high-quality image
-                bookmark.image = await getHqImage(id, bookmark.image);
-
-                // Check cache and update 'up_to_date' field if needed
-                if (id) {
-                    const hqBookmark = await db.getCache(db.hqMangaCache, id);
-                    if (hqBookmark) {
-                        bookmark.up_to_date = hqBookmark.up_to_date;
-                    }
-                }
-            }),
-        );
-
-        return bookmarks;
-    };
-
-    useEffect(() => {
-        const init = async () => {
-            const updatedBookmarks = await updateBookmarks(bookmarks);
-            setUpdatedBookmarks(updatedBookmarks);
-        };
-
-        init();
-    }, [page, bookmarks]);
+    const [updatedBookmarks, setUpdatedBookmarks] =
+        useState<Bookmark[]>(bookmarks);
 
     return (
         <section>

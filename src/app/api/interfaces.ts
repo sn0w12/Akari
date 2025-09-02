@@ -71,20 +71,18 @@ export interface DetailsChapter {
 }
 
 export interface HqMangaCacheItem {
-    identifier: string;
-    aniUrl: string;
-    malUrl: string;
-    description: string;
-    imageUrl: string;
-    smallImageUrl: string;
-    score: number;
-    titles: { type: string; title: string }[];
-    url: string;
-    is_strip: boolean | undefined;
-    up_to_date: boolean | undefined;
-    updated_at?: string | undefined;
-    should_show_popup?: boolean;
+    id: string;
+    created_at: string;
+    updated_at: string;
+    image: string;
+    description: string | null;
+    score: number | null;
+    mal_id: number;
+    ani_id: number | null;
+    type: MangaType;
 }
+
+type MangaType = "Manga" | "Manhwa" | "Manhua";
 
 export interface Bookmark {
     up_to_date: boolean | undefined;
@@ -143,6 +141,7 @@ export interface Chapter {
     mangaId: string | null;
     chapterId: string | null;
     token: string;
+    type: MangaType | null;
 }
 
 export interface SimpleError {
