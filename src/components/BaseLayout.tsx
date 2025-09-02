@@ -145,8 +145,8 @@ export function BaseLayout({
                                     <SidebarMenuLink
                                         tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
                                         href="/bookmarks"
-                                        data-extra-prefetch="/api/bookmarks?page=1&images=true"
                                         aria-label={`${notification} Unread Bookmarks`}
+                                        data-no-prefetch
                                     >
                                         <Bookmark />
                                         <span>Bookmarks</span>
@@ -204,6 +204,7 @@ export function BaseLayout({
                                 <SidebarMenuLink
                                     tooltip="Settings"
                                     href="/settings"
+                                    data-no-prefetch
                                 >
                                     <SettingsIcon />
                                     <span>Settings</span>
@@ -235,7 +236,11 @@ export function BaseLayout({
                             )}
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuLink tooltip="Account" href="/account">
+                            <SidebarMenuLink
+                                tooltip="Account"
+                                href="/account"
+                                data-no-prefetch
+                            >
                                 <User />
                                 <span>Account</span>
                                 <KeyboardShortcut
