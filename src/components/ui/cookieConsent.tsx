@@ -161,7 +161,7 @@ export function CookieConsentFooter() {
                 <TooltipTrigger asChild>
                     <button
                         onClick={() => setOpen(true)}
-                        className="text-gray-400 hover:text-gray-500"
+                        className="text-muted-foreground hover:text-ring"
                         aria-labelledby="cookie-preferences"
                     >
                         <Cookie className="h-6 w-6" />

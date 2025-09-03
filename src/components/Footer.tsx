@@ -15,21 +15,21 @@ export default async function Footer() {
                     <div className="flex justify-center md:order-2 space-x-6">
                         <Link
                             href="/about"
-                            className="text-gray-400 hover:text-gray-500"
+                            className="text-muted-foreground hover:text-ring"
                             prefetch={false}
                         >
                             About
                         </Link>
                         <Link
                             href="/privacy"
-                            className="text-gray-400 hover:text-gray-500"
+                            className="text-muted-foreground hover:text-ring"
                             prefetch={false}
                         >
                             Privacy
                         </Link>
                         <Link
                             href="/terms"
-                            className="text-gray-400 hover:text-gray-500"
+                            className="text-muted-foreground hover:text-ring"
                             prefetch={false}
                         >
                             Terms
@@ -41,7 +41,7 @@ export default async function Footer() {
                                     href="https://github.com/sn0w12/akari"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-gray-500"
+                                    className="text-muted-foreground hover:text-ring"
                                     prefetch={false}
                                 >
                                     <svg
@@ -73,7 +73,7 @@ export default async function Footer() {
                                     href="https://github.com/sn0w12/akari/issues"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-gray-500"
+                                    className="text-muted-foreground hover:text-ring"
                                     prefetch={false}
                                 >
                                     <AlertCircle className="h-6 w-6" />
@@ -88,7 +88,7 @@ export default async function Footer() {
                         </Tooltip>
                     </div>
                     <div>
-                        <p className="text-center text-base text-gray-400 flex items-center justify-center gap-2">
+                        <p className="text-center text-base text-muted-foreground flex items-center justify-center gap-2">
                             <span>&copy; {new Date().getFullYear()} Akari</span>
                             <span className="h-4 border-r border-gray-400"></span>
                             <span>v{version}</span>
@@ -97,14 +97,14 @@ export default async function Footer() {
                                 href={
                                     "https://www.gnu.org/licenses/agpl-3.0.html"
                                 }
-                                className="text-gray-400 hover:text-gray-500"
+                                className="text-muted-foreground hover:text-ring"
                                 prefetch={false}
                             >
                                 AGPL-3.0.
                             </Link>
                         </p>
                     </div>
-                    <div className="text-center text-sm text-gray-400">
+                    <div className="text-center text-sm text-muted-foreground">
                         <p>
                             Content sourced from Manganato. Not affiliated with
                             Manganato.

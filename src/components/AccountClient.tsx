@@ -225,7 +225,7 @@ export default function AccountClient() {
                         <CardContent>
                             <div className="space-y-4">
                                 <div className="flex flex-col space-y-1">
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                         Username
                                     </span>
                                     <span className="text-xl font-bold">
@@ -234,7 +234,7 @@ export default function AccountClient() {
                                 </div>
 
                                 <div className="flex flex-col space-y-1">
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                         Account Type
                                     </span>
                                     <span className="text-md">Manganato</span>
@@ -288,7 +288,7 @@ export default function AccountClient() {
                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                         <div className="space-y-2">
                                             <div className="flex flex-col">
-                                                <span className="text-sm text-gray-500">
+                                                <span className="text-sm text-muted-foreground">
                                                     Username
                                                 </span>
                                                 <span className="text-xl font-bold">
