@@ -113,14 +113,6 @@ export async function GET(
     const score = result.malData?.score
         ? (result.malData.score / 2).toFixed(1)
         : (result.score?.toFixed?.(1) ?? "");
-    const status = result.status;
-
-    // Pick status color
-    let statusBg = palette.statusOther;
-    if (status?.toLowerCase() === "completed")
-        statusBg = palette.statusCompleted;
-    else if (status?.toLowerCase() === "ongoing")
-        statusBg = palette.statusOngoing;
 
     let coverDataUrl = "";
     try {
