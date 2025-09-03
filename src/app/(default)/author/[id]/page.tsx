@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import AuthorPage from "@/components/Author";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 interface PageProps {
     params: Promise<{ id: string; sort?: string }>;
@@ -18,6 +19,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name}`;
+    const ogImage = `${getBaseUrl()}/api/author/${params.id}/og`;
 
     return {
         title: name,
@@ -29,10 +31,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         openGraph: {
             title: name,
             description: description,
+            images: ogImage,
         },
         twitter: {
             title: name,
             description: description,
+            images: ogImage,
         },
     };
 }

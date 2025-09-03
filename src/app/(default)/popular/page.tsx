@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import PopularPage from "@/components/Popular";
+import { getBaseUrl } from "@/app/api/baseUrl";
 
 interface PageProps {
     searchParams: Promise<{
@@ -8,6 +9,7 @@ interface PageProps {
 }
 
 const description = `View all popular manga`;
+const ogImage = `${getBaseUrl()}/og/popular.webp`;
 export const metadata: Metadata = {
     title: "Popular Manga",
     description: description,
@@ -18,10 +20,12 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Popular Manga",
         description: description,
+        images: ogImage,
     },
     twitter: {
         title: "Popular Manga",
         description: description,
+        images: ogImage,
     },
 };
 
