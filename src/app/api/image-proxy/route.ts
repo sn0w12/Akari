@@ -49,10 +49,7 @@ export async function GET(req: Request): Promise<Response> {
             });
         } else {
             // Apply normal cache headers
-            Object.assign(
-                headers,
-                generateCacheHeaders(86400, 604800, 2592000),
-            );
+            Object.assign(headers, generateCacheHeaders(2592000));
         }
 
         return new NextResponse(imageBuffer, { headers });
