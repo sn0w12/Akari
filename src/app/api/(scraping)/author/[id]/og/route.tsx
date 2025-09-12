@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { bg, palette } from "@/lib/og";
@@ -35,6 +36,7 @@ export async function GET(
             >
                 <img
                     src={bgUrl}
+                    alt="Background"
                     width={size.width}
                     style={{
                         position: "absolute",

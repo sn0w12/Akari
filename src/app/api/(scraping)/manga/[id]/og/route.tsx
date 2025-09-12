@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { fetchMangaDetails } from "@/lib/scraping";
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
@@ -61,6 +62,7 @@ export async function GET(
                 >
                     <img
                         src={bgUrl}
+                        alt="Background"
                         width={size.width}
                         style={{
                             position: "absolute",
@@ -151,6 +153,7 @@ export async function GET(
                 <img
                     src={bgUrl}
                     width={size.width}
+                    alt="Background"
                     style={{
                         position: "absolute",
                         left: 0,
@@ -171,6 +174,7 @@ export async function GET(
                 >
                     <img
                         src={coverDataUrl}
+                        alt="Cover"
                         width={420}
                         height={size.height}
                         style={{
