@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/MangaDetails";
 import { fetchMangaDetails } from "@/lib/scraping";
+import { unstable_cacheLife as cacheLife } from "next/cache";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -12,6 +14,9 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const params = await props.params;
     const manga = await fetchMangaDetails(params.id);
 
@@ -19,10 +24,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         return {
             title: "Manga not found",
             description: "The manga you are looking for could not be found.",
-            robots: {
-                index: false,
-                follow: false,
-            },
+            robots: robots(),
             openGraph: {
                 title: "Manga not found",
                 description:
@@ -41,7 +43,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         manga.malData?.description ?? manga.description,
         300,
     );
-    const image = `/api/manga/${params.id}/og`;
+    let image = `/api/manga/${params.id}/og`;
+    if (process.env.NEXT_HOST) {
+        image = `https://${process.env.NEXT_HOST}/api/manga/${params.id}/og`;
+    }
 
     return {
         title: manga.name,
@@ -53,6 +58,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         openGraph: {
             title: manga.name,
             description,
+            type: "website",
+            siteName: "Akari Manga",
             images: image,
         },
         twitter: {

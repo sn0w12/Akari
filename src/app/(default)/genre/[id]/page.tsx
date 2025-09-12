@@ -1,5 +1,8 @@
 import { Metadata } from "next";
 import GenrePage from "@/components/Genre";
+import { unstable_cacheLife as cacheLife } from "next/cache";
+import { getBaseUrl } from "@/app/api/baseUrl";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -11,24 +14,27 @@ interface PageProps {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const params = await props.params;
     const name = params.id.replaceAll("_", " ");
     const description = `View all ${name} manga`;
+    const ogImage = `${getBaseUrl()}/og/categories/${params.id.toLowerCase().replaceAll(" ", "_")}.webp`;
 
     return {
         title: name,
         description: description,
-        robots: {
-            index: false,
-            follow: false,
-        },
+        robots: robots(),
         openGraph: {
             title: name,
             description: description,
+            images: ogImage,
         },
         twitter: {
             title: name,
             description: description,
+            images: ogImage,
         },
     };
 }

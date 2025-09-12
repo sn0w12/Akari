@@ -1,4 +1,5 @@
 import MangaReaderHome from "@/components/Home";
+import { robots } from "@/lib/utils";
 import { Metadata } from "next";
 
 interface HomeProps {
@@ -11,14 +12,13 @@ interface HomeProps {
 export const metadata: Metadata = {
     title: "Akari Manga",
     description: "Read manga for free on Akari.",
+    robots: robots(),
     openGraph: {
         title: "Akari Manga",
         description: "Read manga for free on Akari.",
         images: [
             {
-                url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/public/img/icon.png",
-                width: 512,
-                height: 512,
+                url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
                 alt: "Akari Manga",
             },
         ],
@@ -29,9 +29,7 @@ export const metadata: Metadata = {
         title: "Akari Manga",
         description: "Read manga for free on Akari.",
         images: {
-            url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/public/img/icon.png",
-            width: 512,
-            height: 512,
+            url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
             alt: "Akari Manga",
         },
     },

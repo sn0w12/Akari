@@ -282,11 +282,11 @@ export default function ReadingHistory() {
                         </div>
                     ) : readingHistory.length === 0 ? (
                         <div className="text-center py-8">
-                            <Book className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                            <Book className="mx-auto h-12 w-12 text-muted-foreground mb-3" />
                             <h3 className="text-lg font-medium">
                                 No reading history yet
                             </h3>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 Start reading manga to build your history
                             </p>
                         </div>
@@ -376,7 +376,7 @@ export default function ReadingHistory() {
                                                             }
                                                         </h3>
                                                     </Link>
-                                                    <p className="text-sm text-gray-500 mb-3">
+                                                    <p className="text-sm text-muted-foreground mb-3">
                                                         <Clock className="inline h-3 w-3 mr-1" />
                                                         Last read on{" "}
                                                         {formatDate(

@@ -26,7 +26,7 @@ export default function LatestChapterInfo({
                     {bookmark.chapterlastname}
                 </Link>
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
                 Updated: {bookmark.chapterlastdateupdate}
             </p>
         </div>

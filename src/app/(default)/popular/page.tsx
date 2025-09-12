@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import PopularPage from "@/components/Popular";
+import { getBaseUrl } from "@/app/api/baseUrl";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     searchParams: Promise<{
@@ -7,26 +9,23 @@ interface PageProps {
     }>;
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-    const description = `View all popular manga`;
-
-    return {
+const description = `View all popular manga`;
+const ogImage = `${getBaseUrl()}/og/popular.webp`;
+export const metadata: Metadata = {
+    title: "Popular Manga",
+    description: description,
+    robots: robots(),
+    openGraph: {
         title: "Popular Manga",
         description: description,
-        robots: {
-            index: false,
-            follow: false,
-        },
-        openGraph: {
-            title: "Popular Manga",
-            description: description,
-        },
-        twitter: {
-            title: "Popular Manga",
-            description: description,
-        },
-    };
-}
+        images: ogImage,
+    },
+    twitter: {
+        title: "Popular Manga",
+        description: description,
+        images: ogImage,
+    },
+};
 
 export default async function Home(props: PageProps) {
     const searchParams = await props.searchParams;

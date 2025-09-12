@@ -1,8 +1,30 @@
 import { Metadata } from "next";
+import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "About Akari",
     description: "Learn more about Akari and its features",
+    robots: robots(),
+    openGraph: {
+        title: "Akari Manga",
+        description: "Learn more about Akari and its features",
+        images: [
+            {
+                url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
+                alt: "Akari Manga",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        site: "@Akari",
+        title: "Akari Manga",
+        description: "Learn more about Akari and its features",
+        images: {
+            url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
+            alt: "Akari Manga",
+        },
+    },
 };
 
 export default function AboutPage() {

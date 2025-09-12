@@ -10,14 +10,17 @@ async function getMalData(identifier: number) {
         const data = await request.json();
         const manga = data.data;
 
-        const response = {
-            titles: manga.titles,
-            imageUrl: manga.images.webp.large_image_url,
-            smallImageUrl: manga.images.webp.small_image_url,
-            url: manga.url,
-            score: manga.scored / 2,
+        const response: HqMangaCacheItem = {
+            id: "",
+            image: manga.images.webp.large_image_url,
+            score: typeof manga.scored === "number" ? manga.scored : null,
             description: manga.synopsis,
-        } as HqMangaCacheItem;
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            mal_id: manga.mal_id,
+            ani_id: null,
+            type: manga.type,
+        };
 
         return response;
     } catch (error) {
@@ -83,10 +86,6 @@ export async function fetchMalData(
                 return null;
             }
 
-            if (malSyncResponseData.mal_id) {
-                data["malUrl"] =
-                    `https://myanimelist.net/manga/${malSyncResponseData.mal_id}`;
-            }
             if (data.description != null) {
                 data.description = data.description
                     .replace("[Written by MAL Rewrite]", "")
@@ -107,7 +106,7 @@ export async function fetchMalData(
 }
 
 export async function syncMal(
-    id: string,
+    id: number,
     num_chapters_read: string,
     retry: boolean = true,
 ) {

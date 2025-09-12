@@ -57,9 +57,6 @@ export async function syncAllServices(data: Chapter) {
         db.updateCache(db.mangaCache, data.parentId, {
             last_read: window.location.href.split("/").pop() || "",
         });
-        db.updateCache(db.hqMangaCache, data.parentId, {
-            up_to_date: data.parentId == data.nextChapter,
-        });
 
         new Toast(
             `Bookmark updated successfully on: ${authorizedServices.join(", ")}`,
@@ -117,8 +114,8 @@ async function syncBookmark(data: Chapter) {
     if (!chapterNumber) return;
 
     const malData = await fetchMalData(data.parentId, true);
-    const malId = malData?.malUrl.split("/").pop();
-    if (!malData || !malData.malUrl || !malId) return;
+    const malId = malData?.mal_id;
+    if (!malData || !malId) return;
 
     await syncMal(malId, chapterNumber, false);
 }

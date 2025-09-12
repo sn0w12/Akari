@@ -15,9 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import ErrorComponent from "./ui/error";
-import { MalPopup } from "./ui/MangaDetails/malPopup";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { ReportMalLink } from "./ui/MangaDetails/ReportMalLink";
 import { imageUrl } from "@/lib/utils";
 import { fetchMangaDetails } from "@/lib/scraping";
 import MalImage from "./img/MAL-logo.webp";
@@ -69,11 +67,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
     manga.alternativeNames = manga.alternativeNames?.filter(
         (name: string) => name.trim() !== "",
     );
-    const shouldShowPopup = manga.malData?.should_show_popup ?? true;
 
     let score = manga.score;
     const malScore = manga.malData?.score;
-    if (malScore !== undefined) {
+    if (malScore !== undefined && malScore !== null) {
         score = malScore / 2;
     }
 
@@ -83,15 +80,14 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center">
                     <EnhancedImage
-                        src={imageUrl(
-                            manga.malData?.imageUrl ?? manga.imageUrl,
-                        )}
+                        src={imageUrl(manga.malData?.image ?? manga.imageUrl)}
                         alt={manga.name}
                         className="rounded-lg shadow-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
                         width={400}
                         height={600}
                         priority={true}
+                        fetchPriority="high"
                     />
                 </div>
 
@@ -130,9 +126,9 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
-                            {manga.malData?.aniUrl && (
+                            {manga.malData?.ani_id && (
                                 <Link
-                                    href={manga.malData.aniUrl}
+                                    href={`https://anilist.co/manga/${manga.malData.ani_id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     prefetch={false}
@@ -146,10 +142,10 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     />
                                 </Link>
                             )}
-                            {manga.malData?.malUrl && (
+                            {manga.malData?.mal_id && (
                                 <div className="flex items-center gap-2">
                                     <Link
-                                        href={manga.malData.malUrl}
+                                        href={`https://myanimelist.net/manga/${manga.malData.mal_id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         prefetch={false}
@@ -162,7 +158,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                             height={40}
                                         />
                                     </Link>
-                                    <ReportMalLink mangaId={manga.identifier} />
                                 </div>
                             )}
                         </div>
@@ -283,9 +278,6 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             <ChaptersSection manga={manga} />
-            {shouldShowPopup && (
-                <MalPopup mangaTitle={manga.name} mangaId={manga.identifier} />
-            )}
         </div>
     );
 }

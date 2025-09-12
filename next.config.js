@@ -73,28 +73,32 @@ module.exports = {
     async headers() {
         return [
             {
-                source: "/", // Home
-                headers: generateCacheHeaders(60, 360),
+                source: "/",
+                headers: generateCacheHeaders(60, 360), // 1 minute, 6 minutes
             },
             {
-                source: "/popular", // Popular
-                headers: generateCacheHeaders(86400, 604800),
+                source: "/popular",
+                headers: generateCacheHeaders(86400, 604800), // 1 day, 7 days
+            },
+            {
+                source: "/bookmarks",
+                headers: generateCacheHeaders(86400, 604800), // 1 day, 7 days
             },
             {
                 source: "/genre/:path", // Genres
-                headers: generateCacheHeaders(60, 300),
+                headers: generateCacheHeaders(180, 900), // 3 minutes, 15 minutes
             },
             {
                 source: "/author/:path", // Authors
-                headers: generateCacheHeaders(3600),
+                headers: generateCacheHeaders(3600), // 1 hour
             },
             {
                 source: "/manga/:path*", // Chapters
-                headers: generateCacheHeaders(3600, 604800),
+                headers: generateCacheHeaders(3600, 604800), // 1 hour, 7 days
             },
             {
                 source: "/manga/:path", // Manga
-                headers: generateCacheHeaders(300),
+                headers: generateCacheHeaders(300, 900), // 5 minutes, 15 minutes
             },
         ];
     },

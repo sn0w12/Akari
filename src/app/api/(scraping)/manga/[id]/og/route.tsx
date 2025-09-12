@@ -1,15 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
 import { fetchMangaDetails } from "@/lib/scraping";
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { imageUrl } from "@/lib/utils";
 import path from "path";
 import sharp from "sharp";
+import { bg, palette } from "@/lib/og";
 
-const geistRegularFont = readFile(
-    path.resolve(process.cwd(), "public/fonts/Geist-Regular.ttf"),
-);
-const geistBoldFont = readFile(
-    path.resolve(process.cwd(), "public/fonts/Geist-Bold.ttf"),
+const montserratBlackFont = readFile(
+    path.resolve(process.cwd(), "public/fonts/Montserrat-Black.ttf"),
 );
 
 const size = {
@@ -26,16 +25,23 @@ export async function GET(
     const userAgent = req.headers.get("user-agent") || "Mozilla/5.0";
     const acceptLanguage =
         req.headers.get("accept-language") || "en-US,en;q=0.9";
-    const palette = {
-        background: "#0a0a0a",
-        primary: "#e2e2e2",
-        secondary: "#222222",
+    const isDevelopment = process.env.NODE_ENV === "development";
+    let host =
+        req.headers.get("x-forwarded-host") ||
+        req.headers.get("host") ||
+        "localhost:3000";
+    let protocol =
+        req.headers.get("x-forwarded-proto") ||
+        (host.startsWith("localhost") ? "http" : "https");
 
-        score: "#fdc700",
-        statusCompleted: "#155dfc",
-        statusOngoing: "#00a63e",
-        statusOther: "#4a5565",
-    };
+    if (!isDevelopment) {
+        if (process.env.NEXT_HOST) {
+            host = process.env.NEXT_HOST;
+            protocol = "https";
+        }
+    }
+    const baseUrl = `${protocol}://${host}`;
+    const bgUrl = bg(req);
 
     const result = await fetchMangaDetails(id, userAgent, acceptLanguage);
 
@@ -51,13 +57,35 @@ export async function GET(
                         justifyContent: "center",
                         background: palette.background,
                         color: palette.primary,
-                        fontFamily: "Geist",
-                        fontWeight: 900,
-                        fontSize: 64,
-                        letterSpacing: 2,
+                        fontFamily: "Montserrat",
                     }}
                 >
-                    Not Found
+                    <img
+                        src={bgUrl}
+                        alt="Background"
+                        width={size.width}
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            width: size.width,
+                            objectFit: "cover",
+                        }}
+                    />
+                    <div
+                        style={{
+                            display: "flex",
+                            fontSize: "10em",
+                            fontWeight: 900,
+                            color: palette.primary,
+                            overflow: "hidden",
+                            wordBreak: "break-word",
+                            textShadow:
+                                "0 0 10px rgba(226, 226, 226, 0.8), 0 0 20px rgba(226, 226, 226, 0.6), 0 0 30px rgba(226, 226, 226, 0.4)",
+                        }}
+                    >
+                        Not Found
+                    </div>
                 </div>
             ),
             {
@@ -65,9 +93,9 @@ export async function GET(
                 height: size.height,
                 fonts: [
                     {
-                        name: "Geist",
-                        data: await geistBoldFont,
-                        weight: 700,
+                        name: "Montserrat",
+                        data: await montserratBlackFont,
+                        weight: 900,
                         style: "normal",
                     },
                 ],
@@ -76,31 +104,17 @@ export async function GET(
     }
 
     // Prepare data
-    const cover = result.malData?.imageUrl ?? result.imageUrl;
+    const cover = result.malData?.image ?? result.imageUrl;
     const title = result.name;
-    const genres = result.genres;
+    const authors =
+        Array.isArray(result.authors) &&
+        result.authors.length === 1 &&
+        result.authors[0] === "Unknown"
+            ? []
+            : result.authors;
     const score = result.malData?.score
         ? (result.malData.score / 2).toFixed(1)
         : (result.score?.toFixed?.(1) ?? "");
-    const status = result.status;
-
-    // Pick status color
-    let statusBg = palette.statusOther;
-    if (status?.toLowerCase() === "completed")
-        statusBg = palette.statusCompleted;
-    else if (status?.toLowerCase() === "ongoing")
-        statusBg = palette.statusOngoing;
-
-    // Get absolute URL for favicon
-    const host =
-        req.headers.get("x-forwarded-host") ||
-        req.headers.get("host") ||
-        "localhost:3000";
-    const protocol =
-        req.headers.get("x-forwarded-proto") ||
-        (host.startsWith("localhost") ? "http" : "https");
-    const baseUrl = `${protocol}://${host}`;
-    const faviconUrl = `${baseUrl}/img/icon.png`;
 
     let coverDataUrl = "";
     try {
@@ -131,22 +145,21 @@ export async function GET(
                     height: "100%",
                     display: "flex",
                     background: palette.background,
-                    fontFamily: "Geist",
+                    fontFamily: "Montserrat",
                     position: "relative",
                 }}
             >
                 {/* Cover */}
                 <img
-                    src={coverDataUrl}
+                    src={bgUrl}
                     width={size.width}
+                    alt="Background"
                     style={{
-                        filter: "blur(15px) brightness(0.5)",
                         position: "absolute",
                         left: 0,
                         top: 0,
                         width: size.width,
                         objectFit: "cover",
-                        opacity: 0.25,
                     }}
                 />
                 <div
@@ -161,6 +174,7 @@ export async function GET(
                 >
                     <img
                         src={coverDataUrl}
+                        alt="Cover"
                         width={420}
                         height={size.height}
                         style={{
@@ -174,7 +188,7 @@ export async function GET(
                         flex: 1,
                         display: "flex",
                         flexDirection: "column",
-                        justifyContent: "flex-start",
+                        justifyContent: "space-between",
                         padding: "32px",
                         gap: 8,
                     }}
@@ -182,105 +196,68 @@ export async function GET(
                     <div
                         style={{
                             display: "flex",
-                            fontSize: 56,
-                            fontWeight: 900,
-                            color: palette.primary,
-                            lineHeight: 1.1,
-                            maxWidth: 700,
-                            overflow: "hidden",
-                            wordBreak: "break-word",
-                        }}
-                    >
-                        {title}
-                    </div>
-                    <div
-                        style={{
-                            display: "flex",
+                            flexDirection: "column",
                             gap: 16,
-                            alignItems: "center",
                         }}
                     >
-                        {/* Score */}
-                        {score && (
+                        <div
+                            style={{
+                                display: "flex",
+                                fontSize: 70,
+                                fontWeight: 900,
+                                color: palette.primary,
+                                lineHeight: 1.1,
+                                maxWidth: 700,
+                                overflow: "hidden",
+                                wordBreak: "break-word",
+                                textShadow:
+                                    "0 0 10px rgba(226, 226, 226, 0.8), 0 0 20px rgba(226, 226, 226, 0.6), 0 0 30px rgba(226, 226, 226, 0.4)",
+                            }}
+                        >
+                            {title}
+                        </div>
+                        {authors && (
                             <div
                                 style={{
                                     display: "flex",
-                                    background: palette.score,
-                                    color: palette.background,
-                                    fontWeight: 500,
-                                    fontSize: 28,
-                                    borderRadius: 64,
-                                    padding: "8px 28px",
-                                    letterSpacing: 1,
-                                    fontFamily: "inherit",
+                                    gap: 4,
+                                    fontSize: 50,
+                                    fontWeight: 700,
+                                    color: palette.secondary,
+                                    textShadow:
+                                        "0 0 10px rgba(161, 161, 161, 0.8), 0 0 20px rgba(161, 161, 161, 0.6), 0 0 30px rgba(161, 161, 161, 0.4)",
                                 }}
                             >
-                                Score: {score}
+                                {authors.map((author) => (
+                                    <span key={author}>{author}</span>
+                                ))}
                             </div>
                         )}
-                        {/* Status */}
-                        {status && (
-                            <div
+                    </div>
+                    {/* Details */}
+                    {score && (
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                gap: 8,
+                                fontSize: 60,
+                                fontWeight: 700,
+                                color: palette.score,
+                            }}
+                        >
+                            <span
                                 style={{
-                                    display: "flex",
-                                    background: statusBg,
-                                    color: palette.primary,
-                                    fontWeight: 500,
-                                    fontSize: 28,
-                                    borderRadius: 64,
-                                    padding: "8px 28px",
-                                    letterSpacing: 1,
-                                    fontFamily: "inherit",
+                                    textShadow:
+                                        "0 0 10px rgba(253, 199, 0, 0.8), 0 0 20px rgba(253, 199, 0, 0.6), 0 0 30px rgba(253, 199, 0, 0.4)",
                                 }}
                             >
-                                {status}
-                            </div>
-                        )}
-                    </div>
-                    {/* Genres */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: 16,
-                            flexWrap: "wrap",
-                            marginTop: 16,
-                        }}
-                    >
-                        {genres &&
-                            genres.map((genre) => (
-                                <div
-                                    key={genre}
-                                    style={{
-                                        display: "flex",
-                                        background: palette.secondary,
-                                        color: palette.primary,
-                                        fontWeight: 500,
-                                        fontSize: 28,
-                                        borderRadius: 64,
-                                        padding: "8px 28px",
-                                        letterSpacing: 1,
-                                        fontFamily: "inherit",
-                                    }}
-                                >
-                                    {genre}
-                                </div>
-                            ))}
-                    </div>
+                                {score}/5
+                            </span>
+                        </div>
+                    )}
                 </div>
-                {/* Favicon in bottom right */}
-                <img
-                    src={faviconUrl}
-                    alt="Akari Manga Reader"
-                    width={64}
-                    height={64}
-                    style={{
-                        position: "absolute",
-                        right: 32,
-                        bottom: 32,
-                        width: 64,
-                        height: 64,
-                    }}
-                />
             </div>
         ),
         {
@@ -288,15 +265,9 @@ export async function GET(
             height: size.height,
             fonts: [
                 {
-                    name: "Geist",
-                    data: await geistRegularFont,
-                    weight: 500,
-                    style: "normal",
-                },
-                {
-                    name: "Geist",
-                    data: await geistBoldFont,
-                    weight: 700,
+                    name: "Montserrat",
+                    data: await montserratBlackFont,
+                    weight: 900,
                     style: "normal",
                 },
             ],

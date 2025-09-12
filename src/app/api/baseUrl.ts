@@ -1,4 +1,9 @@
 export function getBaseUrl() {
+    const host = process.env.NEXT_HOST;
+    if (host) {
+        return `https://${host}`;
+    }
+
     const vercelEnv = process.env.VERCEL_ENV;
     const port = process.env.PORT || 3000;
 
@@ -14,6 +19,11 @@ export function getBaseUrl() {
 }
 
 export function getProductionUrl() {
+    const host = process.env.NEXT_HOST;
+    if (host) {
+        return `https://${host}`;
+    }
+
     const vercelEnv = process.env.VERCEL_ENV;
     const port = process.env.PORT || 3000;
 

@@ -1,8 +1,10 @@
 import { Metadata } from "next";
+import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Terms of Service",
     description: "Akari Terms of Service",
+    robots: robots(),
 };
 
 export default function TermsPage() {

@@ -34,46 +34,9 @@ export function encodeUserId(userId: string): string {
         .digest("hex");
 }
 
-/**
- * Interface for the raw manga data from database
- */
-interface MangaDatabaseRecord {
-    id: string;
-    image: string;
-    score?: number;
-    description?: string;
-    mal_id?: number;
-    updated_at?: string;
-    should_show_popup?: boolean;
-}
-
-/**
- * Transform manga data from database format to application format
- */
-function transformMangaData(
-    data: MangaDatabaseRecord | null,
-): HqMangaCacheItem | null {
-    if (!data) return null;
-    return {
-        identifier: data.id,
-        titles: [], // MAL data doesn't include titles
-        imageUrl: data.image,
-        smallImageUrl: data.image,
-        url: "",
-        score: data.score || 0,
-        description: data.description || "",
-        malUrl: data.mal_id
-            ? `https://myanimelist.net/manga/${data.mal_id}`
-            : "",
-        aniUrl: "",
-        up_to_date: undefined,
-        is_strip: undefined,
-        updated_at: data.updated_at,
-        should_show_popup: data.should_show_popup,
-    };
-}
-
-export async function getMangaFromSupabase(identifier: string) {
+export async function getMangaFromSupabase(
+    identifier: string,
+): Promise<HqMangaCacheItem | null> {
     if (!supabasePublic) {
         console.warn("Supabase not initialized, skipping query");
         return null;
@@ -81,7 +44,7 @@ export async function getMangaFromSupabase(identifier: string) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("manga_mal_data")
+            .from("akari_mal_data")
             .select("*")
             .eq("id", identifier)
             .single();
@@ -93,10 +56,36 @@ export async function getMangaFromSupabase(identifier: string) {
             return null;
         }
 
-        return transformMangaData(data);
+        return data;
     } catch (e) {
         console.error("Supabase query error:", e);
         return null;
+    }
+}
+
+export async function saveMangaToSupabase(manga: HqMangaCacheItem) {
+    if (!supabaseAdmin) {
+        console.warn("Supabase admin not initialized, skipping save");
+        return;
+    }
+
+    try {
+        const { error } = await supabaseAdmin.from("akari_mal_data").upsert({
+            id: manga.id,
+            image: manga.image,
+            description: manga.description,
+            score: manga.score,
+            mal_id: manga.mal_id,
+            ani_id: manga.ani_id,
+            type: manga.type,
+            updated_at: new Date().toISOString(),
+        });
+
+        if (error) {
+            console.error("Error saving manga to Supabase:", error);
+        }
+    } catch (e) {
+        console.error("Exception saving manga to Supabase:", e);
     }
 }
 
@@ -108,7 +97,7 @@ export async function getMangaArrayFromSupabase(identifiers: string[]) {
 
     try {
         const { data, error } = await supabasePublic
-            .from("manga_mal_data")
+            .from("akari_mal_data")
             .select("id, image")
             .in("id", identifiers)
             .order("id", { ascending: true });

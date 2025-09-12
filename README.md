@@ -7,7 +7,7 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-1.3.1-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/version-1.3.3-indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
@@ -54,18 +54,19 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## General
 
-| Setting          | Default | Description                                                                                                                                                |
-| ---------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme            | System  | Choose between Light, Dark, or System color theme                                                                                                          |
-| Fetch MAL Data ⊕ | Enabled | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database, this helps improve akari both locally and on the official website |
-| Fancy Animations | Enabled | Toggle advanced animations for a richer experience                                                                                                         |
+| Setting              | Default  | Description                                                                                                                                                |
+| -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme                | System   | Choose between Light, Dark, or System color theme                                                                                                          |
+| Fetch MAL Data ⊕     | Enabled  | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database, this helps improve akari both locally and on the official website |
+| Fancy Animations     | Enabled  | Toggle advanced animations for a richer experience                                                                                                         |
+| Prefer Settings Page | Disabled | Open settings page instead of the settings dialog                                                                                                          |
 
 ## Manga
 
-| Setting            | Default | Description                            |
-| ------------------ | ------- | -------------------------------------- |
-| Manga Server       | 1       | Chooses the manga server to fetch from |
-| Show Page Progress | Enabled | Enables or disables the progress bar   |
+| Setting              | Default | Description                                      |
+| -------------------- | ------- | ------------------------------------------------ |
+| Show Page Progress   | Enabled | Enables or disables the progress bar             |
+| Save Reading History | Enabled | Saves your reading history, see the account page |
 
 ## Notifications
 
@@ -74,11 +75,23 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 | Use Toasts   | Enabled | Enable or disable notification toasts                      |
 | Login Toasts | Enabled | Show warnings when you aren't logged in to a service (MAL) |
 
-## Cache
+## Shortcuts
 
-| Setting     | Default | Description       |
-| ----------- | ------- | ----------------- |
-| Clear Cache | N/A     | Clears all caches |
+| Setting            | Default      | Description                 |
+| ------------------ | ------------ | --------------------------- |
+| Show Shortcuts     | Enabled      | Enable or disable shortcuts |
+| Search Manga       | Ctrl+K       | Open manga search           |
+| Toggle Sidebar     | Ctrl+Shift+B | Toggle the sidebar          |
+| Open Settings      | Ctrl+,       | Open settings               |
+| Open Account       | Ctrl+.       | Open account page           |
+| Navigate Bookmarks | Ctrl+B       | Navigate to bookmarks       |
+
+## Data
+
+| Setting               | Default | Description                 |
+| --------------------- | ------- | --------------------------- |
+| Clear Cache           | N/A     | Clears all caches           |
+| Clear Reading History | N/A     | Clears your reading history |
 
 # Technical Stack
 

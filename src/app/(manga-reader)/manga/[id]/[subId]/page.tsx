@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import ChapterReader from "@/components/MangaReader";
 import { fetchChapterData } from "@/lib/scraping";
+import { unstable_cacheLife as cacheLife } from "next/cache";
+import { robots } from "@/lib/utils";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -9,6 +11,9 @@ interface MangaReaderProps {
 export async function generateMetadata({
     params,
 }: MangaReaderProps): Promise<Metadata> {
+    "use cache";
+    cacheLife("weeks");
+
     const mangaParams = await params;
     const chapter = await fetchChapterData(mangaParams.id, mangaParams.subId);
 
@@ -18,26 +23,27 @@ export async function generateMetadata({
 
     const title = `${chapter.title} - ${chapter.chapter}`;
     const description = `Read ${chapter.title} ${chapter.chapter}`;
+    let image = `/api/manga/${mangaParams.id}/og`;
+    if (process.env.NEXT_HOST) {
+        image = `https://${process.env.NEXT_HOST}/api/manga/${mangaParams.id}/og`;
+    }
 
     return {
         title,
         description,
-        robots: {
-            index: false,
-            follow: false,
-        },
+        robots: robots(),
         openGraph: {
             title,
             description,
             type: "website",
-            siteName: "Manga Reader",
-            images: `/api/manga/${mangaParams.id}/og`,
+            siteName: "Akari Manga",
+            images: image,
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
-            images: `/api/manga/${mangaParams.id}/og`,
+            images: image,
         },
     };
 }

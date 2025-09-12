@@ -1,12 +1,12 @@
 "use client";
 
-import { Chapter, ChapterImage, HqMangaCacheItem } from "@/app/api/interfaces";
+import { Chapter, ChapterImage } from "@/app/api/interfaces";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PageReader from "./Readers/page-reader";
 import StripReader from "./Readers/strip-reader";
 import { FooterProvider } from "@/lib/footer-context";
 import MangaReaderSkeleton from "./mangaReaderSkeleton";
-import db from "@/lib/db";
+import Toast from "@/lib/toastWrapper";
 
 interface ReaderProps {
     chapter: Chapter;
@@ -17,21 +17,36 @@ export interface ImageGroups {
     length: number;
 }
 
-function createImagePromise(url: string): Promise<ChapterImage> {
+function createImagePromise(url: string, index: number): Promise<ChapterImage> {
     return new Promise((resolve) => {
         const img = new Image();
         const proxyUrl = `/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
 
         img.onload = () => {
-            resolve({
-                url: proxyUrl,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-            });
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const dataUrl = canvas.toDataURL("image/jpeg");
+                resolve({
+                    url: dataUrl,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                });
+            } else {
+                resolve({
+                    url: proxyUrl,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                });
+            }
         };
 
         img.onerror = () => {
             console.error(`Failed to load image: ${url}`);
+            new Toast(`Failed to load image: ${index}`, "error");
             resolve({
                 url: proxyUrl,
             });
@@ -46,19 +61,27 @@ const badAspectRatio = 2.78;
 const aspectRatioTolerance = 0.01;
 async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
     try {
-        return await Promise.all(
-            chapter.images.map((url) => createImagePromise(url)),
-        ).then((images) =>
-            images.filter((image, index) => {
+        const images = await Promise.all(
+            chapter.images.map((url, index) => createImagePromise(url, index)),
+        );
+
+        const filteredByGif = images
+            .map((image, index) => ({ image, originalIndex: index }))
+            .filter(
+                ({ originalIndex }) =>
+                    !chapter.images[originalIndex]
+                        .toLowerCase()
+                        .split("?")[0]
+                        .endsWith(".gif"),
+            );
+
+        // Then, filter based on aspect ratio for first and last
+        const finalFiltered = filteredByGif
+            .filter(({ image }, index, array) => {
                 if (image.width == undefined || image.height == undefined) {
                     return false;
                 }
-                // Only check first and last images so we don't filter out real images
-                // that are in the middle of the chapter
-                if (index == 0 || index == images.length - 1) {
-                    if (chapter.images[index].toLowerCase().endsWith(".gif")) {
-                        return false;
-                    }
+                if (index === 0 || index === array.length - 1) {
                     const aspectRatio = image.width / image.height;
                     const isBadImage =
                         Math.abs(aspectRatio - badAspectRatio) <=
@@ -66,8 +89,10 @@ async function getChapterImages(chapter: Chapter): Promise<ChapterImage[]> {
                     return !isBadImage;
                 }
                 return true;
-            }),
-        );
+            })
+            .map(({ image }) => image);
+
+        return finalFiltered;
     } catch (error) {
         console.error("Failed to get chapter images:", error);
         return chapter.images.map((url) => ({ url }));
@@ -79,6 +104,7 @@ export function Reader({ chapter }: ReaderProps) {
         undefined,
     );
     const hasCachedRef = useRef(false);
+    const [chapterImages, setChapterImages] = useState<ChapterImage[]>([]);
     const [combinedImages, setCombinedImages] = useState<ImageGroups>({
         length: 0,
     });
@@ -91,6 +117,7 @@ export function Reader({ chapter }: ReaderProps) {
         async function calculateImageGroups() {
             setIsLoading(true);
             const chapterImages = await getChapterImages(chapter);
+            setChapterImages(chapterImages);
             const newCombinedImages: ImageGroups = { length: 0 };
             const cutoffHeight = 1500;
             let totalCutoffImages = 0;
@@ -132,7 +159,11 @@ export function Reader({ chapter }: ReaderProps) {
                 console.log(
                     `Total images: ${chapterImages.length}, Cutoff images: ${totalCutoffImages}`,
                 );
-                setIsStripMode(totalCutoffImages >= chapterImages.length / 1.5);
+                const isStrip =
+                    chapter.type !== null
+                        ? chapter.type !== "Manga"
+                        : totalCutoffImages >= chapterImages.length / 1.5;
+                setIsStripMode(isStrip);
             }
             setIsLoading(false);
         }
@@ -143,16 +174,20 @@ export function Reader({ chapter }: ReaderProps) {
     useEffect(() => {
         if (chapter && chapter.images.length > 0) {
             const checkStripModeCache = async () => {
-                const mangaCache =
-                    (await db.getCache(db.hqMangaCache, chapter.parentId)) ??
-                    ({} as HqMangaCacheItem);
+                const userChosenMode = localStorage.getItem("readerMode");
+                const isStrip =
+                    userChosenMode === "strip"
+                        ? true
+                        : userChosenMode === "page"
+                          ? false
+                          : null;
 
                 // Check if the chapter's parentId is cached
-                if (mangaCache?.is_strip === true) {
+                if (isStrip === true) {
                     setIsStripMode(true);
                     hasCachedRef.current = true;
                     return;
-                } else if (mangaCache?.is_strip === false) {
+                } else if (isStrip === false) {
                     setIsStripMode(false);
                     hasCachedRef.current = true;
                     return;
@@ -166,11 +201,7 @@ export function Reader({ chapter }: ReaderProps) {
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
-        const mangaCache =
-            (await db.getCache(db.hqMangaCache, chapter!.parentId)) ??
-            ({} as HqMangaCacheItem);
-        mangaCache.is_strip = isStrip;
-        await db.updateCache(db.hqMangaCache, chapter!.parentId, mangaCache);
+        localStorage.setItem("readerMode", isStrip ? "strip" : "page");
     }
 
     function toggleReaderMode(override: boolean = true) {
@@ -221,6 +252,7 @@ export function Reader({ chapter }: ReaderProps) {
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
+                        images={chapterImages}
                         toggleReaderMode={toggleReaderMode}
                     />
                 ) : (

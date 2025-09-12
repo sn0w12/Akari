@@ -56,14 +56,6 @@ export default function BookmarksBody({
         const storyId = bookmark.link_story.split("/").pop();
         if (storyId) {
             db.updateCache(db.mangaCache, storyId, cacheObject);
-
-            const cacheEntry = await db.getCache(db.hqMangaCache, storyId);
-            if (!cacheEntry || cacheEntry.up_to_date === undefined) {
-                await db.updateCache(db.hqMangaCache, storyId, {
-                    up_to_date:
-                        bookmark.link_chapter_last == bookmark.link_chapter_now,
-                });
-            }
         }
     }, []);
 

@@ -49,15 +49,11 @@ export async function GET(req: Request): Promise<Response> {
             });
         } else {
             // Apply normal cache headers
-            Object.assign(
-                headers,
-                generateCacheHeaders(86400, 604800, 2592000),
-            );
+            Object.assign(headers, generateCacheHeaders(2592000));
         }
 
         return new NextResponse(imageBuffer, { headers });
-    } catch (error) {
-        console.error("Error fetching image:", error);
+    } catch {
         return NextResponse.json(
             { error: "Failed to fetch image" },
             { status: 500 },

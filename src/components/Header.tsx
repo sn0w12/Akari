@@ -4,7 +4,6 @@ import SearchBar from "./ui/Header/Search/SearchBar";
 import SearchButton from "./ui/Header/Search/SearchButton";
 import { useEffect, useState } from "react";
 import { ThemeSetting } from "./ui/Header/ThemeSettings";
-import { TrackLogin } from "./ui/Header/TrackLogin";
 import { validateSecondaryAccounts } from "@/lib/secondaryAccounts";
 import BookmarksButton from "./ui/Bookmarks/BookmarksButton";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
@@ -62,13 +61,18 @@ export function HeaderComponent() {
             <div className="py-1 pr-4 md:pr-11 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
-                    <>
-                        <span
-                            className={`hidden md:block bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${isSidebarCollapsed ? "ml-1" : ""}`}
-                        >
-                            {notification}
-                        </span>
-                    </>
+                    <span
+                        className={`hidden md:block bg-accent-color text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${isSidebarCollapsed ? "ml-1" : ""}`}
+                    >
+                        {notification}
+                    </span>
+                ) : null}
+                {process.env.NEXT_PUBLIC_AKARI_PREVIEW === "1" ? (
+                    <span
+                        className={`hidden md:block bg-amber-700 text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${isSidebarCollapsed ? "ml-1" : ""}`}
+                    >
+                        Preview
+                    </span>
                 ) : null}
                 <div
                     className={`hidden md:block flex h-full items-center pr-2 transition-all pl-4 ${isSidebarCollapsed && notification ? "md:pl-3" : "md:pl-2"}`}
@@ -121,7 +125,6 @@ export function HeaderComponent() {
 
                         {/* Theme Handler */}
                         <ThemeSetting />
-                        <TrackLogin />
                     </div>
                 </div>
             </div>

@@ -139,8 +139,8 @@ const ToastTestPage: React.FC = () => {
                     disabled={!activeToast}
                     className={`px-4 py-2 rounded ${
                         activeToast
-                            ? "bg-gray-500 text-white hover:bg-gray-600"
-                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            ? "bg-gray-500 text-primary hover:bg-gray-600"
+                            : "bg-gray-200 text-muted-foreground cursor-not-allowed"
                     }`}
                 >
                     Close Current Toast
