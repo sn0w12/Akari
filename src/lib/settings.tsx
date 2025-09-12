@@ -74,21 +74,6 @@ export const generalSettings = {
 
 export const mangaSettings = {
     label: "Manga",
-    mangaServer: {
-        label: "Manga Server",
-        type: "select",
-        options: [
-            { label: "Server 1", value: "1" },
-            { label: "Server 2", value: "2" },
-        ],
-        default: "1",
-        onChange: (value: string) => {
-            setCookie("manga_server", value, "functional");
-            if (window.location.pathname.includes("/chapter")) {
-                window.location.reload();
-            }
-        },
-    },
     showPageProgress: {
         label: "Show Page Progress",
         type: "checkbox",
@@ -102,12 +87,6 @@ export const mangaSettings = {
         onChange: (value: string) => {
             setCookie("save_reading_history", value, "functional");
         },
-    },
-    disableMalPopup: {
-        label: "Disable MAL Popup",
-        description: "Disables the MAL popup on manga pages.",
-        type: "checkbox",
-        default: false,
     },
 };
 
