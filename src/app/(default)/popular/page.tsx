@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import PopularPage from "@/components/Popular";
 import { getBaseUrl } from "@/app/api/baseUrl";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     searchParams: Promise<{
@@ -13,10 +14,7 @@ const ogImage = `${getBaseUrl()}/og/popular.webp`;
 export const metadata: Metadata = {
     title: "Popular Manga",
     description: description,
-    robots: {
-        index: false,
-        follow: false,
-    },
+    robots: robots(),
     openGraph: {
         title: "Popular Manga",
         description: description,

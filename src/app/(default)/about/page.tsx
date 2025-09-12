@@ -1,8 +1,10 @@
 import { Metadata } from "next";
+import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "About Akari",
     description: "Learn more about Akari and its features",
+    robots: robots(),
     openGraph: {
         title: "Akari Manga",
         description: "Learn more about Akari and its features",

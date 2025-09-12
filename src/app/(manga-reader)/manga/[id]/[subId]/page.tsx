@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import ChapterReader from "@/components/MangaReader";
 import { fetchChapterData } from "@/lib/scraping";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import { robots } from "@/lib/utils";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -30,10 +31,7 @@ export async function generateMetadata({
     return {
         title,
         description,
-        robots: {
-            index: false,
-            follow: false,
-        },
+        robots: robots(),
         openGraph: {
             title,
             description,

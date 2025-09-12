@@ -1,8 +1,10 @@
 import { Metadata } from "next";
+import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Privacy Policy",
     description: "Akari's privacy policy",
+    robots: robots(),
 };
 
 export default function PrivacyPage() {

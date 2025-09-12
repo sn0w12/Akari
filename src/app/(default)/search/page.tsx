@@ -1,9 +1,11 @@
 import SimpleSearch from "@/components/SimpleSearch";
 import { Metadata } from "next";
+import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Search Manga",
     description: "Search manga.",
+    robots: robots(),
     openGraph: {
         title: "Search Manga",
         description: "Search manga.",

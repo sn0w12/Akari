@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import AuthorPage from "@/components/Author";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { getBaseUrl } from "@/app/api/baseUrl";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ id: string; sort?: string }>;
@@ -24,10 +25,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return {
         title: name,
         description: description,
-        robots: {
-            index: false,
-            follow: false,
-        },
+        robots: robots(),
         openGraph: {
             title: name,
             description: description,

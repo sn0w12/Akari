@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { robots } from "@/lib/utils";
 import BookmarksPage from "@/components/Bookmarks";
 
 interface BookmarksProps {
@@ -11,6 +12,7 @@ interface BookmarksProps {
 export const metadata: Metadata = {
     title: "Bookmarks",
     description: "View and manage your bookmarked series",
+    robots: robots(),
 };
 
 export default async function Bookmarks(props: BookmarksProps) {

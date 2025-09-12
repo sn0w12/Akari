@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/MangaDetails";
 import { fetchMangaDetails } from "@/lib/scraping";
 import { unstable_cacheLife as cacheLife } from "next/cache";
+import { robots } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -23,10 +24,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         return {
             title: "Manga not found",
             description: "The manga you are looking for could not be found.",
-            robots: {
-                index: false,
-                follow: false,
-            },
+            robots: robots(),
             openGraph: {
                 title: "Manga not found",
                 description:
