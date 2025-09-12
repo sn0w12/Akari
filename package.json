@@ -64,7 +64,7 @@
         "sharp": "^0.34.3",
         "tailwind-merge": "^3.0.2",
         "tailwindcss-animate": "^1.0.7",
-        "tough-cookie": "^5.1.2",
+        "tough-cookie": "^6.0.0",
         "zod": "^3.24.2",
         "zustand": "^5.0.3"
     },
