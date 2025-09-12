@@ -87,6 +87,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         width={400}
                         height={600}
                         priority={true}
+                        fetchPriority="high"
                     />
                 </div>
 
