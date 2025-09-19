@@ -116,8 +116,10 @@ export function ProximityPrefetch({
         // Prefetch up to 3 routes at a time
         for (const route of routesToPrefetch.slice(0, 3)) {
             if (!prefetchedRoutes.has(route)) {
-                console.log("prefetching", route);
-                router.prefetch(route);
+                const prefetchUrl = route.includes("?")
+                    ? `${route}&_prefetch=1`
+                    : `${route}?_prefetch=1`;
+                router.prefetch(prefetchUrl);
                 setPrefetchedRoutes((prev) => new Set([...prev, route]));
             }
         } // Direct fetch for extraPrefetch links
