@@ -88,6 +88,7 @@ export async function processMangaList(url: string, page: string) {
     });
     timeEnd("Parse HTML");
 
+    time("Parse Popular");
     $(".owl-carousel .item").each((index: number, element) => {
         const mangaElement = $(element);
         const imageUrl = mangaElement.find("img").attr("src");
