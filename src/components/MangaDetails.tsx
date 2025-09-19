@@ -187,6 +187,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                                 href={`/author/${encodeURIComponent(author.replaceAll(" ", "-"))}`}
                                                 key={index}
                                                 prefetch={false}
+                                                data-no-prefetch
                                             >
                                                 <Badge
                                                     withShadow={true}
@@ -239,6 +240,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                                     genre.replaceAll(" ", "_"),
                                                 )}`}
                                                 prefetch={false}
+                                                data-no-prefetch
                                             >
                                                 <Badge
                                                     variant="secondary"
