@@ -78,7 +78,7 @@
         "@types/react": "npm:types-react@19.0.0-rc.1",
         "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
         "@types/xml2js": "^0.4.14",
-        "@typescript-eslint/eslint-plugin": "^8.29.1",
+        "@typescript-eslint/eslint-plugin": "^8.44.0",
         "@typescript-eslint/parser": "^8.32.0",
         "eslint": "^9.21.0",
         "eslint-config-next": "15.3.2",
