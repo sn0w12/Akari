@@ -17,6 +17,7 @@ import { usePathname } from "next/navigation";
 import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useTheme } from "next-themes";
 import { useSettingsChange } from "@/lib/settings";
+import { inPreview } from "@/config";
 
 export function HeaderComponent() {
     const pathname = usePathname();
@@ -79,7 +80,7 @@ export function HeaderComponent() {
                         {notification}
                     </span>
                 ) : null}
-                {process.env.NEXT_PUBLIC_AKARI_PREVIEW === "1" ? (
+                {inPreview ? (
                     <span
                         className={`hidden md:block bg-amber-700 text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${
                             isSidebarCollapsed ? "ml-1" : ""
