@@ -128,7 +128,6 @@ export function ProximityPrefetch({
                 link.extraPrefetchUrl &&
                 !prefetchedRoutes.has(link.extraPrefetchUrl)
             ) {
-                console.log("extra fetching", link.extraPrefetchUrl);
                 // Use fetch on the URL specified in the extraPrefetchAttribute
                 fetch(link.extraPrefetchUrl).catch((err) => {
                     console.error("Error fetching extra prefetch link:", err);

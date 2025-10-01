@@ -184,7 +184,6 @@ export async function getLatestReadChapter(
 export function compareVersions(num1: number, num2: number): boolean {
     // Check if both values are integers
     if (Number.isInteger(num1) && Number.isInteger(num2)) {
-        console.log(num1, num2);
         // Check if the first value is 1 larger than the second
         return num1 === num2 + 1;
     }

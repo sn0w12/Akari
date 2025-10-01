@@ -28,7 +28,6 @@ export async function GET(req: Request): Promise<Response> {
 
         const contentType = response.headers["content-type"];
         if (!contentType || !contentType.startsWith("image/")) {
-            console.log(response);
             return NextResponse.json(
                 { error: "The requested resource is not a valid image" },
                 { status: 400 }

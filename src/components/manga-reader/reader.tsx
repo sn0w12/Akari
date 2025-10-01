@@ -194,9 +194,6 @@ export function Reader({ chapter }: ReaderProps) {
 
                 setCombinedImages(newCombinedImages);
                 if (!hasCachedRef.current && !chapter.type) {
-                    console.log(
-                        `Total images: ${chapterImages.length}, Cutoff images: ${totalCutoffImages}`
-                    );
                     isStrip = totalCutoffImages >= chapterImages.length / 1.5;
                 }
             } else {
@@ -229,7 +226,6 @@ export function Reader({ chapter }: ReaderProps) {
         }
         setIsInactive(false);
         inactivityTimer.current = setTimeout(() => {
-            console.log("User is inactive");
             setIsInactive(true);
         }, 2000);
     }, []);

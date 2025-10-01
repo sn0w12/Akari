@@ -85,7 +85,6 @@ export default function StripReader({
             // Calculate percentage
             const percentage =
                 (scrollTop / (scrollHeight - clientHeight)) * 100;
-            console.log("Scroll Percentage:", percentage);
             setScrollPercentage(Math.min(100, Math.max(0, percentage)));
 
             // Calculate pixels from bottom
