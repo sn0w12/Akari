@@ -1,7 +1,8 @@
-import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import ErrorComponent from "./ui/error";
-import { getPopularManga } from "@/lib/scraping";
-import { MangaGrid } from "./MangaGrid";
+import ErrorComponent from "./error-page";
+import { getPopularManga } from "@/lib/manga/scraping";
+import { MangaGrid } from "./manga/manga-grid";
+import { ServerPagination } from "./ui/pagination/server-pagination";
+import { isApiErrorData } from "@/lib/api";
 
 interface PageProps {
     searchParams: { page?: string };
@@ -13,10 +14,10 @@ export default async function PopularPage({ searchParams }: PageProps) {
     const currentPage = Number(searchParams.page) || 1;
     const mangaData = await getPopularManga(currentPage.toString());
 
-    if ("error" in mangaData) {
+    if (isApiErrorData(mangaData)) {
         return (
             <ErrorComponent
-                message={`Failed to load manga data: ${mangaData.error}`}
+                message={`Failed to load manga data: ${mangaData.message}`}
             />
         );
     }
@@ -33,7 +34,7 @@ export default async function PopularPage({ searchParams }: PageProps) {
 
                 <MangaGrid mangaList={mangaList} />
             </div>
-            <PaginationElement
+            <ServerPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
             />

@@ -1,6 +1,6 @@
+import PopularPage from "@/components/popular";
 import { Metadata } from "next";
-import PopularPage from "@/components/Popular";
-import { getBaseUrl } from "@/app/api/baseUrl";
+import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
 
 interface PageProps {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function Home(props: PageProps) {
+export default async function Popular(props: PageProps) {
     const searchParams = await props.searchParams;
     return (
         <div className="min-h-screen bg-background text-foreground">

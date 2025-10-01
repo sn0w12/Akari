@@ -1,25 +1,25 @@
-import ErrorComponent from "./ui/error";
-import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import { PopularManga } from "./ui/Home/PopularManga";
-import { MangaGrid } from "./MangaGrid";
+import ErrorComponent from "./error-page";
+import { ServerPagination } from "./ui/pagination/server-pagination";
+import { PopularManga } from "./home/popular-manga";
+import { MangaGrid } from "./manga/manga-grid";
+import { getLatestManga } from "@/lib/manga/scraping";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { getLatestManga } from "@/lib/scraping";
+import { isApiErrorData } from "@/lib/api";
 
 export default async function MangaReaderHome({
-    searchParams,
+    currentPage,
 }: {
-    searchParams: { page: string };
+    currentPage: number;
 }) {
     "use cache";
     cacheLife("minutes");
 
-    const currentPage = Number(searchParams.page) || 1;
     const mangaData = await getLatestManga(currentPage.toString());
 
-    if ("error" in mangaData) {
+    if (isApiErrorData(mangaData)) {
         return (
             <ErrorComponent
-                message={`Failed to load manga data: ${mangaData.error}`}
+                message={`Failed to load manga data: ${mangaData.message}`}
             />
         );
     }
@@ -40,15 +40,18 @@ export default async function MangaReaderHome({
                 )}
 
                 <h2
-                    className={`text-3xl font-bold mb-6 ${currentPage === 1 ? "mt-6" : ""}`}
+                    className={`text-3xl font-bold mb-6 ${
+                        currentPage === 1 ? "mt-6" : ""
+                    }`}
                 >
                     Latest Releases
                 </h2>
                 <MangaGrid mangaList={mangaList} />
             </div>
-            <PaginationElement
+            <ServerPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
+                className="mb-4"
             />
         </div>
     );

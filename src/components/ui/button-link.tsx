@@ -23,7 +23,7 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
                 {...props}
             />
         );
-    },
+    }
 );
 ButtonLink.displayName = "ButtonLink";
 

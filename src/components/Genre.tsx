@@ -1,16 +1,9 @@
-import { SortSelect } from "./ui/SortSelect";
-import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import ErrorComponent from "./ui/error";
-import { SmallManga } from "@/app/api/interfaces";
-import { MangaGrid } from "./MangaGrid";
+import { ServerPagination } from "./ui/pagination/server-pagination";
+import ErrorComponent from "./error-page";
+import { MangaGrid } from "./manga/manga-grid";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { fetchGenreData } from "@/lib/scraping";
-
-interface MangaListResponse {
-    mangaList: SmallManga[];
-    popular: SmallManga[];
-    metaData: { totalStories: number; totalPages: number };
-}
+import { fetchGenreData } from "@/lib/manga/scraping";
+import { isApiErrorData } from "@/lib/api";
 
 interface PageProps {
     params: { id: string };
@@ -27,18 +20,18 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     const data = await fetchGenreData(
         params.id,
         String(currentPage),
-        currentSort,
+        currentSort
     );
 
-    if ("error" in data) {
+    if (isApiErrorData(data)) {
         return (
             <ErrorComponent
-                message={`Failed to load manga data: ${data.error}`}
+                message={`Failed to load manga data: ${data.message}`}
             />
         );
     }
 
-    const { mangaList, metaData } = data as MangaListResponse;
+    const { mangaList, metaData } = data;
     const totalPages = metaData.totalPages;
 
     return (
@@ -48,16 +41,16 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
                     <h2 className={`text-3xl font-bold mb-6`}>
                         {decodeURIComponent(params.id).replaceAll("_", " ")}
                     </h2>
-                    <SortSelect currentSort={currentSort} />
                 </div>
 
                 <MangaGrid mangaList={mangaList} />
             </div>
 
-            <PaginationElement
+            <ServerPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 searchParams={[{ key: "sort", value: currentSort }]}
+                className="mb-4"
             />
         </div>
     );

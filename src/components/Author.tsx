@@ -1,10 +1,10 @@
-import { SortSelect } from "./ui/SortSelect";
-import { PaginationElement } from "@/components/ui/Pagination/ServerPaginationElement";
-import ErrorComponent from "./ui/error";
-import { MangaGrid } from "./MangaGrid";
-import { SmallManga } from "@/app/api/interfaces";
+import { ServerPagination } from "./ui/pagination/server-pagination";
+import ErrorComponent from "./error-page";
+import { SmallManga } from "@/types/manga";
+import { MangaGrid } from "./manga/manga-grid";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { fetchAuthorData } from "@/lib/scraping";
+import { fetchAuthorData } from "@/lib/manga/scraping";
+import { isApiErrorData } from "@/lib/api";
 
 interface PageProps {
     params: { id: string };
@@ -26,11 +26,11 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
         const data = await fetchAuthorData(
             params.id,
             String(currentPage),
-            currentSort,
+            currentSort
         );
 
-        if ("result" in data) {
-            error = String(data.data);
+        if (isApiErrorData(data)) {
+            error = data.message;
         } else {
             mangaList = data.mangaList;
             totalPages = data.metaData.totalPages;
@@ -46,7 +46,6 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
                     <h2 className={`text-3xl font-bold mb-6`}>
                         {params.id.replaceAll("-", " ")}
                     </h2>
-                    <SortSelect currentSort={currentSort} />
                 </div>
 
                 {error && <ErrorComponent message={error} />}
@@ -54,7 +53,7 @@ export default async function AuthorPage({ params, searchParams }: PageProps) {
             </div>
 
             {!error && (
-                <PaginationElement
+                <ServerPagination
                     currentPage={currentPage}
                     totalPages={totalPages}
                     searchParams={[{ key: "sort", value: currentSort }]}

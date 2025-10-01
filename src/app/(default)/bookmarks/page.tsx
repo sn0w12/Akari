@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { robots } from "@/lib/utils";
-import BookmarksPage from "@/components/Bookmarks";
+import BookmarksPage from "@/components/bookmarks";
 
 interface BookmarksProps {
     searchParams: Promise<{

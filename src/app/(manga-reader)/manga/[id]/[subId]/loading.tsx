@@ -1,4 +1,4 @@
-import MangaReaderSkeleton from "@/components/ui/MangaReader/mangaReaderSkeleton";
+import MangaReaderSkeleton from "@/components/manga-reader/skeleton";
 
 export default function Loading() {
     return <MangaReaderSkeleton />;

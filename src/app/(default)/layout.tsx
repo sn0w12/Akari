@@ -1,14 +1,18 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import Footer from "@/components/Footer";
-import { CookieConsent } from "@/components/ui/cookieConsent";
-import { ToastProvider } from "@/lib/toast/ToastContext";
-import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
+import localFont from "next/font/local";
+import { inDevelopment } from "@/config";
+import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
+import { ThemeProvider } from "@/components/theme-provider";
+import { BaseLayout } from "@/components/base-layout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProximityPrefetch } from "@/lib/proximity-prefetch";
+import { CookieConsent } from "@/components/cookie-consent";
+import Footer from "@/components/footer";
+import { QueryProvider } from "@/components/query-provider";
+import { ConfirmProvider } from "@/contexts/confirm-context";
+import { Toaster } from "@/components/ui/sonner";
+
+import type { Metadata } from "next";
 import type { Viewport } from "next";
 
 const geistSans = localFont({
@@ -32,20 +36,16 @@ export const viewport: Viewport = {
 export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
-    const isDevelopment = process.env.NODE_ENV === "development";
-
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                {isDevelopment && (
-                    <script
-                        src="https://unpkg.com/react-scan/dist/auto.global.js"
-                        async
-                    />
+                {inDevelopment && (
+                    // eslint-disable-next-line @next/next/no-sync-scripts
+                    <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
+                className={`${geistSans.variable} ${geistMono.variable} h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
             >
                 <ProximityPrefetch>
                     <ThemeProvider
@@ -55,16 +55,22 @@ export default async function RootLayout({
                         disableTransitionOnChange
                     >
                         <SidebarProvider defaultOpen={false}>
-                            <BaseLayout gutter={true}>
-                                <ToastProvider>
-                                    <AnalyticsWrapper />
-                                    <div className="flex-grow pt-2 md:p-4 md:pb-0">
-                                        {children}
-                                    </div>
-                                    <CookieConsent />
-                                    <Footer />
-                                </ToastProvider>
-                            </BaseLayout>
+                            <ConfirmProvider>
+                                <QueryProvider>
+                                    <BaseLayout gutter={true}>
+                                        <AnalyticsWrapper />
+                                        <div className="flex-1 pt-2 md:p-4 md:pb-0">
+                                            {children}
+                                        </div>
+                                        <CookieConsent />
+                                        <Toaster
+                                            richColors
+                                            position="top-right"
+                                        />
+                                        <Footer />
+                                    </BaseLayout>
+                                </QueryProvider>
+                            </ConfirmProvider>
                         </SidebarProvider>
                     </ThemeProvider>
                 </ProximityPrefetch>

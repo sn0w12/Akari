@@ -1,7 +1,7 @@
 {
     "name": "Akari Manga",
     "short_name": "Akari",
-    "description": "Enhanced manga reading experience for Manganato users with bookmarks, reading history, and a modern UI",
+    "description": "Enhanced manga reading experience for Manganato users with a modern UI",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0a0a0a",
@@ -13,7 +13,7 @@
             "type": "image/x-icon"
         }
     ],
-    "categories": ["books", "reading", "entertainment"],
+    "categories": ["books", "reading", "entertainment", "manga"],
     "related_applications": [],
     "prefer_related_applications": false
 }

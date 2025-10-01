@@ -1,7 +1,7 @@
+"use client";
+
 import React from "react";
-import db from "./db";
-import { setCookie } from "./cookies";
-import { Input } from "@/components/ui/input";
+import { Input, NumberInput } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,13 +13,71 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import ConfirmDialog from "@/components/ui/confirmDialog";
+import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { ColorPicker } from "@/components/ui/color-picker";
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+    ContextMenuSeparator,
+} from "@/components/ui/context-menu";
+import { RotateCcw } from "lucide-react";
+import { ShortcutOptions, useShortcut } from "@/hooks/use-shortcut";
+import { APP_SETTINGS } from "@/config";
+import { cn } from "@/lib/utils";
 
-let settingsVersion = 0;
-export const useSettingsVersion = () =>
-    React.useMemo(() => settingsVersion, []);
+type AppSettingsCategories = typeof APP_SETTINGS;
+type CategoryKeys = keyof AppSettingsCategories;
+type SettingsByCategory<T extends CategoryKeys> =
+    AppSettingsCategories[T]["settings"];
+type AllSettings = {
+    [C in CategoryKeys]: SettingsByCategory<C>;
+}[CategoryKeys];
+type SettingKeys = {
+    [C in CategoryKeys]: keyof SettingsByCategory<C>;
+}[CategoryKeys];
+type SettingDefaultType<T extends SettingKeys> = T extends keyof AllSettings
+    ? AllSettings[T] extends { default: infer D }
+        ? D
+        : never
+    : never;
+export type SettingsInterface = {
+    [K in SettingKeys]: SettingDefaultType<K>;
+};
+
+type AllSettingsFlat = {
+    [C in keyof typeof APP_SETTINGS]: (typeof APP_SETTINGS)[C]["settings"];
+}[keyof typeof APP_SETTINGS];
+type UnionToIntersection<U> = (
+    U extends unknown ? (k: U) => void : never
+) extends (k: infer I) => void
+    ? I
+    : never;
+type AllSettingsMerged = UnionToIntersection<AllSettingsFlat>;
+type KeysOfType<T, U> = {
+    [K in keyof T]: T[K] extends { type: U } ? K : never;
+}[keyof T];
+
+export type CheckboxSettingKeys = KeysOfType<AllSettingsMerged, "checkbox">;
+export type TextSettingKeys = KeysOfType<AllSettingsMerged, "text">;
+export type PasswordSettingKeys = KeysOfType<AllSettingsMerged, "password">;
+export type EmailSettingKeys = KeysOfType<AllSettingsMerged, "email">;
+export type NumberSettingKeys = KeysOfType<AllSettingsMerged, "number">;
+export type TextareaSettingKeys = KeysOfType<AllSettingsMerged, "textarea">;
+export type SelectSettingKeys = KeysOfType<AllSettingsMerged, "select">;
+export type RadioSettingKeys = KeysOfType<AllSettingsMerged, "radio">;
+export type ShortcutSettingKeys = KeysOfType<AllSettingsMerged, "shortcut">;
+export type ButtonSettingKeys = KeysOfType<AllSettingsMerged, "button">;
+export type SliderSettingKeys = KeysOfType<AllSettingsMerged, "slider">;
+export type ColorSettingKeys = KeysOfType<AllSettingsMerged, "color">;
+export type CustomRenderSettingKeys = KeysOfType<
+    AllSettingsMerged,
+    "custom-render"
+>;
+
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
     key: keyof SettingsInterface;
@@ -27,185 +85,20 @@ export interface SettingsChangeEvent {
     previousValue: SettingValue;
 }
 
-type DefaultValueType<T> = T extends { default: infer D } ? D : never;
-
-export type SettingsInterface = {
-    [K in keyof typeof settings]: DefaultValueType<(typeof settings)[K]>;
-};
-
-export const generalSettings = {
-    label: "General",
-    theme: {
-        label: "Theme",
-        type: "select",
-        options: [
-            { label: "Light", value: "light" },
-            { label: "Dark", value: "dark" },
-            { label: "System", value: "system" },
-        ],
-        default: "system",
-    },
-    fetchMalImage: {
-        label: "Fetch MAL Data",
-        description:
-            "Updates the Akari database with better images and other info.",
-        type: "checkbox",
-        default: true,
-        deploymentOnly: true,
-    },
-    fancyAnimations: {
-        label: "Fancy Animations",
-        description: "Such as manga detail pages cover image.",
-        type: "checkbox",
-        default: true,
-    },
-    preferSettingsPage: {
-        label: "Prefer Settings Page",
-        description: "Open settings page instead of the settings dialog.",
-        type: "checkbox",
-        default: false,
-        onChange: (value: boolean) => {
-            if (value && !window.location.pathname.includes("/settings")) {
-                window.location.assign("/settings");
-            }
-        },
-    },
-};
-
-export const mangaSettings = {
-    label: "Manga",
-    showPageProgress: {
-        label: "Show Page Progress",
-        type: "checkbox",
-        default: true,
-    },
-    saveReadingHistory: {
-        label: "Save Reading History",
-        description: `Saves your reading history, see the <a href="/account">account</a> page.`,
-        type: "checkbox",
-        default: true,
-        onChange: (value: string) => {
-            setCookie("save_reading_history", value, "functional");
-        },
-    },
-};
-
-export const notificationSettings = {
-    label: "Notifications",
-    useToast: {
-        label: "Use Toasts",
-        type: "checkbox",
-        default: true,
-    },
-    loginToasts: {
-        label: "Login Toasts",
-        description: "Show warnings when you aren't logged in to a service.",
-        type: "checkbox",
-        default: true,
-    },
-};
-
-export const dataSettings = {
-    label: "Data",
-    clearCache: {
-        label: "Clear Cache",
-        type: "button",
-        confirmation: "Are you sure you want to clear the cache?",
-        onClick: () => {
-            db.clearCache(db.bookmarkCache);
-            db.clearCache(db.mangaCache);
-            db.clearCache(db.hqMangaCache);
-            window.location.reload();
-        },
-    },
-    clearReadingHistory: {
-        label: "Clear Reading History",
-        type: "button",
-        confirmation: "Are you sure you want to clear your reading history?",
-        onClick: async () => {
-            await fetch("/api/account/reading", {
-                method: "DELETE",
-            });
-        },
-    },
-};
-
-export const shortcutsSettings = {
-    label: "Shortcuts",
-    showShortcuts: {
-        type: "checkbox",
-        label: "Show Shortcuts",
-        value: true,
-        default: true,
-    },
-    searchManga: {
-        type: "shortcut",
-        label: "Search Manga",
-        value: "Ctrl+K",
-        default: "Ctrl+K",
-    },
-    toggleSidebar: {
-        type: "shortcut",
-        label: "Toggle Sidebar",
-        value: "Ctrl+Shift+B",
-        default: "Ctrl+Shift+B",
-    },
-    openSettings: {
-        type: "shortcut",
-        label: "Open Settings",
-        value: "Ctrl+,",
-        default: "Ctrl+,",
-    },
-    openAccount: {
-        type: "shortcut",
-        label: "Open Account",
-        value: "Ctrl+.",
-        default: "Ctrl+.",
-    },
-    navigateBookmarks: {
-        type: "shortcut",
-        label: "Navigate to Bookmarks",
-        value: "Ctrl+B",
-        default: "Ctrl+B",
-    },
-};
-
-const allSettings = [
-    generalSettings,
-    mangaSettings,
-    notificationSettings,
-    shortcutsSettings,
-    dataSettings,
-];
-type ExcludeLabel<T> = Omit<T, "label">;
-type MergeSettings<T extends readonly unknown[]> = ExcludeLabel<
-    UnionToIntersection<T[number]>
->;
-type UnionToIntersection<U> = (
-    U extends unknown ? (k: U) => void : never
-) extends (k: infer I) => void
-    ? I
-    : never;
-
-const settings: MergeSettings<typeof allSettings> = Object.assign(
-    {},
-    ...allSettings.map((settingGroup) => {
-        const { ...rest } = settingGroup;
-        return rest;
-    }),
-);
-
-type SettingMap = (typeof allSettings)[number];
-
+// Get default values for all settings
 const getDefaultSettings = (): SettingsInterface => {
     const defaults: Record<string, unknown> = {};
-    for (const key in settings) {
-        if (key === "label") continue;
-        const setting = settings[key as keyof typeof settings];
-        if (typeof setting !== "string" && "default" in setting) {
-            defaults[key] = setting.default;
-        }
-    }
+
+    Object.entries(APP_SETTINGS).forEach(([, category]) => {
+        Object.entries(category.settings).forEach(([key, setting]) => {
+            const settingDef = setting as Setting;
+            defaults[key] =
+                typeof settingDef.default === "function"
+                    ? settingDef.default()
+                    : settingDef.default;
+        });
+    });
+
     return defaults as SettingsInterface;
 };
 
@@ -227,10 +120,9 @@ export const defaultSettings = getDefaultSettings();
 export function dispatchSettingsChange<T extends SettingValue>(
     key: keyof SettingsInterface,
     value: T,
-    previousValue: T,
+    previousValue: T
 ) {
     if (typeof window !== "undefined") {
-        settingsVersion++;
         const event = new CustomEvent<SettingsChangeEvent>(
             SETTINGS_CHANGE_EVENT,
             {
@@ -239,7 +131,7 @@ export function dispatchSettingsChange<T extends SettingValue>(
                     value,
                     previousValue,
                 },
-            },
+            }
         );
         window.dispatchEvent(event);
     }
@@ -255,18 +147,18 @@ export function dispatchSettingsChange<T extends SettingValue>(
  * ```tsx
  * // Watch all settings changes
  * useSettingsChange((event) => {
- *   console.log('Settings changed:', event.detail);
+ *   log('Settings changed:', event.detail);
  * });
  *
  * // Watch only theme changes
  * useSettingsChange((event) => {
- *   console.log('Theme changed:', event.detail.value);
+ *   log('Theme changed:', event.detail.value);
  * }, 'theme');
  * ```
  */
 export function useSettingsChange(
     callback: (event: CustomEvent<SettingsChangeEvent>) => void,
-    watchKey?: keyof SettingsInterface,
+    watchKey?: keyof SettingsInterface
 ) {
     React.useEffect(() => {
         const handler = (event: Event) => {
@@ -292,9 +184,11 @@ export function useSettingsChange(
  * // theme will automatically update when the theme setting changes
  * ```
  */
-export function useSetting<K extends keyof SettingsInterface>(key: K) {
+export function useSetting<K extends SettingKeys>(
+    key: K
+): SettingsInterface[K] {
     const [value, setValue] = React.useState<SettingsInterface[K]>(
-        () => getSetting(key) ?? defaultSettings[key],
+        () => getSetting(key) ?? defaultSettings[key]
     );
 
     useSettingsChange((event) => {
@@ -312,15 +206,19 @@ export function useSetting<K extends keyof SettingsInterface>(key: K) {
  * @param key - The setting key to retrieve from the settings object
  * @returns The value of the specified setting key if found in localStorage, the default value if the key exists in defaultSettings, or null if neither exists or if running server-side
  */
-export function getSetting(key: keyof SettingsInterface) {
-    if (typeof window !== "undefined") {
-        const storedSetting = localStorage.getItem("settings");
-        if (storedSetting) {
-            const settings = JSON.parse(storedSetting);
-            return settings[key] ?? defaultSettings[key];
-        }
+export function getSetting<K extends SettingKeys>(
+    key: K
+): SettingsInterface[K] | null {
+    if (typeof window === "undefined") return null;
+
+    const storedSetting = localStorage.getItem("settings");
+    if (storedSetting) {
+        const settings = JSON.parse(storedSetting);
+        return settings[key] ?? defaultSettings[key];
     }
-    return null;
+
+    const def = defaultSettings[key];
+    return typeof def === "function" ? def() : def;
 }
 
 /**
@@ -329,61 +227,72 @@ export function getSetting(key: keyof SettingsInterface) {
  * @param keys - Array of setting keys to retrieve
  * @returns Object containing the requested settings with their values
  */
-export function getSettings(keys: (keyof SettingsInterface)[]) {
+export function getSettings<K extends SettingKeys>(keys: K[]) {
     if (typeof window === "undefined") return null;
 
     const storedSettings = localStorage.getItem("settings");
     if (!storedSettings) {
-        return keys.reduce<Record<keyof SettingsInterface, SettingValue>>(
-            (acc, key) => {
-                acc[key] = defaultSettings[key];
-                return acc;
-            },
-            {} as Record<keyof SettingsInterface, SettingValue>,
-        );
+        return keys.reduce<Partial<SettingsInterface>>((acc, key) => {
+            acc[key] = defaultSettings[key];
+            return acc;
+        }, {});
     }
 
     const settings = JSON.parse(storedSettings);
-    return keys.reduce((acc, key) => {
+    return keys.reduce<Partial<SettingsInterface>>((acc, key) => {
         acc[key] = settings[key] ?? defaultSettings[key];
         return acc;
-    }, {} as Partial<SettingsInterface>);
+    }, {});
+}
+
+/**
+ * React hook to bind a callback to a shortcut defined in settings.
+ * @param key - The key of the shortcut setting (type-safe)
+ * @param callback - The function to call when the shortcut is triggered
+ * @param options - Optional shortcut options
+ */
+export function useShortcutSetting(
+    key: ShortcutSettingKeys,
+    callback: () => void,
+    options: ShortcutOptions = {}
+) {
+    const shortcut = useSetting(key);
+    useShortcut(shortcut, callback, options);
 }
 
 /**
  * Creates a map of settings with handlers to update the settings.
  *
- * @param settingsMap - The settings map object.
+ * @param categoryKey - The category key from APP_SETTINGS
  * @param currentSettings - The current settings object.
  * @param setSettings - A function to update the settings.
  * @returns A map of settings with their current values and change handlers.
  */
 export const createSettingsMap = (
-    settingsMap: SettingMap,
+    categoryKey: keyof typeof APP_SETTINGS,
     currentSettings: SettingsInterface,
-    setSettings: (newSettings: SettingsInterface) => void,
-): SettingsMap => {
-    const createHandler =
-        (
-            key: keyof SettingsInterface,
-            customHandler?: (value: SettingValue) => void,
-        ) =>
-        (value: SettingValue) => {
-            setSettings({ ...currentSettings, [key]: value });
-            customHandler?.(value);
+    setSettings: (newSettings: SettingsInterface) => void
+): Record<string, Setting> => {
+    const categorySettings = APP_SETTINGS[categoryKey]?.settings || {};
+    const returnSettings: Record<string, Setting> = {};
+
+    for (const [key, settingDef] of Object.entries(categorySettings)) {
+        const setting = settingDef as Setting;
+        const createHandler = (value: SettingValue) => {
+            setSettings({
+                ...currentSettings,
+                [key]: value,
+            } as SettingsInterface);
+            setting.onChange?.(value);
         };
 
-    const returnSettings: SettingsMap = {};
-    for (const [key, definition] of Object.entries(settingsMap)) {
-        const keyName = key as keyof SettingsInterface;
-        const setting = definition as Setting;
-        const onChange = createHandler(keyName, setting.onChange);
         returnSettings[key] = {
             ...setting,
-            value: currentSettings[keyName],
-            onChange,
-        } as Setting;
+            value: currentSettings[key as keyof SettingsInterface],
+            onChange: createHandler,
+        };
     }
+
     return returnSettings;
 };
 
@@ -392,18 +301,19 @@ export const createSettingsMap = (
  *
  * @param currentSettings - The current state of all settings
  * @param setSettings - A function to update the settings state
- * @returns A record object mapping setting labels to their respective SettingsMap objects
+ * @returns A record object mapping setting labels to their respective setting maps
  */
 export const createAllSettingsMaps = (
     currentSettings: SettingsInterface,
-    setSettings: (newSettings: SettingsInterface) => void,
+    setSettings: (newSettings: SettingsInterface) => void
 ) => {
-    const settingsMap: Record<string, SettingsMap> = {};
-    allSettings.forEach((setting) => {
-        settingsMap[setting.label] = createSettingsMap(
-            setting,
+    const settingsMap: Record<string, Record<string, Setting>> = {};
+
+    Object.entries(APP_SETTINGS).forEach(([key, category]) => {
+        settingsMap[category.label] = createSettingsMap(
+            key as keyof typeof APP_SETTINGS,
             currentSettings,
-            setSettings,
+            setSettings
         );
     });
 
@@ -415,31 +325,74 @@ export const createAllSettingsMaps = (
  * Unlike createAllSettingsMaps, this doesn't include change handlers and uses default values.
  * Useful for server-side rendering or static contexts.
  *
- * @returns A record object mapping setting labels to their respective SettingsMap objects with default values
+ * @returns A record object mapping setting labels to their respective setting maps with default values
  */
-export const getDefaultSettingsMaps = (): Record<string, SettingsMap> => {
-    const staticSettingsMap: Record<string, SettingsMap> = {};
+export const getDefaultSettingsMaps = (): Record<
+    string,
+    Record<string, Setting>
+> => {
+    const staticSettingsMap: Record<string, Record<string, Setting>> = {};
 
-    allSettings.forEach((settingGroup) => {
-        const groupMap: SettingsMap = {};
+    Object.entries(APP_SETTINGS).forEach(([, category]) => {
+        const groupMap: Record<string, Setting> = {};
 
-        for (const [key, definition] of Object.entries(settingGroup)) {
-            if (key === "label") continue;
+        Object.entries(category.settings).forEach(([key, settingDef]) => {
+            const setting = settingDef as Setting;
 
-            const setting = definition as Setting;
-            groupMap[key] = {
-                ...setting,
-                value: setting.default,
-                // Provide a no-op function as onChange handler
-                onChange: () => {},
-            } as Setting;
-        }
+            // Create a type-safe copy of the setting with its default value
+            const settingCopy = { ...setting };
+            const defaultValue =
+                typeof setting.default === "function"
+                    ? setting.default()
+                    : setting.default;
 
-        staticSettingsMap[settingGroup.label] = groupMap;
+            // Type-safe assignment of value based on setting type
+            switch (setting.type) {
+                case "checkbox":
+                    (settingCopy as CheckboxSetting).value =
+                        defaultValue as boolean;
+                    break;
+                case "text":
+                case "password":
+                case "email":
+                case "number":
+                case "textarea":
+                case "select":
+                case "radio":
+                case "shortcut":
+                case "slider":
+                case "color":
+                    (settingCopy as BaseSetting).value = defaultValue as string;
+                    break;
+            }
+
+            // Add no-op onChange handler
+            settingCopy.onChange = () => {};
+
+            groupMap[key] = settingCopy;
+        });
+
+        staticSettingsMap[category.label] = groupMap;
     });
 
     return staticSettingsMap;
 };
+
+/**
+ * Resets all settings to their default values.
+ * Overwrites localStorage and dispatches change events for each setting.
+ */
+export function resetAllSettingsToDefault() {
+    Object.keys(defaultSettings).forEach((key) => {
+        dispatchSettingsChange(
+            key as keyof SettingsInterface,
+            defaultSettings[key as keyof SettingsInterface],
+            getSetting(key as SettingKeys) ??
+                defaultSettings[key as keyof SettingsInterface]
+        );
+    });
+    localStorage.setItem("settings", JSON.stringify(defaultSettings));
+}
 
 export type SettingValue = string | boolean | string[];
 export type SettingType =
@@ -452,61 +405,93 @@ export type SettingType =
     | "select"
     | "radio"
     | "shortcut"
-    | "button";
+    | "button"
+    | "slider"
+    | "color"
+    | "custom-render";
+
+export interface ContextMenuItemDef {
+    label: string;
+    onClick: () => void;
+    icon?: React.ReactNode;
+    variant?: "default" | "destructive";
+}
 
 interface BaseSetting {
     label: string;
     description?: string;
-    value: SettingValue;
-    default: SettingValue;
-    onChange: (value: SettingValue) => void;
-    deploymentOnly?: boolean;
+    value?: SettingValue;
+    default: SettingValue | (() => SettingValue);
+    onChange?: (value: SettingValue) => void;
+    contextMenuItems?: ContextMenuItemDef[];
+    groups?: string[];
 }
 
 interface CheckboxSetting extends BaseSetting {
     type: "checkbox";
-    value: boolean;
-    default: boolean;
+    value?: boolean;
+    default: boolean | (() => boolean);
 }
 
 interface TextSetting extends BaseSetting {
     type: "text" | "password" | "email" | "number";
-    value: string;
-    default: string;
+    value?: string;
+    default: string | (() => string);
 }
 
 interface TextareaSetting extends BaseSetting {
     type: "textarea";
-    value: string;
-    default: string;
+    value?: string;
+    options?: { resize?: boolean };
+    default: string | (() => string);
 }
 
 interface SelectSetting extends BaseSetting {
     type: "select";
     options: { label: string; value: string }[];
-    value: string;
-    default: string;
+    value?: string;
+    default: string | (() => string);
 }
 
 interface RadioSetting extends BaseSetting {
     type: "radio";
     options: { label: string; value: string }[];
-    value: string;
-    default: string;
+    value?: string;
+    default: string | (() => string);
 }
 
 interface ShortcutSetting extends BaseSetting {
     type: "shortcut";
-    value: string;
-    default: string;
+    value?: string;
+    default: string | (() => string);
+    allowOverlap?: string[];
+}
+
+interface SliderSetting extends BaseSetting {
+    type: "slider";
+    min: number;
+    max: number;
+    step: number;
+    value?: string;
+    default: string | (() => string);
 }
 
 interface ButtonSetting extends BaseSetting {
     type: "button";
     label: string;
     confirmation?: string;
-    confirmPositive?: boolean;
-    onClick: () => void;
+    confirmVariant?: "default" | "destructive";
+    onClick?: () => void;
+}
+
+interface ColorSetting extends BaseSetting {
+    type: "color";
+    value?: string;
+    default: string | (() => string);
+}
+
+interface CustomRenderSetting extends BaseSetting {
+    type: "custom-render";
 }
 
 export type Setting =
@@ -516,239 +501,441 @@ export type Setting =
     | SelectSetting
     | RadioSetting
     | ShortcutSetting
-    | ButtonSetting;
+    | ButtonSetting
+    | SliderSetting
+    | ColorSetting
+    | CustomRenderSetting;
 
-export interface SettingsMap {
-    [key: string]: Setting;
+function getDefaultSettingsValue(setting: Setting): SettingValue {
+    if (typeof setting.default === "function") {
+        return setting.default();
+    }
+    return setting.default;
 }
 
 function getSettingValue(setting: Setting): SettingValue {
-    switch (setting.type) {
-        case "checkbox":
-            return (
-                (setting as CheckboxSetting).value ??
-                (setting as CheckboxSetting).default
-            );
-        case "text":
-        case "password":
-        case "email":
-        case "number":
-        case "textarea":
-        case "select":
-        case "radio":
-        case "shortcut":
-            return (
-                (setting as BaseSetting).value ??
-                (setting as BaseSetting).default
-            );
-        case "button":
-            return "";
-        default:
-            const _exhaustiveCheck: never = setting;
-            return _exhaustiveCheck as never;
-    }
+    return setting.value ?? getDefaultSettingsValue(setting);
 }
 
-function findDuplicateShortcuts(settingsMap: SettingsMap): Set<string> {
-    const shortcuts = new Set<string>();
+function findDuplicateShortcuts(
+    settingsMap: Record<string, Setting>
+): Set<string> {
+    const shortcuts = new Map<string, string[]>();
     const duplicates = new Set<string>();
 
-    Object.values(settingsMap).forEach((setting) => {
+    Object.entries(settingsMap).forEach(([key, setting]) => {
         if (setting.type === "shortcut") {
-            const value =
-                (setting.value as string) ?? (setting.default as string);
-            if (shortcuts.has(value)) {
-                duplicates.add(value);
+            const value = getSettingValue(setting) as string;
+            if (!shortcuts.has(value)) {
+                shortcuts.set(value, []);
             }
-            shortcuts.add(value);
+            shortcuts.get(value)!.push(key);
+        }
+    });
+
+    // Check for duplicates
+    shortcuts.forEach((settingKeys, shortcutValue) => {
+        if (settingKeys.length > 1) {
+            const hasUnallowedOverlap = settingKeys.some((currentKey) => {
+                const currentSetting = settingsMap[
+                    currentKey
+                ] as ShortcutSetting;
+                const otherKeys = settingKeys.filter((k) => k !== currentKey);
+
+                // If this setting doesn't have allowOverlap, it doesn't allow any overlaps
+                if (
+                    !currentSetting.allowOverlap ||
+                    currentSetting.allowOverlap.length === 0
+                ) {
+                    return true;
+                }
+
+                return otherKeys.some(
+                    (otherKey) =>
+                        !currentSetting.allowOverlap!.includes(
+                            otherKey as ShortcutSettingKeys
+                        )
+                );
+            });
+
+            if (hasUnallowedOverlap) {
+                duplicates.add(shortcutValue);
+            }
         }
     });
 
     return duplicates;
 }
 
-export function renderInput(
-    key: string,
-    setting: Setting,
-    settingsMap: SettingsMap,
-) {
-    switch (setting.type) {
-        case "checkbox":
-            return (
-                <Switch
-                    id={key}
-                    checked={getSettingValue(setting) as boolean}
-                    onCheckedChange={(value) => {
-                        setting.onChange(value);
-                    }}
-                />
-            );
-        case "text":
-        case "password":
-        case "email":
-        case "number":
-            return (
-                <Input
-                    id={key}
-                    type={setting.type}
-                    value={getSettingValue(setting) as string}
-                    onChange={(e) => {
-                        setting.onChange(e.target.value);
-                    }}
-                    className="max-w-xs"
-                />
-            );
-        case "textarea":
-            return (
-                <Textarea
-                    id={key}
-                    value={getSettingValue(setting) as string}
-                    onChange={(e: {
-                        target: { value: string | boolean | string[] };
-                    }) => {
-                        setting.onChange(e.target.value);
-                    }}
-                    className="max-w-xs"
-                />
-            );
-        case "select":
-            return (
-                <Select
-                    value={getSettingValue(setting) as string}
-                    onValueChange={(value) => {
-                        setting.onChange(value);
-                    }}
-                >
-                    <SelectTrigger className="w-48">
-                        <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {setting.options.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            );
-        case "radio":
-            return (
-                <RadioGroup
-                    value={getSettingValue(setting) as string}
-                    onValueChange={(value) => {
-                        setting.onChange(value);
-                    }}
-                    className="flex flex-col space-y-1"
-                >
-                    {setting.options.map((option) => (
-                        <div
-                            key={option.value}
-                            className="flex items-center space-x-2"
-                        >
-                            <RadioGroupItem
-                                value={option.value}
-                                id={`${key}-${option.value}`}
-                            />
-                            <Label htmlFor={`${key}-${option.value}`}>
-                                {option.label}
-                            </Label>
-                        </div>
-                    ))}
-                </RadioGroup>
-            );
-        case "shortcut":
-            const duplicates = findDuplicateShortcuts(settingsMap);
-            const isDuplicate = duplicates.has(
-                getSettingValue(setting) as string,
-            );
+/**
+ * Normalizes a KeyboardEvent or string to a canonical shortcut key name.
+ * Examples: "Control" => "Ctrl", " " => "Space", "a" => "A"
+ */
+export function normalizeKeyInput(key: string | KeyboardEvent): string {
+    const k = typeof key === "string" ? key : key.key;
 
-            return (
-                <Input
-                    id={key}
-                    type="text"
-                    value={getSettingValue(setting) as string}
-                    className={`max-w-60 ${isDuplicate ? "border-red-500 bg-red-800 focus-visible:ring-red-500" : ""}`}
-                    onKeyDown={(e) => {
-                        e.preventDefault();
-                        const keys: string[] = [];
-                        if (e.ctrlKey) keys.push("Ctrl");
-                        if (e.shiftKey) keys.push("Shift");
-                        if (e.altKey) keys.push("Alt");
-                        if (
-                            e.key !== "Control" &&
-                            e.key !== "Shift" &&
-                            e.key !== "Alt"
-                        ) {
-                            keys.push(e.key.toUpperCase());
-                        }
-                        if (keys.length > 0) {
-                            setting.onChange(keys.join("+"));
-                        }
-                    }}
-                    readOnly
-                    placeholder="Press keys..."
-                />
-            );
-        case "button":
-            if (!setting.confirmation) {
-                return (
-                    <Button
-                        onClick={() => (setting as ButtonSetting).onClick()}
-                    >
-                        {setting.label}
-                    </Button>
-                );
-            }
-
-            return (
-                <ConfirmDialog
-                    triggerButton={
-                        <Button>{(setting as ButtonSetting).label}</Button>
-                    }
-                    title="Confirm"
-                    message={(setting as ButtonSetting).confirmation ?? ""}
-                    confirmColor={`${setting.confirmPositive ? "bg-green-600 border-green-500 hover:bg-green-500" : "bg-red-600 border-red-500 hover:bg-red-500"}`}
-                    onConfirm={() => (setting as ButtonSetting).onClick()}
-                />
-            );
+    switch (k) {
+        case "Control":
+        case "Ctrl":
+            return "Ctrl";
+        case "Shift":
+            return "Shift";
+        case "Alt":
+            return "Alt";
+        case " ":
+        case "Spacebar":
+        case "Space":
+            return "Space";
+        case "Meta":
+        case "Command":
+        case "Cmd":
+            return "Meta";
         default:
-            return null;
+            // For single characters, return uppercase
+            if (k.length === 1) return k.toUpperCase();
+            // For function keys, keep as is (e.g., F1, F2)
+            if (/^F\d+$/.test(k)) return k.toUpperCase();
+            // Otherwise, return as-is
+            return k;
     }
 }
 
-export function renderInputSkeleton(setting: Setting) {
-    switch (setting.type) {
-        case "checkbox":
-            return (
-                <Skeleton className="h-6 w-11 rounded-full border-2 border-transparent mb-1" />
-            );
-        case "text":
-        case "password":
-        case "email":
-        case "number":
-        case "shortcut":
-            return <Skeleton className="h-10 w-48" />;
-        case "textarea":
-            return <Skeleton className="h-24 w-48" />;
-        case "select":
-            return <Skeleton className="h-10 w-48" />;
-        case "radio":
-            return (
-                <div className="flex flex-col space-y-2">
-                    {setting.options.map((_, index) => (
-                        <div
-                            key={index}
-                            className="flex items-center space-x-2"
-                        >
-                            <Skeleton className="h-4 w-4 rounded-full" />
-                            <Skeleton className="h-4 w-24" />
-                        </div>
-                    ))}
-                </div>
-            );
-        case "button":
-            return <Button>{setting.label}</Button>;
-        default:
-            return null;
+export function renderInput(
+    key: string,
+    setting: Setting,
+    settingsMap: Record<string, Setting>
+) {
+    if (setting.type === "custom-render") {
+        return null; // Will be handled by custom renderer in the component
     }
+
+    const renderSettingInput = () => {
+        switch (setting.type) {
+            case "checkbox":
+                return (
+                    <Switch
+                        id={key}
+                        checked={getSettingValue(setting) as boolean}
+                        onCheckedChange={(value) => {
+                            setting.onChange?.(value);
+                        }}
+                    />
+                );
+            case "text":
+            case "password":
+            case "email":
+                return (
+                    <Input
+                        id={key}
+                        type={setting.type}
+                        value={getSettingValue(setting) as string}
+                        onChange={(e) => {
+                            setting.onChange?.(e.target.value);
+                        }}
+                        className="max-w-xs"
+                    />
+                );
+            case "number": {
+                return (
+                    <NumberInput
+                        id={key}
+                        type={setting.type}
+                        value={getSettingValue(setting) as string}
+                        onChange={(e) => {
+                            setting.onChange?.(e.target.value);
+                        }}
+                        wrapperClassName="max-w-xs"
+                    />
+                );
+            }
+            case "textarea": {
+                const textareaOptions = setting.options || {};
+                return (
+                    <Textarea
+                        id={key}
+                        value={getSettingValue(setting) as string}
+                        onChange={(e: {
+                            target: { value: string | boolean | string[] };
+                        }) => {
+                            setting.onChange?.(e.target.value);
+                        }}
+                        className={cn("max-w-xs", {
+                            "resize-none": textareaOptions.resize === false,
+                        })}
+                    />
+                );
+            }
+            case "select":
+                return (
+                    <Select
+                        value={getSettingValue(setting) as string}
+                        onValueChange={(value) => {
+                            setting.onChange?.(value);
+                        }}
+                    >
+                        <ContextMenu>
+                            <ContextMenuTrigger asChild>
+                                <SelectTrigger className="w-48">
+                                    <SelectValue
+                                        placeholder={"Select an option"}
+                                    />
+                                </SelectTrigger>
+                            </ContextMenuTrigger>
+                            <ContextMenuContent>
+                                <ContextMenuItem
+                                    onClick={() =>
+                                        setting.onChange?.(
+                                            getDefaultSettingsValue(setting)
+                                        )
+                                    }
+                                    className="flex gap-2"
+                                    variant="destructive"
+                                >
+                                    <RotateCcw className="size-4" />
+                                    <span>{"Reset"}</span>
+                                </ContextMenuItem>
+
+                                {setting.contextMenuItems &&
+                                    setting.contextMenuItems.length > 0 && (
+                                        <>
+                                            <ContextMenuSeparator />
+                                            {setting.contextMenuItems.map(
+                                                (item, index) => (
+                                                    <ContextMenuItem
+                                                        key={index}
+                                                        onClick={item.onClick}
+                                                        variant={item.variant}
+                                                        className="flex gap-2"
+                                                    >
+                                                        {item.icon && item.icon}
+                                                        <span>
+                                                            {item.label}
+                                                        </span>
+                                                    </ContextMenuItem>
+                                                )
+                                            )}
+                                        </>
+                                    )}
+                            </ContextMenuContent>
+                        </ContextMenu>
+                        <SelectContent>
+                            {setting.options.map((option) => (
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                );
+            case "radio":
+                return (
+                    <RadioGroup
+                        value={getSettingValue(setting) as string}
+                        onValueChange={(value) => {
+                            setting.onChange?.(value);
+                        }}
+                        className="flex flex-col space-y-1"
+                    >
+                        {setting.options.map((option) => (
+                            <div
+                                key={option.value}
+                                className="flex items-center space-x-2"
+                            >
+                                <RadioGroupItem
+                                    value={option.value}
+                                    id={`${key}-${option.value}`}
+                                />
+                                <Label htmlFor={`${key}-${option.value}`}>
+                                    {option.label}
+                                </Label>
+                            </div>
+                        ))}
+                    </RadioGroup>
+                );
+            case "shortcut": {
+                const duplicates = findDuplicateShortcuts(settingsMap);
+                const isDuplicate = duplicates.has(
+                    getSettingValue(setting) as string
+                );
+
+                return (
+                    <Input
+                        id={key}
+                        type="text"
+                        value={getSettingValue(setting) as string}
+                        className={`max-w-60 ${
+                            isDuplicate
+                                ? "border-destructive bg-destructive/20 focus-visible:ring-destructive"
+                                : ""
+                        }`}
+                        onKeyDown={(e) => {
+                            e.preventDefault();
+                            const keys: string[] = [];
+                            if (e.ctrlKey) keys.push("Ctrl");
+                            if (e.shiftKey) keys.push("Shift");
+                            if (e.altKey) keys.push("Alt");
+
+                            if (e.key === " " || e.code === "Space") {
+                                keys.push("Space");
+                            } else if (
+                                e.key !== "Control" &&
+                                e.key !== "Shift" &&
+                                e.key !== "Alt"
+                            ) {
+                                keys.push(e.key.toUpperCase());
+                            }
+
+                            if (keys.length > 0) {
+                                setting.onChange?.(keys.join("+"));
+                            }
+                        }}
+                        readOnly
+                        placeholder={"Press a key combination..."}
+                    />
+                );
+            }
+            case "slider": {
+                const sliderSetting = setting as SliderSetting;
+                const value = parseInt(getSettingValue(setting) as string);
+                const maxLen = Math.max(
+                    sliderSetting.min.toString().length,
+                    sliderSetting.max.toString().length
+                );
+
+                return (
+                    <div className="flex w-full flex-col gap-2">
+                        <div className="flex items-center justify-between font-mono">
+                            <span
+                                style={{
+                                    minWidth: `${maxLen}ch`,
+                                    textAlign: "start",
+                                }}
+                            >
+                                {sliderSetting.min}
+                            </span>
+                            <input
+                                className={cn(
+                                    "bg-background w-12 border-0 text-center font-medium"
+                                )}
+                                type="number"
+                                max={sliderSetting.max}
+                                min={sliderSetting.min}
+                                value={value.toString()}
+                                size={value.toString().length}
+                                onChange={(e) => {
+                                    const newValue = parseInt(e.target.value);
+                                    if (!isNaN(newValue)) {
+                                        setting.onChange?.(
+                                            Math.min(
+                                                newValue,
+                                                sliderSetting.max
+                                            ).toString()
+                                        );
+                                    }
+                                }}
+                            />
+                            <span
+                                style={{
+                                    minWidth: `${maxLen}ch`,
+                                    textAlign: "end",
+                                }}
+                            >
+                                {sliderSetting.max}
+                            </span>
+                        </div>
+                        <Slider
+                            id={key}
+                            min={sliderSetting.min}
+                            max={sliderSetting.max}
+                            step={sliderSetting.step}
+                            value={[value]}
+                            onValueChange={(values) => {
+                                setting.onChange?.(values[0].toString());
+                            }}
+                        />
+                    </div>
+                );
+            }
+            case "button":
+                if (!setting.confirmation) {
+                    return (
+                        <Button
+                            onClick={() =>
+                                (setting as ButtonSetting).onClick?.()
+                            }
+                        >
+                            {setting.label}
+                        </Button>
+                    );
+                }
+
+                return (
+                    <ButtonConfirmDialog
+                        triggerButton={<Button>{setting.label}</Button>}
+                        title={"Confirm"}
+                        description={
+                            (setting as ButtonSetting).confirmation ?? ""
+                        }
+                        onConfirm={() => (setting as ButtonSetting).onClick?.()}
+                        variant={setting.confirmVariant ?? "default"}
+                    />
+                );
+            case "color":
+                return (
+                    <ColorPicker
+                        value={getSettingValue(setting) as string}
+                        onChange={(value: SettingValue) => {
+                            setting.onChange?.(value);
+                        }}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
+    if (setting.type === "button" || setting.type === "select") {
+        return renderSettingInput();
+    }
+
+    return (
+        <ContextMenu>
+            <ContextMenuTrigger asChild>
+                {renderSettingInput()}
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+                <ContextMenuItem
+                    onClick={() =>
+                        setting.onChange?.(getDefaultSettingsValue(setting))
+                    }
+                    className="flex gap-2"
+                    variant="destructive"
+                >
+                    <RotateCcw className="size-4" />
+                    <span>{"Reset"}</span>
+                </ContextMenuItem>
+
+                {setting.contextMenuItems &&
+                    setting.contextMenuItems.length > 0 && (
+                        <>
+                            <ContextMenuSeparator />
+                            {setting.contextMenuItems.map((item, index) => (
+                                <ContextMenuItem
+                                    key={index}
+                                    onClick={item.onClick}
+                                    variant={item.variant}
+                                    className="flex gap-2"
+                                >
+                                    {item.icon && item.icon}
+                                    <span>{item.label}</span>
+                                </ContextMenuItem>
+                            ))}
+                        </>
+                    )}
+            </ContextMenuContent>
+        </ContextMenu>
+    );
 }
