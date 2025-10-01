@@ -89,7 +89,7 @@ export default function BookmarksBody({
 
         const syncIfNeeded = async () => {
             if (hasSyncedBookmarksCache) return;
-            const mangaId = bookmarks.length > 0 ? bookmarks[0].id : null;
+            const mangaId = bookmarks.length > 0 ? bookmarks[0].slug : null;
             if (!mangaId) return;
             const latestRead = await getLatestReadChapter(mangaId);
             if (!latestRead) {
