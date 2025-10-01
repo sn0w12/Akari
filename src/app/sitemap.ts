@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-dynamic";
 
 const NEXT_MANGA_URL = process.env.NEXT_MANGA_URL!;
-const NEXT_HOST = process.env.NEXT_HOST!;
+const NEXT_PUBLIC_HOST = process.env.NEXT_PUBLIC_HOST!;
 
 interface SitemapEntry {
     url: string;
@@ -96,7 +96,7 @@ export default async function sitemap({
 
         const urls: SitemapEntry[] = rawUrlSet.url.map(
             (u: RawUrlEntry): SitemapEntry => ({
-                url: u.loc[0].replace(baseUrl, `https://${NEXT_HOST}`),
+                url: u.loc[0].replace(baseUrl, `https://${NEXT_PUBLIC_HOST}`),
                 lastModified: u.lastmod ? new Date(u.lastmod[0]) : undefined,
             }),
         );

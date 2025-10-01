@@ -25,8 +25,8 @@ export async function generateMetadata({
     const title = `${chapter.title} - ${chapter.chapter}`;
     const description = `Read ${chapter.title} ${chapter.chapter}`;
     let image = `/api/v1/manga/${mangaParams.id}/og`;
-    if (process.env.NEXT_HOST) {
-        image = `https://${process.env.NEXT_HOST}/api/v1/manga/${mangaParams.id}/og`;
+    if (process.env.NEXT_PUBLIC_HOST) {
+        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${mangaParams.id}/og`;
     }
 
     return {

@@ -37,8 +37,8 @@ export async function GET(
         (host.startsWith("localhost") ? "http" : "https");
 
     if (!isDevelopment) {
-        if (process.env.NEXT_HOST) {
-            host = process.env.NEXT_HOST;
+        if (process.env.NEXT_PUBLIC_HOST) {
+            host = process.env.NEXT_PUBLIC_HOST;
             protocol = "https";
         }
     }

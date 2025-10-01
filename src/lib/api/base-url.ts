@@ -1,5 +1,5 @@
 export function getBaseUrl() {
-    const host = process.env.NEXT_HOST;
+    const host = process.env.NEXT_PUBLIC_HOST;
     if (host) {
         if (host.includes("localhost") || host.includes("127.0.0.1")) {
             return `http://${host}`;
@@ -22,7 +22,7 @@ export function getBaseUrl() {
 }
 
 export function getProductionUrl() {
-    const host = process.env.NEXT_HOST;
+    const host = process.env.NEXT_PUBLIC_HOST;
     if (host) {
         return `https://${host}`;
     }

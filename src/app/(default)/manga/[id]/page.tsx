@@ -45,8 +45,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         300
     );
     let image = `/api/v1/manga/${params.id}/og`;
-    if (process.env.NEXT_HOST) {
-        image = `https://${process.env.NEXT_HOST}/api/v1/manga/${params.id}/og`;
+    if (process.env.NEXT_PUBLIC_HOST) {
+        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${params.id}/og`;
     }
 
     return {
