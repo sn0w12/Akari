@@ -82,7 +82,7 @@ export async function logout(secondaryAccounts: SecondaryAccount[]) {
         sessionStorage.removeItem(account.sessionKey);
     });
 
-    await fetch("/api/logout");
+    await fetchApi("/api/v1/logout");
 }
 
 export async function logoutSecondaryAccount(account: SecondaryAccount) {

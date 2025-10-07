@@ -86,14 +86,14 @@ export default function AccountClient() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleLogout = async () => {
-        await logout(secondaryAccounts);
+    const handleLogout = () => {
+        logout(secondaryAccounts);
         setSavedUsername("");
         window.location.reload();
     };
 
-    const handleSecondaryLogout = async (account: SecondaryAccount) => {
-        await logoutSecondaryAccount(account);
+    const handleSecondaryLogout = (account: SecondaryAccount) => {
+        logoutSecondaryAccount(account);
         setSecondaryAccounts((accounts) =>
             accounts.map((acc) =>
                 acc.id === account.id ? { ...acc, user: null } : acc
