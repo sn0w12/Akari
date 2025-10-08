@@ -112,11 +112,13 @@ export async function fetchMangaDetails(
             $(".manga-info-text li").each((_, element) => {
                 const text = $(element).text().trim();
                 if (text.startsWith("Author")) {
-                    $(element)
-                        .find("a")
-                        .each((_, authorElement) => {
-                            authors.push($(authorElement).text().trim());
-                        });
+                    const authorNames = text.split(":")[1];
+                    authorNames.split("/").forEach((author) => {
+                        const trimmedAuthor = author.trim();
+                        if (trimmedAuthor) {
+                            authors.push(trimmedAuthor);
+                        }
+                    });
                 }
             });
             let status = $(".manga-info-text li")
