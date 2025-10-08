@@ -26,6 +26,7 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data))
     );
 
+    success = results[0].status === "fulfilled";
     const authorizedServices: string[] = [];
     const unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
@@ -35,7 +36,6 @@ export async function syncAllServices(data: Chapter) {
                 unAuthorizedServices.push(services[index]);
             } else {
                 console.error(`Failed to sync with handler:`, error);
-                success = false;
             }
         } else {
             authorizedServices.push(services[index]);
@@ -56,7 +56,7 @@ export async function syncAllServices(data: Chapter) {
             Description: `${unAuthorizedServices.join(", ")}`,
         });
     } else {
-        new Toast("Failed to update bookmark on some services.", "error");
+        new Toast("Failed to update bookmark.", "error");
     }
 
     if (authorizedServices.includes(services[0])) {
