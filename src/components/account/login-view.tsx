@@ -118,16 +118,16 @@ export default function LoginView({
                                             <FormLabel>CAPTCHA</FormLabel>
                                             <div className="flex items-center w-full">
                                                 {!captchaUrl ? (
-                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0">
+                                                    <div className="w-[100px] h-9 mr-2 flex-shrink-0">
                                                         <Skeleton className="w-full h-full" />
                                                     </div>
                                                 ) : (
-                                                    <div className="w-[100px] h-[45px] mr-2 flex-shrink-0 content-center">
+                                                    <div className="w-[100px] h-9 mr-2 flex-shrink-0">
                                                         <Image
                                                             src={captchaUrl}
                                                             loading="eager"
                                                             alt="CAPTCHA"
-                                                            className="object-contain"
+                                                            className="object-fill h-full"
                                                             width={100}
                                                             height={45}
                                                         />
