@@ -52,10 +52,10 @@ export default function SearchButton() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden border touch-manipulation"
+                    className="md:hidden border touch-manipulation size-10"
                     aria-label="Search Manga"
                 >
-                    <Search className="h-5 w-5" />
+                    <Search className="size-5" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="">
