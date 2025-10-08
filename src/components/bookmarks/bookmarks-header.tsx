@@ -96,7 +96,7 @@ export default function BookmarksHeader() {
     };
 
     return (
-        <div className="relative mb-6">
+        <div className="relative mb-4 md:mb-6">
             <div className="flex flex-col md:flex-row gap-4">
                 <Button
                     variant="outline"
