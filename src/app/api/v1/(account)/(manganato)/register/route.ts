@@ -77,10 +77,6 @@ export async function POST(request: NextRequest) {
         );
 
         const setCookies = responseCookies.map((cookie) => cookie.toString());
-        setCookies.push(
-            `user_id=${registerResponse.data.data.id}; Path=/; Max-Age=2592000;`
-        );
-
         const response = createApiResponse(registerResponse.data, {
             setCookies,
         });
