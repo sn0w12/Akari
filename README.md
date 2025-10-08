@@ -98,7 +98,7 @@ Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga 
 
 If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
 
-![Login](./images/LoginForm.png)
+![Login](./images/LoginForm.webp)
 
 After you've been logged in, you can use it as you normally would.
 
@@ -107,15 +107,15 @@ After you've been logged in, you can use it as you normally would.
 
 ### Front Page
 
-![FrontPage](./images/Homepage.png)
+![FrontPage](./images/Homepage.webp)
 
 ### Bookmarks
 
-![Bookmarks](./images/Bookmarks.png)
+![Bookmarks](./images/Bookmarks.webp)
 
 ### Manga
 
-![Manga](./images/Manga.png)
+![Manga](./images/Manga.webp)
 
 ### Author
 
@@ -123,7 +123,7 @@ After you've been logged in, you can use it as you normally would.
 
 ### Genre
 
-![Genre](./images/Genre.png)
+![Genre](./images/Genre.webp)
 
 </details>
 
