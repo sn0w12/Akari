@@ -48,7 +48,7 @@ export default function BookmarksBody({
                     mangaId: bookmark.slug,
                     mangaName: bookmark.title,
                     mangaImage: bookmark.coverImage,
-                    latestChapter: bookmark.latestChapter.number.toString(),
+                    latestChapter: bookmark.currentChapter.number.toString(),
                 })
             );
 
