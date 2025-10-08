@@ -1,4 +1,3 @@
-import { setCookie } from "@/lib/utils";
 import { Setting } from "./lib/settings";
 
 /**
@@ -28,35 +27,30 @@ export const APP_SETTINGS = {
                     { label: "System", value: "system" },
                 ],
                 default: "system",
-                groups: ["Appearance"],
-            },
-            fetchMalImage: {
-                label: "Fetch MAL Data",
-                description:
-                    "Updates the Akari database with better images and other info.",
-                type: "checkbox",
-                default: true,
-                groups: ["Data"],
+                groups: ["UI"],
             },
             fancyAnimations: {
                 label: "Fancy Animations",
                 description: "Such as manga detail pages cover image.",
                 type: "checkbox",
                 default: true,
-                groups: ["Appearance"],
+                groups: ["UI"],
             },
-            clearReadingHistory: {
-                label: "Clear Reading History",
-                type: "button",
-                confirmation:
-                    "Are you sure you want to clear your reading history?",
-                default: false,
-                onClick: async () => {
-                    await fetch("/api/account/reading", {
-                        method: "DELETE",
-                    });
-                },
-                groups: ["Data"],
+            useToast: {
+                label: "Show Toasts",
+                description: "Show toast notifications for various actions.",
+                type: "checkbox",
+                default: true,
+                groups: ["UI", "Notifications"],
+            },
+            groupLoginToasts: {
+                label: "Login Toasts",
+                description:
+                    "Show warnings when you aren't logged in to a service.",
+                type: "checkbox-group",
+                options: [{ label: "MAL", value: "MAL" }],
+                default: ["MAL"],
+                groups: ["UI", "Notifications"],
             },
         },
     },
@@ -71,39 +65,15 @@ export const APP_SETTINGS = {
                 default: true,
                 groups: ["Reading"],
             },
-            saveReadingHistory: {
-                label: "Save Reading History",
-                description: `Saves your reading history.`,
-                type: "checkbox",
-                default: true,
-                onChange: (value) => {
-                    setCookie(
-                        "save_reading_history",
-                        value as string,
-                        "functional"
-                    );
-                },
+            stripWidth: {
+                label: "Strip Reader Width",
+                description: "Width of the strip reader.",
+                type: "slider",
+                default: "144",
+                min: 32,
+                max: 256,
+                step: 8,
                 groups: ["Reading"],
-            },
-        },
-    },
-    notifications: {
-        label: "Notifications",
-        settings: {
-            useToast: {
-                label: "Show Toasts",
-                description: "Show toast notifications for various actions.",
-                type: "checkbox",
-                default: true,
-                groups: ["UI"],
-            },
-            loginToasts: {
-                label: "Login Toasts",
-                description:
-                    "Show warnings when you aren't logged in to a service.",
-                type: "checkbox",
-                default: true,
-                groups: ["UI"],
             },
         },
     },

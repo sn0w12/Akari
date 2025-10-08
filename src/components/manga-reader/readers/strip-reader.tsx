@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFooterVisibility } from "@/contexts/footer-context";
+import { useSetting } from "@/lib/settings";
 
 function throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
@@ -50,6 +51,7 @@ export default function StripReader({
     const router = useRouter();
     const [scrollPercentage, setScrollPercentage] = useState(0);
     const [distanceFromBottom, setDistanceFromBottom] = useState(1000);
+    const stripWidth = useSetting("stripWidth");
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
@@ -160,7 +162,10 @@ export default function StripReader({
                         }`}
                         width={img.width || 720}
                         height={img.height || 1500}
-                        className="object-contain w-128 z-20 relative"
+                        className="object-contain z-20 relative max-w-full"
+                        style={{
+                            width: `calc(var(--spacing) * ${stripWidth})`,
+                        }}
                         loading={"eager"}
                         priority={index < 3}
                     />

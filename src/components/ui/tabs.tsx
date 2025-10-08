@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
+import { useSetting } from "@/lib/settings";
 
 const TabsContext = React.createContext<{
     hoverIndexRef: React.MutableRefObject<number | null>;
@@ -36,6 +37,7 @@ function TabsList({
     size?: "default" | "small";
 }) {
     const [isHovering, setIsHovering] = React.useState(false);
+    const useFancyAnimations = useSetting("fancyAnimations") as boolean;
     const hoverIndexRef = React.useRef<number | null>(null);
     const isHoveringRef = React.useRef<boolean>(false);
     const indicatorRef = React.useRef<HTMLDivElement>(null);
@@ -133,9 +135,11 @@ function TabsList({
                             left: "0px",
                             opacity: 0,
                             transform: "translateZ(0)",
-                            transition: isHovering
-                                ? "all 200ms cubic-bezier(0.16, 1, 0.3, 1)"
-                                : "opacity 200ms cubic-bezier(0.16, 1, 0.3, 1)",
+                            transition: useFancyAnimations
+                                ? isHovering
+                                    ? "all 200ms cubic-bezier(0.16, 1, 0.3, 1)"
+                                    : "opacity 200ms cubic-bezier(0.16, 1, 0.3, 1)"
+                                : "none",
                         }}
                     />
                     {React.Children.map(children, (child, index) =>

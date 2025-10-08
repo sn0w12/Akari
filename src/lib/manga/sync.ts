@@ -42,9 +42,15 @@ export async function syncAllServices(data: Chapter) {
         }
     });
     if (unAuthorizedServices.length > 0) {
-        if (getSetting("loginToasts")) {
+        const notToastServices = getSetting(
+            "groupLoginToasts"
+        ) as unknown as string[];
+        const servicesToToast = unAuthorizedServices.filter(
+            (service) => !notToastServices.includes(service)
+        );
+        if (servicesToToast.length > 0) {
             new Toast(
-                `Not logged in to services: ${unAuthorizedServices.join(", ")}`,
+                `Not logged in to services: ${servicesToToast.join(", ")}`,
                 "warning"
             );
         }
@@ -53,7 +59,7 @@ export async function syncAllServices(data: Chapter) {
     // Display a toast notification after all sync handlers are done
     if (success) {
         new Toast(`Bookmark updated successfully`, "success", {
-            Description: `${unAuthorizedServices.join(", ")}`,
+            Description: `${authorizedServices.join(", ")}`,
         });
     } else {
         new Toast("Failed to update bookmark.", "error");

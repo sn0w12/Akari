@@ -62,6 +62,10 @@ type KeysOfType<T, U> = {
 }[keyof T];
 
 export type CheckboxSettingKeys = KeysOfType<AllSettingsMerged, "checkbox">;
+export type CheckboxGroupSettingKeys = KeysOfType<
+    AllSettingsMerged,
+    "checkbox-group"
+>;
 export type TextSettingKeys = KeysOfType<AllSettingsMerged, "text">;
 export type PasswordSettingKeys = KeysOfType<AllSettingsMerged, "password">;
 export type EmailSettingKeys = KeysOfType<AllSettingsMerged, "email">;
@@ -352,6 +356,10 @@ export const getDefaultSettingsMaps = (): Record<
                     (settingCopy as CheckboxSetting).value =
                         defaultValue as boolean;
                     break;
+                case "checkbox-group":
+                    (settingCopy as CheckboxGroupSetting).value =
+                        defaultValue as string[];
+                    break;
                 case "text":
                 case "password":
                 case "email":
@@ -397,6 +405,7 @@ export function resetAllSettingsToDefault() {
 export type SettingValue = string | boolean | string[];
 export type SettingType =
     | "checkbox"
+    | "checkbox-group"
     | "text"
     | "password"
     | "email"
@@ -431,6 +440,13 @@ interface CheckboxSetting extends BaseSetting {
     type: "checkbox";
     value?: boolean;
     default: boolean | (() => boolean);
+}
+
+interface CheckboxGroupSetting extends BaseSetting {
+    type: "checkbox-group";
+    options: { label: string; value: string }[];
+    value?: string[];
+    default: string[] | (() => string[]);
 }
 
 interface TextSetting extends BaseSetting {
@@ -496,6 +512,7 @@ interface CustomRenderSetting extends BaseSetting {
 
 export type Setting =
     | CheckboxSetting
+    | CheckboxGroupSetting
     | TextSetting
     | TextareaSetting
     | SelectSetting
@@ -621,6 +638,39 @@ export function renderInput(
                         }}
                     />
                 );
+            case "checkbox-group": {
+                const checkboxGroupSetting = setting as CheckboxGroupSetting;
+                const selectedValues = getSettingValue(setting) as string[];
+
+                return (
+                    <div className="flex flex-col space-y-2">
+                        {checkboxGroupSetting.options.map((option) => (
+                            <div
+                                key={option.value}
+                                className="flex items-center space-x-2"
+                            >
+                                <Label htmlFor={`${key}-${option.value}`}>
+                                    {option.label}
+                                </Label>
+                                <Switch
+                                    id={`${key}-${option.value}`}
+                                    checked={selectedValues.includes(
+                                        option.value
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                        const newSelectedValues = checked
+                                            ? [...selectedValues, option.value]
+                                            : selectedValues.filter(
+                                                  (v) => v !== option.value
+                                              );
+                                        setting.onChange?.(newSelectedValues);
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
             case "text":
             case "password":
             case "email":
@@ -818,7 +868,7 @@ export function renderInput(
                             </span>
                             <input
                                 className={cn(
-                                    "bg-background w-12 border-0 text-center font-medium"
+                                    "w-12 border-0 text-center font-medium"
                                 )}
                                 type="number"
                                 max={sliderSetting.max}
