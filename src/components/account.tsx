@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { useState, useEffect } from "react";
 import {
     generateMalAuth,
@@ -8,40 +7,16 @@ import {
     SecondaryAccount,
     SECONDARY_ACCOUNTS,
 } from "@/lib/auth/secondary-accounts";
-import {
-    fetchCaptcha,
-    submitLogin,
-    logout,
-    logoutSecondaryAccount,
-} from "@/lib/auth/manganato";
+import { logout, logoutSecondaryAccount } from "@/lib/auth/manganato";
 import LoggedInView from "./account/logged-in-view";
-import LoginView from "./account/login-view";
-import { formSchema } from "./account/login-view";
+import { useRouter } from "next/navigation";
 
 export default function AccountClient() {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
     const [loading, setLoading] = useState(true);
     const [savedUsername, setSavedUsername] = useState("");
-    const [captchaUrl, setCaptchaUrl] = useState("");
-    const [sessionCookies, setSessionCookies] = useState([""]);
-    const [loginError, setLoginError] = useState("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const handleFetchCaptcha = async () => {
-        if (captchaUrl && sessionCookies.length > 0) {
-            return;
-        }
-
-        try {
-            const { captchaUrl: url, cookies: newCookies } =
-                await fetchCaptcha();
-            setCaptchaUrl(url);
-            setSessionCookies(newCookies);
-        } catch {
-            setLoginError("Failed to fetch CAPTCHA.");
-        }
-    };
+    const router = useRouter();
 
     useEffect(() => {
         // Check if user is logged in
@@ -53,6 +28,10 @@ export default function AccountClient() {
             } catch (error) {
                 console.error("Failed to parse user_acc cookie:", error);
             }
+        } else {
+            // Not logged in, redirect to login page
+            router.push("/login");
+            return;
         }
         setLoading(false);
 
@@ -78,11 +57,6 @@ export default function AccountClient() {
         };
 
         checkSecondaryAuth();
-
-        // If not logged in, fetch captcha for login form
-        if (!accountName) {
-            handleFetchCaptcha();
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -102,29 +76,6 @@ export default function AccountClient() {
         window.location.reload();
     };
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setIsLoading(true);
-
-        try {
-            const response = await submitLogin(
-                values.username,
-                values.password,
-                values.captcha,
-                sessionCookies
-            );
-            if (response.success) {
-                setSavedUsername(values.username);
-                window.location.reload();
-            } else {
-                setLoginError(response.error || "Login failed");
-            }
-        } catch {
-            setLoginError("An error occurred during login.");
-        }
-
-        setIsLoading(false);
-    };
-
     if (loading) {
         return;
     }
@@ -140,15 +91,6 @@ export default function AccountClient() {
             />
         );
     } else {
-        return (
-            <LoginView
-                captchaUrl={captchaUrl}
-                sessionCookies={sessionCookies}
-                loginError={loginError}
-                isLoading={isLoading}
-                onSubmit={onSubmit}
-                handleFetchCaptcha={handleFetchCaptcha}
-            />
-        );
+        return <span>Redirecting...</span>;
     }
 }
