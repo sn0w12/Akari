@@ -23,7 +23,7 @@ export async function GET(req: Request): Promise<Response> {
                 referer: `https://${process.env.NEXT_MANGA_URL}/`,
                 Accept: "image/avif,image/jxl,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
             },
-            timeout: 2000,
+            timeout: 10000,
         });
 
         const contentType = response.headers["content-type"];
