@@ -8,6 +8,7 @@ import Image from "next/image";
 import PageProgress from "../page-progress";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useFooterVisibility } from "@/contexts/footer-context";
+import { useQueryClient } from "@tanstack/react-query";
 import MangaFooter from "../manga-footer";
 import EndOfManga from "../end-of-manga";
 
@@ -42,6 +43,7 @@ export default function PageReader({
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
     const { isFooterVisible } = useFooterVisibility();
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!chapter) return;
@@ -52,6 +54,9 @@ export default function PageReader({
             bookmarkUpdatedRef.current = true;
             syncAllServices(chapter).then((success) => {
                 setBookmarkState(success);
+                if (success) {
+                    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+                }
             });
         }
 
@@ -67,7 +72,14 @@ export default function PageReader({
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [chapter, currentPage, router, images.length, setBookmarkState]);
+    }, [
+        chapter,
+        currentPage,
+        router,
+        images.length,
+        setBookmarkState,
+        queryClient,
+    ]);
 
     const updatePageUrl = useCallback((pageNum: number) => {
         const url = new URL(window.location.href);

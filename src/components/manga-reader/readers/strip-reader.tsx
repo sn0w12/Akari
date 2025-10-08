@@ -6,6 +6,7 @@ import MangaFooter from "../manga-footer";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/manga/sync";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFooterVisibility } from "@/contexts/footer-context";
 
 function throttle<T extends (...args: unknown[]) => unknown>(
@@ -54,6 +55,7 @@ export default function StripReader({
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
     const mountTimeRef = useRef<number>(Date.now());
     const { isFooterVisible } = useFooterVisibility();
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         const mainElement = document.getElementById(
@@ -130,6 +132,9 @@ export default function StripReader({
         ) {
             syncAllServices(chapter).then((success) => {
                 setBookmarkState(success);
+                if (success) {
+                    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+                }
             });
             bookmarkUpdatedRef.current = true;
         }
@@ -138,7 +143,7 @@ export default function StripReader({
             router.prefetch(`/manga/${chapter.nextChapter}?_prefetch=1`);
             hasPrefetchedRef.current = true;
         }
-    }, [scrollPercentage, chapter, router, setBookmarkState]);
+    }, [scrollPercentage, chapter, router, setBookmarkState, queryClient]);
 
     return (
         <div>
