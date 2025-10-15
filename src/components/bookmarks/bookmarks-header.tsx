@@ -119,7 +119,7 @@ export default function BookmarksHeader() {
                             setTimeout(() => setIsFocused(false), 150)
                         }
                         onKeyDown={handleKeyDown}
-                        className="no-cancel"
+                        className="no-cancel text-sm"
                     />
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 </div>
