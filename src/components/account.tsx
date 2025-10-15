@@ -6,6 +6,7 @@ import {
     isAccountValid,
     SecondaryAccount,
     SECONDARY_ACCOUNTS,
+    SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
 import { logout, logoutSecondaryAccount } from "@/lib/auth/manganato";
 import LoggedInView from "./account/logged-in-view";
@@ -42,7 +43,10 @@ export default function AccountClient() {
                     const userData = JSON.parse(
                         localStorage.getItem(account.storageKey) || "{}"
                     );
-                    if (userData.name && (await isAccountValid(account))) {
+                    if (
+                        userData.name &&
+                        (await isAccountValid(account.id as SecondaryAccountId))
+                    ) {
                         return { ...account, user: userData };
                     }
 

@@ -17,7 +17,7 @@ export interface SecondaryAccount {
     validateEndpoint: ApiUrl;
 }
 
-export const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
+export const SECONDARY_ACCOUNTS = [
     {
         id: "mal",
         name: "MyAnimeList",
@@ -30,7 +30,8 @@ export const SECONDARY_ACCOUNTS: SecondaryAccount[] = [
         apiEndpoint: "/api/v1/mal/logout",
         validateEndpoint: "/api/v1/mal/isLoggedIn",
     },
-];
+] as const satisfies SecondaryAccount[];
+export type SecondaryAccountId = (typeof SECONDARY_ACCOUNTS)[number]["id"];
 
 export function generateMalAuth(account: SecondaryAccount) {
     const codeVerifier = generateCodeVerifier();
@@ -51,7 +52,10 @@ export function generateMalAuth(account: SecondaryAccount) {
     return { ...account, authUrl: url.toString() };
 }
 
-export async function isAccountValid(account: SecondaryAccount) {
+export async function isAccountValid(accountId: SecondaryAccountId) {
+    const account = SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
+    if (!account) throw new Error(`Unknown account ID: ${accountId}`);
+
     const cache = sessionStorage.getItem(account.sessionKey);
     if (cache === "true") return true;
     if (cache === "false") return false;
@@ -80,7 +84,7 @@ export async function validateSecondaryAccounts() {
             return {
                 id: account.id,
                 name: account.name,
-                valid: await isAccountValid(account),
+                valid: await isAccountValid(account.id),
             };
         })
     );
