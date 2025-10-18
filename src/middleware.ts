@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { UAParser } from "ua-parser-js";
 import { inDevelopment } from "./config";
 
 const SKIP_LOGGING_EXACT = [
@@ -84,23 +85,31 @@ export function middleware(request: NextRequest): NextResponse {
         return NextResponse.next();
     }
 
-    const isPrefetch = request.nextUrl.searchParams.has("_prefetch");
+    setTimeout(() => {
+        const userAgent = request.headers.get("user-agent");
+        const { browser, os } = UAParser(userAgent || "");
+        const isPrefetch = request.nextUrl.searchParams.has("_prefetch");
 
-    const timestamp = new Date().toISOString().replace("T", " ").slice(0, 19);
-    const method = `${getMethodColor(request.method)}${request.method}`;
-    const requestType = pathname.startsWith("/api")
-        ? `${colors.magenta}API`
-        : isPrefetch
-        ? `${colors.yellow}PRE`
-        : `${colors.blue}NAV`;
+        const timestamp = new Date()
+            .toISOString()
+            .replace("T", " ")
+            .slice(0, 19);
+        const method = `${getMethodColor(request.method)}${request.method}`;
+        const requestType = pathname.startsWith("/api")
+            ? `${colors.magenta}API`
+            : isPrefetch
+            ? `${colors.yellow}PRE`
+            : `${colors.blue}NAV`;
 
-    const route = getTransformedKey(pathname);
-
-    console.log(
-        `[${timestamp} | ${method}${colors.reset} | ${requestType}${
-            colors.reset
-        }] ${route ? `${route} | ` : ""}${decodeURIComponent(pathname)}`
-    );
+        const route = getTransformedKey(pathname);
+        console.log(
+            `[${timestamp} | ${method}${colors.reset} | ${requestType}${
+                colors.reset
+            }] ${route ? `${route} | ` : ""}${decodeURIComponent(pathname)} | ${
+                browser.name || "Unknown"
+            } | ${os.name || "Unknown"}`
+        );
+    }, 0);
 
     return NextResponse.next();
 }
