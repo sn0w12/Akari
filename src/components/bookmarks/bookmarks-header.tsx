@@ -14,6 +14,8 @@ import { SmallBookmark, SmallBookmarkRecord } from "@/types/manga";
 import { fetchApi, isApiErrorResponse } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
+import { useConfirm } from "@/contexts/confirm-context";
+import { SyncStatus } from "@/types/api";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -22,6 +24,7 @@ export default function BookmarksHeader() {
     const [isFocused, setIsFocused] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const router = useRouter();
+    const { confirm } = useConfirm();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -78,6 +81,29 @@ export default function BookmarksHeader() {
         URL.revokeObjectURL(url);
     }
 
+    async function syncToMal() {
+        const confirmed = await confirm({
+            title: "Sync bookmarks to MyAnimeList",
+            description:
+                "Your sync request will be queued and processed shortly. You will not be able to make another sync request until the current one is completed.",
+            confirmText: "Yes, Sync",
+            cancelText: "Cancel",
+        });
+        if (!confirmed) return;
+
+        const response = await fetchApi<SyncStatus>("/api/v1/mal/sync", {
+            method: "POST",
+        });
+        if (isApiErrorResponse(response)) {
+            new Toast(response.data.message, "error");
+            return;
+        }
+        new Toast(
+            `Sync request queued at position: ${response.data.position}`,
+            "success"
+        );
+    }
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (searchResults.length === 0) return;
 
@@ -107,6 +133,16 @@ export default function BookmarksHeader() {
                     onClick={exportBookmarks}
                 >
                     Export Bookmarks
+                </Button>
+                <Button
+                    variant="outline"
+                    size="lg"
+                    className={
+                        "w-auto md:h-auto flex items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
+                    }
+                    onClick={syncToMal}
+                >
+                    Sync to MAL
                 </Button>
                 <div className="relative w-full">
                     <Input

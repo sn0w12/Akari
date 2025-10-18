@@ -79,6 +79,16 @@ export default function BookmarksSkeleton() {
                         >
                             Export Bookmarks
                         </Button>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className={
+                                "w-auto md:h-auto flex items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
+                            }
+                            disabled={true}
+                        >
+                            Sync to MAL
+                        </Button>
                         <div className="relative w-full">
                             <Input
                                 type="search"

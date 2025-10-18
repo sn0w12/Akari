@@ -396,6 +396,7 @@ export async function fetchChapterData(
                 id: subId,
                 title: cleanText(mangaTitle),
                 chapter: cleanText(chapterTitle),
+                number: subId.replace("chapter-", "").replace("-", "."),
                 chapters: chapters,
                 pages: pages,
                 parentId: parent,
