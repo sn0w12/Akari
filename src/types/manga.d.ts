@@ -40,6 +40,7 @@ export interface Chapter {
     id: string;
     title: string;
     chapter: string;
+    number: string;
     chapters: { value: string; label: string }[];
     pages: number;
     parentId: string;
@@ -85,6 +86,7 @@ export interface SmallBookmark {
     mangaName: string;
     mangaImage: string | null;
     latestChapter: string;
+    malData?: MalData | null;
 }
 
 export interface SmallBookmarkRecord extends SmallBookmark {

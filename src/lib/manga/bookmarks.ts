@@ -146,7 +146,7 @@ export async function updateBookmark(chapter: Chapter): Promise<boolean> {
             mangaId: chapter.parentId,
             mangaName: chapter.title,
             mangaImage: chapter.malImage,
-            latestChapter: chapter.id,
+            latestChapter: chapter.number,
         },
     };
 
