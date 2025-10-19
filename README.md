@@ -7,7 +7,7 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-1.3.3-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
@@ -76,13 +76,6 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 | Open Settings      | Ctrl+,       | Open settings               |
 | Open Account       | Ctrl+.       | Open account page           |
 | Navigate Bookmarks | Ctrl+Shift+B | Navigate to bookmarks       |
-
-## Data
-
-| Setting               | Default | Description                 |
-| --------------------- | ------- | --------------------------- |
-| Clear Cache           | N/A     | Clears all caches           |
-| Clear Reading History | N/A     | Clears your reading history |
 
 # Technical Stack
 
