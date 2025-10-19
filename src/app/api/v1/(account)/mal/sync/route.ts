@@ -9,7 +9,6 @@ import { hashUsername } from "@/lib/auth/user";
 import { SyncStatus } from "@/types/api";
 
 const ENCRYPTION_KEY = process.env.SUPABASE_ENCRYPTION_KEY!;
-if (!ENCRYPTION_KEY) throw new Error("SUPABASE_ENCRYPTION_KEY is required");
 
 export async function GET() {
     const cookieStore = await cookies();
@@ -75,6 +74,7 @@ export async function GET() {
 }
 
 export async function POST() {
+    if (!ENCRYPTION_KEY) throw new Error("SUPABASE_ENCRYPTION_KEY is required");
     const cookieStore = await cookies();
     const username = getUsernameFromCookies(cookieStore);
     if (!username) {
