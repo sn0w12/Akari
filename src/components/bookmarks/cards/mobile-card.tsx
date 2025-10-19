@@ -65,7 +65,7 @@ const MobileBookmarkCard: React.FC<{
                         rel="noopener noreferrer"
                         className={`mt-2 py-4 px-6 w-full text-lg font-bold text-white ${buttonColor} transition-colors`}
                     >
-                        {continueReadingText}
+                        {continueReadingText.split("-")[1].trim()}
                     </ButtonLink>
                 </div>
                 {LatestChapterInfo({ bookmark, colors: buttonColor })}
