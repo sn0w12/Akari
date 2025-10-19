@@ -51,7 +51,7 @@
         "tough-cookie": "^6.0.0",
         "ua-parser-js": "^2.0.6",
         "xml2js": "^0.6.2",
-        "zod": "^4.1.11",
+        "zod": "^4.1.12",
         "zustand": "^5.0.8"
     },
     "devDependencies": {
