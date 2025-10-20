@@ -14,12 +14,13 @@ import {
 import { InfoIcon } from "lucide-react";
 import ErrorComponent from "./error-page";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { imageUrl } from "@/lib/utils";
+import { cn, imageUrl } from "@/lib/utils";
 import { fetchMangaDetails } from "@/lib/manga/scraping";
 import { isApiErrorData } from "@/lib/api";
 
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
+import { Manga } from "@/types/manga";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -51,6 +52,47 @@ const getViewsColor = (views: string) => {
     return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
+function ExternalLinks({ manga }: { manga: Manga }) {
+    return (
+        <>
+            {manga.malData?.ani_id && (
+                <Link
+                    href={`https://anilist.co/manga/${manga.malData.ani_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10"
+                    prefetch={false}
+                >
+                    <Image
+                        src={AniImage}
+                        alt="AniList Logo"
+                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
+                        width={40}
+                        height={40}
+                    />
+                </Link>
+            )}
+            {manga.malData?.mal_id && (
+                <Link
+                    href={`https://myanimelist.net/manga/${manga.malData.mal_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10"
+                    prefetch={false}
+                >
+                    <Image
+                        src={MalImage}
+                        alt="MyAnimeList Logo"
+                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
+                        width={40}
+                        height={40}
+                    />
+                </Link>
+            )}
+        </>
+    );
+}
+
 export async function MangaDetailsComponent({ id }: { id: string }) {
     "use cache";
     cacheLife("minutes");
@@ -78,11 +120,11 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
         <div className="mx-auto p-4 pb-0">
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
-                <div className="flex flex-shrink-0 justify-center">
+                <div className="flex flex-shrink-0 justify-center hidden lg:block">
                     <EnhancedImage
                         src={imageUrl(manga.malData?.image ?? manga.imageUrl)}
                         alt={manga.name}
-                        className="rounded-lg  object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
+                        className="rounded-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
                         width={400}
                         height={600}
@@ -94,9 +136,22 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                 {/* Card with flex layout to lock title and buttons */}
                 <Card className="p-6 flex flex-col justify-between flex-grow lg:max-h-[600px] bg-background gap-0">
                     {/* Title stays at the top */}
-                    <div className="flex items-center justify-between mb-4 border-b pb-2">
+                    <div className="flex items-center mb-4 border-b pb-4 justify-between">
+                        <Image
+                            src={imageUrl(
+                                manga.malData?.image ?? manga.imageUrl
+                            )}
+                            alt={manga.name}
+                            className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:hidden mr-4"
+                            width={400}
+                            height={600}
+                            preload={true}
+                            fetchPriority="high"
+                        />
                         <div className="flex items-center gap-2">
-                            <h1 className="text-3xl font-bold">{manga.name}</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold">
+                                {manga.name}
+                            </h1>
                             {manga.alternativeNames &&
                                 manga.alternativeNames.length > 0 && (
                                     <Tooltip>
@@ -123,47 +178,18 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     </Tooltip>
                                 )}
                         </div>
-                        <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
-                            {manga.malData?.ani_id && (
-                                <Link
-                                    href={`https://anilist.co/manga/${manga.malData.ani_id}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    prefetch={false}
-                                >
-                                    <Image
-                                        src={AniImage}
-                                        alt="AniList Logo"
-                                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                                        width={40}
-                                        height={40}
-                                    />
-                                </Link>
-                            )}
-                            {manga.malData?.mal_id && (
-                                <div className="flex items-center gap-2">
-                                    <Link
-                                        href={`https://myanimelist.net/manga/${manga.malData.mal_id}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        prefetch={false}
-                                    >
-                                        <Image
-                                            src={MalImage}
-                                            alt="MyAnimeList Logo"
-                                            className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                                            width={40}
-                                            height={40}
-                                        />
-                                    </Link>
-                                </div>
-                            )}
+                        <div
+                            className={
+                                "flex-shrink-0 flex-col gap-2 flex lg:gap-0 lg:flex-row"
+                            }
+                        >
+                            <ExternalLinks manga={manga} />
                         </div>
                     </div>
 
                     {manga.alternativeNames &&
                         manga.alternativeNames.length > 0 && (
-                            <div className="border-b pb-4 mb-4 lg:hidden">
+                            <div className="border-b pb-4 mb-4 flex flex-row lg:hidden justify-between items-center">
                                 <span className="px-1 rounded opacity-70">
                                     {manga.alternativeNames
                                         .map((name: string) => name.trim())
@@ -267,7 +293,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full">
                             <Card
-                                className="w-full h-full max-h-96 lg:max-h-none p-4 overflow-y-auto"
+                                className="w-full h-full max-h-60 md:max-h-96 lg:max-h-none p-4 overflow-y-auto"
                                 aria-label="Description"
                                 role="region"
                                 data-scrollbar-custom
