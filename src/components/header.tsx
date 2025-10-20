@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import SearchBar from "./search/search-bar";
-import SearchButton from "./search/search-button";
+import SearchBar from "./header/search/search-bar";
+import SearchButton from "./header/search/search-button";
 import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import BookmarksButton from "./bookmarks-button";
+import BookmarksButton from "./header/bookmarks-button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import {
     Breadcrumb,
