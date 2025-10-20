@@ -39,9 +39,9 @@ function mobileCard(index: number) {
     return (
         <Card
             key={`mobile-${index}`}
-            className="flex flex-row items-start  bg-card border border-border rounded-lg p-0 md:hidden"
+            className="flex flex-row items-start bg-card border border-border rounded-lg p-0 md:hidden"
         >
-            <CardContent className="pt-6 flex flex-col flex-shrink justify-between w-full">
+            <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
                 <div className="mb-2">
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full mb-0 shrink-0">
