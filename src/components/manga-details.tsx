@@ -14,7 +14,7 @@ import {
 import { InfoIcon } from "lucide-react";
 import ErrorComponent from "./error-page";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { cn, imageUrl } from "@/lib/utils";
+import { imageUrl } from "@/lib/utils";
 import { fetchMangaDetails } from "@/lib/manga/scraping";
 import { isApiErrorData } from "@/lib/api";
 
