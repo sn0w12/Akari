@@ -1,4 +1,4 @@
-import MangaDetailsSkeleton from "@/components/ui/MangaDetails/mangaDetailsSkeleton";
+import MangaDetailsSkeleton from "@/components/manga-details/skeleton";
 
 export default function Loading() {
     return <MangaDetailsSkeleton />;

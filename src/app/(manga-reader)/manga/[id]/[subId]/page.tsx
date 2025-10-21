@@ -1,8 +1,9 @@
 import { Metadata } from "next";
-import ChapterReader from "@/components/MangaReader";
-import { fetchChapterData } from "@/lib/scraping";
+import ChapterReader from "@/components/manga-reader";
+import { fetchChapterData } from "@/lib/manga/scraping";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
+import { isApiErrorData } from "@/lib/api";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -17,15 +18,15 @@ export async function generateMetadata({
     const mangaParams = await params;
     const chapter = await fetchChapterData(mangaParams.id, mangaParams.subId);
 
-    if ("result" in chapter) {
-        throw new Error(chapter.data);
+    if (isApiErrorData(chapter)) {
+        throw new Error(chapter.message);
     }
 
     const title = `${chapter.title} - ${chapter.chapter}`;
     const description = `Read ${chapter.title} ${chapter.chapter}`;
-    let image = `/api/manga/${mangaParams.id}/og`;
-    if (process.env.NEXT_HOST) {
-        image = `https://${process.env.NEXT_HOST}/api/manga/${mangaParams.id}/og`;
+    let image = `/api/v1/manga/${mangaParams.id}/og`;
+    if (process.env.NEXT_PUBLIC_HOST) {
+        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${mangaParams.id}/og`;
     }
 
     return {

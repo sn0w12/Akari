@@ -1,6 +1,8 @@
-import MangaReaderHome from "@/components/Home";
+import MangaReaderHome from "@/components/home";
+import HomeSkeleton from "@/components/home/skeleton";
 import { robots } from "@/lib/utils";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 interface HomeProps {
     searchParams: Promise<{
@@ -36,6 +38,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Home(props: HomeProps) {
-    const searchParams = await props.searchParams;
-    return <MangaReaderHome searchParams={searchParams} />;
+    const currentPage = Number((await props.searchParams).page) || 1;
+
+    return (
+        <Suspense fallback={<HomeSkeleton currentPage={currentPage} />}>
+            <MangaReaderHome currentPage={currentPage} />
+        </Suspense>
+    );
 }

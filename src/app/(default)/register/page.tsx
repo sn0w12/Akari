@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { robots } from "@/lib/utils";
-import Register from "@/components/Register";
+import Register from "@/components/register";
 
 export const metadata: Metadata = {
     title: "Register",

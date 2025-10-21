@@ -1,60 +1,40 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-
-const isDev = process.env.NODE_ENV === "development";
-const isPreview = process.env.NEXT_PUBLIC_AKARI_PREVIEW === "1";
+import { CookieCategory, useCookieConsent } from "@/hooks/use-cookie-consent";
+import { inDevelopment, inPreview } from "@/config";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-interface PerformanceMetrics {
-    [key: string]: number;
-}
+export const setCookie = (
+    name: string,
+    value: string,
+    category: CookieCategory,
+    maxAge = 31536000
+) => {
+    const { consent } = useCookieConsent.getState();
 
-export const performanceMetrics: PerformanceMetrics = {};
-const startTimes: { [key: string]: number } = {};
-
-export function time(label: string) {
-    startTimes[label] = performance.now();
-    if (isDev) {
-        console.time(label);
-    }
-}
-
-export function timeEnd(label: string) {
-    const endTime = performance.now();
-    const startTime = startTimes[label];
-    if (startTime) {
-        performanceMetrics[label] = Number((endTime - startTime).toFixed(2));
-        delete startTimes[label];
+    if (!consent[category]) {
+        return false;
     }
 
-    if (isDev) {
-        console.timeEnd(label);
-    }
-}
-
-export function cleanText(text: string): string {
-    return text.trim().replace(/\s+/g, " ");
-}
-
-export function clearPerformanceMetrics() {
-    Object.keys(performanceMetrics).forEach((key) => {
-        delete performanceMetrics[key];
-    });
-}
+    document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
+    return true;
+};
 
 export function imageUrl(url: string, baseUrl?: string): string {
     if (url.includes("myanimelist")) {
         return url;
     }
 
-    return `${baseUrl || ""}/api/image-proxy?imageUrl=${encodeURIComponent(url)}`;
+    return `${baseUrl || ""}/api/v1/image-proxy?imageUrl=${encodeURIComponent(
+        url
+    )}`;
 }
 
 export function robots() {
-    if (isDev || isPreview) {
+    if (inDevelopment || inPreview) {
         return {
             index: false,
             follow: false,

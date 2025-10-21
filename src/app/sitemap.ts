@@ -1,10 +1,11 @@
 import { parseStringPromise } from "xml2js";
 import type { MetadataRoute } from "next";
+import { inPreview } from "@/config";
 
 export const dynamic = "force-dynamic";
 
 const NEXT_MANGA_URL = process.env.NEXT_MANGA_URL!;
-const NEXT_HOST = process.env.NEXT_HOST!;
+const NEXT_PUBLIC_HOST = process.env.NEXT_PUBLIC_HOST!;
 
 interface SitemapEntry {
     url: string;
@@ -29,7 +30,7 @@ function normalizeUrl(url: string): string {
 
 async function fetchWithTimeout(
     url: string,
-    timeoutMs: number = 10000,
+    timeoutMs: number = 10000
 ): Promise<Response | null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -45,18 +46,20 @@ async function fetchWithTimeout(
 }
 
 export async function generateSitemaps(): Promise<{ id: number }[]> {
+    if (inPreview) return [];
+
     try {
         const baseUrl = normalizeUrl(NEXT_MANGA_URL);
         const response = await fetchWithTimeout(`${baseUrl}/sitemap.xml`);
         if (!response) {
             console.error(
-                "Failed to fetch sitemap index: fetch timed out or failed",
+                "Failed to fetch sitemap index: fetch timed out or failed"
             );
             return [];
         }
         if (!response.ok) {
             throw new Error(
-                `Failed to fetch sitemap index: ${response.status}`,
+                `Failed to fetch sitemap index: ${response.status}`
             );
         }
         const xml = await response.text();
@@ -80,13 +83,13 @@ export default async function sitemap({
         const response = await fetchWithTimeout(`${baseUrl}/sitemap${id}.xml`);
         if (!response) {
             console.error(
-                `Failed to fetch sitemap${id}.xml: fetch timed out or failed`,
+                `Failed to fetch sitemap${id}.xml: fetch timed out or failed`
             );
             return [];
         }
         if (!response.ok) {
             throw new Error(
-                `Failed to fetch sitemap${id}.xml: ${response.status}`,
+                `Failed to fetch sitemap${id}.xml: ${response.status}`
             );
         }
         const xml = await response.text();
@@ -96,9 +99,9 @@ export default async function sitemap({
 
         const urls: SitemapEntry[] = rawUrlSet.url.map(
             (u: RawUrlEntry): SitemapEntry => ({
-                url: u.loc[0].replace(baseUrl, `https://${NEXT_HOST}`),
+                url: u.loc[0].replace(baseUrl, `https://${NEXT_PUBLIC_HOST}`),
                 lastModified: u.lastmod ? new Date(u.lastmod[0]) : undefined,
-            }),
+            })
         );
         return urls;
     } catch (error) {

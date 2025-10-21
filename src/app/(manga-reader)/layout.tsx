@@ -1,13 +1,17 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { CookieConsent } from "@/components/ui/cookieConsent";
-import { ToastProvider } from "@/lib/toast/ToastContext";
-import { BaseLayout } from "@/components/BaseLayout";
 import "@/app/globals.css";
+import localFont from "next/font/local";
+import { inDevelopment } from "@/config";
+import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
+import { ThemeProvider } from "@/components/theme-provider";
+import { BaseLayout } from "@/components/base-layout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProximityPrefetch } from "@/lib/proximity-prefetch";
+import { CookieConsent } from "@/components/cookie-consent";
+import { QueryProvider } from "@/components/query-provider";
+import { ConfirmProvider } from "@/contexts/confirm-context";
+import { Toaster } from "@/components/ui/sonner";
+
+import type { Metadata } from "next";
 import type { Viewport } from "next";
 
 const geistSans = localFont({
@@ -31,44 +35,46 @@ export const viewport: Viewport = {
 export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
-    const isDevelopment = process.env.NODE_ENV === "development";
-
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                {isDevelopment && (
-                    <script
-                        src="https://unpkg.com/react-scan/dist/auto.global.js"
-                        async
-                    />
+                {inDevelopment && (
+                    // eslint-disable-next-line @next/next/no-sync-scripts
+                    <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} h-dvh flex flex-col antialiased bg-background`}
+                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased bg-background`}
             >
-                <ProximityPrefetch>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <SidebarProvider defaultOpen={false}>
-                            <BaseLayout gutter={false}>
-                                <ToastProvider>
-                                    <AnalyticsWrapper />
-                                    <div
-                                        id="scroll-element"
-                                        className="flex-grow overflow-x-hidden"
-                                    >
-                                        {children}
-                                    </div>
-                                    <CookieConsent />
-                                </ToastProvider>
-                            </BaseLayout>
-                        </SidebarProvider>
-                    </ThemeProvider>
-                </ProximityPrefetch>
+                <ConfirmProvider>
+                    <ProximityPrefetch>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            <SidebarProvider defaultOpen={false}>
+                                <QueryProvider>
+                                    <BaseLayout gutter={false}>
+                                        <AnalyticsWrapper />
+                                        <div
+                                            id="scroll-element"
+                                            className="flex-grow overflow-x-hidden"
+                                        >
+                                            {children}
+                                        </div>
+                                        <CookieConsent />
+                                        <Toaster
+                                            richColors
+                                            position="top-right"
+                                        />
+                                    </BaseLayout>
+                                </QueryProvider>
+                            </SidebarProvider>
+                        </ThemeProvider>
+                    </ProximityPrefetch>
+                </ConfirmProvider>
             </body>
         </html>
     );

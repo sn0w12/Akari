@@ -1,4 +1,4 @@
-import PopularSkeleton from "@/components/ui/Popular/PopularSkeleton";
+import PopularSkeleton from "@/components/popular/skeleton";
 
 export default function Loading() {
     return <PopularSkeleton />;

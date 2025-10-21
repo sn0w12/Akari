@@ -7,7 +7,7 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-1.3.3-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
@@ -15,65 +15,56 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 
 ## Table of Contents
 
-- [Features](#features)
-- [Settings](#settings)
-- [Technical Stack](#technical-stack)
-- [Getting Started](#getting-started)
-    - [Online Usage](#online-usage)
-    - [Local Installation](#local-installation)
+-   [Features](#features)
+-   [Settings](#settings)
+-   [Technical Stack](#technical-stack)
+-   [Getting Started](#getting-started)
+    -   [Online Usage](#online-usage)
+    -   [Local Installation](#local-installation)
 
 # Features
 
 ## Reader Experience
 
-- **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
-- **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
-- **Responsive Design:** Fully responsive interface that works on mobile and desktop
+-   **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
+-   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
+-   **Responsive Design:** Fully responsive interface that works on mobile and desktop
 
 ## Manga Management
 
-- **Genre Filtering:** Browse manga by specific genres
-- **Popular Manga Section:** Discover trending and popular manga
-- **Latest Updates:** Stay informed about newly added chapters
+-   **Genre Filtering:** Browse manga by specific genres
+-   **Popular Manga Section:** Discover trending and popular manga
+-   **Latest Updates:** Stay informed about newly added chapters
 
 ## Bookmarks and Sync
 
-- **MyAnimeList Integration:**
-    - Sync with MyAnimeList (MAL) account
-    - Enhanced manga information from MAL
-- **Bookmark Management:**
-    - Sync bookmarks with Manganato account
-    - Quick bookmark removal from manga pages
-    - Search through bookmarked manga
-    - Up-to-date chapter tracking
-    - Last read chapter tracking
+-   **MyAnimeList Integration:**
+    -   Sync with MyAnimeList (MAL) account
+    -   Enhanced manga information from MAL
+-   **Bookmark Management:**
+    -   Sync bookmarks with Manganato account
+    -   Quick bookmark removal from manga pages
+    -   Search through bookmarked manga
+    -   Up-to-date chapter tracking
+    -   Last read chapter tracking
 
 # Settings
 
-> ⊕ indicates features only available on the official website.
-
 ## General
 
-| Setting              | Default  | Description                                                                                                                                                |
-| -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme                | System   | Choose between Light, Dark, or System color theme                                                                                                          |
-| Fetch MAL Data ⊕     | Enabled  | Uses the public `jikan` and `MalSync` APIs to fetch manga info to put into the database, this helps improve akari both locally and on the official website |
-| Fancy Animations     | Enabled  | Toggle advanced animations for a richer experience                                                                                                         |
-| Prefer Settings Page | Disabled | Open settings page instead of the settings dialog                                                                                                          |
+| Setting          | Default | Description                                           |
+| ---------------- | ------- | ----------------------------------------------------- |
+| Theme            | System  | Select the application theme.                         |
+| Fancy Animations | Enabled | Such as manga detail pages cover image.               |
+| Show Toasts      | Enabled | Show toast notifications for various actions.         |
+| Login Toasts     | Enabled | Show warnings when you aren't logged in to a service. |
 
 ## Manga
 
-| Setting              | Default | Description                                      |
-| -------------------- | ------- | ------------------------------------------------ |
-| Show Page Progress   | Enabled | Enables or disables the progress bar             |
-| Save Reading History | Enabled | Saves your reading history, see the account page |
-
-## Notifications
-
-| Setting      | Default | Description                                                |
-| ------------ | ------- | ---------------------------------------------------------- |
-| Use Toasts   | Enabled | Enable or disable notification toasts                      |
-| Login Toasts | Enabled | Show warnings when you aren't logged in to a service (MAL) |
+| Setting            | Default | Description                                            |
+| ------------------ | ------- | ------------------------------------------------------ |
+| Show Page Progress | Enabled | Shows a progress bar at the side/ bottom when reading. |
+| Strip Reader Width | 144     | Width of the strip reader.                             |
 
 ## Shortcuts
 
@@ -81,23 +72,16 @@ Akari is a Next.js application designed to provide an enhanced manga reading exp
 | ------------------ | ------------ | --------------------------- |
 | Show Shortcuts     | Enabled      | Enable or disable shortcuts |
 | Search Manga       | Ctrl+K       | Open manga search           |
-| Toggle Sidebar     | Ctrl+Shift+B | Toggle the sidebar          |
+| Toggle Sidebar     | Ctrl+B       | Toggle the sidebar          |
 | Open Settings      | Ctrl+,       | Open settings               |
 | Open Account       | Ctrl+.       | Open account page           |
-| Navigate Bookmarks | Ctrl+B       | Navigate to bookmarks       |
-
-## Data
-
-| Setting               | Default | Description                 |
-| --------------------- | ------- | --------------------------- |
-| Clear Cache           | N/A     | Clears all caches           |
-| Clear Reading History | N/A     | Clears your reading history |
+| Navigate Bookmarks | Ctrl+Shift+B | Navigate to bookmarks       |
 
 # Technical Stack
 
-- **Frontend**: Next.js 15, React 19, TailwindCSS
-- **Database**: Supabase integration for manga data
-- **Authentication**: Built-in Manganato authentication and MyAnimeList OAuth
+-   **Frontend**: Next.js 15, React 19, TailwindCSS
+-   **Database**: Supabase integration for manga data
+-   **Authentication**: Built-in Manganato authentication and MyAnimeList OAuth
 
 # Getting Started
 
@@ -107,7 +91,7 @@ Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga 
 
 If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
 
-![Login](./images/LoginForm.png)
+![Login](./images/LoginForm.webp)
 
 After you've been logged in, you can use it as you normally would.
 
@@ -116,15 +100,15 @@ After you've been logged in, you can use it as you normally would.
 
 ### Front Page
 
-![FrontPage](./images/Homepage.png)
+![FrontPage](./images/Homepage.webp)
 
 ### Bookmarks
 
-![Bookmarks](./images/Bookmarks.png)
+![Bookmarks](./images/Bookmarks.webp)
 
 ### Manga
 
-![Manga](./images/Manga.png)
+![Manga](./images/Manga.webp)
 
 ### Author
 
@@ -132,7 +116,7 @@ After you've been logged in, you can use it as you normally would.
 
 ### Genre
 
-![Genre](./images/Genre.png)
+![Genre](./images/Genre.webp)
 
 </details>
 
@@ -144,8 +128,8 @@ If you prefer to run Akari locally, follow these steps.
 
 Before running Akari, make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+-   [Node.js](https://nodejs.org/)
+-   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ### Installation
 

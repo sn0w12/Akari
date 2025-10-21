@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import AuthorPage from "@/components/Author";
+import AuthorPage from "@/components/author";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { getBaseUrl } from "@/app/api/baseUrl";
+import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
 
 interface PageProps {
@@ -20,7 +20,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name}`;
-    const ogImage = `${getBaseUrl()}/api/author/${params.id}/og`;
+    const ogImage = `${getBaseUrl()}/api/v1/author/${params.id}/og`;
 
     return {
         title: name,

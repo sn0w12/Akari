@@ -1,6 +1,8 @@
-import SimpleSearch from "@/components/SimpleSearch";
+import SimpleSearch from "@/components/search";
 import { Metadata } from "next";
 import { robots } from "@/lib/utils";
+import { Suspense } from "react";
+import SearchPageSkeleton from "@/components/search/skeleton";
 
 export const metadata: Metadata = {
     title: "Search Manga",
@@ -34,7 +36,9 @@ export const metadata: Metadata = {
 export default async function SearchPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <SimpleSearch />
+            <Suspense fallback={<SearchPageSkeleton />}>
+                <SimpleSearch />
+            </Suspense>
         </div>
     );
 }

@@ -1,8 +1,9 @@
 import { Metadata } from "next";
-import { MangaDetailsComponent } from "@/components/MangaDetails";
-import { fetchMangaDetails } from "@/lib/scraping";
+import { MangaDetailsComponent } from "@/components/manga-details";
+import { fetchMangaDetails } from "@/lib/manga/scraping";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
+import { isApiErrorData } from "@/lib/api";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -20,7 +21,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const manga = await fetchMangaDetails(params.id);
 
-    if ("error" in manga) {
+    if (isApiErrorData(manga)) {
         return {
             title: "Manga not found",
             description: "The manga you are looking for could not be found.",
@@ -41,20 +42,17 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
     const description = truncate(
         manga.malData?.description ?? manga.description,
-        300,
+        300
     );
-    let image = `/api/manga/${params.id}/og`;
-    if (process.env.NEXT_HOST) {
-        image = `https://${process.env.NEXT_HOST}/api/manga/${params.id}/og`;
+    let image = `/api/v1/manga/${params.id}/og`;
+    if (process.env.NEXT_PUBLIC_HOST) {
+        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${params.id}/og`;
     }
 
     return {
         title: manga.name,
         description,
-        robots: {
-            index: false,
-            follow: false,
-        },
+        robots: robots(),
         openGraph: {
             title: manga.name,
             description,
@@ -73,9 +71,5 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function MangaPage(props: PageProps) {
     const params = await props.params;
-    return (
-        <div className="min-h-screen bg-background text-foreground">
-            <MangaDetailsComponent id={params.id} />
-        </div>
-    );
+    return <MangaDetailsComponent id={params.id} />;
 }

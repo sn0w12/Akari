@@ -1,8 +1,8 @@
-import { AnalyticsWrapper } from "@/components/ui/analyticsWrapper";
-import localFont from "next/font/local";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { ToastProvider } from "@/lib/toast/ToastContext";
 import "@/app/globals.css";
+import localFont from "next/font/local";
+import { inDevelopment } from "@/config";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = localFont({
     src: "../../../public/fonts/GeistVF.woff",
@@ -15,11 +15,17 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export default function MangaReaderLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                {inDevelopment && (
+                    // eslint-disable-next-line @next/next/no-sync-scripts
+                    <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+                )}
+            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
             >
@@ -29,10 +35,13 @@ export default function MangaReaderLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <ToastProvider>
-                        <AnalyticsWrapper />
+                    <div
+                        id="scroll-element"
+                        className="flex-grow overflow-x-hidden"
+                    >
                         {children}
-                    </ToastProvider>
+                    </div>
+                    <Toaster richColors position="top-right" />
                 </ThemeProvider>
             </body>
         </html>

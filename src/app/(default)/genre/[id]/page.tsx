@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import GenrePage from "@/components/Genre";
+import GenrePage from "@/components/genre";
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { getBaseUrl } from "@/app/api/baseUrl";
+import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
 
 interface PageProps {
@@ -20,7 +20,9 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const name = params.id.replaceAll("_", " ");
     const description = `View all ${name} manga`;
-    const ogImage = `${getBaseUrl()}/og/categories/${params.id.toLowerCase().replaceAll(" ", "_")}.webp`;
+    const ogImage = `${getBaseUrl()}/og/categories/${params.id
+        .toLowerCase()
+        .replaceAll(" ", "_")}.webp`;
 
     return {
         title: name,
