@@ -1,6 +1,5 @@
 "use client";
 
-import { Chapter } from "@/types/manga";
 import { checkIfBookmarked, bookmarkManga } from "@/lib/manga/bookmarks";
 import { Button } from "../ui/button";
 import Toast from "@/lib/toast-wrapper";
@@ -8,26 +7,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Spinner from "../ui/puff-loader";
 
 export function FooterBookmarkButton({
-    chapterData,
+    chapter,
 }: {
-    chapterData: Chapter;
+    chapter: components["schemas"]["ChapterResponse"];
 }) {
     const queryClient = useQueryClient();
 
     const { data: isBookmarked, isLoading } = useQuery({
-        queryKey: ["bookmark", chapterData?.mangaId],
-        queryFn: () => checkIfBookmarked(chapterData?.mangaId || ""),
-        enabled: !!chapterData?.mangaId,
+        queryKey: ["bookmark", chapter?.mangaId],
+        queryFn: () => checkIfBookmarked(chapter?.mangaId || ""),
+        enabled: !!chapter?.mangaId,
     });
 
     const bookmarkMutation = useMutation({
-        mutationFn: () =>
-            bookmarkManga(chapterData?.mangaId || "", chapterData),
+        mutationFn: () => bookmarkManga(chapter.mangaId, chapter.number),
         onSuccess: (result) => {
             if (result) {
                 new Toast("Manga bookmarked", "success");
                 queryClient.invalidateQueries({
-                    queryKey: ["bookmark", chapterData?.mangaId],
+                    queryKey: ["bookmark", chapter.mangaId],
                 });
             } else {
                 new Toast("Failed to bookmark manga", "error");
@@ -40,7 +38,7 @@ export function FooterBookmarkButton({
     });
 
     const handleBookmark = () => {
-        if (!chapterData || isBookmarked) return;
+        if (!chapter || isBookmarked) return;
         bookmarkMutation.mutate();
     };
 

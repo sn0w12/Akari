@@ -1,6 +1,5 @@
 "use client";
 
-import { Chapter, ChapterImage } from "@/types/manga";
 import Image from "next/image";
 import MangaFooter from "../manga-footer";
 import { useEffect, useRef, useState } from "react";
@@ -34,8 +33,7 @@ function throttle<T extends (...args: unknown[]) => unknown>(
 }
 
 interface StripReaderProps {
-    chapter: Chapter;
-    images: ChapterImage[];
+    chapter: components["schemas"]["ChapterResponse"];
     toggleReaderMode: () => void;
     bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
@@ -43,7 +41,6 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
-    images,
     toggleReaderMode,
     bgColor,
     setBookmarkState,
@@ -153,15 +150,15 @@ export default function StripReader({
                 id="reader"
                 className={`flex flex-col items-center overflow-auto transition-colors duration-500 ${bgColor}`}
             >
-                {images.map((img, index) => (
+                {chapter.images.map((img, index) => (
                     <Image
                         key={index}
-                        src={img.url}
-                        alt={`${chapter.title} - ${chapter.chapter} Page ${
+                        src={img}
+                        alt={`${chapter.title} - ${chapter.title} Page ${
                             index + 1
                         }`}
-                        width={img.width || 720}
-                        height={img.height || 1500}
+                        width={720}
+                        height={1500}
                         className="object-contain z-20 relative max-w-full"
                         style={{
                             width: `calc(var(--spacing) * ${stripWidth})`,
@@ -179,12 +176,12 @@ export default function StripReader({
                 }`}
             >
                 <MangaFooter
-                    chapterData={chapter}
+                    chapter={chapter}
                     toggleReaderMode={toggleReaderMode}
                 />
             </div>
             <MangaFooter
-                chapterData={chapter}
+                chapter={chapter}
                 toggleReaderMode={toggleReaderMode}
             />
         </div>

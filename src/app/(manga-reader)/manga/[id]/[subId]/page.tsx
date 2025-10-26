@@ -1,9 +1,9 @@
 import { Metadata } from "next";
-import ChapterReader from "@/components/manga-reader";
-import { fetchChapterData } from "@/lib/manga/scraping";
+import { Reader } from "@/components/manga-reader";
 import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
-import { isApiErrorData } from "@/lib/api";
+import { client } from "@/lib/api";
+import ErrorPage from "@/components/error-page";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -16,14 +16,25 @@ export async function generateMetadata({
     cacheLife("weeks");
 
     const mangaParams = await params;
-    const chapter = await fetchChapterData(mangaParams.id, mangaParams.subId);
+    const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
+        params: {
+            path: {
+                id: mangaParams.id,
+                subId: Number(mangaParams.subId),
+            },
+        },
+    });
 
-    if (isApiErrorData(chapter)) {
-        throw new Error(chapter.message);
+    if (error) {
+        return {
+            title: "Chapter Not Found",
+            description: "The requested chapter could not be found.",
+        };
     }
 
-    const title = `${chapter.title} - ${chapter.chapter}`;
-    const description = `Read ${chapter.title} ${chapter.chapter}`;
+    const chapter = data.data;
+    const title = `${chapter.title} - ${chapter.title}`;
+    const description = `Read ${chapter.title} ${chapter.title} for free on Akari Manga.`;
     let image = `/api/v1/manga/${mangaParams.id}/og`;
     if (process.env.NEXT_PUBLIC_HOST) {
         image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${mangaParams.id}/og`;
@@ -51,9 +62,22 @@ export async function generateMetadata({
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
     const mangaParams = await params;
+    const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
+        params: {
+            path: {
+                id: mangaParams.id,
+                subId: Number(mangaParams.subId),
+            },
+        },
+    });
+
+    if (error) {
+        return <ErrorPage error={error} />;
+    }
+
     return (
         <div className="bg-background text-foreground">
-            <ChapterReader id={mangaParams.id} subId={mangaParams.subId} />
+            <Reader chapter={data.data} />
         </div>
     );
 }

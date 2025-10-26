@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Chapter } from "@/types/manga";
 import { Button } from "../ui/button";
 import { ChapterSelector } from "./chapter-selector";
 import { FooterBookmarkButton } from "./footer-bookmark";
@@ -8,16 +7,16 @@ import { useFooterVisibility } from "@/contexts/footer-context";
 import { cn } from "@/lib/utils";
 
 export default function MangaFooter({
-    chapterData,
+    chapter,
     toggleReaderMode,
 }: {
-    chapterData: Chapter;
+    chapter: components["schemas"]["ChapterResponse"];
     toggleReaderMode: () => void;
 }) {
     const { isTouchInteractionEnabled } = useFooterVisibility();
-    const lastChapterExists = chapterData.lastChapter.split("/").length === 2;
-    const nextChapterExists = chapterData.nextChapter.split("/").length === 2;
-    const transformedChapters = chapterData.chapters.map((chapter) => ({
+    const lastChapterExists = chapter.lastChapter !== null;
+    const nextChapterExists = chapter.nextChapter !== null;
+    const transformedChapters = chapter.chapters.map((chapter) => ({
         value: chapter.value,
         label:
             chapter.label.match(/[Cc]hapter\s+\d+(\.\d+)?/)?.[0] ??
@@ -36,19 +35,15 @@ export default function MangaFooter({
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left md:ml-10">
                     <h2 className="text-lg font-semibold">
                         <a
-                            href={`/manga/${chapterData.parentId}`}
+                            href={`/manga/${chapter.mangaId}`}
                             className="hover:underline"
                         >
-                            {chapterData.title}
+                            {chapter.title}
                         </a>
                     </h2>
                     <ChapterSelector
                         chapters={transformedChapters}
-                        value={
-                            chapterData.chapter
-                                .match(/[Cc]hapter\s(\d+)(\.\d+)?/)?.[0]
-                                .match(/(\d+)(\.\d+)?/)?.[0] ?? "1"
-                        }
+                        value={chapter.number.toString()}
                     />
                 </div>
                 <div className="flex flex-col w-full sm:w-64 md:w-auto md:flex-row gap-4">
@@ -59,12 +54,12 @@ export default function MangaFooter({
                         >
                             Toggle Reader
                         </Button>
-                        <FooterBookmarkButton chapterData={chapterData} />
+                        <FooterBookmarkButton chapter={chapter} />
                     </div>
                     <div className="flex items-center gap-4">
                         {lastChapterExists ? (
                             <Link
-                                href={`/manga/${chapterData.lastChapter}`}
+                                href={`/manga/${chapter.lastChapter}`}
                                 className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background  hover:bg-accent hover:text-accent-foreground h-9 w-28 px-4 py-2"
                                 aria-label="Previous Chapter"
                                 prefetch={false}
@@ -86,7 +81,7 @@ export default function MangaFooter({
                         )}
                         {nextChapterExists ? (
                             <Link
-                                href={`/manga/${chapterData.nextChapter}`}
+                                href={`/manga/${chapter.nextChapter}`}
                                 className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 w-28 px-4 py-2"
                                 aria-label="Next Chapter"
                                 prefetch={false}

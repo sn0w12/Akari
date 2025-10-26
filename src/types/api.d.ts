@@ -2620,6 +2620,7 @@ export interface components {
             value: string;
         };
         ChapterResponse: {
+            parentId: unknown;
             /** Format: uuid */
             id: string;
             type: components["schemas"]["MangaType"];
