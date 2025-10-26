@@ -15,7 +15,7 @@ import {
     clearPerformanceMetrics,
     cleanText,
 } from "@/lib/api/performance";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { ApiErrorData } from "@/lib/api";
 
 export async function getLatestManga(page: string) {

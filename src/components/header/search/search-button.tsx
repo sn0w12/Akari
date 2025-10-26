@@ -31,10 +31,7 @@ export default function SearchButton() {
     }, [searchText]);
 
     // Fetch search results using React Query
-    const {
-        data: searchResults = { mangaList: [], totalPages: 0 },
-        isLoading: isSearchLoading,
-    } = useQuery({
+    const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
         queryKey: ["search", debouncedSearchText],
         queryFn: () => getSearchResults(debouncedSearchText, 1, 3),
         enabled: debouncedSearchText.trim().length > 0,
@@ -74,32 +71,26 @@ export default function SearchButton() {
                     </div>
                     {isSearchLoading ? (
                         <Spinner />
-                    ) : searchResults.mangaList.length > 0 ? (
+                    ) : searchResults.length > 0 ? (
                         <>
-                            {searchResults.mangaList.map(
-                                (result: {
-                                    id: string;
-                                    title: string;
-                                    image: string;
-                                }) => (
-                                    <Link
-                                        href={`/manga/${result.id}`}
-                                        key={result.id}
-                                        onClick={() => setOpen(false)}
-                                        className="block p-2 hover:bg-accent flex items-center rounded-lg border"
-                                        prefetch={true}
-                                    >
-                                        <Image
-                                            src={`/api/v1/image-proxy?imageUrl=${result.image}`}
-                                            alt={result.title}
-                                            className="max-h-24 w-auto rounded mr-2"
-                                            height={100}
-                                            width={70}
-                                        />
-                                        {result.title}
-                                    </Link>
-                                )
-                            )}
+                            {searchResults.map((result) => (
+                                <Link
+                                    href={`/manga/${result.id}`}
+                                    key={result.id}
+                                    onClick={() => setOpen(false)}
+                                    className="block p-2 hover:bg-accent flex items-center rounded-lg border"
+                                    prefetch={true}
+                                >
+                                    <Image
+                                        src={`/api/v1/image-proxy?imageUrl=${result.cover}`}
+                                        alt={result.title}
+                                        className="max-h-24 w-auto rounded mr-2"
+                                        height={100}
+                                        width={70}
+                                    />
+                                    {result.title}
+                                </Link>
+                            ))}
                             <Link
                                 href={`/search?q=${encodeURIComponent(
                                     searchText

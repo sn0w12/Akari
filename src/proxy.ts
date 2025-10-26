@@ -71,7 +71,7 @@ function getTransformedKey(x: string): string | null {
     return null;
 }
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
     if (inDevelopment) {
         return NextResponse.next();
     }

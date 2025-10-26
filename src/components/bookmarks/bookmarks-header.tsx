@@ -15,7 +15,6 @@ import { fetchApi, isApiErrorResponse } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { useConfirm } from "@/contexts/confirm-context";
-import { SyncStatus } from "@/types/api";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");

@@ -24,34 +24,30 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 export const formSchema = z.object({
-    username: z
-        .string()
-        .min(2, { message: "Username must be at least 2 characters." }),
+    email: z.email({ message: "Invalid email address." }),
     password: z.string().min(1, { message: "Password is required." }),
-    captcha: z.string().min(1, { message: "CAPTCHA is required." }),
 });
 
 interface LoginViewProps {
-    captchaUrl: string;
-    sessionCookies: string[];
     loginError: string;
     isLoading: boolean;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
-    handleFetchCaptcha: () => void;
 }
 
 export default function LoginView({
-    captchaUrl,
     loginError,
     isLoading,
     onSubmit,
 }: LoginViewProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: { username: "", password: "", captcha: "" },
+        defaultValues: { email: "", password: "" },
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     return (
         <div className="mx-auto px-4 py-1 max-w-md">
@@ -75,13 +71,13 @@ export default function LoginView({
                             >
                                 <FormField
                                     control={form.control}
-                                    name="username"
+                                    name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Username</FormLabel>
+                                            <FormLabel>Email</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="Username..."
+                                                    placeholder="Email..."
                                                     className="touch-manipulation"
                                                     {...field}
                                                 />
@@ -98,49 +94,41 @@ export default function LoginView({
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    type="password"
-                                                    placeholder="Password..."
-                                                    className="touch-manipulation"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="captcha"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>CAPTCHA</FormLabel>
-                                            <div className="flex items-center w-full">
-                                                {!captchaUrl ? (
-                                                    <div className="w-[100px] h-9 mr-2 flex-shrink-0">
-                                                        <Skeleton className="w-full h-full" />
-                                                    </div>
-                                                ) : (
-                                                    <div className="w-[100px] h-9 mr-2 flex-shrink-0">
-                                                        <Image
-                                                            src={captchaUrl}
-                                                            loading="eager"
-                                                            alt="CAPTCHA"
-                                                            className="object-fill h-full"
-                                                            width={100}
-                                                            height={45}
-                                                        />
-                                                    </div>
-                                                )}
-                                                <FormControl>
+                                                <div className="relative">
                                                     <Input
-                                                        placeholder="Enter CAPTCHA..."
-                                                        className="touch-manipulation"
+                                                        type={
+                                                            showPassword
+                                                                ? "text"
+                                                                : "password"
+                                                        }
+                                                        placeholder="Password..."
+                                                        className="touch-manipulation pr-10"
                                                         {...field}
                                                     />
-                                                </FormControl>
-                                            </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent dark:hover:bg-transparent"
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                !showPassword
+                                                            )
+                                                        }
+                                                        aria-label={
+                                                            showPassword
+                                                                ? "Hide password"
+                                                                : "Show password"
+                                                        }
+                                                    >
+                                                        {showPassword ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

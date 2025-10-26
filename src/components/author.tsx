@@ -2,7 +2,7 @@ import { ServerPagination } from "./ui/pagination/server-pagination";
 import ErrorComponent from "./error-page";
 import { SmallManga } from "@/types/manga";
 import { MangaGrid } from "./manga/manga-grid";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { fetchAuthorData } from "@/lib/manga/scraping";
 import { isApiErrorData } from "@/lib/api";
 

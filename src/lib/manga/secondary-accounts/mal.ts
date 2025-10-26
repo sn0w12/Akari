@@ -1,38 +1,50 @@
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
+import { client } from "@/lib/api";
 
-export async function syncMal(
-    id: number,
-    num_chapters_read: string,
-    retry: boolean = true
-) {
-    const maxRetries = 1;
-    const retryDelay = 200000;
-
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-            const response = await fetchApi("/api/v1/mal/me/mangalist", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    manga_id: id,
-                    num_chapters_read,
-                }),
-            });
-
-            if (isApiErrorResponse(response)) {
-                throw new Error(response.data.message);
-            }
-
-            return response.data;
-        } catch (error) {
-            if (attempt < maxRetries && retry) {
-                console.warn(`Retrying in ${retryDelay / 1000}s...`);
-                await new Promise((resolve) => setTimeout(resolve, retryDelay));
-                continue;
-            }
-            throw error;
-        }
+export async function syncMal(manga: components["schemas"]["ChapterResponse"]) {
+    if (!manga.malId) {
+        return false;
     }
+
+    try {
+        const { error } = await client.POST("/v2/mal/mangalist", {
+            body: {
+                mangaId: manga.malId,
+                numChaptersRead: manga.number,
+            },
+        });
+
+        if (error) {
+            return false;
+        }
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function checkMalAuthorization() {
+    const { error } = await client.GET("/v2/mal/mangalist", {
+        params: {
+            query: {
+                limit: 1,
+            },
+        },
+    });
+
+    if (error) {
+        return false;
+    }
+
+    return true;
+}
+
+export async function logOutMal() {
+    const { error } = await client.POST("/v2/mal/logout");
+
+    if (error) {
+        return false;
+    }
+
+    return true;
 }

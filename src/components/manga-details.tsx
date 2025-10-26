@@ -12,15 +12,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import ErrorComponent from "./error-page";
-import { unstable_cacheLife as cacheLife } from "next/cache";
-import { imageUrl } from "@/lib/utils";
-import { fetchMangaDetails } from "@/lib/manga/scraping";
-import { isApiErrorData } from "@/lib/api";
+import { cacheLife } from "next/cache";
 
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
-import { Manga } from "@/types/manga";
+import { formatRelativeDate } from "@/lib/utils";
+import { MangaComments } from "./manga-details/manga-comments";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -35,29 +32,29 @@ const getStatusColor = (status: string) => {
     }
 };
 
-const getViewsColor = (views: string) => {
-    const viewsNum =
-        parseFloat(views.replace(/K|M/, "")) *
-        (views.includes("M") ? 1_000_000 : 1_000);
-
-    if (viewsNum < 100_000)
+const getViewsColor = (views: number) => {
+    if (views < 100_000)
         return { bg: "bg-orange-500 hover:bg-orange-600", text: "text-white" };
-    else if (viewsNum < 1_000_000)
+    else if (views < 1_000_000)
         return { bg: "bg-yellow-500 hover:bg-yellow-600", text: "text-black" };
-    else if (viewsNum < 10_000_000)
+    else if (views < 10_000_000)
         return { bg: "bg-teal-500 hover:bg-teal-600", text: "text-white" };
-    else if (viewsNum < 100_000_000)
+    else if (views < 100_000_000)
         return { bg: "bg-violet-500 hover:bg-violet-600", text: "text-white" };
 
     return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
 };
 
-function ExternalLinks({ manga }: { manga: Manga }) {
+function ExternalLinks({
+    manga,
+}: {
+    manga: components["schemas"]["MangaDetailResponse"];
+}) {
     return (
         <>
-            {manga.malData?.ani_id && (
+            {manga.aniId && (
                 <Link
-                    href={`https://anilist.co/manga/${manga.malData.ani_id}`}
+                    href={`https://anilist.co/manga/${manga.aniId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
@@ -72,9 +69,9 @@ function ExternalLinks({ manga }: { manga: Manga }) {
                     />
                 </Link>
             )}
-            {manga.malData?.mal_id && (
+            {manga.malId && (
                 <Link
-                    href={`https://myanimelist.net/manga/${manga.malData.mal_id}`}
+                    href={`https://myanimelist.net/manga/${manga.malId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
@@ -93,37 +90,22 @@ function ExternalLinks({ manga }: { manga: Manga }) {
     );
 }
 
-export async function MangaDetailsComponent({ id }: { id: string }) {
+export async function MangaDetailsComponent({
+    manga,
+}: {
+    manga: components["schemas"]["MangaDetailResponse"];
+}) {
     "use cache";
     cacheLife("minutes");
 
-    const manga = await fetchMangaDetails(id);
-    if (isApiErrorData(manga)) {
-        return (
-            <div className="mx-auto p-4">
-                <ErrorComponent message={manga.message} />
-            </div>
-        );
-    }
-
-    manga.alternativeNames = manga.alternativeNames?.filter(
-        (name: string) => name.trim() !== ""
-    );
-
-    let score = manga.score;
-    const malScore = manga.malData?.score;
-    if (malScore !== undefined && malScore !== null) {
-        score = malScore / 2;
-    }
-
     return (
-        <div className="mx-auto p-4 pb-0">
+        <div className="mx-auto p-4">
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center hidden lg:block">
                     <EnhancedImage
-                        src={imageUrl(manga.malData?.image ?? manga.imageUrl)}
-                        alt={manga.name}
+                        src={manga.cover}
+                        alt={manga.title}
                         className="rounded-lg object-cover h-auto max-w-lg min-w-full w-full lg:h-[600px]"
                         hoverEffect="dynamic-tilt"
                         width={400}
@@ -138,10 +120,8 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                     {/* Title stays at the top */}
                     <div className="flex items-center mb-4 border-b pb-4 justify-between">
                         <Image
-                            src={imageUrl(
-                                manga.malData?.image ?? manga.imageUrl
-                            )}
-                            alt={manga.name}
+                            src={manga.cover}
+                            alt={manga.title}
                             className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:hidden mr-4"
                             width={400}
                             height={600}
@@ -150,17 +130,17 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         />
                         <div className="flex items-center gap-2">
                             <h1 className="text-2xl md:text-3xl font-bold">
-                                {manga.name}
+                                {manga.title}
                             </h1>
-                            {manga.alternativeNames &&
-                                manga.alternativeNames.length > 0 && (
+                            {manga.alternativeTitles &&
+                                manga.alternativeTitles.length > 0 && (
                                     <Tooltip>
                                         <TooltipTrigger>
                                             <InfoIcon className="w-5 h-5 hidden lg:block" />
                                         </TooltipTrigger>
                                         <TooltipContent side="bottom">
                                             <div className="flex flex-col gap-1 max-w-96 w-auto">
-                                                {manga.alternativeNames.map(
+                                                {manga.alternativeTitles.map(
                                                     (
                                                         mangaName: string,
                                                         index: number
@@ -187,11 +167,11 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                         </div>
                     </div>
 
-                    {manga.alternativeNames &&
-                        manga.alternativeNames.length > 0 && (
+                    {manga.alternativeTitles &&
+                        manga.alternativeTitles.length > 0 && (
                             <div className="border-b pb-4 mb-4 flex flex-row lg:hidden justify-between items-center">
                                 <span className="px-1 rounded opacity-70">
-                                    {manga.alternativeNames
+                                    {manga.alternativeTitles
                                         .map((name: string) => name.trim())
                                         .join(" | ")}
                                 </span>
@@ -239,19 +219,19 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 <div className="text-lg mb-2 flex items-center">
                                     Updated:
                                     <Badge className="ml-2 hover:bg-gray-300">
-                                        {manga.updated}
+                                        {formatRelativeDate(manga.updatedAt)}
                                     </Badge>
                                 </div>
                                 <div className="text-lg mb-2 flex items-center">
                                     Views:
                                     <Badge
                                         className={`${
-                                            getViewsColor(manga.view).bg
+                                            getViewsColor(manga.views).bg
                                         } ${
-                                            getViewsColor(manga.view).text
+                                            getViewsColor(manga.views).text
                                         } ml-2`}
                                     >
-                                        {manga.view}
+                                        {manga.views}
                                     </Badge>
                                 </div>
                             </div>
@@ -283,7 +263,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                     </div>
                                 </div>
                                 <div className="mt-4 flex-grow block lg:hidden xl:block lg:mb-4">
-                                    <ScoreDisplay score={score} />
+                                    <ScoreDisplay score={manga.score / 2} />
                                 </div>
                             </div>
 
@@ -298,10 +278,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
                                 role="region"
                                 data-scrollbar-custom
                             >
-                                <p>
-                                    {manga.malData?.description ??
-                                        manga.description}
-                                </p>
+                                <p>{manga.description}</p>
                             </Card>
                         </div>
                     </div>
@@ -309,6 +286,7 @@ export async function MangaDetailsComponent({ id }: { id: string }) {
             </div>
 
             <ChaptersSection manga={manga} />
+            <MangaComments manga={manga} />
         </div>
     );
 }

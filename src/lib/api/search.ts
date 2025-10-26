@@ -1,34 +1,22 @@
-import { SmallManga } from "@/types/manga";
-import { fetchApi, isApiErrorResponse } from ".";
+import { client } from ".";
 
 export async function getSearchResults(
     query: string,
     page: number = 1,
     n: number = 5
-): Promise<{
-    mangaList: SmallManga[];
-    totalPages: number;
-}> {
-    const response = await fetchApi<{
-        mangaList: SmallManga[];
-        metaData: { totalStories: number; totalPages: number };
-    }>(`/api/v1/search?q=${encodeURIComponent(query)}&p=${page}`);
+) {
+    const { data, error } = await client.GET("/v2/manga/search", {
+        query: {
+            query: query,
+            limit: n,
+        },
+    });
 
-    if (isApiErrorResponse(response)) {
-        console.error(
-            response.data.message || "Failed to fetch search results"
-        );
-        return { mangaList: [], totalPages: 0 };
+    if (error || !data.data) {
+        throw new Error(error?.data.message || "Failed to fetch search results");
     }
 
-    const results = (
-        Object.values(response.data.mangaList) as SmallManga[]
-    ).slice(0, n);
-
-    return {
-        mangaList: results,
-        totalPages: response.data.metaData.totalPages,
-    };
+    return data.data;
 }
 
 export const genreMap: { [key: string]: number } = {

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import GenrePage from "@/components/genre";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
 

@@ -1,8 +1,11 @@
 import MangaReaderHome from "@/components/home";
 import HomeSkeleton from "@/components/home/skeleton";
+import { client } from "@/lib/api";
 import { robots } from "@/lib/utils";
 import { Metadata } from "next";
 import { Suspense } from "react";
+import { cacheLife } from "next/cache";
+import ErrorPage from "@/components/error-page";
 
 interface HomeProps {
     searchParams: Promise<{
@@ -39,10 +42,22 @@ export const metadata: Metadata = {
 
 export default async function Home(props: HomeProps) {
     const currentPage = Number((await props.searchParams).page) || 1;
+    const { data, error } = await client.GET("/v2/manga/list", {
+        params: {
+            query: {
+                page: currentPage,
+                pageSize: 24,
+            },
+        },
+    });
+
+    if (error) {
+        return <ErrorPage title="Failed to load manga list" error={error} />;
+    }
 
     return (
         <Suspense fallback={<HomeSkeleton currentPage={currentPage} />}>
-            <MangaReaderHome currentPage={currentPage} />
+            <MangaReaderHome data={data} />
         </Suspense>
     );
 }

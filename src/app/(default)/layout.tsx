@@ -5,6 +5,7 @@ import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BaseLayout } from "@/components/base-layout";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { UserProvider } from "@/contexts/user-context";
 import { ProximityPrefetch } from "@/lib/proximity-prefetch";
 import { CookieConsent } from "@/components/cookie-consent";
 import Footer from "@/components/footer";
@@ -57,18 +58,20 @@ export default async function RootLayout({
                         <SidebarProvider defaultOpen={false}>
                             <ConfirmProvider>
                                 <QueryProvider>
-                                    <BaseLayout gutter={true}>
-                                        <AnalyticsWrapper />
-                                        <div className="flex-1 pt-2 md:p-4 md:pb-0">
-                                            {children}
-                                        </div>
-                                        <CookieConsent />
-                                        <Toaster
-                                            richColors
-                                            position="top-right"
-                                        />
-                                        <Footer />
-                                    </BaseLayout>
+                                    <UserProvider>
+                                        <BaseLayout gutter={true}>
+                                            <AnalyticsWrapper />
+                                            <div className="flex-1 pt-2 md:p-4 md:pb-0">
+                                                {children}
+                                            </div>
+                                            <CookieConsent />
+                                            <Toaster
+                                                richColors
+                                                position="top-right"
+                                            />
+                                            <Footer />
+                                        </BaseLayout>
+                                    </UserProvider>
                                 </QueryProvider>
                             </ConfirmProvider>
                         </SidebarProvider>

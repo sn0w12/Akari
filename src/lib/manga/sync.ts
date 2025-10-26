@@ -1,14 +1,17 @@
-import { Chapter } from "@/types/manga";
 import Toast from "../toast-wrapper";
 import { syncMal } from "./secondary-accounts/mal";
 import { checkIfBookmarked, updateBookmark } from "./bookmarks";
 import { getSetting } from "../settings";
 
-type SyncHandler = (data: Chapter) => Promise<unknown>;
+type SyncHandler = (
+    data: components["schemas"]["ChapterResponse"]
+) => Promise<boolean>;
 const services = ["MangaNato", "MAL"];
 
-export async function syncAllServices(data: Chapter) {
-    const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
+export async function syncAllServices(
+    data: components["schemas"]["ChapterResponse"]
+) {
+    const syncHandlers: SyncHandler[] = [updateBookmark, syncMal];
     let success = true;
 
     const mangaId = data.mangaId;
@@ -26,19 +29,19 @@ export async function syncAllServices(data: Chapter) {
         syncHandlers.map((handler) => handler(data))
     );
 
-    success = results[0].status === "fulfilled";
+    success = results.length > 0 && results[0]!.status === "fulfilled";
     const authorizedServices: string[] = [];
     const unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
         if (result.status === "rejected") {
             const error = result.reason;
             if (error instanceof Response) {
-                unAuthorizedServices.push(services[index]);
+                unAuthorizedServices.push(services[index]!);
             } else {
                 console.error(`Failed to sync with handler:`, error);
             }
         } else {
-            authorizedServices.push(services[index]);
+            authorizedServices.push(services[index]!);
         }
     });
     if (unAuthorizedServices.length > 0) {
@@ -65,19 +68,8 @@ export async function syncAllServices(data: Chapter) {
         new Toast("Failed to update bookmark.", "error");
     }
 
-    if (authorizedServices.includes(services[0])) {
+    if (authorizedServices.includes(services[0]!)) {
         return true;
     }
     return false;
-}
-
-async function syncBookmark(data: Chapter) {
-    if (!data.malId) return;
-
-    const regex = /Chapter\s(\d+)/;
-    const match = data.chapter.match(regex);
-    const chapterNumber = match ? match[1] : null;
-    if (!chapterNumber) return;
-
-    await syncMal(data.malId, chapterNumber, false);
 }

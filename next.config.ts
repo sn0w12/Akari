@@ -1,3 +1,5 @@
+import { NextConfig } from "next";
+
 function generateCacheHeaders(
     time: number,
     staleWhileRevalidate?: number,
@@ -19,30 +21,12 @@ function generateCacheHeaders(
     ];
 }
 
-module.exports = {
+const config: NextConfig = {
     images: {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "avt.mkklcdnv6temp.com",
-                port: "",
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "mn2.mkklcdnv6temp.com",
-                port: "",
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "s4.anilist.co",
-                port: "",
-                pathname: "/**",
-            },
-            {
-                protocol: "https",
-                hostname: "cdn.myanimelist.net",
+                hostname: "img.akarimanga.dpdns.org",
                 port: "",
                 pathname: "/**",
             },
@@ -52,10 +36,9 @@ module.exports = {
                 pathname: "/api/v1/image-proxy",
             },
         ],
-        unoptimized: false,
     },
+    reactCompiler: true,
     experimental: {
-        reactCompiler: true,
         useCache: true,
     },
     async headers() {
@@ -91,3 +74,5 @@ module.exports = {
         ];
     },
 };
+
+export default config;

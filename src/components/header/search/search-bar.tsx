@@ -37,10 +37,7 @@ export default function SearchBar() {
     }, [isFocused, debouncedSearchText]);
 
     // Fetch search results using React Query
-    const {
-        data: searchResults = { mangaList: [], totalPages: 0 },
-        isLoading: isSearchLoading,
-    } = useQuery({
+    const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
         queryKey: ["search", debouncedSearchText],
         queryFn: () => getSearchResults(debouncedSearchText),
         enabled: debouncedSearchText.trim().length > 0,
@@ -64,14 +61,9 @@ export default function SearchBar() {
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            if (
-                focusedIndex >= 0 &&
-                focusedIndex < searchResults.mangaList.length
-            ) {
+            if (focusedIndex >= 0 && focusedIndex < searchResults.length) {
                 // Navigate to the selected result
-                router.push(
-                    `/manga/${searchResults.mangaList[focusedIndex].id}`
-                );
+                router.push(`/manga/${searchResults[focusedIndex]!.id}`);
             } else {
                 // Navigate to search page if no result selected
                 router.push(`/search?q=${encodeURIComponent(searchText)}`);
@@ -81,7 +73,7 @@ export default function SearchBar() {
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
             setFocusedIndex((prev) =>
-                prev < searchResults.mangaList.length - 1 ? prev + 1 : prev
+                prev < searchResults.length - 1 ? prev + 1 : prev
             );
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -142,12 +134,11 @@ export default function SearchBar() {
                             <div className="flex justify-center">
                                 <Spinner />
                             </div>
-                        ) : searchResults.mangaList.length > 0 ? (
+                        ) : searchResults.length > 0 ? (
                             <>
-                                {searchResults.mangaList.map(
-                                    (result, index) => (
-                                        <Link
-                                            href={`/manga/${result.id}`}
+                                {searchResults.map((result, index) => (
+                                    <Link
+                                        href={`/manga/${result.id}`}
                                             key={result.id}
                                             id={`search-result-${index}`}
                                             onMouseDown={() => {
@@ -161,7 +152,7 @@ export default function SearchBar() {
                                             prefetch={true}
                                         >
                                             <Image
-                                                src={`/api/v1/image-proxy?imageUrl=${result.image}`}
+                                                src={`/api/v1/image-proxy?imageUrl=${result.cover}`}
                                                 alt={result.title}
                                                 className="max-h-24 w-auto rounded mr-2"
                                                 height={100}

@@ -1,7 +1,11 @@
 import { generateCodeVerifier, generateCodeChallenge } from "./mal";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/lib/consts";
-import { ApiUrl, fetchApi, isApiErrorResponse } from "../api";
+import { client } from "../api";
+import {
+    checkMalAuthorization,
+    logOutMal,
+} from "../manga/secondary-accounts/mal";
 
 export interface SecondaryAccount {
     id: string;
@@ -13,10 +17,9 @@ export interface SecondaryAccount {
     hoverColor: string;
     storageKey: string;
     sessionKey: string;
-    apiEndpoint: ApiUrl;
-    validateEndpoint: ApiUrl;
+    logOut: () => Promise<boolean>;
+    validate: () => Promise<boolean>;
 }
-
 export const SECONDARY_ACCOUNTS = [
     {
         id: "mal",
@@ -27,8 +30,8 @@ export const SECONDARY_ACCOUNTS = [
         hoverColor: "hover:bg-blue-500",
         storageKey: "mal_user",
         sessionKey: "mal",
-        apiEndpoint: "/api/v1/mal/logout",
-        validateEndpoint: "/api/v1/mal/isLoggedIn",
+        logOut: logOutMal,
+        validate: checkMalAuthorization,
     },
 ] as const satisfies SecondaryAccount[];
 export type SecondaryAccountId = (typeof SECONDARY_ACCOUNTS)[number]["id"];
@@ -60,22 +63,10 @@ export async function isAccountValid(accountId: SecondaryAccountId) {
     if (cache === "true") return true;
     if (cache === "false") return false;
 
-    const response = await fetchApi<{ result: string }>(
-        account.validateEndpoint
-    );
-    if (isApiErrorResponse(response)) {
-        console.error(
-            `Error validating ${account.name} account:`,
-            response.data.message
-        );
-        return false;
-    }
+    const valid = await account.validate();
 
-    sessionStorage.setItem(
-        account.sessionKey,
-        response.data.result === "ok" ? "true" : "false"
-    );
-    return response.data.result === "ok";
+    sessionStorage.setItem(account.sessionKey, valid ? "true" : "false");
+    return valid;
 }
 
 export async function validateSecondaryAccounts() {

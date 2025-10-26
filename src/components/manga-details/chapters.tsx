@@ -7,48 +7,38 @@ import { ArrowUpDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import ClientPagination from "../ui/pagination/client-pagination";
 import Toast from "@/lib/toast-wrapper";
-import { Manga, MangaChapter } from "@/types/manga";
 import { useQuery } from "@tanstack/react-query";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
+import { formatRelativeDate } from "@/lib/utils";
 
 interface ChaptersSectionProps {
-    manga: Manga;
+    manga: components["schemas"]["MangaDetailResponse"];
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortedChapters, setSortedChapters] = useState<MangaChapter[]>([]);
+    const [sortedChapters, setSortedChapters] = useState<
+        components["schemas"]["MangaChapter"][]
+    >([]);
     const chaptersPerPage = 24;
 
     const { data, isLoading } = useQuery({
-        queryKey: ["last-read", manga.identifier],
-        queryFn: () => getLatestReadChapter(manga.identifier),
+        queryKey: ["last-read", manga.id],
+        queryFn: () => getLatestReadChapter(manga.id),
     });
 
-    const lastRead = `chapter-${data?.latestChapter.replaceAll(".", "-")}`;
-
+    const lastRead = data?.id;
     const getSortedChapters = useCallback(() => {
-        const uniqueChapters = manga?.chapterList.filter(
-            (chapter, index, self) => {
-                const ids = self.map((ch) => ch.id);
-                return ids.indexOf(chapter.id) === index;
+        return [...(manga.chapters || [])].sort((a, b) => {
+            if (a.number === undefined || b.number === undefined) {
+                return 0;
             }
-        );
-
-        return [...uniqueChapters].sort((a, b) => {
-            // Extract numbers from chapter IDs using regex
-            const extractNumber = (str: string) => {
-                const match = str.match(/\d+\.?\d*/);
-                return match ? parseFloat(match[0]) : 0;
-            };
-
-            // Use the extracted numbers for comparison
-            const numA = extractNumber(a.id);
-            const numB = extractNumber(b.id);
-            return sortOrder === "asc" ? numA - numB : numB - numA;
+            return sortOrder === "asc"
+                ? a.number - b.number
+                : b.number - a.number;
         });
-    }, [manga?.chapterList, sortOrder]);
+    }, [manga.chapters, sortOrder]);
 
     useEffect(() => {
         const sortedChapters = getSortedChapters();
@@ -117,7 +107,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
                 {currentChapters?.map((chapter) => (
                     <Link
-                        href={`/manga/${manga.identifier}/${chapter.id}`}
+                        href={`/manga/${manga.id}/${chapter.number}`}
                         key={chapter.id}
                         id={chapter.id}
                         prefetch={false}
@@ -137,7 +127,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                             : ""
                                     }`}
                                 >
-                                    {chapter.name}
+                                    {chapter.title}
                                 </h3>
                                 <p
                                     className={`text-sm ${
@@ -146,7 +136,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                             : "text-muted-foreground"
                                     }`}
                                 >
-                                    Views: {chapter.view}
+                                    Pages: {chapter.pages}
                                 </p>
                                 <p
                                     className={`text-sm ${
@@ -155,7 +145,8 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
                                             : "text-muted-foreground"
                                     }`}
                                 >
-                                    Released: {chapter.createdAt}
+                                    Released:{" "}
+                                    {formatRelativeDate(chapter.createdAt)}
                                 </p>
                             </CardContent>
                         </Card>

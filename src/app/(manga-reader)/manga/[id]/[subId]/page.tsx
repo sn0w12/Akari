@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import ChapterReader from "@/components/manga-reader";
 import { fetchChapterData } from "@/lib/manga/scraping";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
 import { isApiErrorData } from "@/lib/api";
 

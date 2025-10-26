@@ -2,7 +2,7 @@ import { HeaderComponent } from "@/components/header";
 import { Reader } from "./manga-reader/reader";
 import ErrorComponent from "./error-page";
 import { fetchChapterData } from "@/lib/manga/scraping";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { isApiErrorData } from "@/lib/api";
 
 interface ChapterReaderProps {

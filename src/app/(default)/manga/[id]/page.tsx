@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
 import { fetchMangaDetails } from "@/lib/manga/scraping";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
-import { isApiErrorData } from "@/lib/api";
+import { client } from "@/lib/api";
+import ErrorPage from "@/components/error-page";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -19,42 +20,34 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     cacheLife("weeks");
 
     const params = await props.params;
-    const manga = await fetchMangaDetails(params.id);
+    const { data, error } = await client.GET("/v2/manga/{id}", {
+        params: {
+            path: {
+                id: params.id,
+            },
+        },
+    });
 
-    if (isApiErrorData(manga)) {
+    if (error) {
         return {
-            title: "Manga not found",
-            description: "The manga you are looking for could not be found.",
-            robots: robots(),
-            openGraph: {
-                title: "Manga not found",
-                description:
-                    "The manga you are looking for could not be found.",
-            },
-            twitter: {
-                card: "summary_large_image",
-                title: "Manga not found",
-                description:
-                    "The manga you are looking for could not be found.",
-            },
+            title: "Manga Not Found",
+            description: "The requested manga could not be found.",
         };
     }
 
-    const description = truncate(
-        manga.malData?.description ?? manga.description,
-        300
-    );
+    const manga = data.data;
+    const description = truncate(manga.description, 300);
     let image = `/api/v1/manga/${params.id}/og`;
     if (process.env.NEXT_PUBLIC_HOST) {
         image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${params.id}/og`;
     }
 
     return {
-        title: manga.name,
+        title: manga.title,
         description,
         robots: robots(),
         openGraph: {
-            title: manga.name,
+            title: manga.title,
             description,
             type: "website",
             siteName: "Akari Manga",
@@ -62,7 +55,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         },
         twitter: {
             card: "summary_large_image",
-            title: manga.name,
+            title: manga.title,
             description,
             images: image,
         },
@@ -71,5 +64,17 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function MangaPage(props: PageProps) {
     const params = await props.params;
-    return <MangaDetailsComponent id={params.id} />;
+    const { data, error } = await client.GET("/v2/manga/{id}", {
+        params: {
+            path: {
+                id: params.id,
+            },
+        },
+    });
+
+    if (error) {
+        return <ErrorPage title="Failed to load manga" error={error} />;
+    }
+
+    return <MangaDetailsComponent manga={data.data} />;
 }

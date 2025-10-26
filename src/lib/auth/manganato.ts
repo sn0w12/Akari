@@ -1,5 +1,4 @@
 import { SecondaryAccount } from "@/lib/auth/secondary-accounts";
-import { fetchApi, isApiErrorResponse } from "../api";
 
 export interface LoginResponse {
     success: boolean;
@@ -88,5 +87,5 @@ export async function logout(secondaryAccounts: SecondaryAccount[]) {
 export async function logoutSecondaryAccount(account: SecondaryAccount) {
     localStorage.removeItem(account.storageKey);
     sessionStorage.removeItem(account.sessionKey);
-    await fetch(account.apiEndpoint);
+    await account.logOut();
 }
