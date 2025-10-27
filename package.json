@@ -26,7 +26,7 @@
         "@radix-ui/react-switch": "^1.2.6",
         "@radix-ui/react-tabs": "^1.1.13",
         "@radix-ui/react-tooltip": "^1.2.8",
-        "@supabase/supabase-js": "^2.75.1",
+        "@supabase/supabase-js": "^2.76.1",
         "@tanstack/react-query": "^5.90.5",
         "axios": "^1.12.2",
         "axios-cache-interceptor": "^1.8.3",
