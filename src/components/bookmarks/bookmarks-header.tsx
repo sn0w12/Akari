@@ -10,11 +10,10 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
 import { imageUrl } from "@/lib/utils";
-import { SmallBookmark, SmallBookmarkRecord } from "@/types/manga";
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { useConfirm } from "@/contexts/confirm-context";
+import { client } from "@/lib/api";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -38,14 +37,8 @@ export default function BookmarksHeader() {
 
     const getBookmarkSearchResults = async (
         query: string
-    ): Promise<SmallBookmark[]> => {
-        const response = await fetchApi<SmallBookmark[]>(
-            `/api/v1/bookmarks/search?q=${encodeURIComponent(query)}`
-        );
-        if (isApiErrorResponse(response)) {
-            throw new Error(response.data.message);
-        }
-        return response.data;
+    ): Promise<components["schemas"]["BookmarkListResponse"]["items"]> => {
+        return [];
     };
 
     const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
@@ -56,16 +49,33 @@ export default function BookmarksHeader() {
     });
 
     async function exportBookmarks() {
-        const allBookmarksResponse = await fetchApi<SmallBookmarkRecord[]>(
-            "/api/v1/bookmarks/all"
-        );
-        if (isApiErrorResponse(allBookmarksResponse)) {
-            new Toast(allBookmarksResponse.data.message, "error");
-            return;
+        let allBookmarks: any[] = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        const pageSize = 100;
+
+        while (currentPage <= totalPages) {
+            const { data, error } = await client.GET("/v2/bookmarks", {
+                params: {
+                    query: {
+                        page: currentPage,
+                        pageSize,
+                    },
+                },
+            });
+
+            if (error || !data) {
+                new Toast("Error fetching bookmarks", "error");
+                return;
+            }
+
+            allBookmarks.push(...data.data.items);
+            totalPages = data.data.totalPages;
+            currentPage++;
         }
 
         const bookmarksBlob = new Blob(
-            [JSON.stringify(allBookmarksResponse.data, null, 2)],
+            [JSON.stringify(allBookmarks, null, 2)],
             { type: "application/json" }
         );
         const url = URL.createObjectURL(bookmarksBlob);
@@ -90,21 +100,12 @@ export default function BookmarksHeader() {
         });
         if (!confirmed) return;
 
-        const response = await fetchApi<SyncStatus>("/api/v1/mal/sync", {
-            method: "POST",
-        });
-        if (isApiErrorResponse(response)) {
-            new Toast(response.data.message, "error");
-            return;
-        }
-        new Toast(
-            `Sync request queued at position: ${response.data.position}`,
-            "success"
-        );
+        return null;
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (searchResults.length === 0) return;
+        if (searchResults[selectedIndex] === undefined) return;
 
         if (e.key === "ArrowDown") {
             e.preventDefault();
@@ -185,19 +186,16 @@ export default function BookmarksHeader() {
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
                                             <Image
-                                                src={imageUrl(
-                                                    result.mangaImage ||
-                                                        `https://img-r1.2xstorage.com/thumb/${result.mangaId}.webp`
-                                                )}
-                                                alt={result.mangaName}
+                                                src={result.cover}
+                                                alt={result.title}
                                                 width={300}
                                                 height={450}
                                                 className="max-h-24 w-auto rounded mr-2"
                                             />
-                                            {result.mangaName}
+                                            {result.title}
                                         </div>
                                         <Link
-                                            href={`/manga/${result.mangaId}/${result.latestChapter}`}
+                                            href={`/manga/${result.mangaId}/${result.lastReadChapter.number}`}
                                         >
                                             <Button
                                                 className="z-20"

@@ -1,19 +1,22 @@
+import { cn } from "@/lib/utils";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import { removeBookmark } from "@/lib/manga/bookmarks";
-import { cn } from "@/lib/utils";
 import { syncAllServices } from "@/lib/manga/sync";
-import { Bookmark, Chapter } from "@/types/manga";
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
+import { client } from "@/lib/api";
 
 export function ConfirmDialogs({
     bookmark,
     setUpdatedBookmarks,
     className,
 }: {
-    bookmark: Bookmark;
-    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    setUpdatedBookmarks: React.Dispatch<
+        React.SetStateAction<
+            components["schemas"]["BookmarkListResponse"]["items"][number][]
+        >
+    >;
     className?: string;
 }) {
     async function handleRemoveBookmark(mangaId: string) {
@@ -21,20 +24,30 @@ export function ConfirmDialogs({
 
         if (data) {
             setUpdatedBookmarks((prev) =>
-                prev.filter((bookmark) => bookmark.id !== mangaId)
+                prev.filter((bookmark) => bookmark.mangaId !== mangaId)
             );
         }
     }
 
-    async function handleUpdateBookmark(id: string, subId: string) {
-        const response = await fetchApi<Chapter>(
-            `/api/v1/manga/${id}/${subId}`
-        );
-        if (isApiErrorResponse(response)) {
-            return;
+    async function handleUpdateBookmark(id: string, subId: number | undefined) {
+        if (!subId) {
+            return false;
         }
 
-        return await syncAllServices(response.data);
+        const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
+            params: {
+                path: {
+                    id: id,
+                    subId: subId,
+                },
+            },
+        });
+
+        if (error) {
+            return false;
+        }
+
+        return await syncAllServices(data.data);
     }
 
     return (
@@ -60,7 +73,7 @@ export function ConfirmDialogs({
                 confirmText="Remove"
                 cancelText="Cancel"
                 variant="destructive"
-                onConfirm={() => handleRemoveBookmark(bookmark.id)}
+                onConfirm={() => handleRemoveBookmark(bookmark.mangaId)}
             />
             <ButtonConfirmDialog
                 triggerButton={
@@ -79,8 +92,8 @@ export function ConfirmDialogs({
                 cancelText="Cancel"
                 onConfirm={() =>
                     handleUpdateBookmark(
-                        bookmark.mangaUrl?.split("/").pop() || "",
-                        bookmark.latestChapter.url.split("/").pop() || ""
+                        bookmark.mangaId,
+                        bookmark.chapters[0]?.number
                     )
                 }
             />

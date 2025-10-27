@@ -2,23 +2,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button-link";
-import { Bookmark } from "@/types/manga";
 import LatestChapterInfo from "./latest-chapter-info";
-import { getButtonInfo } from "@/lib/manga/bookmarks";
-import { imageUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
 const MobileBookmarkCard: React.FC<{
-    bookmark: Bookmark;
-    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    setUpdatedBookmarks: React.Dispatch<
+        React.SetStateAction<
+            components["schemas"]["BookmarkListResponse"]["items"]
+        >
+    >;
 }> = ({ bookmark, setUpdatedBookmarks }) => {
-    const {
-        mangaIdentifier,
-        continueReading,
-        continueReadingText,
-        buttonColor,
-    } = getButtonInfo(bookmark);
-
     return (
         <Card className="flex flex-row items-start  bg-card border border-border rounded-lg p-0 md:hidden">
             <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
@@ -26,7 +21,7 @@ const MobileBookmarkCard: React.FC<{
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full shrink-0">
                             <Link
-                                href={`/manga/${mangaIdentifier}`}
+                                href={`/manga/${bookmark.mangaId}`}
                                 rel="noopener noreferrer"
                                 className="block"
                                 prefetch={false}
@@ -34,7 +29,7 @@ const MobileBookmarkCard: React.FC<{
                                 aria-hidden="true"
                             >
                                 <Image
-                                    src={imageUrl(bookmark.coverImage)}
+                                    src={bookmark.cover}
                                     alt={bookmark.title}
                                     width={300}
                                     height={450}
@@ -44,7 +39,7 @@ const MobileBookmarkCard: React.FC<{
                         </div>
                         <Link
                             className="w-full"
-                            href={`/manga/${mangaIdentifier}`}
+                            href={`/manga/${bookmark.mangaId}`}
                             prefetch={false}
                         >
                             <h3 className="font-bold text-2xl mb-2 text-center hover:underline">
@@ -59,16 +54,25 @@ const MobileBookmarkCard: React.FC<{
                     </div>
                     {/* Continue Reading Button */}
                     <ButtonLink
-                        href={`/manga/${mangaIdentifier}/${continueReading
-                            .split("/")
-                            .pop()}`}
+                        href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
                         rel="noopener noreferrer"
-                        className={`mt-2 py-4 px-6 w-full text-lg font-bold text-white ${buttonColor} transition-colors`}
+                        className={cn(
+                            "mt-2 py-4 px-6 w-full text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors",
+                            {
+                                "bg-cyan-600 hover:bg-cyan-700":
+                                    bookmark.lastReadChapter.number ===
+                                    bookmark.chapters[1]?.number,
+                                "bg-green-600 hover:bg-green-700":
+                                    bookmark.lastReadChapter.number ===
+                                    bookmark.chapters[0]?.number,
+                            }
+                        )}
+                        prefetch={false}
                     >
-                        {continueReadingText.split("-")[1].trim()}
+                        Chapter {bookmark.lastReadChapter.number}
                     </ButtonLink>
                 </div>
-                {LatestChapterInfo({ bookmark, colors: buttonColor })}
+                <LatestChapterInfo bookmark={bookmark} />
             </CardContent>
         </Card>
     );

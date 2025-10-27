@@ -35,7 +35,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -44,7 +44,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -53,7 +53,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -94,7 +94,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BookmarkListResponseApiResponse"];
+                        "application/json": components["schemas"]["BookmarkListResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -103,7 +103,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -112,7 +112,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -148,7 +148,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Int32ApiResponse"];
+                        "application/json": components["schemas"]["Int32SuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -157,7 +157,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -166,7 +166,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -205,7 +205,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["LastReadResponseApiResponse"];
+                        "application/json": components["schemas"]["LastReadResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -214,7 +214,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -223,7 +223,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -252,7 +252,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -261,7 +261,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -270,7 +270,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -279,7 +279,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -304,7 +304,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -313,7 +313,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -322,7 +322,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -331,7 +331,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -371,7 +371,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -380,7 +380,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -389,7 +389,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -398,7 +398,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -440,7 +440,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["PaginatedCommentResponseApiResponse"];
+                        "application/json": components["schemas"]["PaginatedCommentResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -449,7 +449,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -458,7 +458,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -488,7 +488,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CommentResponseApiResponse"];
+                        "application/json": components["schemas"]["CommentResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -497,7 +497,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -506,7 +506,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -515,7 +515,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -524,7 +524,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -561,7 +561,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CommentVoteResponseListApiResponse"];
+                        "application/json": components["schemas"]["CommentVoteResponseListSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -570,7 +570,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -579,7 +579,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -618,7 +618,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CommentWithRepliesResponseListApiResponse"];
+                        "application/json": components["schemas"]["CommentWithRepliesResponseListSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -627,7 +627,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -636,7 +636,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -682,7 +682,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -691,7 +691,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -700,7 +700,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -709,7 +709,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -718,7 +718,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -761,7 +761,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -770,7 +770,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -779,7 +779,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
@@ -788,7 +788,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -797,7 +797,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -806,7 +806,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -831,7 +831,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -840,7 +840,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
@@ -849,7 +849,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -858,7 +858,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -867,7 +867,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -908,7 +908,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -917,7 +917,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -926,7 +926,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -973,7 +973,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListPaginatedResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -982,7 +982,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1024,7 +1024,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListWithEntriesResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListWithEntriesResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1033,7 +1033,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1042,7 +1042,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1072,7 +1072,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListEntryResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListEntryResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1081,7 +1081,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1090,7 +1090,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1099,7 +1099,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1108,7 +1108,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1147,7 +1147,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListPaginatedResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1156,7 +1156,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1165,7 +1165,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1208,7 +1208,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1217,7 +1217,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1226,7 +1226,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1235,7 +1235,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1280,7 +1280,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserMangaListEntryResponseApiResponse"];
+                        "application/json": components["schemas"]["UserMangaListEntryResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1289,7 +1289,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1298,7 +1298,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1307,7 +1307,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1316,7 +1316,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1343,7 +1343,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1352,7 +1352,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1361,7 +1361,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1370,7 +1370,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1410,7 +1410,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MalTokenResponseApiResponse"];
+                        "application/json": components["schemas"]["MalTokenResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1419,7 +1419,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1428,7 +1428,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1464,7 +1464,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
             };
@@ -1507,7 +1507,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MalMangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["MalMangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1516,7 +1516,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1525,7 +1525,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1552,7 +1552,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MalMangaListStatusApiResponse"];
+                        "application/json": components["schemas"]["MalMangaListStatusSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1561,7 +1561,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1570,7 +1570,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1579,7 +1579,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1626,7 +1626,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1635,7 +1635,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1678,7 +1678,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaListResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1687,7 +1687,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1726,7 +1726,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaDetailResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaDetailResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1735,7 +1735,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1744,7 +1744,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1783,7 +1783,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaChapterListApiResponse"];
+                        "application/json": components["schemas"]["MangaChapterListSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1792,7 +1792,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1801,7 +1801,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1842,7 +1842,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1851,7 +1851,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1860,7 +1860,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1904,7 +1904,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1913,7 +1913,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1922,7 +1922,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1931,7 +1931,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -1968,7 +1968,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaDetailResponseApiResponse"];
+                        "application/json": components["schemas"]["MangaDetailResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -1977,7 +1977,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -1986,7 +1986,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2029,7 +2029,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaResponseListApiResponse"];
+                        "application/json": components["schemas"]["MangaResponseListSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2038,7 +2038,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2047,7 +2047,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2086,7 +2086,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ChapterResponseApiResponse"];
+                        "application/json": components["schemas"]["ChapterResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -2095,7 +2095,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2104,7 +2104,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2145,7 +2145,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaSearchResponseListApiResponse"];
+                        "application/json": components["schemas"]["MangaSearchResponseListSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2154,7 +2154,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2163,7 +2163,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2201,7 +2201,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UploadResponsePaginatedResponseApiResponse"];
+                        "application/json": components["schemas"]["UploadResponsePaginatedResponseSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2210,7 +2210,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2235,7 +2235,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UploadResponseApiResponse"];
+                        "application/json": components["schemas"]["UploadResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2244,7 +2244,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2253,7 +2253,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2289,7 +2289,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UploadResponsePaginatedResponseApiResponse"];
+                        "application/json": components["schemas"]["UploadResponsePaginatedResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2298,7 +2298,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2307,7 +2307,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2350,7 +2350,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["SessionApiResponse"];
+                        "application/json": components["schemas"]["SessionSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2359,7 +2359,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2368,7 +2368,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2409,7 +2409,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserResponseApiResponse"];
+                        "application/json": components["schemas"]["UserResponseSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2418,7 +2418,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2427,7 +2427,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2463,7 +2463,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["StringApiResponse"];
+                        "application/json": components["schemas"]["StringSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2472,7 +2472,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2506,7 +2506,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UserResponseApiResponse"];
+                        "application/json": components["schemas"]["UserResponseSuccessResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2515,7 +2515,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -2524,7 +2524,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ErrorDataApiResponse"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -2555,72 +2555,72 @@ export interface components {
         };
         BookmarkChapter: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: float */
-            number?: number;
-            title?: string | null;
+            number: number;
+            title: string;
             /** Format: int32 */
-            pages?: number | null;
+            pages: number;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
         };
         BookmarkListResponse: {
-            items?: components["schemas"]["BookmarkResponse"][] | null;
+            items: components["schemas"]["BookmarkResponse"][];
             /** Format: int32 */
-            totalItems?: number;
+            totalItems: number;
             /** Format: int32 */
-            currentPage?: number;
+            currentPage: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int32 */
-            readonly totalPages?: number;
+            readonly totalPages: number;
         };
-        BookmarkListResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        BookmarkListResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["BookmarkListResponse"];
         };
         BookmarkResponse: {
             /** Format: uuid */
-            bookmarkId?: string;
+            bookmarkId: string;
             /** Format: date-time */
-            bookmarkCreatedAt?: string;
+            bookmarkCreatedAt: string;
             /** Format: date-time */
-            bookmarkUpdatedAt?: string;
+            bookmarkUpdatedAt: string;
             /** Format: uuid */
-            mangaId?: string;
-            title?: string | null;
-            cover?: string | null;
-            description?: string | null;
-            status?: string | null;
-            type?: components["schemas"]["MangaType"];
-            authors?: string[] | null;
-            genres?: string[] | null;
+            mangaId: string;
+            title: string;
+            cover: string;
+            description: string;
+            status: string;
+            type: components["schemas"]["MangaType"];
+            authors: string[];
+            genres: string[];
             /** Format: int32 */
-            views?: number;
+            views: number;
             /** Format: double */
-            score?: number;
+            score: number;
             /** Format: int32 */
             malId?: number | null;
             /** Format: int32 */
             aniId?: number | null;
-            alternativeTitles?: string[] | null;
+            alternativeTitles: string[];
             /** Format: date-time */
-            mangaCreatedAt?: string;
+            mangaCreatedAt: string;
             /** Format: date-time */
-            mangaUpdatedAt?: string;
-            lastReadChapter?: components["schemas"]["BookmarkChapter"];
-            chapters?: components["schemas"]["BookmarkChapter"][] | null;
+            mangaUpdatedAt: string;
+            lastReadChapter: components["schemas"]["BookmarkChapter"];
+            chapters: components["schemas"]["BookmarkChapter"][];
         };
         ChapterOption: {
             label: string;
             value: string;
         };
         ChapterResponse: {
-            parentId: unknown;
             /** Format: uuid */
             id: string;
             type: components["schemas"]["MangaType"];
@@ -2642,8 +2642,9 @@ export interface components {
             /** Format: int32 */
             aniId?: number | null;
         };
-        ChapterResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        ChapterResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["ChapterResponse"];
@@ -2672,8 +2673,9 @@ export interface components {
             /** Format: int64 */
             replyCount: number;
         };
-        CommentResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        CommentResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["CommentResponse"];
@@ -2683,9 +2685,12 @@ export interface components {
             commentId: string;
             /** Format: int32 */
             value: number;
+            /** Format: uuid */
+            targetId: string;
         };
-        CommentVoteResponseListApiResponse: {
-            result: components["schemas"]["ResultType"];
+        CommentVoteResponseListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["CommentVoteResponse"][];
@@ -2713,8 +2718,9 @@ export interface components {
             attachment?: components["schemas"]["UploadResponse"];
             replies: components["schemas"]["CommentWithRepliesResponse"][];
         };
-        CommentWithRepliesResponseListApiResponse: {
-            result: components["schemas"]["ResultType"];
+        CommentWithRepliesResponseListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["CommentWithRepliesResponse"][];
@@ -2740,8 +2746,9 @@ export interface components {
             message: string | null;
             details?: unknown;
         };
-        ErrorDataApiResponse: {
-            result: components["schemas"]["ResultType"];
+        ErrorResponse: {
+            /** @enum {string} */
+            result: "Error";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["ErrorData"];
@@ -2756,8 +2763,9 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
-        Int32ApiResponse: {
-            result: components["schemas"]["ResultType"];
+        Int32SuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             /** Format: int32 */
@@ -2777,8 +2785,9 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
-        LastReadResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        LastReadResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["LastReadResponse"];
@@ -2806,8 +2815,9 @@ export interface components {
             data: components["schemas"]["MalMangaListItem"][] | null;
             paging: components["schemas"]["MalPaging"];
         };
-        MalMangaListResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MalMangaListResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MalMangaListResponse"];
@@ -2831,8 +2841,9 @@ export interface components {
             tags: string[] | null;
             comments: string | null;
         };
-        MalMangaListStatusApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MalMangaListStatusSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MalMangaListStatus"];
@@ -2858,8 +2869,9 @@ export interface components {
             expiresIn: number;
             tokenType: string | null;
         };
-        MalTokenResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MalTokenResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MalTokenResponse"];
@@ -2883,8 +2895,9 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        MangaChapterListApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MangaChapterListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MangaChapter"][];
@@ -2914,25 +2927,27 @@ export interface components {
             updatedAt: string;
             chapters: components["schemas"]["MangaChapter"][];
         };
-        MangaDetailResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MangaDetailResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MangaDetailResponse"];
         };
         MangaListResponse: {
-            items?: components["schemas"]["MangaResponse"][] | null;
+            items: components["schemas"]["MangaResponse"][];
             /** Format: int32 */
-            totalItems?: number;
+            totalItems: number;
             /** Format: int32 */
-            currentPage?: number;
+            currentPage: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int32 */
-            readonly totalPages?: number;
+            readonly totalPages: number;
         };
-        MangaListResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MangaListResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MangaListResponse"];
@@ -2961,8 +2976,9 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        MangaResponseListApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MangaResponseListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MangaResponse"][];
@@ -2993,8 +3009,9 @@ export interface components {
             /** Format: double */
             rank?: number;
         };
-        MangaSearchResponseListApiResponse: {
-            result: components["schemas"]["ResultType"];
+        MangaSearchResponseListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MangaSearchResponse"][];
@@ -3002,18 +3019,19 @@ export interface components {
         /** @enum {string} */
         MangaType: "Manga" | "Manwha" | "Manhua" | "OEL";
         PaginatedCommentResponse: {
-            items?: components["schemas"]["CommentResponse"][] | null;
+            items: components["schemas"]["CommentResponse"][];
             /** Format: int32 */
-            totalItems?: number;
+            totalItems: number;
             /** Format: int32 */
-            currentPage?: number;
+            currentPage: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int32 */
-            readonly totalPages?: number;
+            readonly totalPages: number;
         };
-        PaginatedCommentResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        PaginatedCommentResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["PaginatedCommentResponse"];
@@ -3036,8 +3054,9 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
         };
-        SessionApiResponse: {
-            result: components["schemas"]["ResultType"];
+        SessionSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["Session"];
@@ -3054,8 +3073,9 @@ export interface components {
             userName: string;
             displayName: string;
         };
-        StringApiResponse: {
-            result: components["schemas"]["ResultType"];
+        StringSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: string;
@@ -3085,28 +3105,30 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
-        UploadResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UploadResponse"];
-        };
         UploadResponsePaginatedResponse: {
-            items?: components["schemas"]["UploadResponse"][] | null;
+            items: components["schemas"]["UploadResponse"][];
             /** Format: int32 */
-            totalItems?: number;
+            totalItems: number;
             /** Format: int32 */
-            currentPage?: number;
+            currentPage: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int32 */
-            readonly totalPages?: number;
+            readonly totalPages: number;
         };
-        UploadResponsePaginatedResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UploadResponsePaginatedResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UploadResponsePaginatedResponse"];
+        };
+        UploadResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["UploadResponse"];
         };
         User: {
             appMetadata?: {
@@ -3173,25 +3195,27 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        UserMangaListEntryResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UserMangaListEntryResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserMangaListEntryResponse"];
         };
         UserMangaListPaginatedResponse: {
-            items?: components["schemas"]["UserMangaListResponse"][] | null;
+            items: components["schemas"]["UserMangaListResponse"][];
             /** Format: int32 */
-            totalItems?: number;
+            totalItems: number;
             /** Format: int32 */
-            currentPage?: number;
+            currentPage: number;
             /** Format: int32 */
-            pageSize?: number;
+            pageSize: number;
             /** Format: int32 */
-            readonly totalPages?: number;
+            readonly totalPages: number;
         };
-        UserMangaListPaginatedResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UserMangaListPaginatedResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserMangaListPaginatedResponse"];
@@ -3209,8 +3233,9 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        UserMangaListResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UserMangaListResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserMangaListResponse"];
@@ -3229,8 +3254,9 @@ export interface components {
             updatedAt: string;
             entries?: components["schemas"]["UserMangaListEntryResponse"][] | null;
         };
-        UserMangaListWithEntriesResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UserMangaListWithEntriesResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserMangaListWithEntriesResponse"];
@@ -3247,8 +3273,9 @@ export interface components {
             username: string;
             displayName: string;
         };
-        UserResponseApiResponse: {
-            result: components["schemas"]["ResultType"];
+        UserResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserResponse"];

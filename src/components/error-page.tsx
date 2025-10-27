@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface CustomErrorProps {
     title?: string;
-    error?: components["schemas"]["ErrorDataApiResponse"];
+    error?: components["schemas"]["ErrorResponse"];
 }
 
 export default function ErrorPage({

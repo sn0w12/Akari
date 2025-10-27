@@ -5,7 +5,7 @@ import { MangaGrid } from "./manga/manga-grid";
 export default async function MangaReaderHome({
     data,
 }: {
-    data: components["schemas"]["MangaListResponseApiResponse"];
+    data: components["schemas"]["MangaListResponseSuccessResponse"];
 }) {
     return (
         <div className="min-h-screen bg-background text-foreground">

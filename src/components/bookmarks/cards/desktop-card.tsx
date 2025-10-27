@@ -5,35 +5,30 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-import { Bookmark, Manga } from "@/types/manga";
 import LatestChapterInfo from "./latest-chapter-info";
-import { getButtonInfo } from "@/lib/manga/bookmarks";
-import { imageUrl } from "@/lib/utils";
+import { cn, imageUrl } from "@/lib/utils";
 import { ChevronsUpDownIcon, Loader2Icon } from "lucide-react";
 import { useRef, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
+import { client } from "@/lib/api";
 
-interface Chapter {
-    id: string;
-    name: string;
-    path: string;
-    view: string;
-    createdAt: string;
+interface DesktopBookmarkCardProps {
+    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    setUpdatedBookmarks: React.Dispatch<
+        React.SetStateAction<
+            components["schemas"]["BookmarkListResponse"]["items"]
+        >
+    >;
 }
 
-const DesktopBookmarkCard: React.FC<{
-    bookmark: Bookmark;
-    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
-}> = ({ bookmark, setUpdatedBookmarks }) => {
-    const {
-        mangaIdentifier,
-        continueReading,
-        continueReadingText,
-        buttonColor,
-    } = getButtonInfo(bookmark);
-    const [chapters, setChapters] = useState<Chapter[]>([]);
+function DesktopBookmarkCard({
+    bookmark,
+    setUpdatedBookmarks,
+}: DesktopBookmarkCardProps) {
+    const [chapters, setChapters] = useState<
+        components["schemas"]["MangaChapter"][]
+    >([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
@@ -42,8 +37,6 @@ const DesktopBookmarkCard: React.FC<{
     ) as React.RefObject<HTMLButtonElement>;
 
     async function showChapters() {
-        if (!mangaIdentifier) return;
-
         const newShowState = !showPopup;
         setShowPopup(!showPopup);
         if (newShowState && buttonRef.current) {
@@ -64,14 +57,19 @@ const DesktopBookmarkCard: React.FC<{
         if (chapters.length === 0 && !showPopup) {
             setIsLoading(true);
             try {
-                const response = await fetchApi<Manga>(
-                    `/api/v1/manga/${mangaIdentifier}`
-                );
-                if (isApiErrorResponse(response)) {
-                    throw new Error(response.data.message);
+                const { data, error } = await client.GET("/v2/manga/{id}", {
+                    params: {
+                        path: {
+                            id: bookmark.mangaId,
+                        },
+                    },
+                });
+
+                if (error) {
+                    throw new Error("Failed to load chapters");
                 }
 
-                setChapters(response.data.chapterList);
+                setChapters(data.data.chapters);
             } catch (error) {
                 console.error("Error loading chapters:", error);
             } finally {
@@ -84,7 +82,7 @@ const DesktopBookmarkCard: React.FC<{
         <Card className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full">
             <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
                 <Link
-                    href={`/manga/${mangaIdentifier}`}
+                    href={`/manga/${bookmark.mangaId}`}
                     rel="noopener noreferrer"
                     className="block"
                     prefetch={false}
@@ -92,7 +90,7 @@ const DesktopBookmarkCard: React.FC<{
                     aria-hidden="true"
                 >
                     <Image
-                        src={imageUrl(bookmark.coverImage)}
+                        src={bookmark.cover}
                         alt={bookmark.title}
                         width={300}
                         height={450}
@@ -104,7 +102,7 @@ const DesktopBookmarkCard: React.FC<{
                 <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-top gap-2 w-full justify-between">
                         <Link
-                            href={`/manga/${mangaIdentifier}`}
+                            href={`/manga/${bookmark.mangaId}`}
                             prefetch={false}
                         >
                             <h3 className="font-bold text-2xl hover:underline text-left text-ellipsis">
@@ -119,17 +117,23 @@ const DesktopBookmarkCard: React.FC<{
                     <div className="flex flex-row gap-2 mb-2">
                         {/* Continue Reading Button */}
                         <ButtonLink
-                            href={`/manga/${mangaIdentifier}/${continueReading
-                                .split("/")
-                                .pop()}`}
+                            href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
                             rel="noopener noreferrer"
-                            className={`w-fit py-4 px-6 text-lg font-bold text-white ${buttonColor} transition-colors`}
+                            className={cn(
+                                "w-fit py-4 px-6 text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors",
+                                {
+                                    "bg-cyan-600 hover:bg-cyan-700":
+                                        bookmark.lastReadChapter.number ===
+                                        bookmark.chapters[1]?.number,
+                                    "bg-green-600 hover:bg-green-700":
+                                        bookmark.lastReadChapter.number ===
+                                        bookmark.chapters[0]?.number,
+                                }
+                            )}
                             prefetch={false}
                         >
-                            <span className="hidden lg:inline">
-                                {continueReadingText.split("-")[0]}
-                            </span>
-                            <span>{continueReadingText.split("-")[1]}</span>
+                            <span className="hidden lg:inline">Chapter</span>
+                            <span>{bookmark.lastReadChapter.number}</span>
                         </ButtonLink>
                         <Button
                             ref={buttonRef}
@@ -145,15 +149,15 @@ const DesktopBookmarkCard: React.FC<{
                             )}
                         </Button>
                     </div>
-                    {LatestChapterInfo({ bookmark, colors: buttonColor })}
+                    <LatestChapterInfo bookmark={bookmark} />
 
                     {showPopup && (
                         <ChaptersPopup
                             chapters={chapters}
                             onClose={() => setShowPopup(false)}
-                            mangaIdentifier={mangaIdentifier || ""}
+                            mangaIdentifier={bookmark.mangaId}
                             isLoading={isLoading}
-                            lastReadChapter={bookmark.latestChapter.number.toString()}
+                            lastReadChapter={bookmark.lastReadChapter.number.toString()}
                             position={popupPosition}
                             buttonRef={buttonRef}
                         />
@@ -162,6 +166,6 @@ const DesktopBookmarkCard: React.FC<{
             </CardContent>
         </Card>
     );
-};
+}
 
 export default DesktopBookmarkCard;

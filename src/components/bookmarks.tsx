@@ -2,11 +2,9 @@
 
 import BookmarksBody from "./bookmarks/bookmarks-body";
 import BookmarksSkeleton from "@/components/bookmarks/skeleton";
-import { isApiErrorData } from "@/lib/api";
 import { fetchBookmarks } from "@/lib/manga/bookmarks";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import ErrorComponent from "./error-page";
+import ErrorPage from "./error-page";
 
 interface BookmarksPageProps {
     page: number;
@@ -15,20 +13,11 @@ interface BookmarksPageProps {
 export default function BookmarksPage({ page }: BookmarksPageProps) {
     const { data, isLoading } = useQuery({
         queryKey: ["bookmarks", page],
-        queryFn: () => fetchBookmarks(page),
+        queryFn: async () => await fetchBookmarks(page),
     });
-    const router = useRouter();
 
-    if (isApiErrorData(data)) {
-        if (data.message === "User not logged in") {
-            router.push("/account");
-        }
-
-        return (
-            <div className="mx-auto p-4">
-                <ErrorComponent message={data.message} />
-            </div>
-        );
+    if (data?.result === "Error") {
+        return <ErrorPage error={data} />;
     }
 
     if (isLoading || !data) {
@@ -38,9 +27,9 @@ export default function BookmarksPage({ page }: BookmarksPageProps) {
     return (
         <div className="mx-auto p-4">
             <BookmarksBody
-                bookmarks={data.bookmarks}
+                bookmarks={data.data.items}
                 page={page}
-                totalPages={data.totalPages}
+                totalPages={data.data.totalPages}
             />
         </div>
     );

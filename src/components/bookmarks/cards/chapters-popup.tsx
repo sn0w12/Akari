@@ -7,16 +7,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { getSetting } from "@/lib/settings";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Chapter {
-    id: string;
-    name: string;
-    path: string;
-    view: string;
-    createdAt: string;
-}
-
 export const ChaptersPopup: React.FC<{
-    chapters: Chapter[];
+    chapters: components["schemas"]["MangaChapter"][];
     onClose: () => void;
     mangaIdentifier: string;
     isLoading: boolean;
@@ -183,7 +175,7 @@ export const ChaptersPopup: React.FC<{
                                     } rounded text-sm transition-colors duration-100`}
                                     prefetch={false}
                                     data-no-prefetch
-                                    aria-label={`Read ${chapter.name} ${
+                                    aria-label={`Read ${chapter.title} ${
                                         chapter.id ===
                                         `chapter-${lastReadChapter}`
                                             ? "(Last Read)"
@@ -191,7 +183,7 @@ export const ChaptersPopup: React.FC<{
                                     }`}
                                 >
                                     <div className="flex justify-between items-center">
-                                        <span>{chapter.name}</span>
+                                        <span>{chapter.title}</span>
                                         <span
                                             className={`text-xs ${
                                                 chapter.id ===

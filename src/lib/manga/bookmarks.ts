@@ -9,50 +9,23 @@ export async function fetchBookmarks(page: number) {
         });
 
         if (error) {
-            throw new Error(error.data.message || "Failed to fetch bookmarks");
+            return error;
         }
 
-        return data.data;
+        return data;
     } catch (err) {
-        console.error("Error fetching bookmarks:", err);
-        return {
-            message: "An error occurred while fetching bookmarks.",
-        };
+        return null;
     }
 }
 
-const notificationName = "akari-notification";
-const notificationTimestampName = "akari-notification-timestamp";
-const notificationCacheDuration = 1 * 60 * 60 * 1000;
-
 export const fetchNotification = async () => {
-    const cached = localStorage.getItem(notificationName);
-    const timestamp = localStorage.getItem(notificationTimestampName);
-    const now = Date.now();
-
-    if (
-        cached &&
-        timestamp &&
-        now - parseInt(timestamp) < notificationCacheDuration
-    ) {
-        return cached;
-    }
-
     try {
         const { data, error } = await client.GET("/v2/bookmarks/unread");
 
         if (error) {
-            localStorage.removeItem(notificationName);
-            localStorage.removeItem(notificationTimestampName);
-            if (error.status === 401) {
-                localStorage.removeItem("auth");
-                localStorage.removeItem("accountName");
-            }
             return "";
         }
 
-        localStorage.setItem(notificationName, data.data.toString());
-        localStorage.setItem(notificationTimestampName, now.toString());
         return data.data.toString();
     } catch (error) {
         console.error("Error fetching notification:", error);

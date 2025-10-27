@@ -32,12 +32,6 @@ export default async function Footer() {
                             </Link>
                         </p>
                     </div>
-                    <div className="text-center text-sm text-muted-foreground">
-                        <p>
-                            Content sourced from Manganato. Not affiliated with
-                            Manganato.
-                        </p>
-                    </div>
                     <div className="flex justify-center flex-col">
                         <div className="flex flex-row w-full justify-between">
                             <Link
