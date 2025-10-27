@@ -26,7 +26,7 @@ function MangaCommentList({
     onEdit: (commentId: string, content: string) => Promise<void>;
     onDelete: (commentId: string) => Promise<void>;
     onNewComment: (content: string) => Promise<void>;
-    userVotes: { commentId: string; value: number }[];
+    userVotes: components["schemas"]["CommentVoteResponse"][];
     currentUser?: components["schemas"]["UserResponse"];
 }) {
     return (
@@ -382,13 +382,9 @@ export function MangaComments({
                     <Skeleton className="h-24" />
                     <Skeleton className="h-24" />
                 </div>
-            ) : !data ? (
-                <div className="text-center py-12">
-                    <p>No comments found.</p>
-                </div>
             ) : (
                 <MangaCommentList
-                    comments={data.items ?? []}
+                    comments={data?.items ?? []}
                     onLoadReplies={handleLoadReplies}
                     onVote={handleVote}
                     onReply={handleReply}

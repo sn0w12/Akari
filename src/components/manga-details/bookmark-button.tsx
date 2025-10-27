@@ -6,13 +6,12 @@ import Spinner from "../ui/puff-loader";
 import { ButtonConfirmDialog } from "../ui/confirm";
 import { useState } from "react";
 import React from "react";
-import { Manga } from "@/types/manga";
 import Toast from "@/lib/toast-wrapper";
 import { useSetting } from "@/lib/settings";
 import { bookmarkManga, removeBookmark } from "@/lib/manga/bookmarks";
 
 interface BookmarkButtonProps {
-    manga: Manga;
+    manga: components["schemas"]["MangaDetailResponse"];
     isBookmarked: boolean | null;
 }
 
@@ -28,12 +27,12 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
 
     const handleBookmarkClick = async () => {
-        if (!manga.mangaId || isStateBookmarked === null || isStateBookmarked)
+        if (!manga.id || isStateBookmarked === null || isStateBookmarked)
             return;
 
         setIsLoading(true);
         try {
-            const data = await bookmarkManga(manga.mangaId);
+            const data = await bookmarkManga(manga.id);
             setIsLoading(false);
 
             if (data) {
@@ -46,10 +45,10 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     };
 
     const handleRemoveBookmark = async () => {
-        if (!manga.mangaId || isStateBookmarked === null || !isStateBookmarked)
+        if (!manga.id || isStateBookmarked === null || !isStateBookmarked)
             return;
 
-        const result = await removeBookmark(manga.mangaId);
+        const result = await removeBookmark(manga.id);
         if (!result) return;
 
         setIsStateBookmarked(false);
