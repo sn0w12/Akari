@@ -1,7 +1,9 @@
-import PopularPage from "@/components/popular";
 import { Metadata } from "next";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
+import { client } from "@/lib/api";
+import ErrorPage from "@/components/error-page";
+import GridPage from "@/components/grid-page";
 
 interface PageProps {
     searchParams: Promise<{
@@ -29,9 +31,26 @@ export const metadata: Metadata = {
 
 export default async function Popular(props: PageProps) {
     const searchParams = await props.searchParams;
+    const { data, error } = await client.GET("/v2/manga/list/popular", {
+        params: {
+            query: {
+                offset: Number(searchParams.page) || 1,
+                pageSize: 24,
+                days: 30,
+            },
+        },
+    });
+
+    if (error) {
+        return <ErrorPage error={error} />;
+    }
+
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <PopularPage searchParams={searchParams} />
-        </div>
+        <GridPage
+            title={"Popular"}
+            mangaList={data.data.items}
+            currentPage={data.data.currentPage}
+            totalPages={data.data.totalPages}
+        />
     );
 }
