@@ -1,8 +1,10 @@
 import { Metadata } from "next";
-import AuthorPage from "@/components/author";
 import { cacheLife } from "next/cache";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
+import { client } from "@/lib/api";
+import ErrorPage from "@/components/error-page";
+import GridPage from "@/components/grid-page";
 
 interface PageProps {
     params: Promise<{ id: string; sort?: string }>;
@@ -39,17 +41,33 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     };
 }
 
-export default async function Home(props: PageProps) {
+export default async function AuthorPage(props: PageProps) {
     const searchParams = await props.searchParams;
     const params = await props.params;
+    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    const { data, error } = await client.GET("/v2/author/{name}", {
+        params: {
+            path: {
+                name: title,
+            },
+            query: {
+                page: Number(searchParams.page) || 1,
+                pageSize: 24,
+            },
+        },
+    });
+
+    if (error) {
+        return <ErrorPage error={error} />;
+    }
+
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <AuthorPage
-                params={{
-                    id: params.id,
-                }}
-                searchParams={searchParams}
-            />
-        </div>
+        <GridPage
+            title={title}
+            mangaList={data.data.items}
+            currentPage={data.data.currentPage}
+            totalPages={data.data.totalPages}
+        />
     );
 }
