@@ -11,30 +11,22 @@ import {
 import { logout, logoutSecondaryAccount } from "@/lib/auth/manganato";
 import LoggedInView from "./account/logged-in-view";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/contexts/user-context";
 
 export default function AccountClient() {
     const [secondaryAccounts, setSecondaryAccounts] =
         useState<SecondaryAccount[]>(SECONDARY_ACCOUNTS);
-    const [loading, setLoading] = useState(true);
     const [savedUsername, setSavedUsername] = useState("");
     const router = useRouter();
+    const { user, isLoading } = useUser();
 
     useEffect(() => {
-        // Check if user is logged in
-        const accountName = localStorage.getItem("accountName");
-        if (accountName) {
-            try {
-                const decodedAccountName = decodeURIComponent(accountName);
-                setSavedUsername(decodedAccountName);
-            } catch (error) {
-                console.error("Failed to parse user_acc cookie:", error);
-            }
-        } else {
-            // Not logged in, redirect to login page
+        if (isLoading) return;
+        if (!user) {
             router.push("/login");
             return;
         }
-        setLoading(false);
+        setSavedUsername(user.displayName);
 
         // Check secondary accounts
         const checkSecondaryAuth = async () => {
@@ -61,8 +53,7 @@ export default function AccountClient() {
         };
 
         checkSecondaryAuth();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [user]);
 
     const handleLogout = () => {
         logout(secondaryAccounts);
@@ -80,7 +71,7 @@ export default function AccountClient() {
         window.location.reload();
     };
 
-    if (loading) {
+    if (isLoading) {
         return;
     }
 

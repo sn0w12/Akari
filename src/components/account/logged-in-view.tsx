@@ -69,7 +69,7 @@ export default function LoggedInView({
                     <CardHeader>
                         <CardTitle>Account Information</CardTitle>
                         <CardDescription>
-                            Manage your primary Manganato account settings
+                            Manage your primary Akari account settings
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -87,7 +87,7 @@ export default function LoggedInView({
                                 <span className="text-sm text-muted-foreground">
                                     Account Type
                                 </span>
-                                <span className="text-md">Manganato</span>
+                                <span className="text-md">Akari</span>
                             </div>
 
                             <div className="pt-4 border-t mt-6">

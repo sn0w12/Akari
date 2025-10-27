@@ -1,16 +1,24 @@
 "use client";
 
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { submitLogin } from "@/lib/auth/akari";
 import LoginView from "@/components/account/login-view";
 import { formSchema } from "@/components/account/login-view";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/contexts/user-context";
 
 export default function LoginPage() {
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
+    const { user } = useUser();
+
+    useEffect(() => {
+        if (user) {
+            router.push("/account");
+        }
+    }, [user, router]);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true);
