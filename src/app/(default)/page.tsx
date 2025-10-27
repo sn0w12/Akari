@@ -86,7 +86,7 @@ export default async function Home(props: HomeProps) {
             <MangaReaderHome
                 latest={latestResponse.data.data.items}
                 popular={popularResponse.data.data.items}
-                totalPages={popularResponse.data.data.totalPages}
+                totalPages={latestResponse.data.data.totalPages}
             />
         </Suspense>
     );
