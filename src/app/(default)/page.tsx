@@ -42,22 +42,52 @@ export const metadata: Metadata = {
 
 export default async function Home(props: HomeProps) {
     const currentPage = Number((await props.searchParams).page) || 1;
-    const { data, error } = await client.GET("/v2/manga/list", {
-        params: {
-            query: {
-                page: currentPage,
-                pageSize: 24,
-            },
-        },
-    });
 
-    if (error) {
-        return <ErrorPage title="Failed to load manga list" error={error} />;
+    const [latestResponse, popularResponse] = await Promise.all([
+        client.GET("/v2/manga/list", {
+            params: {
+                query: {
+                    page: currentPage,
+                    pageSize: 24,
+                },
+            },
+        }),
+        client.GET("/v2/manga/list/popular", {
+            params: {
+                query: {
+                    offset: 1,
+                    pageSize: 24,
+                    days: 30,
+                },
+            },
+        }),
+    ]);
+
+    if (latestResponse.error) {
+        return (
+            <ErrorPage
+                title="Failed to load manga list"
+                error={latestResponse.error}
+            />
+        );
+    }
+
+    if (popularResponse.error) {
+        return (
+            <ErrorPage
+                title="Failed to load popular manga"
+                error={popularResponse.error}
+            />
+        );
     }
 
     return (
         <Suspense fallback={<HomeSkeleton currentPage={currentPage} />}>
-            <MangaReaderHome data={data} />
+            <MangaReaderHome
+                latest={latestResponse.data.data.items}
+                popular={popularResponse.data.data.items}
+                totalPages={popularResponse.data.data.totalPages}
+            />
         </Suspense>
     );
 }

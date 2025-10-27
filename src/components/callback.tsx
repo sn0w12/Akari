@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { client } from "@/lib/api";
 import Cookies from "js-cookie";
 import ErrorComponent from "./error-page";
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
 
 const CallbackPage = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [error, setError] = useState<
+        components["schemas"]["ErrorResponse"] | undefined
+    >(undefined);
     const [success, setSuccess] = useState<boolean>(false);
 
     useEffect(() => {
@@ -18,53 +20,60 @@ const CallbackPage = () => {
         const codeVerifier = Cookies.get("pkce_code_verifier");
 
         if (!code || !codeVerifier) {
-            setErrorMessage("Missing code or code verifier");
+            setError({
+                result: "Error",
+                status: 500,
+                data: {
+                    message: "Missing code or code verifier",
+                },
+            });
             return;
         }
 
         // Send request to exchange code for tokens
         const fetchToken = async () => {
             try {
-                const tokenResponse = await fetchApi<{
-                    access_token: string;
-                    refresh_token: string;
-                    expires_in: number;
-                }>("/api/v1/mal/token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
+                const { data, error } = await client.POST("/v2/mal/token", {
+                    body: {
                         code,
-                        code_verifier: codeVerifier,
-                    }),
+                        codeVerifier: codeVerifier,
+                        redirectUri: `${window.location.origin}/auth/callback`,
+                    },
                 });
 
-                if (isApiErrorResponse(tokenResponse)) {
-                    throw new Error(tokenResponse.data.message);
+                if (error) {
+                    setError(error);
+                    return;
                 }
-
-                const data = tokenResponse.data;
 
                 setSuccess(true);
                 Cookies.remove("pkce_code_verifier");
 
-                const malResponse = await fetchApi("/api/v1/mal/me", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        access_token: data.access_token,
-                    }),
-                });
+                const { data: userData, error: userError } = await client.GET(
+                    "/v2/mal/mangalist"
+                );
 
-                if (!isApiErrorResponse(malResponse)) {
-                    const malData = malResponse.data;
-                    localStorage.setItem("mal_user", JSON.stringify(malData));
-                    sessionStorage.setItem("mal", "true");
+                if (userError) {
+                    setError(userError);
+                    return;
                 }
 
-                // Redirect to homepage
+                console.log(userData);
+                localStorage.setItem("mal_user", JSON.stringify(userData.data));
+                sessionStorage.setItem("mal", "true");
+
                 router.push("/");
             } catch (error) {
-                setErrorMessage((error as Error).message);
+                setError({
+                    result: "Error",
+                    status: 500,
+                    data: {
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : "Unknown error",
+                    },
+                });
                 setTimeout(() => {
                     router.push("/");
                 }, 5000);
@@ -75,23 +84,27 @@ const CallbackPage = () => {
     }, [searchParams, router]);
 
     return (
-        <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
-            <Card className="p-6 space-y-4 text-center">
-                {errorMessage ? (
-                    <ErrorComponent message={errorMessage} />
-                ) : (
-                    <p
-                        className={`${
-                            success ? "text-green-500" : "text-muted-foreground"
-                        }`}
-                    >
-                        {success
-                            ? "Success!"
-                            : "Exchanging authorization code for access token..."}
-                    </p>
-                )}
-            </Card>
-        </div>
+        <>
+            {error ? (
+                <ErrorComponent error={error} />
+            ) : (
+                <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">
+                    <Card className="p-6 space-y-4 text-center">
+                        <p
+                            className={`${
+                                success
+                                    ? "text-green-500"
+                                    : "text-muted-foreground"
+                            }`}
+                        >
+                            {success
+                                ? "Success!"
+                                : "Exchanging authorization code for access token..."}
+                        </p>
+                    </Card>
+                </div>
+            )}
+        </>
     );
 };
 

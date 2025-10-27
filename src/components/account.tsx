@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import {
-    generateMalAuth,
     isAccountValid,
     SecondaryAccount,
     SECONDARY_ACCOUNTS,
     SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
-import { logout, logoutSecondaryAccount } from "@/lib/auth/manganato";
+import { logOut } from "@/lib/auth/akari";
 import LoggedInView from "./account/logged-in-view";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/user-context";
@@ -42,10 +41,6 @@ export default function AccountClient() {
                         return { ...account, user: userData };
                     }
 
-                    if (account.id === "mal") {
-                        return generateMalAuth(account);
-                    }
-
                     return account;
                 })
             );
@@ -56,19 +51,18 @@ export default function AccountClient() {
     }, [user]);
 
     const handleLogout = () => {
-        logout(secondaryAccounts);
+        logOut(secondaryAccounts);
         setSavedUsername("");
         window.location.reload();
     };
 
-    const handleSecondaryLogout = (account: SecondaryAccount) => {
-        logoutSecondaryAccount(account);
+    const handleSecondaryLogout = async (account: SecondaryAccount) => {
+        await account.logOut();
         setSecondaryAccounts((accounts) =>
             accounts.map((acc) =>
                 acc.id === account.id ? { ...acc, user: null } : acc
             )
         );
-        window.location.reload();
     };
 
     if (isLoading) {

@@ -1,13 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { fetchMangaDetails } from "@/lib/manga/scraping";
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { imageUrl } from "@/lib/utils";
 import path from "path";
 import sharp from "sharp";
 import { bg, palette } from "@/lib/api/og";
-import { isApiErrorData } from "@/lib/api";
-import { generateCacheHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 
 const montserratBlackFont = readFile(
     path.resolve(process.cwd(), "public/fonts/Montserrat-Black.ttf")
@@ -45,9 +43,15 @@ export async function GET(
     const baseUrl = `${protocol}://${host}`;
     const bgUrl = bg();
 
-    const result = await fetchMangaDetails(id, userAgent, acceptLanguage);
+    const { data, error } = await client.GET("/v2/manga/{id}", {
+        params: {
+            path: {
+                id: id,
+            },
+        },
+    });
 
-    if (isApiErrorData(result)) {
+    if (error) {
         return new ImageResponse(
             (
                 <div
@@ -106,17 +110,11 @@ export async function GET(
     }
 
     // Prepare data
-    const cover = result.malData?.image ?? result.imageUrl;
-    const title = result.name;
-    const authors =
-        Array.isArray(result.authors) &&
-        result.authors.length === 1 &&
-        result.authors[0] === "Unknown"
-            ? []
-            : result.authors;
-    const score = result.malData?.score
-        ? (result.malData.score / 2).toFixed(1)
-        : result.score?.toFixed?.(1) ?? "";
+    const manga = data.data;
+    const cover = manga.cover;
+    const title = manga.title;
+    const authors = manga.authors;
+    const score = manga.score.toFixed(1);
 
     let coverDataUrl = "";
     try {
@@ -277,12 +275,10 @@ export async function GET(
                     style: "normal",
                 },
             ],
-            headers: Object.fromEntries(
-                generateCacheHeaders(2_592_000).map(({ key, value }) => [
-                    key,
-                    value,
-                ])
-            ),
+            headers: {
+                "cache-control":
+                    "public, max-age=86400, stale-while-revalidate=3600",
+            },
         }
     );
 }

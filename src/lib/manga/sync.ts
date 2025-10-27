@@ -1,5 +1,5 @@
 import Toast from "../toast-wrapper";
-import { syncMal } from "./secondary-accounts/mal";
+import { syncMal } from "../auth/secondary-accounts/mal";
 import { checkIfBookmarked, updateBookmark } from "./bookmarks";
 import { getSetting } from "../settings";
 

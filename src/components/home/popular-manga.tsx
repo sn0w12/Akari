@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SmallManga } from "@/types/manga";
 import { MangaCard } from "../manga/manga-card";
 import ClientPagination from "../ui/pagination/client-pagination";
 
 interface PopularMangaProps {
-    mangas: SmallManga[];
+    manga: components["schemas"]["MangaResponse"][];
 }
 
-export function PopularManga({ mangas }: PopularMangaProps) {
+export function PopularManga({ manga }: PopularMangaProps) {
     const [currentPopularPage, setCurrentPopularPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
 
@@ -23,13 +22,13 @@ export function PopularManga({ mangas }: PopularMangaProps) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const totalPopularPages = Math.ceil(mangas.length / itemsPerPage);
+    const totalPopularPages = Math.ceil(manga.length / itemsPerPage);
 
     useEffect(() => {
         setCurrentPopularPage(1);
     }, [itemsPerPage]);
 
-    const paginatedPopularList = mangas.slice(
+    const paginatedPopularList = manga.slice(
         (currentPopularPage - 1) * itemsPerPage,
         currentPopularPage * itemsPerPage
     );
@@ -38,13 +37,7 @@ export function PopularManga({ mangas }: PopularMangaProps) {
         <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {paginatedPopularList.map((manga, index) => (
-                    <MangaCard
-                        key={index}
-                        manga={manga}
-                        loading="eager"
-                        priority={index <= 4}
-                        isBookmarked={false}
-                    />
+                    <MangaCard key={index} manga={manga} />
                 ))}
             </div>
 

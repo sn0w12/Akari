@@ -64,9 +64,8 @@ export default function SimpleSearch() {
                 </div>
             ) : (
                 <div className="mt-4">
-                    {searchData?.mangaList &&
-                    searchData.mangaList.length > 0 ? (
-                        <MangaGrid mangaList={searchData.mangaList} />
+                    {searchData && searchData.length > 0 ? (
+                        <MangaGrid mangaList={searchData} />
                     ) : searchQuery ? (
                         <div className="text-center py-8">
                             <p>
@@ -81,10 +80,10 @@ export default function SimpleSearch() {
                 </div>
             )}
 
-            {searchData?.mangaList && searchData.mangaList.length > 0 && (
+            {searchData && searchData.length > 0 && (
                 <ClientPagination
                     currentPage={currentPage}
-                    totalPages={searchData.totalPages}
+                    totalPages={1}
                     handlePageChange={setCurrentPage}
                     className="my-4"
                 />

@@ -1,4 +1,5 @@
 import { client } from "@/lib/api";
+import { SECONDARY_ACCOUNTS } from "../secondary-accounts";
 
 export async function syncMal(manga: components["schemas"]["ChapterResponse"]) {
     if (!manga.malId) {
@@ -44,6 +45,12 @@ export async function logOutMal() {
 
     if (error) {
         return false;
+    }
+
+    const malAccount = SECONDARY_ACCOUNTS.find((acc) => acc.id === "mal");
+    if (malAccount) {
+        sessionStorage.removeItem(malAccount.sessionKey);
+        localStorage.removeItem(malAccount.storageKey);
     }
 
     return true;

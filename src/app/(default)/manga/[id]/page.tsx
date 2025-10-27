@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
-import { fetchMangaDetails } from "@/lib/manga/scraping";
 import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
 import { client } from "@/lib/api";
