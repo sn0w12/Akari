@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { cacheLife } from "next/cache";
+import { formatRelativeDate } from "@/lib/utils";
+import { MangaComments } from "./manga-details/manga-comments";
+import { ViewManga } from "./manga-reader/view-manga";
 
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
-import { formatRelativeDate } from "@/lib/utils";
-import { MangaComments } from "./manga-details/manga-comments";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -285,6 +286,7 @@ export async function MangaDetailsComponent({
                 </Card>
             </div>
 
+            <ViewManga manga={manga} />
             <ChaptersSection manga={manga} />
             <MangaComments manga={manga} />
         </div>
