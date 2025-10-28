@@ -171,7 +171,7 @@ export default function SyncMalPage() {
                 if (malItem) {
                     updateItems.push({
                         mangaId: manga.id,
-                        chapterNumber: malItem.listStatus.numChaptersRead || 0,
+                        chapterNumber: malItem.listStatus?.numChaptersRead ?? 0,
                     });
                 }
             }
@@ -227,15 +227,15 @@ export default function SyncMalPage() {
                                         {item.node.title || "Unknown Title"}
                                     </TableCell>
                                     <TableCell>
-                                        {item.listStatus.numChaptersRead}
+                                        {item.listStatus?.numChaptersRead}
                                     </TableCell>
                                     <TableCell className="min-w-[100px]">
                                         <Badge
                                             variant={getStatusVariant(
-                                                item.listStatus.status
+                                                item.listStatus?.status || null
                                             )}
                                         >
-                                            {item.listStatus.status ||
+                                            {item.listStatus?.status ||
                                                 "Unknown"}
                                         </Badge>
                                     </TableCell>
