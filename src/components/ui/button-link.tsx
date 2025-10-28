@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import { Button } from "./button";
 import { type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -10,10 +11,24 @@ export interface ButtonLinkProps
         VariantProps<typeof buttonVariants> {
     href: string;
     prefetch?: boolean;
+    disabled?: boolean;
 }
 
 const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
-    ({ className, variant, size, href, prefetch, ...props }, ref) => {
+    ({ className, variant, size, href, prefetch, disabled, ...props }, ref) => {
+        if (disabled) {
+            return (
+                <Button
+                    variant={variant}
+                    size={size}
+                    className={className}
+                    disabled
+                >
+                    {props.children}
+                </Button>
+            );
+        }
+
         return (
             <Link
                 href={href}

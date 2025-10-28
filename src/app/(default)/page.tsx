@@ -84,7 +84,7 @@ export default async function Home(props: HomeProps) {
     }
 
     return (
-        <Suspense fallback={<HomeSkeleton currentPage={currentPage} />}>
+        <Suspense fallback={<HomeSkeleton />}>
             <MangaReaderHome
                 latest={latestResponse.data.data.items}
                 popular={popularResponse.data.data.items}

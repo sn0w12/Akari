@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "../button-link";
 import { cn } from "@/lib/utils";
 import { JumpToPagePopover } from "./pagination-popover";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ interface PaginationElementProps {
     totalPages: number;
     searchParams?: { key: string; value: string }[];
     className?: string;
+    href?: string;
 }
 
 export function ServerPagination({
@@ -20,6 +22,7 @@ export function ServerPagination({
     totalPages,
     searchParams = [],
     className,
+    href,
 }: PaginationElementProps) {
     const router = useRouter();
     const [jumpToPage, setJumpToPage] = useState(currentPage.toString());
@@ -27,10 +30,15 @@ export function ServerPagination({
     const visiblePages = getVisiblePages(currentPage, totalPages);
 
     const createPageUrl = (page: number) => {
-        return (
-            `?page=${page}` +
-            searchParams.map((param) => `&${param.key}=${param.value}`).join("")
-        );
+        const base = href || "";
+        const separator = base.includes("?") ? "&" : "?";
+        const params =
+            `page=${page}` +
+            searchParams
+                .filter((param) => param.value)
+                .map((param) => `&${param.key}=${param.value}`)
+                .join("");
+        return base + separator + params;
     };
 
     const handlePageChange = (page: number) => {
@@ -46,10 +54,10 @@ export function ServerPagination({
             aria-label="Pagination"
         >
             {/* Previous Button - Fixed left position */}
-            <Button
+            <ButtonLink
                 variant="outline"
                 size="sm"
-                onClick={() => handlePageChange(currentPage - 1)}
+                href={createPageUrl(currentPage - 1)}
                 onMouseOver={() => {
                     router.prefetch(
                         `${createPageUrl(currentPage - 1)}&_prefetch=1`
@@ -61,7 +69,7 @@ export function ServerPagination({
             >
                 <ChevronLeft className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1">Previous</span>
-            </Button>
+            </ButtonLink>
 
             {/* Page Numbers - Fixed center container */}
             <div className="flex items-center justify-center gap-1 flex-1">
@@ -84,11 +92,11 @@ export function ServerPagination({
                     }
 
                     return (
-                        <Button
+                        <ButtonLink
                             key={page}
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePageChange(page)}
+                            href={createPageUrl(page)}
                             className={cn("min-w-[2.5rem] h-9", {
                                 "hidden sm:inline-flex":
                                     index === 1 ||
@@ -97,16 +105,16 @@ export function ServerPagination({
                             aria-label={`Go to page ${page}`}
                         >
                             {page}
-                        </Button>
+                        </ButtonLink>
                     );
                 })}
             </div>
 
             {/* Next Button - Fixed right position */}
-            <Button
+            <ButtonLink
                 variant="outline"
                 size="sm"
-                onClick={() => handlePageChange(currentPage + 1)}
+                href={createPageUrl(currentPage + 1)}
                 onMouseOver={() => {
                     router.prefetch(
                         `${createPageUrl(currentPage + 1)}&_prefetch=1`
@@ -118,7 +126,7 @@ export function ServerPagination({
             >
                 <span className="hidden sm:inline mr-1">Next</span>
                 <ChevronRight className="h-4 w-4" />
-            </Button>
+            </ButtonLink>
         </nav>
     );
 }

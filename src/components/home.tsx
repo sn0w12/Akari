@@ -23,6 +23,7 @@ export default async function MangaReaderHome({
             </div>
             <ServerPagination
                 currentPage={1}
+                href="./latest"
                 totalPages={totalPages}
                 className="mb-4"
             />
