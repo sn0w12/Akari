@@ -82,7 +82,7 @@ export default function SearchButton() {
                                     prefetch={true}
                                 >
                                     <Image
-                                        src={`/api/v1/image-proxy?imageUrl=${result.cover}`}
+                                        src={result.cover}
                                         alt={result.title}
                                         className="max-h-24 w-auto rounded mr-2"
                                         height={100}

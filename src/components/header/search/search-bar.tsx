@@ -139,29 +139,28 @@ export default function SearchBar() {
                                 {searchResults.map((result, index) => (
                                     <Link
                                         href={`/manga/${result.id}`}
-                                            key={result.id}
-                                            id={`search-result-${index}`}
-                                            onMouseDown={() => {
-                                                shouldCloseRef.current = false;
-                                            }}
-                                            className={`block p-2 hover:bg-accent flex items-center rounded-lg ${
-                                                index === focusedIndex
-                                                    ? "bg-accent"
-                                                    : ""
-                                            }`}
-                                            prefetch={true}
-                                        >
-                                            <Image
-                                                src={`/api/v1/image-proxy?imageUrl=${result.cover}`}
-                                                alt={result.title}
-                                                className="max-h-24 w-auto rounded mr-2"
-                                                height={100}
-                                                width={70}
-                                            />
-                                            {result.title}
-                                        </Link>
-                                    )
-                                )}
+                                        key={result.id}
+                                        id={`search-result-${index}`}
+                                        onMouseDown={() => {
+                                            shouldCloseRef.current = false;
+                                        }}
+                                        className={`block p-2 hover:bg-accent flex items-center rounded-lg ${
+                                            index === focusedIndex
+                                                ? "bg-accent"
+                                                : ""
+                                        }`}
+                                        prefetch={true}
+                                    >
+                                        <Image
+                                            src={result.cover}
+                                            alt={result.title}
+                                            className="max-h-24 w-auto rounded mr-2"
+                                            height={100}
+                                            width={70}
+                                        />
+                                        {result.title}
+                                    </Link>
+                                ))}
                                 <Link
                                     href={`/search?q=${encodeURIComponent(
                                         searchText
