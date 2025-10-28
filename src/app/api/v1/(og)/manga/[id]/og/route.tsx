@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
-import { imageUrl } from "@/lib/utils";
 import path from "path";
 import sharp from "sharp";
 import { bg, palette } from "@/lib/api/og";
@@ -22,9 +21,7 @@ export async function GET(
 ): Promise<ImageResponse> {
     const params = await props.params;
     const id = params.id;
-    const userAgent = req.headers.get("user-agent") || "Mozilla/5.0";
-    const acceptLanguage =
-        req.headers.get("accept-language") || "en-US,en;q=0.9";
+
     const isDevelopment = process.env.NODE_ENV === "development";
     let host =
         req.headers.get("x-forwarded-host") ||
@@ -40,7 +37,6 @@ export async function GET(
             protocol = "https";
         }
     }
-    const baseUrl = `${protocol}://${host}`;
     const bgUrl = bg();
 
     const { data, error } = await client.GET("/v2/manga/{id}", {
@@ -118,27 +114,24 @@ export async function GET(
 
     let coverDataUrl = "";
     try {
-        const coverResponse = await fetch(imageUrl(cover, baseUrl));
+        const coverResponse = await fetch(cover);
         if (!coverResponse.ok) throw new Error("Failed to fetch cover");
         const coverBuffer = await coverResponse.arrayBuffer();
         const image = sharp(Buffer.from(coverBuffer));
         const metadata = await image.metadata();
         if (metadata.format === "webp") {
-            // Convert WebP to PNG
             const pngBuffer = await image.png().toBuffer();
             coverDataUrl = `data:image/png;base64,${pngBuffer.toString(
                 "base64"
             )}`;
         } else {
-            // Use original if not WebP
             coverDataUrl = `data:image/${metadata.format};base64,${Buffer.from(
                 coverBuffer
             ).toString("base64")}`;
         }
     } catch (error) {
         console.error("Error processing cover image:", error);
-        // Fallback: Use original URL if conversion fails
-        coverDataUrl = imageUrl(cover, baseUrl);
+        coverDataUrl = cover;
     }
 
     return new ImageResponse(
