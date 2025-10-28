@@ -2624,6 +2624,7 @@ export interface components {
             chapters: components["schemas"]["ChapterOption"][];
             /** Format: uuid */
             mangaId: string;
+            mangaTitle: string;
             /** Format: float */
             lastChapter?: number | null;
             /** Format: float */

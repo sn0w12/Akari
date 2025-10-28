@@ -18,9 +18,11 @@ import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useTheme } from "next-themes";
 import { useSettingsChange } from "@/lib/settings";
 import { inPreview } from "@/config";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 
 export function HeaderComponent() {
     const pathname = usePathname();
+    const { overrides } = useBreadcrumb();
     const [notification, setNotification] = useState<string>("");
     const [segments, setSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
@@ -34,14 +36,29 @@ export function HeaderComponent() {
         setTheme(String(event.detail.value));
     }, "theme");
 
+    const isUUID = (str: string) =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            str
+        );
+
     useEffect(() => {
         const pathSegments = pathname.split("/").filter(Boolean);
         if (pathSegments.length === 0) {
             pathSegments.push("manga");
         }
 
-        setSegments(pathSegments);
-    }, [pathname]);
+        const hasUnresolvedUUID = pathSegments.some(
+            (segment) => isUUID(segment) && !overrides[segment]
+        );
+        if (hasUnresolvedUUID) {
+            return;
+        }
+
+        const modifiedSegments = pathSegments.map(
+            (segment) => overrides[segment] || segment
+        );
+        setSegments(modifiedSegments);
+    }, [pathname, overrides]);
 
     useEffect(() => {
         fetchNotification().then((value) => {

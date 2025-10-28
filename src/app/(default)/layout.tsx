@@ -11,6 +11,7 @@ import { CookieConsent } from "@/components/cookie-consent";
 import Footer from "@/components/footer";
 import { QueryProvider } from "@/components/query-provider";
 import { ConfirmProvider } from "@/contexts/confirm-context";
+import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { Toaster } from "@/components/ui/sonner";
 
 import type { Metadata } from "next";
@@ -59,18 +60,20 @@ export default async function RootLayout({
                             <ConfirmProvider>
                                 <QueryProvider>
                                     <UserProvider>
-                                        <BaseLayout gutter={true}>
-                                            <AnalyticsWrapper />
-                                            <div className="flex-1 pt-2 md:p-4 md:pb-0">
-                                                {children}
-                                            </div>
-                                            <CookieConsent />
-                                            <Toaster
-                                                richColors
-                                                position="top-right"
-                                            />
-                                            <Footer />
-                                        </BaseLayout>
+                                        <BreadcrumbProvider>
+                                            <BaseLayout gutter={true}>
+                                                <AnalyticsWrapper />
+                                                <div className="flex-1 pt-2 md:p-4 md:pb-0">
+                                                    {children}
+                                                </div>
+                                                <CookieConsent />
+                                                <Toaster
+                                                    richColors
+                                                    position="top-right"
+                                                />
+                                                <Footer />
+                                            </BaseLayout>
+                                        </BreadcrumbProvider>
                                     </UserProvider>
                                 </QueryProvider>
                             </ConfirmProvider>

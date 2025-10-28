@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
 import { FooterProvider } from "@/contexts/footer-context";
+import { BreadcrumbSetter } from "./breadcrumb-setter";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -81,6 +82,10 @@ export function Reader({ chapter }: ReaderProps) {
 
     return (
         <FooterProvider stripMode={isStripMode}>
+            <BreadcrumbSetter
+                orig={chapter.mangaId}
+                title={chapter.mangaTitle}
+            />
             <div>
                 {isStripMode ? (
                     <StripReader

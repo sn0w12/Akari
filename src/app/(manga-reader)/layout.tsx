@@ -9,6 +9,7 @@ import { ProximityPrefetch } from "@/lib/proximity-prefetch";
 import { CookieConsent } from "@/components/cookie-consent";
 import { QueryProvider } from "@/components/query-provider";
 import { ConfirmProvider } from "@/contexts/confirm-context";
+import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { Toaster } from "@/components/ui/sonner";
 
 import type { Metadata } from "next";
@@ -56,20 +57,22 @@ export default async function RootLayout({
                         >
                             <SidebarProvider defaultOpen={false}>
                                 <QueryProvider>
-                                    <BaseLayout gutter={false}>
-                                        <AnalyticsWrapper />
-                                        <div
-                                            id="scroll-element"
-                                            className="flex-grow overflow-x-hidden"
-                                        >
-                                            {children}
-                                        </div>
-                                        <CookieConsent />
-                                        <Toaster
-                                            richColors
-                                            position="top-right"
-                                        />
-                                    </BaseLayout>
+                                    <BreadcrumbProvider>
+                                        <BaseLayout gutter={false}>
+                                            <AnalyticsWrapper />
+                                            <div
+                                                id="scroll-element"
+                                                className="flex-grow overflow-x-hidden"
+                                            >
+                                                {children}
+                                            </div>
+                                            <CookieConsent />
+                                            <Toaster
+                                                richColors
+                                                position="top-right"
+                                            />
+                                        </BaseLayout>
+                                    </BreadcrumbProvider>
                                 </QueryProvider>
                             </SidebarProvider>
                         </ThemeProvider>

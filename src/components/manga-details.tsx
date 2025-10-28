@@ -19,6 +19,7 @@ import { ViewManga } from "./manga-reader/view-manga";
 
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
+import { BreadcrumbSetter } from "./breadcrumb-setter";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -104,6 +105,7 @@ export async function MangaDetailsComponent({
 
     return (
         <div className="mx-auto p-4">
+            <BreadcrumbSetter orig={manga.id} title={manga.title} />
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center hidden lg:block">
@@ -226,7 +228,8 @@ export async function MangaDetailsComponent({
                                             manga.status
                                         )} text-white`}
                                     >
-                                        {manga.status.charAt(0).toUpperCase() + manga.status.slice(1)}
+                                        {manga.status.charAt(0).toUpperCase() +
+                                            manga.status.slice(1)}
                                     </Badge>
                                 </div>
                                 <div>
