@@ -31,11 +31,6 @@ const config: NextConfig = {
                 pathname: "/**",
             },
         ],
-        localPatterns: [
-            {
-                pathname: "/api/v1/image-proxy",
-            },
-        ],
     },
     reactCompiler: true,
     experimental: {
