@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { Reader } from "@/components/manga-reader";
 import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
-import { client } from "@/lib/api";
+import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 
 interface MangaReaderProps {
@@ -23,6 +23,7 @@ export async function generateMetadata({
                 subId: Number(mangaParams.subId),
             },
         },
+        headers: serverHeaders,
     });
 
     if (error) {
@@ -69,6 +70,7 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
                 subId: Number(mangaParams.subId),
             },
         },
+        headers: serverHeaders,
     });
 
     if (error) {

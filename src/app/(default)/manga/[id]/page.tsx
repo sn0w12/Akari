@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
 import { cacheLife } from "next/cache";
 import { robots } from "@/lib/utils";
-import { client } from "@/lib/api";
+import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 
 interface PageProps {
@@ -25,6 +25,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
                 id: params.id,
             },
         },
+        headers: serverHeaders,
     });
 
     if (error) {
@@ -69,6 +70,7 @@ export default async function MangaPage(props: PageProps) {
                 id: params.id,
             },
         },
+        headers: serverHeaders,
     });
 
     if (error) {

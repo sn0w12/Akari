@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { robots } from "@/lib/utils";
-import { client } from "@/lib/api";
+import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
 
@@ -39,6 +39,7 @@ export default async function Popular(props: PageProps) {
                 days: 30,
             },
         },
+        headers: serverHeaders,
     });
 
     if (error) {

@@ -4,8 +4,8 @@ import { client } from "@/lib/api";
 import { robots } from "@/lib/utils";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { cacheLife } from "next/cache";
 import ErrorPage from "@/components/error-page";
+import { serverHeaders } from "@/lib/api";
 
 interface HomeProps {
     searchParams: Promise<{
@@ -51,6 +51,7 @@ export default async function Home(props: HomeProps) {
                     pageSize: 24,
                 },
             },
+            headers: serverHeaders,
         }),
         client.GET("/v2/manga/list/popular", {
             params: {
@@ -60,6 +61,7 @@ export default async function Home(props: HomeProps) {
                     days: 30,
                 },
             },
+            headers: serverHeaders,
         }),
     ]);
 
