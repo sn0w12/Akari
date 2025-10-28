@@ -2,13 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { getSearchResults } from "@/lib/api/search";
 import ClientPagination from "./ui/pagination/client-pagination";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MangaGrid } from "./manga/manga-grid";
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/api";
+import GenrePicker from "./genre-picker";
+import { Genre, genres } from "@/lib/api/search";
+import { Button } from "@/components/ui/button";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Filter } from "lucide-react";
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -16,10 +24,19 @@ export default function SearchPage() {
 
     const query = searchParams.get("q") || "";
     const page = Number(searchParams.get("p")) || 1;
+    const genresParam = searchParams.get("genres") || "";
+    const selectedGenresFromUrl = genresParam
+        ? (genresParam
+              .split(",")
+              .filter((g) => genres.includes(g as Genre)) as Genre[])
+        : [];
 
     const [searchQuery, setSearchQuery] = useState(query);
     const [currentPage, setCurrentPage] = useState(page);
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(query);
+    const [selectedGenres, setSelectedGenres] = useState<Genre[]>(
+        selectedGenresFromUrl
+    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -32,12 +49,14 @@ export default function SearchPage() {
         const params = new URLSearchParams();
         if (searchQuery) params.set("q", searchQuery);
         if (currentPage > 1) params.set("p", currentPage.toString());
+        if (selectedGenres.length > 0)
+            params.set("genres", selectedGenres.join(","));
 
-        router.push(`/search?${params.toString()}`);
-    }, [searchQuery, currentPage, router]);
+        router.replace(`/search?${params.toString()}`);
+    }, [searchQuery, currentPage, selectedGenres, router]);
 
     const { data: searchData, isLoading } = useQuery({
-        queryKey: ["search", debouncedSearchQuery, currentPage],
+        queryKey: ["search", debouncedSearchQuery, currentPage, selectedGenres],
         queryFn: async () => {
             const { data, error } = await client.GET("/v2/manga/list", {
                 params: {
@@ -45,6 +64,7 @@ export default function SearchPage() {
                         query: debouncedSearchQuery,
                         page: currentPage,
                         pageSize: 24,
+                        genres: selectedGenres,
                     },
                 },
             });
@@ -57,7 +77,8 @@ export default function SearchPage() {
 
             return data.data;
         },
-        enabled: debouncedSearchQuery.trim().length > 0,
+        enabled:
+            debouncedSearchQuery.trim().length > 0 || selectedGenres.length > 0,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -65,15 +86,40 @@ export default function SearchPage() {
         setCurrentPage(1);
     }, [searchQuery]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedGenres]);
+
     return (
-        <div className="container mx-auto px-4 pt-4">
-            <Input
-                type="search"
-                value={searchQuery}
-                placeholder="Search manga..."
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-2 mb-4"
-            />
+        <div className="px-4 pt-4">
+            <div className="flex gap-2 mb-4">
+                <Input
+                    type="search"
+                    value={searchQuery}
+                    placeholder="Search manga..."
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 p-2"
+                />
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline">
+                            <Filter className="w-4 h-4 mr-2" />
+                            Filter
+                            {selectedGenres.length > 0 && (
+                                <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
+                                    {selectedGenres.length}
+                                </span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-128">
+                        <GenrePicker
+                            selectedGenres={selectedGenres}
+                            onChange={setSelectedGenres}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
 
             {isLoading ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pt-4">
@@ -93,7 +139,10 @@ export default function SearchPage() {
                         </div>
                     ) : (
                         <div className="text-center py-8">
-                            <p>Enter a search term to find manga</p>
+                            <p>
+                                Enter a search term or select a genre to find
+                                manga
+                            </p>
                         </div>
                     )}
                 </div>
