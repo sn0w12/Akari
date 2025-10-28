@@ -207,7 +207,7 @@ export async function MangaDetailsComponent({
                                                 >
                                                     <Badge
                                                         withShadow={true}
-                                                        className="bg-primary text-secondary hover:bg-gray-300"
+                                                        className="bg-primary text-secondary hover:bg-gray-300 hover:text-primary dark:hover:text-secondary"
                                                         shadowClassName="mt-[4px]"
                                                     >
                                                         {author}
