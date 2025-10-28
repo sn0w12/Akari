@@ -233,7 +233,7 @@ export async function MangaDetailsComponent({
                                     <div className="text-lg font-semibold mb-1">
                                         Updated:
                                     </div>
-                                    <Badge className="hover:bg-gray-300">
+                                    <Badge className="hover:bg-primary">
                                         {formatRelativeDate(manga.updatedAt)}
                                     </Badge>
                                 </div>
