@@ -8,6 +8,7 @@ import { syncAllServices } from "@/lib/manga/sync";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFooterVisibility } from "@/contexts/footer-context";
 import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
 
 function throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
@@ -159,7 +160,14 @@ export default function StripReader({
                         }`}
                         width={720}
                         height={1500}
-                        className="object-contain z-20 relative max-w-full"
+                        className={cn(
+                            "object-contain z-20 relative max-w-full",
+                            {
+                                "rounded-t": index === 0,
+                                "rounded-b":
+                                    index === chapter.images.length - 1,
+                            }
+                        )}
                         style={{
                             width: `calc(var(--spacing) * ${stripWidth})`,
                         }}

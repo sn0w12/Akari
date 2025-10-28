@@ -38,6 +38,20 @@ export function Reader({ chapter }: ReaderProps) {
         [chapter.mangaId]
     );
 
+    useEffect(() => {
+        const storedMode = localStorage.getItem(localstorageId);
+        if (!storedMode) {
+            setIsStripMode(["Manwha", "Manhua"].includes(chapter.type));
+            return;
+        }
+
+        if (storedMode === "strip") {
+            setIsStripMode(true);
+        } else {
+            setIsStripMode(false);
+        }
+    }, [localstorageId]);
+
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
         localStorage.setItem(localstorageId, isStrip ? "strip" : "page");

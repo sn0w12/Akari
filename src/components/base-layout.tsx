@@ -191,6 +191,7 @@ export function BaseLayout({
                 <main
                     className="bg-background flex flex-col flex-1 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full"
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
+                    id="scroll-element"
                 >
                     {children}
                 </main>
