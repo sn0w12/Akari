@@ -40,6 +40,7 @@ const config: NextConfig = {
     reactCompiler: true,
     experimental: {
         useCache: true,
+        cssChunking: true,
     },
     async headers() {
         return [
