@@ -443,15 +443,6 @@ export interface paths {
                         "application/json": components["schemas"]["PaginatedCommentResponseSuccessResponse"];
                     };
                 };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2793,15 +2784,15 @@ export interface components {
             data: components["schemas"]["LastReadResponse"];
         };
         MalListStatus: {
-            status: string | null;
-            isRereading: boolean;
+            status?: string | null;
+            isRereading?: boolean;
             /** Format: int32 */
-            numVolumesRead: number;
+            numVolumesRead?: number;
             /** Format: int32 */
-            numChaptersRead: number;
+            numChaptersRead?: number;
             /** Format: int32 */
-            score: number;
-            updatedAt: string | null;
+            score?: number;
+            updatedAt?: string | null;
         };
         MalMainPicture: {
             medium: string | null;
@@ -2809,7 +2800,7 @@ export interface components {
         };
         MalMangaListItem: {
             node: components["schemas"]["MalMangaNode"];
-            listStatus: components["schemas"]["MalListStatus"];
+            listStatus?: components["schemas"]["MalListStatus"];
         };
         MalMangaListResponse: {
             data: components["schemas"]["MalMangaListItem"][] | null;
@@ -2823,23 +2814,23 @@ export interface components {
             data: components["schemas"]["MalMangaListResponse"];
         };
         MalMangaListStatus: {
-            status: string | null;
-            isRereading: boolean;
+            status?: string | null;
+            isRereading?: boolean;
             /** Format: int32 */
-            numVolumesRead: number;
+            numVolumesRead?: number;
             /** Format: int32 */
-            numChaptersRead: number;
+            numChaptersRead?: number;
             /** Format: int32 */
-            score: number;
-            updatedAt: string | null;
+            score?: number;
+            updatedAt?: string | null;
             /** Format: int32 */
-            priority: number;
+            priority?: number;
             /** Format: int32 */
-            numTimesReread: number;
+            numTimesReread?: number;
             /** Format: int32 */
-            rereadValue: number;
-            tags: string[] | null;
-            comments: string | null;
+            rereadValue?: number;
+            tags?: string[] | null;
+            comments?: string | null;
         };
         MalMangaListStatusSuccessResponse: {
             /** @enum {string} */
@@ -2852,7 +2843,7 @@ export interface components {
             /** Format: int32 */
             id: number;
             title: string | null;
-            mainPicture: components["schemas"]["MalMainPicture"];
+            mainPicture?: components["schemas"]["MalMainPicture"];
         };
         MalPaging: {
             next?: string | null;
@@ -2863,11 +2854,11 @@ export interface components {
             redirectUri: string | null;
         };
         MalTokenResponse: {
-            accessToken: string | null;
-            refreshToken: string | null;
+            access_token?: string | null;
+            refresh_token?: string | null;
             /** Format: int32 */
-            expiresIn: number;
-            tokenType: string | null;
+            expires_in?: number;
+            token_type?: string | null;
         };
         MalTokenResponseSuccessResponse: {
             /** @enum {string} */
