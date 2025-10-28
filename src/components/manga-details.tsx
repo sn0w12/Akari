@@ -23,27 +23,30 @@ import AniImage from "@/public/img/icons/AniList-logo.webp";
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
         case "ongoing":
-            return "bg-green-500 hover:bg-green-600";
+            return "bg-accent-positive hover:bg-accent-positive";
         case "completed":
-            return "bg-blue-500 hover:bg-blue-600";
+            return "bg-info hover:bg-info";
         case "hiatus":
-            return "bg-yellow-500 hover:bg-yellow-600";
+            return "bg-warning hover:bg-warning";
         default:
-            return "bg-gray-500 hover:bg-gray-600";
+            return "bg-primary hover:bg-primary";
     }
 };
 
 const getViewsColor = (views: number) => {
-    if (views < 100_000)
-        return { bg: "bg-orange-500 hover:bg-orange-600", text: "text-white" };
-    else if (views < 1_000_000)
-        return { bg: "bg-yellow-500 hover:bg-yellow-600", text: "text-black" };
-    else if (views < 10_000_000)
-        return { bg: "bg-teal-500 hover:bg-teal-600", text: "text-white" };
-    else if (views < 100_000_000)
-        return { bg: "bg-violet-500 hover:bg-violet-600", text: "text-white" };
+    if (views < 100)
+        return { bg: "bg-[#ffc659] hover:bg-[#ffc659]", text: "text-black" };
+    else if (views < 1_000)
+        return { bg: "bg-[#ff8f70] hover:bg-[#ff8f70]", text: "text-black" };
+    else if (views < 10_000)
+        return { bg: "bg-[#ff609e] hover:bg-[#ff609e]", text: "text-white" };
+    else if (views < 100_000)
+        return { bg: "bg-[#e255d0] hover:bg-[#e255d0]", text: "text-white" };
 
-    return { bg: "bg-green-500 hover:bg-green-600", text: "text-white" };
+    return {
+        bg: "bg-accent-positive hover:bg-accent-positive",
+        text: "text-white",
+    };
 };
 
 function ExternalLinks({
@@ -183,54 +186,65 @@ export async function MangaDetailsComponent({
                     <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
-                            <div>
-                                <div className="text-lg mb-2">
-                                    Authors:
-                                    {manga.authors.map(
-                                        (author: string, index: number) => (
-                                            <Link
-                                                href={`/author/${encodeURIComponent(
-                                                    author.replaceAll(" ", "-")
-                                                )}`}
-                                                key={index}
-                                                prefetch={false}
-                                                data-no-prefetch
-                                            >
-                                                <Badge
-                                                    withShadow={true}
-                                                    className="bg-primary text-secondary ml-2 hover:bg-gray-300"
-                                                    shadowClassName="ml-2 mt-[5px]"
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <div className="text-lg font-semibold mb-1">
+                                        Authors:
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {manga.authors.map(
+                                            (author: string, index: number) => (
+                                                <Link
+                                                    href={`/author/${encodeURIComponent(
+                                                        author.replaceAll(
+                                                            " ",
+                                                            "-"
+                                                        )
+                                                    )}`}
+                                                    key={index}
+                                                    prefetch={false}
+                                                    data-no-prefetch
                                                 >
-                                                    {author}
-                                                </Badge>
-                                            </Link>
-                                        )
-                                    )}
+                                                    <Badge
+                                                        withShadow={true}
+                                                        className="bg-primary text-secondary hover:bg-gray-300"
+                                                        shadowClassName="mt-[4px]"
+                                                    >
+                                                        {author}
+                                                    </Badge>
+                                                </Link>
+                                            )
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="text-lg mb-2 flex items-center">
-                                    Status:
+                                <div>
+                                    <div className="text-lg font-semibold mb-1">
+                                        Status:
+                                    </div>
                                     <Badge
                                         className={`${getStatusColor(
                                             manga.status
-                                        )} text-white ml-2`}
+                                        )} text-white`}
                                     >
                                         {manga.status}
                                     </Badge>
                                 </div>
-                                <div className="text-lg mb-2 flex items-center">
-                                    Updated:
-                                    <Badge className="ml-2 hover:bg-gray-300">
+                                <div>
+                                    <div className="text-lg font-semibold mb-1">
+                                        Updated:
+                                    </div>
+                                    <Badge className="hover:bg-gray-300">
                                         {formatRelativeDate(manga.updatedAt)}
                                     </Badge>
                                 </div>
-                                <div className="text-lg mb-2 flex items-center">
-                                    Views:
+                                <div>
+                                    <div className="text-lg font-semibold mb-1">
+                                        Views:
+                                    </div>
                                     <Badge
                                         className={`${
                                             getViewsColor(manga.views).bg
-                                        } ${
-                                            getViewsColor(manga.views).text
-                                        } ml-2`}
+                                        } ${getViewsColor(manga.views).text}`}
                                     >
                                         {manga.views}
                                     </Badge>
