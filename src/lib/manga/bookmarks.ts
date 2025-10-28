@@ -3,8 +3,10 @@ import { client } from "../api";
 export async function fetchBookmarks(page: number) {
     try {
         const { data, error } = await client.GET("/v2/bookmarks", {
-            query: {
-                page: page,
+            params: {
+                query: {
+                    page: page,
+                },
             },
         });
 
