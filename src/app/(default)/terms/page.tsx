@@ -14,7 +14,7 @@ export default function TermsPage() {
                 <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
                 <div className="prose dark:prose-invert">
                     <p>
-                        <strong>Last Updated: 2024-10-07</strong>
+                        <strong>Last Updated: 2025-10-28</strong>
                     </p>
 
                     <p>
@@ -34,16 +34,7 @@ export default function TermsPage() {
                         entity to these Terms.
                     </p>
 
-                    <h2>2. Description of the Website</h2>
-                    <p>
-                        Akari is a Next.js Website designed to enhance the manga
-                        reading experience for Manganato users. It utilizes
-                        Manganato as a backend, allowing users to manage and
-                        retain their bookmarks from the site directly within the
-                        Website.
-                    </p>
-
-                    <h2>3. User Responsibilities</h2>
+                    <h2>2. User Responsibilities</h2>
                     <ul>
                         <li>
                             You agree to use the Website in compliance with all
@@ -61,16 +52,15 @@ export default function TermsPage() {
                         </li>
                     </ul>
 
-                    <h2>4. Content Disclaimer</h2>
+                    <h2>3. Content Disclaimer</h2>
                     <p>
                         The developers of this Website do not have any
                         affiliation with the content available in the Website.
                         Akari collects content from sources that are freely
-                        accessible through any web browser. The Website does not
-                        host any content directly.
+                        accessible through any web browser.
                     </p>
 
-                    <h2>5. Limitation of Liability</h2>
+                    <h2>4. Limitation of Liability</h2>
                     <p>
                         To the fullest extent permitted by law, in no event
                         shall Akari, its developers, or its affiliates be liable
@@ -87,7 +77,7 @@ export default function TermsPage() {
                         in any content.
                     </p>
 
-                    <h2>6. Indemnification</h2>
+                    <h2>5. Indemnification</h2>
                     <p>
                         You agree to defend, indemnify, and hold harmless Akari,
                         its developers, and its affiliates from and against any
@@ -97,7 +87,7 @@ export default function TermsPage() {
                         your violation of these Terms.
                     </p>
 
-                    <h2>7. Changes to Terms</h2>
+                    <h2>6. Changes to Terms</h2>
                     <p>
                         We reserve the right to modify these Terms at any time.
                         If we make changes, we will notify you by revising the

@@ -6,7 +6,7 @@ import { getSetting } from "../settings";
 type SyncHandler = (
     data: components["schemas"]["ChapterResponse"]
 ) => Promise<boolean>;
-const services = ["MangaNato", "MAL"];
+const services = ["Akari", "MAL"];
 
 export async function syncAllServices(
     data: components["schemas"]["ChapterResponse"]

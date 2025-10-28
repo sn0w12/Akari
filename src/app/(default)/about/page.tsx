@@ -3,11 +3,11 @@ import { robots } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "About Akari",
-    description: "Learn more about Akari and its features",
+    description: "Discover Akari, a high-quality open-source manga reader",
     robots: robots(),
     openGraph: {
-        title: "Akari Manga",
-        description: "Learn more about Akari and its features",
+        title: "Akari - Open Source Manga Reader",
+        description: "Discover Akari, a high-quality open-source manga reader",
         images: [
             {
                 url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         site: "@Akari",
-        title: "Akari Manga",
-        description: "Learn more about Akari and its features",
+        title: "Akari - Open Source Manga Reader",
+        description: "Discover Akari, a high-quality open-source manga reader",
         images: {
             url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
             alt: "Akari Manga",
@@ -33,16 +33,24 @@ export default function AboutPage() {
             <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 <h1 className="text-3xl font-bold mb-6">About Akari</h1>
                 <p className="text-lg mb-4">
-                    Akari is a Next.js application designed to provide an
-                    enhanced manga reading experience for Manganato users. It
-                    uses Manganato as a backend, leveraging its content while
-                    allowing users to manage and retain their bookmarks from the
-                    site directly within the application.
+                    Akari is a high-quality, open-source manga reader built with
+                    Next.js. It provides an enhanced reading experience,
+                    allowing users to manage bookmarks and reading history
+                    seamlessly.
                 </p>
-                <p className="text-lg">
-                    Our goal is to offer a seamless, user-friendly interface for
-                    manga enthusiasts, combining the vast library of Manganato
-                    with improved functionality and a modern design.
+                <p className="text-lg mb-4">
+                    Featuring a modern, responsive UI powered by Tailwind CSS
+                    and shadcn/ui components, Akari ensures a smooth and
+                    intuitive interface across all devices. Users can easily
+                    navigate through manga collections, search for titles, and
+                    enjoy keyboard shortcuts for efficient reading.
+                </p>
+                <p className="text-lg mb-4">
+                    As an open-source project, Akari welcomes contributions from
+                    the community. Whether you're a developer looking to add new
+                    features or a user reporting issues, your input helps make
+                    Akari better for everyone. The project is hosted on GitHub,
+                    where you can explore the codebase and get involved.
                 </p>
             </div>
         </div>

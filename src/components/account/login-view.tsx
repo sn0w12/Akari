@@ -58,7 +58,7 @@ export default function LoginView({
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Login to Manganato</CardTitle>
+                        <CardTitle>Login to Akari</CardTitle>
                         <CardDescription>
                             Enter your credentials to access your account
                         </CardDescription>

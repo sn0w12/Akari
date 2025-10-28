@@ -1,7 +1,7 @@
 {
     "name": "Akari Manga",
     "short_name": "Akari",
-    "description": "Enhanced manga reading experience for Manganato users with a modern UI",
+    "description": "Akari is a high-quality, open-source manga reader focused on user experience.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0a0a0a",
