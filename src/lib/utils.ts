@@ -42,10 +42,19 @@ export function formatRelativeDate(dateString: string): string {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffMinutes < 60) {
+        if (diffMinutes === 1) {
+            return `1 minute ago`;
+        }
         return `${diffMinutes} minutes ago`;
     } else if (diffHours < 24) {
+        if (diffHours === 1) {
+            return `1 hour ago`;
+        }
         return `${diffHours} hours ago`;
     } else if (diffDays < 7) {
+        if (diffDays === 1) {
+            return `1 day ago`;
+        }
         return `${diffDays} days ago`;
     } else {
         const options: Intl.DateTimeFormatOptions = {
