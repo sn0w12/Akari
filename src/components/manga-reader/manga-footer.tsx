@@ -38,7 +38,7 @@ export default function MangaFooter({
                             href={`/manga/${chapter.mangaId}`}
                             className="hover:underline"
                         >
-                            {chapter.title}
+                            {chapter.mangaTitle}
                         </a>
                     </h2>
                     <ChapterSelector
