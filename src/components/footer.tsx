@@ -59,38 +59,24 @@ export default async function Footer() {
                         <Separator className="hidden md:block" />
                         <div className="flex flex-row w-full justify-between gap-6">
                             <CookieConsentFooter />
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href="https://github.com/sn0w12/akari"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-muted-foreground hover:text-ring"
-                                        prefetch={false}
-                                    >
-                                        <span>GitHub</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    View the source code
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href="https://github.com/sn0w12/akari/issues"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-muted-foreground hover:text-ring"
-                                        prefetch={false}
-                                    >
-                                        <span>Report issues</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Report bugs or request features
-                                </TooltipContent>
-                            </Tooltip>
+                            <Link
+                                href="https://github.com/sn0w12/akari"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-ring"
+                                prefetch={false}
+                            >
+                                <span>GitHub</span>
+                            </Link>
+                            <Link
+                                href="https://github.com/sn0w12/akari/issues"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-ring"
+                                prefetch={false}
+                            >
+                                <span>Report issues</span>
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -160,19 +160,12 @@ export function CookieConsentFooter() {
 
     return (
         <>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <button
-                        onClick={() => setOpen(true)}
-                        className="text-muted-foreground hover:text-ring pointer-cursor"
-                    >
-                        Cookies
-                    </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                    Manage cookie preferences
-                </TooltipContent>
-            </Tooltip>
+            <button
+                onClick={() => setOpen(true)}
+                className="text-muted-foreground hover:text-ring pointer-cursor"
+            >
+                Cookies
+            </button>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
