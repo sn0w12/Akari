@@ -6,12 +6,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import LatestChapterInfo from "./latest-chapter-info";
-import { cn, imageUrl } from "@/lib/utils";
-import { ChevronsUpDownIcon, Loader2Icon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ChevronsUpDownIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
-import { client } from "@/lib/api";
 
 interface DesktopBookmarkCardProps {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
@@ -26,17 +25,13 @@ function DesktopBookmarkCard({
     bookmark,
     setUpdatedBookmarks,
 }: DesktopBookmarkCardProps) {
-    const [chapters, setChapters] = useState<
-        components["schemas"]["MangaChapter"][]
-    >([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef<HTMLButtonElement>(
         null!
     ) as React.RefObject<HTMLButtonElement>;
 
-    async function showChapters() {
+    function showChapters() {
         const newShowState = !showPopup;
         setShowPopup(!showPopup);
         if (newShowState && buttonRef.current) {
@@ -52,29 +47,6 @@ function DesktopBookmarkCard({
             ); // 20px safety margin
 
             setPopupPosition({ top: rect.bottom, left: adjustedLeft });
-        }
-
-        if (chapters.length === 0 && !showPopup) {
-            setIsLoading(true);
-            try {
-                const { data, error } = await client.GET("/v2/manga/{id}", {
-                    params: {
-                        path: {
-                            id: bookmark.mangaId,
-                        },
-                    },
-                });
-
-                if (error) {
-                    throw new Error("Failed to load chapters");
-                }
-
-                setChapters(data.data.chapters);
-            } catch (error) {
-                console.error("Error loading chapters:", error);
-            } finally {
-                setIsLoading(false);
-            }
         }
     }
 
@@ -139,25 +111,18 @@ function DesktopBookmarkCard({
                             ref={buttonRef}
                             className="w-10 p-0"
                             onClick={showChapters}
-                            disabled={isLoading}
-                            aria-label="Browse   chapters"
+                            aria-label="Browse chapters"
                         >
-                            {isLoading && !showPopup ? (
-                                <Loader2Icon className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <ChevronsUpDownIcon className="h-5 w-5" />
-                            )}
+                            <ChevronsUpDownIcon className="h-5 w-5" />
                         </Button>
                     </div>
                     <LatestChapterInfo bookmark={bookmark} />
 
                     {showPopup && (
                         <ChaptersPopup
-                            chapters={chapters}
                             onClose={() => setShowPopup(false)}
-                            mangaIdentifier={bookmark.mangaId}
-                            isLoading={isLoading}
-                            lastReadChapter={bookmark.lastReadChapter.number.toString()}
+                            mangaId={bookmark.mangaId}
+                            lastReadChapter={bookmark.lastReadChapter}
                             position={popupPosition}
                             buttonRef={buttonRef}
                         />

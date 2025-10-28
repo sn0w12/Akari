@@ -6,24 +6,46 @@ import { XIcon } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getSetting } from "@/lib/settings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatRelativeDate, cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { client } from "@/lib/api";
 
-export const ChaptersPopup: React.FC<{
-    chapters: components["schemas"]["MangaChapter"][];
+interface ChaptersPopupProps {
     onClose: () => void;
-    mangaIdentifier: string;
-    isLoading: boolean;
-    lastReadChapter?: string;
+    mangaId: string;
+    lastReadChapter?: components["schemas"]["MangaChapter"];
     position?: { top: number; left: number };
     buttonRef?: React.RefObject<HTMLButtonElement>;
-}> = ({
-    chapters,
+}
+
+export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     onClose,
-    mangaIdentifier,
-    isLoading,
+    mangaId,
     lastReadChapter,
     position,
     buttonRef,
 }) => {
+    const { data, isLoading } = useQuery({
+        queryKey: ["chapters", mangaId],
+        queryFn: async () => {
+            const { data, error } = await client.GET(
+                "/v2/manga/{id}/chapters",
+                {
+                    params: {
+                        path: {
+                            id: mangaId,
+                        },
+                    },
+                }
+            );
+
+            if (error) {
+                throw new Error("Failed to load chapters");
+            }
+
+            return data.data;
+        },
+    });
     const [isVisible, setIsVisible] = useState(false);
     const ENABLE_ANIMATIONS = getSetting("fancyAnimations");
     const popupRef = useRef<HTMLDialogElement>(null);
@@ -123,13 +145,12 @@ export const ChaptersPopup: React.FC<{
     return (
         <dialog
             ref={popupRef}
-            className={`absolute right-0 z-10 mt-2 p-4 bg-card border border-border rounded-md  w-72 chapters-popup-content ${
-                ENABLE_ANIMATIONS
-                    ? `transition-opacity duration-200 ease-in-out ${
-                          isVisible ? "opacity-100" : "opacity-0"
-                      }`
-                    : ""
-            }`}
+            className={cn(
+                "absolute right-0 z-10 mt-2 p-4 bg-card border border-border rounded-md w-72 chapters-popup-content",
+                ENABLE_ANIMATIONS &&
+                    "transition-opacity duration-200 ease-in-out",
+                ENABLE_ANIMATIONS && (isVisible ? "opacity-100" : "opacity-0")
+            )}
             style={style}
             onClick={(e) => e.stopPropagation()}
             open={true}
@@ -161,43 +182,47 @@ export const ChaptersPopup: React.FC<{
                                 </div>
                             ))}
                     </div>
-                ) : chapters.length > 0 ? (
+                ) : data && data.length > 0 ? (
                     <ul className="space-y-1">
-                        {chapters.map((chapter) => (
-                            <li key={chapter.id}>
-                                <Link
-                                    href={`/manga/${mangaIdentifier}/${chapter.id}`}
-                                    className={`block p-2 mr-1 hover:bg-accent ${
-                                        chapter.id ===
-                                        `chapter-${lastReadChapter}`
-                                            ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                                            : ""
-                                    } rounded text-sm transition-colors duration-100`}
-                                    prefetch={false}
-                                    data-no-prefetch
-                                    aria-label={`Read ${chapter.title} ${
-                                        chapter.id ===
-                                        `chapter-${lastReadChapter}`
-                                            ? "(Last Read)"
-                                            : ""
-                                    }`}
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <span>{chapter.title}</span>
-                                        <span
-                                            className={`text-xs ${
-                                                chapter.id ===
-                                                `chapter-${lastReadChapter}`
-                                                    ? "text-white"
-                                                    : "text-muted-foreground"
-                                            }`}
-                                        >
-                                            {chapter.createdAt}
-                                        </span>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
+                        {data.map((chapter) => {
+                            const isLastRead =
+                                chapter.id === lastReadChapter?.id;
+                            return (
+                                <li key={chapter.id}>
+                                    <Link
+                                        href={`/manga/${mangaId}/${chapter.id}`}
+                                        className={cn(
+                                            "block p-2 rounded text-sm transition-colors duration-100 hover:bg-accent",
+                                            {
+                                                "bg-indigo-600 hover:bg-indigo-700 text-white":
+                                                    isLastRead,
+                                            }
+                                        )}
+                                        prefetch={false}
+                                        data-no-prefetch
+                                        aria-label={`Read ${chapter.title} ${
+                                            isLastRead ? "(Last Read)" : ""
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <span>{chapter.title}</span>
+                                            <span
+                                                className={cn(
+                                                    "text-xs",
+                                                    isLastRead
+                                                        ? "text-white"
+                                                        : "text-muted-foreground"
+                                                )}
+                                            >
+                                                {formatRelativeDate(
+                                                    chapter.createdAt
+                                                )}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                 ) : (
                     <div className="text-center py-4 text-muted-foreground">
