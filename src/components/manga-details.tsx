@@ -226,7 +226,7 @@ export async function MangaDetailsComponent({
                                             manga.status
                                         )} text-white`}
                                     >
-                                        {manga.status}
+                                        {manga.status.charAt(0).toUpperCase() + manga.status.slice(1)}
                                     </Badge>
                                 </div>
                                 <div>
