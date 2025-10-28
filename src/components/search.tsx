@@ -8,8 +8,9 @@ import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MangaGrid } from "./manga/manga-grid";
 import { useQuery } from "@tanstack/react-query";
+import { client } from "@/lib/api";
 
-export default function SimpleSearch() {
+export default function SearchPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -37,7 +38,25 @@ export default function SimpleSearch() {
 
     const { data: searchData, isLoading } = useQuery({
         queryKey: ["search", debouncedSearchQuery, currentPage],
-        queryFn: () => getSearchResults(debouncedSearchQuery, currentPage, 100),
+        queryFn: async () => {
+            const { data, error } = await client.GET("/v2/manga/list", {
+                params: {
+                    query: {
+                        query: debouncedSearchQuery,
+                        page: currentPage,
+                        pageSize: 24,
+                    },
+                },
+            });
+
+            if (error) {
+                throw new Error(
+                    error.data.message || "Error fetching search results"
+                );
+            }
+
+            return data.data;
+        },
         enabled: debouncedSearchQuery.trim().length > 0,
         staleTime: 5 * 60 * 1000,
     });
@@ -64,8 +83,8 @@ export default function SimpleSearch() {
                 </div>
             ) : (
                 <div className="mt-4">
-                    {searchData && searchData.length > 0 ? (
-                        <MangaGrid mangaList={searchData} />
+                    {searchData && searchData.items.length > 0 ? (
+                        <MangaGrid mangaList={searchData.items} />
                     ) : searchQuery ? (
                         <div className="text-center py-8">
                             <p>
@@ -80,10 +99,10 @@ export default function SimpleSearch() {
                 </div>
             )}
 
-            {searchData && searchData.length > 0 && (
+            {searchData && searchData.items.length > 0 && (
                 <ClientPagination
                     currentPage={currentPage}
-                    totalPages={1}
+                    totalPages={searchData.totalPages}
                     handlePageChange={setCurrentPage}
                     className="my-4"
                 />

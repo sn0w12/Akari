@@ -1,4 +1,4 @@
-import SimpleSearch from "@/components/search";
+import SearchPage from "@/components/search";
 import { Metadata } from "next";
 import { robots } from "@/lib/utils";
 import { Suspense } from "react";
@@ -33,11 +33,11 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function SearchPage() {
+export default async function Search() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Suspense fallback={<SearchPageSkeleton />}>
-                <SimpleSearch />
+                <SearchPage />
             </Suspense>
         </div>
     );
