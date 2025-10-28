@@ -1,5 +1,5 @@
-import AuthorSkeleton from "@/components/grid-pages/author-skeleton";
+import { GridPageSkeleton } from "@/components/grid-page";
 
 export default function Loading() {
-    return <AuthorSkeleton />;
+    return <GridPageSkeleton pageSize={6} />;
 }
