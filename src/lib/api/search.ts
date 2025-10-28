@@ -6,14 +6,18 @@ export async function getSearchResults(
     n: number = 5
 ) {
     const { data, error } = await client.GET("/v2/manga/search", {
-        query: {
-            query: query,
-            limit: n,
+        params: {
+            query: {
+                query: query,
+                limit: n,
+            },
         },
     });
 
     if (error || !data.data) {
-        throw new Error(error?.data.message || "Failed to fetch search results");
+        throw new Error(
+            error?.data.message || "Failed to fetch search results"
+        );
     }
 
     return data.data;
