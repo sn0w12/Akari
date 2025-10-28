@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import { getBaseUrl } from "@/lib/api/base-url";
-import { robots } from "@/lib/utils";
+import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
@@ -22,25 +22,16 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const name = params.id.replaceAll("_", " ");
     const description = `View all ${name} manga`;
-    const ogImage = `${getBaseUrl()}/og/categories/${params.id
+    const ogImage = `/og/categories/${params.id
         .toLowerCase()
         .replaceAll(" ", "_")}.webp`;
 
-    return {
+    return createMetadata({
         title: name,
         description: description,
-        robots: robots(),
-        openGraph: {
-            title: name,
-            description: description,
-            images: ogImage,
-        },
-        twitter: {
-            title: name,
-            description: description,
-            images: ogImage,
-        },
-    };
+        image: ogImage,
+        canonicalPath: `/genre/${params.id}`,
+    });
 }
 
 export default async function GenrePage(props: PageProps) {

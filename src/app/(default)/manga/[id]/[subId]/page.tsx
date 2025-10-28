@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Reader } from "@/components/manga-reader";
 import { cacheLife } from "next/cache";
-import { robots } from "@/lib/utils";
+import { createMetadata, robots } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 
@@ -34,31 +34,19 @@ export async function generateMetadata({
     }
 
     const chapter = data.data;
-    const title = `${chapter.title} - ${chapter.title}`;
-    const description = `Read ${chapter.title} ${chapter.title} for free on Akari Manga.`;
+    const title = `${chapter.mangaTitle} - ${chapter.title}`;
+    const description = `Read ${chapter.mangaTitle} ${chapter.title}.`;
     let image = `/api/v1/manga/${mangaParams.id}/og`;
     if (process.env.NEXT_PUBLIC_HOST) {
         image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${mangaParams.id}/og`;
     }
 
-    return {
-        title,
-        description,
-        robots: robots(),
-        openGraph: {
-            title,
-            description,
-            type: "website",
-            siteName: "Akari Manga",
-            images: image,
-        },
-        twitter: {
-            card: "summary_large_image",
-            title,
-            description,
-            images: image,
-        },
-    };
+    return createMetadata({
+        title: title,
+        description: description,
+        image: `/api/v1/manga/${mangaParams.id}/og`,
+        canonicalPath: `/manga/${mangaParams.id}`,
+    });
 }
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {

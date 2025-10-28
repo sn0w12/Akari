@@ -1,7 +1,7 @@
 import MangaReaderHome from "@/components/home";
 import HomeSkeleton from "@/components/home/skeleton";
 import { client } from "@/lib/api";
-import { robots } from "@/lib/utils";
+import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import ErrorPage from "@/components/error-page";
@@ -14,31 +14,12 @@ interface HomeProps {
     }>;
 }
 
-export const metadata: Metadata = {
-    title: "Akari Manga",
+export const metadata: Metadata = createMetadata({
+    title: "Home",
     description: "Read manga for free on Akari.",
-    robots: robots(),
-    openGraph: {
-        title: "Akari Manga",
-        description: "Read manga for free on Akari.",
-        images: [
-            {
-                url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
-                alt: "Akari Manga",
-            },
-        ],
-    },
-    twitter: {
-        card: "summary_large_image",
-        site: "@Akari",
-        title: "Akari Manga",
-        description: "Read manga for free on Akari.",
-        images: {
-            url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
-            alt: "Akari Manga",
-        },
-    },
-};
+    image: "/og/akari.webp",
+    canonicalPath: "/",
+});
 
 export default async function Home(props: HomeProps) {
     const currentPage = Number((await props.searchParams).page) || 1;

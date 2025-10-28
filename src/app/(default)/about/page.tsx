@@ -10,7 +10,7 @@ export const metadata: Metadata = {
         description: "Discover Akari, a high-quality open-source manga reader",
         images: [
             {
-                url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
+                url: "/og/akari.webp",
                 alt: "Akari Manga",
             },
         ],
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         title: "Akari - Open Source Manga Reader",
         description: "Discover Akari, a high-quality open-source manga reader",
         images: {
-            url: "https://raw.githubusercontent.com/sn0w12/Akari/refs/heads/master/images/AkariGradient.png",
+            url: "/og/akari.webp",
             alt: "Akari Manga",
         },
     },

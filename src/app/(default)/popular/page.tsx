@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import { getBaseUrl } from "@/lib/api/base-url";
-import { robots } from "@/lib/utils";
+import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
@@ -11,23 +10,12 @@ interface PageProps {
     }>;
 }
 
-const description = `View all popular manga`;
-const ogImage = `${getBaseUrl()}/og/popular.webp`;
-export const metadata: Metadata = {
-    title: "Popular Manga",
-    description: description,
-    robots: robots(),
-    openGraph: {
-        title: "Popular Manga",
-        description: description,
-        images: ogImage,
-    },
-    twitter: {
-        title: "Popular Manga",
-        description: description,
-        images: ogImage,
-    },
-};
+export const metadata: Metadata = createMetadata({
+    title: "Akari Manga",
+    description: "Read the most popular manga for free on Akari.",
+    image: "/og/popular.webp",
+    canonicalPath: "/popular",
+});
 
 export default async function Popular(props: PageProps) {
     const searchParams = await props.searchParams;

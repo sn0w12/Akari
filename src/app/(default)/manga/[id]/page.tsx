@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
 import { cacheLife } from "next/cache";
-import { robots } from "@/lib/utils";
+import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 
@@ -37,29 +37,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
     const manga = data.data;
     const description = truncate(manga.description, 300);
-    let image = `/api/v1/manga/${params.id}/og`;
-    if (process.env.NEXT_PUBLIC_HOST) {
-        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${params.id}/og`;
-    }
 
-    return {
+    return createMetadata({
         title: manga.title,
-        description,
-        robots: robots(),
-        openGraph: {
-            title: manga.title,
-            description,
-            type: "website",
-            siteName: "Akari Manga",
-            images: image,
-        },
-        twitter: {
-            card: "summary_large_image",
-            title: manga.title,
-            description,
-            images: image,
-        },
-    };
+        description: description,
+        image: `/api/v1/manga/${params.id}/og`,
+        canonicalPath: `/manga/${params.id}`,
+    });
 }
 
 export default async function MangaPage(props: PageProps) {
