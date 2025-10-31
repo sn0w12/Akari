@@ -23,7 +23,8 @@ export function MangaCard({
     const [cardWidth, setCardWidth] = useState(200);
     const [cardHeight, setCardHeight] = useState(300);
     const [useFixedHeight, setUseFixedHeight] = useState(false);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const innerCardRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +55,12 @@ export function MangaCard({
     }, [expandDirection]);
 
     const handleMouseEnter = () => {
+        // Clear any pending collapse timeout
+        if (collapseTimeoutRef.current) {
+            clearTimeout(collapseTimeoutRef.current);
+            collapseTimeoutRef.current = null;
+        }
+
         if (cardRef.current) {
             const rect = cardRef.current.getBoundingClientRect();
             setCardWidth(rect.width);
@@ -69,25 +76,31 @@ export function MangaCard({
         }
 
         setUseFixedHeight(true);
-        timeoutRef.current = setTimeout(() => {
+        expandTimeoutRef.current = setTimeout(() => {
             setShouldExpand(true);
         }, 300);
     };
 
     const handleMouseLeave = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
+        // Clear any pending expand timeout
+        if (expandTimeoutRef.current) {
+            clearTimeout(expandTimeoutRef.current);
+            expandTimeoutRef.current = null;
         }
+
         setShouldExpand(false);
-        setTimeout(() => {
+        collapseTimeoutRef.current = setTimeout(() => {
             setUseFixedHeight(false);
         }, 300);
     };
 
     useEffect(() => {
         return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
+            if (expandTimeoutRef.current) {
+                clearTimeout(expandTimeoutRef.current);
+            }
+            if (collapseTimeoutRef.current) {
+                clearTimeout(collapseTimeoutRef.current);
             }
         };
     }, []);
