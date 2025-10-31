@@ -5,14 +5,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PageProgress from "../page-progress";
 import { syncAllServices } from "@/lib/manga/sync";
-import { useFooterVisibility } from "@/contexts/footer-context";
 import { useQueryClient } from "@tanstack/react-query";
-import MangaFooter from "../manga-footer";
 import EndOfManga from "../end-of-manga";
+import MangaFooter from "../manga-footer";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    toggleReaderMode: (override?: boolean) => void;
+    scrollMetrics: { pixels: number; percentage: number };
+    toggleReaderMode: () => void;
     isInactive: boolean;
     bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
@@ -20,6 +20,7 @@ interface PageReaderProps {
 
 export default function PageReader({
     chapter,
+    scrollMetrics,
     toggleReaderMode,
     isInactive,
     bgColor,
@@ -38,9 +39,9 @@ export default function PageReader({
             ? 0
             : pageNumber - 1;
     });
+    const [pageProgressHidden, setPageProgressHidden] = useState(false);
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
-    const { isFooterVisible } = useFooterVisibility();
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -72,6 +73,14 @@ export default function PageReader({
             }
         }
     }, [chapter, currentPage, router, setBookmarkState, queryClient]);
+
+    useEffect(() => {
+        if (scrollMetrics.pixels < 50) {
+            setPageProgressHidden(false);
+        } else {
+            setPageProgressHidden(true);
+        }
+    }, [scrollMetrics.pixels]);
 
     const updatePageUrl = useCallback((pageNum: number) => {
         const url = new URL(window.location.href);
@@ -130,12 +139,7 @@ export default function PageReader({
         const middleZoneStart = screenWidth * 0.4;
         const middleZoneEnd = screenWidth * 0.6;
 
-        if (
-            clickY < 100 ||
-            clickY > window.innerHeight - 100 ||
-            isFooterVisible
-        )
-            return;
+        if (clickY < 100 || clickY > window.innerHeight - 100) return;
 
         if (clickX > middleZoneEnd) {
             nextPage();
@@ -201,8 +205,6 @@ export default function PageReader({
             </div>
             <div
                 className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
-                    isFooterVisible ? "opacity-100" : "opacity-0"
-                } ${
                     currentPage !== chapter.images.length - 1
                         ? "block"
                         : "hidden md:block"
@@ -217,19 +219,13 @@ export default function PageReader({
                     setCurrentPage={(page) => {
                         setPageWithUrlUpdate(page);
                     }}
-                    isFooterVisible={isFooterVisible}
+                    hidden={pageProgressHidden}
                 />
             </div>
-            <div
-                className={`footer ${isFooterVisible ? "footer-visible" : ""} ${
-                    currentPage === chapter.images.length ? "hidden" : ""
-                }`}
-            >
-                <MangaFooter
-                    chapter={chapter}
-                    toggleReaderMode={toggleReaderMode}
-                />
-            </div>
+            <MangaFooter
+                chapter={chapter}
+                toggleReaderMode={toggleReaderMode}
+            />
         </>
     );
 }

@@ -4,6 +4,7 @@ import { cacheLife } from "next/cache";
 import { createMetadata, robots } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
+import { ChapterComments } from "@/components/manga-reader/chapter-comments";
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -68,6 +69,9 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
     return (
         <div className="bg-background text-foreground">
             <Reader chapter={data.data} />
+            <div className="p-4">
+                <ChapterComments chapter={data.data} />
+            </div>
         </div>
     );
 }

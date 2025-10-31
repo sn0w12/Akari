@@ -45,7 +45,7 @@ export function FooterBookmarkButton({
     if (isLoading) {
         return (
             <Button
-                className="inline-flex flex-grow items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input  h-9 w-28 px-4 py-2 bg-background text-accent-foreground"
+                className="inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input  h-9 w-28 px-4 py-2 bg-background text-accent-foreground"
                 disabled
             >
                 <Spinner size={30} />
@@ -55,7 +55,7 @@ export function FooterBookmarkButton({
 
     return (
         <Button
-            className={`inline-flex flex-grow items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input  h-9 w-28 px-4 py-2 ${
+            className={`inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input  h-9 w-28 px-4 py-2 ${
                 isBookmarked
                     ? "bg-accent-positive hover:positive/70 text-white"
                     : "bg-background hover:bg-accent text-accent-foreground"

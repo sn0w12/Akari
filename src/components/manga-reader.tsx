@@ -3,11 +3,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
-import { FooterProvider } from "@/contexts/footer-context";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
+import { ChapterInfo } from "./manga-reader/chapter-info";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+}
+
+function throttle<T extends (...args: unknown[]) => unknown>(
+    func: T,
+    limit: number
+): (...args: Parameters<T>) => void {
+    let lastFunc: number | undefined;
+    let lastRan: number | undefined;
+
+    return function (...args: Parameters<T>): void {
+        if (!lastRan) {
+            func(...args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = window.setTimeout(() => {
+                if (Date.now() - lastRan! >= limit) {
+                    func(...args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
 }
 
 export function Reader({ chapter }: ReaderProps) {
@@ -19,6 +42,12 @@ export function Reader({ chapter }: ReaderProps) {
 
     const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
     const [bgColor, setBgColor] = useState<string>("bg-background");
+
+    const [scrollMetrics, setScrollMetrics] = useState({
+        pixels: 0,
+        percentage: 0,
+    });
+    const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
 
     useEffect(() => {
         switch (bookmarkState) {
@@ -94,16 +123,75 @@ export function Reader({ chapter }: ReaderProps) {
         };
     }, [resetInactivityTimer]);
 
+    useEffect(() => {
+        const mainElement = document.getElementById(
+            "scroll-element"
+        ) as HTMLElement;
+        if (!mainElement) return;
+
+        // Use requestAnimationFrame for smoother performance
+        const calculateScrollMetrics = () => {
+            const mainScrollTop = mainElement.scrollTop;
+            const documentScrollTop = document.documentElement.scrollTop;
+
+            // Determine which scroll values to use based on the condition
+            const useDocumentScroll =
+                mainScrollTop === 0 && documentScrollTop !== 0;
+
+            const scrollTop = useDocumentScroll
+                ? documentScrollTop
+                : mainScrollTop;
+
+            const scrollHeight = useDocumentScroll
+                ? document.documentElement.scrollHeight
+                : mainElement.scrollHeight;
+
+            const clientHeight = useDocumentScroll
+                ? window.innerHeight
+                : mainElement.clientHeight;
+
+            // Calculate percentage
+            const percentage =
+                (scrollTop / (scrollHeight - clientHeight)) * 100;
+            setScrollMetrics({
+                pixels: scrollTop,
+                percentage: Math.min(100, Math.max(0, percentage)),
+            });
+        };
+
+        const handleScroll = throttle(() => {
+            requestAnimationFrame(calculateScrollMetrics);
+        }, 300);
+
+        scrollHandlerRef.current = handleScroll;
+
+        mainElement.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        handleScroll(); // Initial calculation
+
+        return () => {
+            if (scrollHandlerRef.current) {
+                mainElement.removeEventListener(
+                    "scroll",
+                    scrollHandlerRef.current
+                );
+                window.removeEventListener("scroll", scrollHandlerRef.current);
+            }
+        };
+    }, []);
+
     return (
-        <FooterProvider stripMode={isStripMode}>
+        <>
             <BreadcrumbSetter
                 orig={chapter.mangaId}
                 title={chapter.mangaTitle}
             />
             <div>
+                <ChapterInfo chapter={chapter} />
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
+                        scrollMetrics={scrollMetrics}
                         toggleReaderMode={toggleReaderMode}
                         bgColor={bgColor}
                         setBookmarkState={setBookmarkState}
@@ -111,6 +199,7 @@ export function Reader({ chapter }: ReaderProps) {
                 ) : (
                     <PageReader
                         chapter={chapter}
+                        scrollMetrics={scrollMetrics}
                         toggleReaderMode={toggleReaderMode}
                         isInactive={isInactive}
                         bgColor={bgColor}
@@ -118,6 +207,6 @@ export function Reader({ chapter }: ReaderProps) {
                     />
                 )}
             </div>
-        </FooterProvider>
+        </>
     );
 }

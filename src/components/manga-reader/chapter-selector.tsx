@@ -67,7 +67,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                         role="combobox"
                         aria-expanded={open}
                         aria-label="Select chapter"
-                        className="w-[200px] justify-between hidden md:flex"
+                        className="w-full justify-between hidden md:flex"
                     >
                         {value
                             ? chapters.find(

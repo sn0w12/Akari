@@ -7,7 +7,7 @@ interface PageProgressProps {
     currentPage: number;
     totalPages: number;
     setCurrentPage: (page: number) => void;
-    isFooterVisible: boolean;
+    hidden?: boolean;
 }
 
 const cutoff = 1024;
@@ -16,15 +16,14 @@ export default function PageProgress({
     currentPage,
     totalPages,
     setCurrentPage,
-    isFooterVisible,
+    hidden = false,
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
     const [gradient, setGradient] = useState(
-        "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40"
+        "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
     );
     const [windowWidth, setWindowWidth] = useState(0);
-    const [footerHeight, setFooterHeight] = useState(0);
     const isVisible = useSetting("showPageProgress");
 
     useEffect(() => {
@@ -38,35 +37,10 @@ export default function PageProgress({
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    useEffect(() => {
-        const updateFooterHeight = () => {
-            const footer = document.querySelector(".footer");
-            setFooterHeight(footer?.clientHeight ?? 0);
-        };
-
-        updateFooterHeight();
-        const resizeObserver = new ResizeObserver(updateFooterHeight);
-        const footer = document.querySelector(".footer");
-        if (footer) {
-            resizeObserver.observe(footer);
-        }
-
-        return () => resizeObserver.disconnect();
-    }, []);
-
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentPage(page);
     };
-
-    function getBottomOffset() {
-        if (!isFooterVisible) {
-            return "1rem";
-        }
-
-        const baseOffset = footerHeight + 16; // 16px (1rem) padding
-        return `${baseOffset}px`;
-    }
 
     useEffect(() => {
         const updateBackgroundStyle = () => {
@@ -88,7 +62,7 @@ export default function PageProgress({
                             width: "calc(100% - 8px)",
                         });
                         setGradient(
-                            "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40"
+                            "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
                         );
                     } else {
                         const left = buttonRect.left - containerRect.left;
@@ -97,7 +71,7 @@ export default function PageProgress({
                             height: "calc(100% - 8px)",
                         });
                         setGradient(
-                            "bg-gradient-to-r from-primary/20 via-primary/30 to-accent-color/40"
+                            "bg-gradient-to-r from-primary/20 via-primary/30 to-accent-positive/40"
                         );
                     }
                 }
@@ -113,17 +87,17 @@ export default function PageProgress({
     return (
         <div
             className={`${
-                isVisible ? "flex" : "hidden"
-            } transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
-            style={windowWidth <= cutoff ? { bottom: getBottomOffset() } : {}}
+                isVisible && !hidden ? "opacity-100" : "opacity-0"
+            } flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto`}
+            style={windowWidth <= cutoff ? { bottom: "1rem" } : {}}
             onClick={(e) => e.stopPropagation()}
         >
             <div
                 ref={containerRef}
-                className="transition-all relative p-1 rounded-lg border border-primary/30 bg-background w-full h-[30px] lg:w-[30px] lg:hover:w-[60px] lg:h-[75vh]"
+                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent w-full h-[30px] lg:w-9 lg:hover:w-18 lg:h-[75vh]"
             >
                 <div
-                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-all duration-300 ease-in-out rounded-sm ${gradient}`}
+                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-[height,width] rounded-sm ${gradient}`}
                     style={backgroundStyle}
                 />
                 <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
@@ -131,7 +105,7 @@ export default function PageProgress({
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 transition-all duration-300 ease-in-out rounded-[3px] ${
+                            className={`flex-1 transition-colors rounded-[3px] ${
                                 index === currentPage
                                     ? "bg-accent-positive hover:bg-accent-positive/70"
                                     : index < currentPage

@@ -1,0 +1,43 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "../ui/button";
+import { ButtonGroup } from "../ui/button-group";
+import { InfoPopover } from "./info-popovers/info";
+import { SettingsPopover } from "./info-popovers/settings";
+import { CommentsButton } from "./info-popovers/comments";
+
+export function ChapterInfo({
+    chapter,
+}: {
+    chapter: components["schemas"]["ChapterResponse"];
+}) {
+    const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
+        "vertical"
+    );
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(min-width: 768px)");
+        const handleChange = (e: MediaQueryListEvent) => {
+            setOrientation(e.matches ? "vertical" : "horizontal");
+        };
+
+        setOrientation(mediaQuery.matches ? "vertical" : "horizontal");
+        mediaQuery.addEventListener("change", handleChange);
+
+        return () => mediaQuery.removeEventListener("change", handleChange);
+    }, []);
+
+    return (
+        <div
+            className={`flex fixed z-50 left-auto right-4 top-16 md:top-14`}
+            onClick={(e) => e.stopPropagation()}
+        >
+            <ButtonGroup orientation={orientation}>
+                <InfoPopover chapter={chapter} orientation={orientation} />
+                <SettingsPopover orientation={orientation} />
+                <CommentsButton />
+            </ButtonGroup>
+        </div>
+    );
+}

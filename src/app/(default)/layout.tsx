@@ -63,7 +63,7 @@ export default async function RootLayout({
                                         <BreadcrumbProvider>
                                             <BaseLayout gutter={true}>
                                                 <AnalyticsWrapper />
-                                                <div className="flex-1 pt-2 md:p-4 md:pb-0">
+                                                <div className="flex-1">
                                                     {children}
                                                 </div>
                                                 <CookieConsent />

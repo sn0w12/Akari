@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { ChapterSelector } from "./chapter-selector";
 import { FooterBookmarkButton } from "./footer-bookmark";
-import { useFooterVisibility } from "@/contexts/footer-context";
 import { cn } from "@/lib/utils";
 
 export default function MangaFooter({
@@ -13,23 +12,14 @@ export default function MangaFooter({
     chapter: components["schemas"]["ChapterResponse"];
     toggleReaderMode: () => void;
 }) {
-    const { isTouchInteractionEnabled } = useFooterVisibility();
     const lastChapterExists = chapter.lastChapter !== null;
     const nextChapterExists = chapter.nextChapter !== null;
-    const transformedChapters = chapter.chapters.map((chapter) => ({
-        value: chapter.value,
-        label:
-            chapter.label.match(/[Cc]hapter\s+\d+(\.\d+)?/)?.[0] ??
-            chapter.label,
-    }));
 
     return (
-        <div className="bg-background border-t border-border px-4 py-3">
+        <div className="bg-background border-t border-b border-border px-4 py-3">
             <div
                 className={cn(
-                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2",
-                    !isTouchInteractionEnabled &&
-                        "pointer-events-none md:pointer-events-auto"
+                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2"
                 )}
             >
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left md:ml-10">
@@ -42,7 +32,7 @@ export default function MangaFooter({
                         </a>
                     </h2>
                     <ChapterSelector
-                        chapters={transformedChapters}
+                        chapters={chapter.chapters}
                         value={chapter.number.toString()}
                     />
                 </div>
