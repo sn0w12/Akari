@@ -10,12 +10,14 @@ import Toast from "@/lib/toast-wrapper";
 import { useQuery } from "@tanstack/react-query";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import { formatRelativeDate } from "@/lib/utils";
+import { useUser } from "@/contexts/user-context";
 
 interface ChaptersSectionProps {
     manga: components["schemas"]["MangaDetailResponse"];
 }
 
 export function ChaptersSection({ manga }: ChaptersSectionProps) {
+    const { user } = useUser();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
     const [sortedChapters, setSortedChapters] = useState<
@@ -26,6 +28,7 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
     const { data, isLoading } = useQuery({
         queryKey: ["last-read", manga.id],
         queryFn: () => getLatestReadChapter(manga.id),
+        enabled: !!manga.id && !!user,
     });
 
     const lastRead = data?.id;

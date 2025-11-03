@@ -5,16 +5,18 @@ import ReadingButton from "./reading-button";
 import { useQuery } from "@tanstack/react-query";
 import { checkIfBookmarked } from "@/lib/manga/bookmarks";
 import { Skeleton } from "../ui/skeleton";
+import { useUser } from "@/contexts/user-context";
 
 interface ButtonsProps {
     manga: components["schemas"]["MangaDetailResponse"];
 }
 
 export default function Buttons({ manga }: ButtonsProps) {
+    const { user } = useUser();
     const { data: isBookmarked, isLoading } = useQuery({
         queryKey: ["bookmark", manga.id],
         queryFn: () => checkIfBookmarked(manga.id),
-        enabled: !!manga.id,
+        enabled: !!manga.id && !!user,
     });
 
     if (isLoading) {

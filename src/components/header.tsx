@@ -19,9 +19,11 @@ import { useTheme } from "next-themes";
 import { useSettingsChange } from "@/lib/settings";
 import { inPreview } from "@/config";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useUser } from "@/contexts/user-context";
 
 export function HeaderComponent() {
     const pathname = usePathname();
+    const { user } = useUser();
     const { overrides } = useBreadcrumb();
     const [notification, setNotification] = useState<string>("");
     const [segments, setSegments] = useState<string[]>([]);
@@ -61,11 +63,13 @@ export function HeaderComponent() {
     }, [pathname, overrides]);
 
     useEffect(() => {
+        if (!user) return;
+
         fetchNotification().then((value) => {
             setNotification(value);
         });
         validateSecondaryAccounts();
-    }, []);
+    }, [user]);
 
     const getSegmentDisplayName = (
         segment: string,
