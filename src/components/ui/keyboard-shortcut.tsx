@@ -1,5 +1,5 @@
-import React from "react";
 import { useKeyPressed } from "@/hooks/use-keys-pressed";
+import { useSetting } from "@/lib/settings";
 
 interface KeyboardShortcutProps {
     keys: string[] | string;
@@ -39,6 +39,9 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
 
+    const shouldShow = useSetting("showShortcuts");
+    if (!shouldShow) return null;
+
     return (
         <span
             className={`text-muted-foreground pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-2 text-sm ${className}`}
@@ -66,6 +69,9 @@ function ContextKeyboardShortcut({
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
 
+    const shouldShow = useSetting("showShortcuts");
+    if (!shouldShow) return null;
+
     return (
         <span
             className={`text-muted-foreground pointer-events-none flex gap-1 text-sm ${className}`}
@@ -92,6 +98,9 @@ function TooltipKeyboardShortcut({
 }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
+
+    const shouldShow = useSetting("showShortcuts");
+    if (!shouldShow) return null;
 
     return (
         <span
