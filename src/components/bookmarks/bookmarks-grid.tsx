@@ -27,7 +27,7 @@ export default function BookmarksGrid({
 
     return (
         <section>
-            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 xl:gap-6">
+            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
                 {updatedBookmarks.map((bookmark) => (
                     <div key={bookmark.bookmarkId}>
                         <DesktopBookmarkCard
