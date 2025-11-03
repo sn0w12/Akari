@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ServerPagination } from "../ui/pagination/server-pagination";
 import DesktopBookmarkCard from "./cards/desktop-card";
 import MobileBookmarkCard from "./cards/mobile-card";
@@ -20,6 +20,10 @@ export default function BookmarksGrid({
         useState<components["schemas"]["BookmarkListResponse"]["items"]>(
             bookmarks
         );
+
+    useEffect(() => {
+        setUpdatedBookmarks(bookmarks);
+    }, [bookmarks]);
 
     return (
         <section>
