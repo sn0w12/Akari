@@ -22,7 +22,7 @@ export default function LatestChapterInfo({
                     href={`/manga/${bookmark.mangaId}/${bookmark.chapters[0].number}`}
                     rel="noopener noreferrer"
                     className={cn(
-                        "box-decoration-clone text-white p-0.5 md:pr-1 rounded-sm bg-indigo-600 hover:bg-indigo-700 transition-colors",
+                        "box-decoration-clone text-white p-0.5 md:px-1 rounded-sm bg-indigo-600 hover:bg-indigo-700 transition-colors",
                         {
                             "bg-cyan-600 hover:bg-cyan-700":
                                 bookmark.lastReadChapter.number ===

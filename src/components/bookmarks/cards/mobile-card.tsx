@@ -69,7 +69,7 @@ const MobileBookmarkCard: React.FC<{
                         )}
                         prefetch={false}
                     >
-                        Chapter {bookmark.lastReadChapter.number}
+                        {bookmark.lastReadChapter.title}
                     </ButtonLink>
                 </div>
                 <LatestChapterInfo bookmark={bookmark} />

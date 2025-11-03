@@ -104,8 +104,7 @@ function DesktopBookmarkCard({
                             )}
                             prefetch={false}
                         >
-                            <span className="hidden lg:inline">Chapter</span>
-                            <span>{bookmark.lastReadChapter.number}</span>
+                            <span>{bookmark.lastReadChapter.title}</span>
                         </ButtonLink>
                         <Button
                             ref={buttonRef}
