@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -27,6 +28,7 @@ export function MangaCard({
     const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const innerCardRef = useRef<HTMLDivElement>(null);
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         if (expandDirection === "auto" && cardRef.current) {
@@ -55,6 +57,8 @@ export function MangaCard({
     }, [expandDirection]);
 
     const handleMouseEnter = () => {
+        if (isMobile) return;
+
         // Clear any pending collapse timeout
         if (collapseTimeoutRef.current) {
             clearTimeout(collapseTimeoutRef.current);
@@ -82,6 +86,8 @@ export function MangaCard({
     };
 
     const handleMouseLeave = () => {
+        if (isMobile) return;
+
         // Clear any pending expand timeout
         if (expandTimeoutRef.current) {
             clearTimeout(expandTimeoutRef.current);
