@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { useShortcutSetting, useSetting } from "@/lib/settings";
 import { useRouter } from "next/navigation";
 import { KeyboardShortcut } from "./ui/keyboard-shortcut";
+import { useUser } from "@/contexts/user-context";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -48,6 +49,7 @@ export function BaseLayout({
     gutter?: boolean;
 }) {
     const router = useRouter();
+    const { user } = useUser();
     const [notification, setNotification] = useState<string>("");
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = sidebarState === "collapsed";
@@ -169,22 +171,41 @@ export function BaseLayout({
                             </SidebarMenuLink>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuLink
-                                tooltip="Account"
-                                href="/account"
-                                data-no-prefetch
-                            >
-                                <User />
-                                <span>Account</span>
-                                <KeyboardShortcut
-                                    keys={useSetting("openAccount")}
-                                    className={`gap-1 transition-opacity transition-duration-200 ${
-                                        isSidebarCollapsed
-                                            ? "opacity-0"
-                                            : "opacity-100"
-                                    }`}
-                                />
-                            </SidebarMenuLink>
+                            {user ? (
+                                <SidebarMenuLink
+                                    tooltip="Account"
+                                    href="/account"
+                                    data-no-prefetch
+                                >
+                                    <User />
+                                    <span>Account</span>
+                                    <KeyboardShortcut
+                                        keys={useSetting("openAccount")}
+                                        className={`gap-1 transition-opacity transition-duration-200 ${
+                                            isSidebarCollapsed
+                                                ? "opacity-0"
+                                                : "opacity-100"
+                                        }`}
+                                    />
+                                </SidebarMenuLink>
+                            ) : (
+                                <SidebarMenuLink
+                                    tooltip="Login"
+                                    href="/login"
+                                    data-no-prefetch
+                                >
+                                    <User />
+                                    <span>Login</span>
+                                    <KeyboardShortcut
+                                        keys={useSetting("openAccount")}
+                                        className={`gap-1 transition-opacity transition-duration-200 ${
+                                            isSidebarCollapsed
+                                                ? "opacity-0"
+                                                : "opacity-100"
+                                        }`}
+                                    />
+                                </SidebarMenuLink>
+                            )}
                         </SidebarMenuItem>
                     </SidebarFooter>
                 </Sidebar>
