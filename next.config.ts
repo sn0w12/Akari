@@ -37,38 +37,6 @@ const config: NextConfig = {
         useCache: true,
         cssChunking: true,
     },
-    async headers() {
-        return [
-            {
-                source: "/",
-                headers: generateCacheHeaders(60, 360), // 1 minute, 6 minutes
-            },
-            {
-                source: "/popular",
-                headers: generateCacheHeaders(86400, 604800), // 1 day, 7 days
-            },
-            {
-                source: "/bookmarks",
-                headers: generateCacheHeaders(86400, 604800), // 1 day, 7 days
-            },
-            {
-                source: "/genre/:path", // Genres
-                headers: generateCacheHeaders(180, 900), // 3 minutes, 15 minutes
-            },
-            {
-                source: "/author/:path", // Authors
-                headers: generateCacheHeaders(3600), // 1 hour
-            },
-            {
-                source: "/manga/:path*", // Chapters
-                headers: generateCacheHeaders(3600, 604800), // 1 hour, 7 days
-            },
-            {
-                source: "/manga/:path", // Manga
-                headers: generateCacheHeaders(300, 900), // 5 minutes, 15 minutes
-            },
-        ];
-    },
 };
 
 export default config;
