@@ -24,6 +24,7 @@ export function MangaCard({
     const [cardWidth, setCardWidth] = useState(200);
     const [cardHeight, setCardHeight] = useState(300);
     const [useFixedHeight, setUseFixedHeight] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
     const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -31,13 +32,13 @@ export function MangaCard({
     const isMobile = useIsMobile();
 
     useEffect(() => {
-        if (expandDirection === "auto" && cardRef.current) {
-            const updateDirection = () => {
-                const rect = cardRef.current?.getBoundingClientRect();
-                if (rect) {
-                    setCardWidth(rect.width);
-                    setCardHeight(rect.height);
+        const updateDirection = () => {
+            const rect = cardRef.current?.getBoundingClientRect();
+            if (rect) {
+                setCardWidth(rect.width);
+                setCardHeight(rect.height);
 
+                if (expandDirection === "auto") {
                     const spaceOnRight = window.innerWidth - rect.right;
                     const expansionWidth = rect.width;
 
@@ -46,12 +47,16 @@ export function MangaCard({
                         spaceOnRight < expansionWidth + 20 ? "left" : "right"
                     );
                 }
-            };
+            }
+        };
 
-            updateDirection();
-            window.addEventListener("resize", updateDirection);
-            return () => window.removeEventListener("resize", updateDirection);
-        } else if (expandDirection !== "auto") {
+        updateDirection();
+        window.addEventListener("resize", updateDirection);
+        return () => window.removeEventListener("resize", updateDirection);
+    }, [expandDirection]);
+
+    useEffect(() => {
+        if (expandDirection !== "auto") {
             setComputedDirection(expandDirection);
         }
     }, [expandDirection]);
@@ -79,9 +84,11 @@ export function MangaCard({
             }
         }
 
+        setIsAnimating(true);
         setUseFixedHeight(true);
         expandTimeoutRef.current = setTimeout(() => {
             setShouldExpand(true);
+            setIsAnimating(false);
         }, 300);
     };
 
@@ -95,8 +102,10 @@ export function MangaCard({
         }
 
         setShouldExpand(false);
+        setIsAnimating(true);
         collapseTimeoutRef.current = setTimeout(() => {
             setUseFixedHeight(false);
+            setIsAnimating(false);
         }, 300);
     };
 
@@ -146,7 +155,12 @@ export function MangaCard({
                 <Link
                     href={`/manga/${manga.id}`}
                     className="relative h-full shrink-0"
-                    style={{ width: `${cardWidth}px` }}
+                    style={{
+                        width:
+                            shouldExpand || isAnimating
+                                ? `${cardWidth}px`
+                                : "100%",
+                    }}
                 >
                     <Image
                         src={manga.cover || "/placeholder.svg"}
