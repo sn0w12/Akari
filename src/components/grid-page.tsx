@@ -20,9 +20,9 @@ export default async function GridPage({
 }: PageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto px-4 pt-1 pb-4">
+            <div className="mx-auto px-4 pt-2 pb-4">
                 <div className="flex gap-4">
-                    <h2 className="text-3xl font-bold mb-6">{title}</h2>
+                    <h2 className="text-3xl font-bold mb-2">{title}</h2>
                 </div>
 
                 <MangaGrid mangaList={mangaList} />
@@ -45,8 +45,8 @@ export async function GridPageSkeleton({
 }) {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto px-4 py-1">
-                <Skeleton className="h-[36px] mb-6 w-96" />
+            <div className="mx-auto px-4 pt-2 pb-4">
+                <Skeleton className="h-[36px] mb-2 w-96" />
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {[...Array(pageSize)].map((_, index) => (
                         <MangaCardSkeleton key={index} />

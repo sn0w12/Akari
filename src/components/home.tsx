@@ -13,12 +13,12 @@ export default async function MangaReaderHome({
 }) {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto px-4 pt-1 pb-4">
+            <div className="mx-auto px-4 pt-2 pb-4">
                 <div>
-                    <h2 className="text-3xl font-bold mb-6">Popular Manga</h2>
+                    <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
                     <PopularManga manga={popular} />
                 </div>
-                <h2 className={`text-3xl font-bold mb-6`}>Latest Releases</h2>
+                <h2 className={`text-3xl font-bold mb-2`}>Latest Releases</h2>
                 <MangaGrid mangaList={latest} />
             </div>
             <ServerPagination

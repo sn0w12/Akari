@@ -6,8 +6,8 @@ import MangaCardSkeleton from "../manga/manga-card-skeleton";
 export default function HomeSkeleton() {
     return (
         <>
-            <div className="mx-auto px-4 pt-1 pb-4">
-                <h2 className="text-3xl font-bold mb-6">Popular Manga</h2>
+            <div className="mx-auto px-4 pt-2 pb-4">
+                <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {[...Array(12)].map((_, index) => (
                         <MangaCardSkeleton key={index} />
@@ -23,7 +23,7 @@ export default function HomeSkeleton() {
                     </Button>
                 </div>
 
-                <h2 className={`text-3xl font-bold my-6`}>Latest Releases</h2>
+                <h2 className={`text-3xl font-bold my-2`}>Latest Releases</h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {[...Array(24)].map((_, index) => (
