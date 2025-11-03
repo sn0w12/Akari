@@ -11,9 +11,11 @@ import { client } from "@/lib/api";
 
 interface UserContextType {
     user: components["schemas"]["UserResponse"] | undefined;
+    setUser: React.Dispatch<
+        React.SetStateAction<components["schemas"]["UserResponse"] | undefined>
+    >;
     isLoading: boolean;
     error: string | null;
-    refetch: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -54,10 +56,8 @@ export function UserProvider({ children }: UserProviderProps) {
         fetchUser();
     }, []);
 
-    const refetch = fetchUser;
-
     return (
-        <UserContext.Provider value={{ user, isLoading, error, refetch }}>
+        <UserContext.Provider value={{ user, setUser, isLoading, error }}>
             {children}
         </UserContext.Provider>
     );

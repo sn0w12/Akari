@@ -12,7 +12,7 @@ export default function LoginPage() {
     const [loginError, setLoginError] = useState("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-    const { user } = useUser();
+    const { user, setUser } = useUser();
 
     useEffect(() => {
         if (user) {
@@ -26,6 +26,7 @@ export default function LoginPage() {
         try {
             const response = await submitLogin(values.email, values.password);
             if (response) {
+                setUser(response);
                 router.push("/account");
             }
         } catch {
