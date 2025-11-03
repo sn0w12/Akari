@@ -79,7 +79,7 @@ function CookieConsentBody({
                 </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
                 {onRejectAll && (
                     <Button variant="outline" onClick={onRejectAll}>
                         Reject All
