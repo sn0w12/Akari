@@ -37,7 +37,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="mx-auto px-4 py-1 max-w-6xl flex-grow">
+        <div className="mx-auto px-4 py-1 max-w-6xl flex-grow flex items-center justify-center min-h-[80vh]">
             <LoginView
                 loginError={loginError}
                 isLoading={isLoading}
