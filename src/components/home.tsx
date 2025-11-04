@@ -1,6 +1,7 @@
 import { ServerPagination } from "./ui/pagination/server-pagination";
 import { PopularManga } from "./home/popular-manga";
 import { MangaGrid } from "./manga/manga-grid";
+import { InstallPrompt } from "./home/install-prompt";
 
 export default async function MangaReaderHome({
     latest,
@@ -27,6 +28,7 @@ export default async function MangaReaderHome({
                 totalPages={totalPages}
                 className="mb-4"
             />
+            <InstallPrompt />
         </div>
     );
 }

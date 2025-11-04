@@ -12,6 +12,7 @@ import Footer from "@/components/footer";
 import { QueryProvider } from "@/components/query-provider";
 import { ConfirmProvider } from "@/contexts/confirm-context";
 import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
+import { DeviceProvider } from "@/contexts/device-context";
 import { Toaster } from "@/components/ui/sonner";
 
 import type { Metadata } from "next";
@@ -56,28 +57,30 @@ export default async function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <SidebarProvider defaultOpen={false}>
-                            <ConfirmProvider>
-                                <QueryProvider>
-                                    <UserProvider>
-                                        <BreadcrumbProvider>
-                                            <BaseLayout gutter={true}>
-                                                <AnalyticsWrapper />
-                                                <div className="flex-1">
-                                                    {children}
-                                                </div>
-                                                <CookieConsent />
-                                                <Toaster
-                                                    richColors
-                                                    position="top-right"
-                                                />
-                                                <Footer />
-                                            </BaseLayout>
-                                        </BreadcrumbProvider>
-                                    </UserProvider>
-                                </QueryProvider>
-                            </ConfirmProvider>
-                        </SidebarProvider>
+                        <DeviceProvider>
+                            <SidebarProvider defaultOpen={false}>
+                                <ConfirmProvider>
+                                    <QueryProvider>
+                                        <UserProvider>
+                                            <BreadcrumbProvider>
+                                                <BaseLayout gutter={true}>
+                                                    <AnalyticsWrapper />
+                                                    <div className="flex-1">
+                                                        {children}
+                                                    </div>
+                                                    <CookieConsent />
+                                                    <Toaster
+                                                        richColors
+                                                        position="top-right"
+                                                    />
+                                                    <Footer />
+                                                </BaseLayout>
+                                            </BreadcrumbProvider>
+                                        </UserProvider>
+                                    </QueryProvider>
+                                </ConfirmProvider>
+                            </SidebarProvider>
+                        </DeviceProvider>
                     </ThemeProvider>
                 </ProximityPrefetch>
             </body>
