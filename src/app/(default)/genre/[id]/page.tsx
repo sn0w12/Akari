@@ -20,11 +20,11 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     cacheLife("weeks");
 
     const params = await props.params;
-    const name = params.id.replaceAll("_", " ");
+    const name = params.id.replaceAll("-", " ");
     const description = `View all ${name} manga`;
     const ogImage = `/og/categories/${params.id
         .toLowerCase()
-        .replaceAll(" ", "_")}.webp`;
+        .replaceAll(" ", "-")}.webp`;
 
     return createMetadata({
         title: name,
@@ -37,10 +37,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 export default async function GenrePage(props: PageProps) {
     const searchParams = await props.searchParams;
     const params = await props.params;
+    const name = decodeURIComponent(params.id).replaceAll("-", " ");
+
     const { data, error } = await client.GET("/v2/genre/{name}", {
         params: {
             path: {
-                name: params.id,
+                name: name,
             },
             query: {
                 page: Number(searchParams.page) || 1,
@@ -56,7 +58,7 @@ export default async function GenrePage(props: PageProps) {
 
     return (
         <GridPage
-            title={decodeURIComponent(params.id)}
+            title={name}
             mangaList={data.data.items}
             currentPage={data.data.currentPage}
             totalPages={data.data.totalPages}

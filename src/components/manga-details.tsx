@@ -263,7 +263,7 @@ export async function MangaDetailsComponent({
                                             <Link
                                                 key={genre}
                                                 href={`/genre/${encodeURIComponent(
-                                                    genre.replaceAll(" ", "_")
+                                                    genre.replaceAll(" ", "-")
                                                 )}`}
                                                 prefetch={false}
                                                 data-no-prefetch
