@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
-import { getBaseUrl } from "@/lib/api/base-url";
 import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
