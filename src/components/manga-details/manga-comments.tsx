@@ -2,12 +2,16 @@
 
 import { client, serverHeaders } from "@/lib/api";
 import { MangaCommentList } from "./manga-comment-list";
+import { cacheLife } from "next/cache";
 
 export async function MangaComments({
     manga,
 }: {
     manga: components["schemas"]["MangaDetailResponse"];
 }) {
+    "use cache";
+    cacheLife("minutes");
+
     const { data, error } = await client.GET("/v2/comments/{id}", {
         params: {
             path: {

@@ -51,6 +51,9 @@ export async function generateMetadata({
 }
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
+    "use cache";
+    cacheLife("hours");
+
     const mangaParams = await params;
     const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
         params: {

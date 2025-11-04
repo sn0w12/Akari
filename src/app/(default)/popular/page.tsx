@@ -17,12 +17,13 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/popular",
 });
 
-export default async function Popular(props: PageProps) {
-    const searchParams = await props.searchParams;
+async function getPopularData(page: number) {
+    "use cache";
+
     const { data, error } = await client.GET("/v2/manga/list/popular", {
         params: {
             query: {
-                offset: Number(searchParams.page) || 1,
+                offset: page,
                 pageSize: 24,
                 days: 30,
             },
@@ -30,7 +31,16 @@ export default async function Popular(props: PageProps) {
         headers: serverHeaders,
     });
 
-    if (error) {
+    return { data, error };
+}
+
+export default async function Popular(props: PageProps) {
+    const searchParams = await props.searchParams;
+    const { data, error } = await getPopularData(
+        Number(searchParams.page) || 1
+    );
+
+    if (error || !data) {
         return <ErrorPage error={error} />;
     }
 

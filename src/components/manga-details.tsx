@@ -101,7 +101,7 @@ export async function MangaDetailsComponent({
     manga: components["schemas"]["MangaDetailResponse"];
 }) {
     "use cache";
-    cacheLife("minutes");
+    cacheLife("hours");
 
     return (
         <div className="mx-auto p-4">

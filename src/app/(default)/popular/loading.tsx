@@ -1,5 +1,5 @@
-import PopularSkeleton from "@/components/popular/skeleton";
+import { GridPageSkeleton } from "@/components/grid-page";
 
 export default function Loading() {
-    return <PopularSkeleton />;
+    return <GridPageSkeleton />;
 }

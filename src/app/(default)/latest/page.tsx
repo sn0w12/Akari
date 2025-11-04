@@ -19,8 +19,8 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/latest",
 });
 
-export default async function Home(props: HomeProps) {
-    const currentPage = Number((await props.searchParams).page) || 1;
+async function getLatestData(currentPage: number) {
+    "use cache";
 
     const { data, error } = await client.GET("/v2/manga/list", {
         params: {
@@ -32,7 +32,14 @@ export default async function Home(props: HomeProps) {
         headers: serverHeaders,
     });
 
-    if (error) {
+    return { data, error };
+}
+
+export default async function Home(props: HomeProps) {
+    const currentPage = Number((await props.searchParams).page) || 1;
+    const { data, error } = await getLatestData(currentPage);
+
+    if (error || !data) {
         return <ErrorPage title="Failed to load manga list" error={error} />;
     }
 
