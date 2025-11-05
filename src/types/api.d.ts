@@ -1104,7 +1104,57 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
+        /** Delete a list */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The list ID. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -3086,6 +3136,7 @@ export interface components {
         UploadResponse: {
             /** Format: uuid */
             id: string;
+            /** Format: uuid */
             userId: string;
             md5Hash: string;
             /** Format: int64 */
@@ -3186,6 +3237,9 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            mangaTitle: string;
+            mangaCover: string;
+            mangaDescription: string;
         };
         UserMangaListEntryResponseSuccessResponse: {
             /** @enum {string} */
@@ -3224,6 +3278,8 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            /** Format: int32 */
+            totalEntries: number;
         };
         UserMangaListResponseSuccessResponse: {
             /** @enum {string} */
@@ -3244,7 +3300,10 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            entries?: components["schemas"]["UserMangaListEntryResponse"][] | null;
+            /** Format: int32 */
+            totalEntries: number;
+            entries: components["schemas"]["UserMangaListEntryResponse"][];
+            user: components["schemas"]["UserResponse"];
         };
         UserMangaListWithEntriesResponseSuccessResponse: {
             /** @enum {string} */

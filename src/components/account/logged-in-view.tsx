@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SecondaryAccount } from "@/lib/auth/secondary-accounts";
+import { ListsTabContent } from "./lists";
 import Link from "next/link";
 import { Link as LinkIcon } from "lucide-react";
 
@@ -61,6 +62,9 @@ export default function LoggedInView({
                 </TabsTrigger>
                 <TabsTrigger index={1} value="connections">
                     Connected Services
+                </TabsTrigger>
+                <TabsTrigger index={2} value="lists">
+                    Manga Lists
                 </TabsTrigger>
             </TabsList>
 
@@ -172,6 +176,10 @@ export default function LoggedInView({
                         </CardContent>
                     </Card>
                 ))}
+            </TabsContent>
+
+            <TabsContent value="lists" className="space-y-6">
+                <ListsTabContent />
             </TabsContent>
         </Tabs>
     );
