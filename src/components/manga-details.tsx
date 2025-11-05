@@ -192,7 +192,9 @@ export async function MangaDetailsComponent({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                                 <div>
                                     <div className="text-lg font-semibold">
-                                        Authors:
+                                        {`Author${
+                                            manga.authors.length > 1 ? "s" : ""
+                                        }:`}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {manga.authors.map(
