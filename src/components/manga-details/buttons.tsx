@@ -2,6 +2,7 @@
 
 import BookmarkButton from "./bookmark-button";
 import ReadingButton from "./reading-button";
+import { ListSelector } from "../list/list-selector";
 import { useQuery } from "@tanstack/react-query";
 import { checkIfBookmarked } from "@/lib/manga/bookmarks";
 import { Skeleton } from "../ui/skeleton";
@@ -21,7 +22,7 @@ export default function Buttons({ manga }: ButtonsProps) {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col xl:flex-row gap-4 mt-auto">
+            <div className="flex flex-col xl:flex-row gap-2">
                 <Skeleton className="h-11 w-full xl:w-1/2" />
                 <Skeleton className="h-11 w-full xl:w-1/2" />
             </div>
@@ -29,8 +30,7 @@ export default function Buttons({ manga }: ButtonsProps) {
     }
 
     return (
-        <div className="flex flex-col xl:flex-row gap-4 mt-auto">
-            {/* Toggle bookmark button based on bookmark status */}
+        <div className="flex flex-col xl:flex-row gap-2">
             <BookmarkButton
                 manga={manga}
                 isBookmarked={isBookmarked ?? false}

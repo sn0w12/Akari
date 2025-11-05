@@ -20,6 +20,7 @@ import { ViewManga } from "./manga-reader/view-manga";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
+import { ListSelector } from "./list/list-selector";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -185,10 +186,10 @@ export async function MangaDetailsComponent({
                         )}
 
                     {/* Middle section grows as needed */}
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 flex-grow overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-4 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                                 <div>
                                     <div className="text-lg font-semibold mb-1">
                                         Authors:
@@ -280,13 +281,15 @@ export async function MangaDetailsComponent({
                                         ))}
                                     </div>
                                 </div>
-                                <div className="mt-4 flex-grow block lg:hidden xl:block lg:mb-4">
+                                <div className="my-2 flex-grow block">
                                     <ScoreDisplay score={manga.score / 2} />
                                 </div>
                             </div>
 
-                            {/* Bookmark and Start Reading Buttons */}
-                            <Buttons manga={manga} />
+                            <div className="flex flex-col gap-2 mt-auto">
+                                <Buttons manga={manga} />
+                                <ListSelector mangaId={manga.id} />
+                            </div>
                         </div>
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full">
