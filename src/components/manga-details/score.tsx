@@ -18,7 +18,7 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
     const hasHalfStar = clampedScore % 1 >= 0.5;
     const isAnyHovered = hoveredIndex !== null;
 
-    const starClasses = "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8";
+    const starClasses = "size-6 md:size-7 xl:size-8";
 
     const handleMouseMove = (
         index: number,
@@ -48,14 +48,9 @@ export default function ScoreDisplay({ score }: ScoreDisplayProps) {
         }
     };
 
-    const handleMouseLeave = () => {
-        setHoveredIndex(null);
-        setHoveredFill(0);
-    };
-
     return (
-        <div className="hidden w-full h-full bg-primary/10 rounded-xl  flex flex-col items-center justify-center p-4 lg:flex">
-            <div className="flex flex-col items-center justify-center relative top-2.5">
+        <div className="flex w-full h-full bg-primary/10 rounded-xl flex flex-col items-center justify-center p-2 xl:p-4">
+            <div className="flex flex-col items-center justify-center relative top-1 xl:top-2.5">
                 <div
                     className="flex items-center justify-center space-x-1"
                     onMouseLeave={() => setHoveredIndex(null)}

@@ -191,7 +191,7 @@ export async function MangaDetailsComponent({
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                                 <div>
-                                    <div className="text-lg font-semibold mb-1">
+                                    <div className="text-lg font-semibold">
                                         Authors:
                                     </div>
                                     <div className="flex flex-wrap gap-2">
@@ -221,7 +221,7 @@ export async function MangaDetailsComponent({
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-lg font-semibold mb-1">
+                                    <div className="text-lg font-semibold">
                                         Status:
                                     </div>
                                     <Badge
@@ -234,7 +234,7 @@ export async function MangaDetailsComponent({
                                     </Badge>
                                 </div>
                                 <div>
-                                    <div className="text-lg font-semibold mb-1">
+                                    <div className="text-lg font-semibold">
                                         Updated:
                                     </div>
                                     <Badge className="hover:bg-primary">
@@ -242,7 +242,7 @@ export async function MangaDetailsComponent({
                                     </Badge>
                                 </div>
                                 <div>
-                                    <div className="text-lg font-semibold mb-1">
+                                    <div className="text-lg font-semibold">
                                         Views:
                                     </div>
                                     <Badge
@@ -256,10 +256,10 @@ export async function MangaDetailsComponent({
                             </div>
                             <div className="flex flex-col h-full">
                                 <div className="h-fit">
-                                    <h2 className="text-xl font-semibold mb-2">
+                                    <h2 className="text-xl font-semibold">
                                         Genres:
                                     </h2>
-                                    <div className="flex flex-wrap gap-2 overflow-y-visible lg:max-h-32 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
+                                    <div className="flex flex-wrap gap-2 overflow-y-visible md:max-h-24 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
                                         {manga.genres.map((genre: string) => (
                                             <Link
                                                 key={genre}
