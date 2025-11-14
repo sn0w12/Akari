@@ -205,7 +205,7 @@ export default function PageReader({
             </div>
             <div
                 className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
-                    currentPage !== chapter.images.length - 1
+                    currentPage !== chapter.images.length
                         ? "block"
                         : "hidden md:block"
                 }`}
