@@ -29,7 +29,7 @@ export function ChapterInfo({
 
     return (
         <div
-            className={`flex fixed z-60 bottom-4 left-auto right-4 md:top-14`}
+            className={`flex fixed z-60 bottom-4 left-auto right-4 h-fit md:top-14`}
             onClick={(e) => e.stopPropagation()}
         >
             <ButtonGroup orientation={orientation}>
