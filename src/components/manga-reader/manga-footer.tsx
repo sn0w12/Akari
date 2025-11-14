@@ -16,7 +16,7 @@ export default function MangaFooter({
     const nextChapterExists = chapter.nextChapter !== null;
 
     return (
-        <div className="bg-background border-t border-b border-border px-4 py-3">
+        <div className="bg-background border-t border-b border-border px-4 py-3 mt-0.5">
             <div
                 className={cn(
                     "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2"
