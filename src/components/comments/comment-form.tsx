@@ -66,7 +66,7 @@ export function CommentForm({
                     placeholder={placeholder}
                     className="min-h-[80px] resize-none text-sm sm:text-base"
                     autoFocus={autoFocus}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !currentUser}
                 />
 
                 <div className="flex items-center gap-2 justify-end">
@@ -84,7 +84,9 @@ export function CommentForm({
                     <Button
                         type="submit"
                         size="sm"
-                        disabled={!content.trim() || isSubmitting}
+                        disabled={
+                            !content.trim() || isSubmitting || !currentUser
+                        }
                     >
                         {isSubmitting ? "Posting..." : submitLabel}
                     </Button>
