@@ -28,10 +28,8 @@ export default function AccountClient() {
 
     const handleLogout = () => {
         logOut(secondaryAccounts);
-        setSavedUsername("");
-        window.location.reload();
+        router.push("/");
     };
-
 
     if (isLoading) {
         return;
