@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from "react";
 import {
-    isAccountValid,
     SecondaryAccount,
     SECONDARY_ACCOUNTS,
-    SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
 import { logOut } from "@/lib/auth/akari";
 import LoggedInView from "./account/logged-in-view";
@@ -26,28 +24,6 @@ export default function AccountClient() {
             return;
         }
         setSavedUsername(user.displayName);
-
-        // Check secondary accounts
-        const checkSecondaryAuth = async () => {
-            const updatedAccounts = await Promise.all(
-                secondaryAccounts.map(async (account) => {
-                    const userData = JSON.parse(
-                        localStorage.getItem(account.storageKey) || "{}"
-                    );
-                    if (
-                        userData.name &&
-                        (await isAccountValid(account.id as SecondaryAccountId))
-                    ) {
-                        return { ...account, user: userData };
-                    }
-
-                    return account;
-                })
-            );
-            setSecondaryAccounts(updatedAccounts);
-        };
-
-        checkSecondaryAuth();
     }, [user]);
 
     const handleLogout = () => {
@@ -56,14 +32,6 @@ export default function AccountClient() {
         window.location.reload();
     };
 
-    const handleSecondaryLogout = async (account: SecondaryAccount) => {
-        await account.logOut();
-        setSecondaryAccounts((accounts) =>
-            accounts.map((acc) =>
-                acc.id === account.id ? { ...acc, user: null } : acc
-            )
-        );
-    };
 
     if (isLoading) {
         return;
@@ -73,10 +41,8 @@ export default function AccountClient() {
         return (
             <LoggedInView
                 secondaryAccounts={secondaryAccounts}
-                setSecondaryAccounts={setSecondaryAccounts}
                 savedUsername={savedUsername}
                 handleLogout={handleLogout}
-                handleSecondaryLogout={handleSecondaryLogout}
             />
         );
     } else {

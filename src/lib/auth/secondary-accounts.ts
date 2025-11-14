@@ -1,15 +1,17 @@
-import { checkMalAuthorization, logOutMal } from "./secondary-accounts/mal";
+import {
+    checkMalAuthorization,
+    generateMalAuth,
+    logOutMal,
+} from "./secondary-accounts/mal";
 
 export interface SecondaryAccount {
     id: string;
     name: string;
     displayName: string;
-    user: { name: string } | null;
-    authUrl?: string;
     buttonColor: string;
     hoverColor: string;
-    storageKey: string;
     sessionKey: string;
+    getAuthUrl: () => string;
     logOut: () => Promise<boolean>;
     validate: () => Promise<boolean>;
 }
@@ -18,16 +20,21 @@ export const SECONDARY_ACCOUNTS = [
         id: "mal",
         name: "MyAnimeList",
         displayName: "MAL",
-        user: null,
         buttonColor: "bg-blue-600",
         hoverColor: "hover:bg-blue-500",
-        storageKey: "mal_user",
         sessionKey: "mal",
+        getAuthUrl: generateMalAuth,
         logOut: logOutMal,
         validate: checkMalAuthorization,
     },
 ] as const satisfies SecondaryAccount[];
 export type SecondaryAccountId = (typeof SECONDARY_ACCOUNTS)[number]["id"];
+
+export interface SmallSecondaryAccount {
+    id: SecondaryAccountId;
+    name: string;
+    valid: boolean;
+}
 
 export async function isAccountValid(accountId: SecondaryAccountId) {
     const account = SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
@@ -43,7 +50,9 @@ export async function isAccountValid(accountId: SecondaryAccountId) {
     return valid;
 }
 
-export async function validateSecondaryAccounts() {
+export async function validateSecondaryAccounts(): Promise<
+    SmallSecondaryAccount[]
+> {
     const validAccounts = await Promise.all(
         SECONDARY_ACCOUNTS.map(async (account) => {
             return {
@@ -54,6 +63,11 @@ export async function validateSecondaryAccounts() {
         })
     );
 
-    console.log("Validated secondary accounts:", validAccounts);
     return validAccounts;
+}
+
+export function getSecondaryAccountById(
+    accountId: SecondaryAccountId
+): SecondaryAccount | undefined {
+    return SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
 }

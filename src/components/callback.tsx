@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { client } from "@/lib/api";
 import Cookies from "js-cookie";
 import ErrorComponent from "./error-page";
+import { getSecondaryAccountById } from "@/lib/auth/secondary-accounts";
 
 const CallbackPage = () => {
     const router = useRouter();
@@ -32,8 +33,11 @@ const CallbackPage = () => {
 
         // Send request to exchange code for tokens
         const fetchToken = async () => {
+            const acc = getSecondaryAccountById("mal");
+            if (!acc) return;
+
             try {
-                const { data, error } = await client.POST("/v2/mal/token", {
+                const { error } = await client.POST("/v2/mal/token", {
                     body: {
                         code,
                         codeVerifier: codeVerifier,
@@ -49,7 +53,7 @@ const CallbackPage = () => {
                 setSuccess(true);
                 Cookies.remove("pkce_code_verifier");
 
-                const { data: userData, error: userError } = await client.GET(
+                const { error: userError } = await client.GET(
                     "/v2/mal/mangalist"
                 );
 
@@ -58,9 +62,7 @@ const CallbackPage = () => {
                     return;
                 }
 
-                console.log(userData);
-                localStorage.setItem("mal_user", JSON.stringify(userData.data));
-                sessionStorage.setItem("mal", "true");
+                sessionStorage.setItem(acc.sessionKey, "true");
 
                 router.push("/");
             } catch (error) {

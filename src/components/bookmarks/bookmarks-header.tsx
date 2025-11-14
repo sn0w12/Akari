@@ -9,7 +9,6 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
-import { imageUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { useConfirm } from "@/contexts/confirm-context";
