@@ -39,7 +39,6 @@ async function getHomeData(currentPage: number) {
         client.GET("/v2/manga/list/popular", {
             params: {
                 query: {
-                    offset: 1,
                     pageSize: 24,
                     days: 30,
                 },

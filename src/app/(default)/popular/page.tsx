@@ -23,7 +23,7 @@ async function getPopularData(page: number) {
     const { data, error } = await client.GET("/v2/manga/list/popular", {
         params: {
             query: {
-                offset: page,
+                page: page,
                 pageSize: 24,
                 days: 30,
             },

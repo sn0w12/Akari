@@ -1759,10 +1759,10 @@ export interface paths {
                 query?: {
                     /** @description The number of days to look back for views. */
                     days?: number;
-                    /** @description The maximum number of results. */
-                    limit?: number;
-                    /** @description The offset for pagination. */
-                    offset?: number;
+                    /** @description The page number. */
+                    page?: number;
+                    /** @description The number of items per page. */
+                    pageSize?: number;
                 };
                 header?: never;
                 path?: never;
