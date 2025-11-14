@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "../ui/button";
 import { ButtonGroup } from "../ui/button-group";
 import { InfoPopover } from "./info-popovers/info";
 import { SettingsPopover } from "./info-popovers/settings";
@@ -30,7 +29,7 @@ export function ChapterInfo({
 
     return (
         <div
-            className={`flex fixed z-50 left-auto right-4 top-16 md:top-14`}
+            className={`flex fixed z-60 bottom-4 left-auto right-4 md:top-14`}
             onClick={(e) => e.stopPropagation()}
         >
             <ButtonGroup orientation={orientation}>

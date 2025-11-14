@@ -12,7 +12,12 @@ export function CommentsButton() {
     };
 
     return (
-        <Button variant="outline" size="icon" onClick={handleScrollToComments}>
+        <Button
+            variant="outline"
+            size="icon"
+            onClick={handleScrollToComments}
+            className="h-7.5 md:h-9"
+        >
             <MessageCircle className="h-4 w-4" />
         </Button>
     );

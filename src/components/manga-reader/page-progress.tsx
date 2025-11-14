@@ -90,11 +90,12 @@ export default function PageProgress({
                 isVisible && !hidden ? "opacity-100" : "opacity-0"
             } flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto`}
             style={windowWidth <= cutoff ? { bottom: "1rem" } : {}}
-            onClick={(e) => e.stopPropagation()}
         >
             <div
                 ref={containerRef}
-                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent w-full h-[30px] lg:w-9 lg:hover:w-18 lg:h-[75vh]"
+                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 lg:w-9 lg:hover:w-18 lg:h-[75vh]"
+                style={windowWidth < 768 ? { width: "calc(100% - 118px)" } : {}}
+                onClick={(e) => e.stopPropagation()}
             >
                 <div
                     className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-[height,width] rounded-sm ${gradient}`}
