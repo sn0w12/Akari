@@ -21,13 +21,13 @@ export default async function MangaReaderHome({
                 </div>
                 <h2 className={`text-3xl font-bold mb-2`}>Latest Releases</h2>
                 <MangaGrid mangaList={latest} />
+                <ServerPagination
+                    currentPage={1}
+                    href="./latest"
+                    totalPages={totalPages}
+                    className="mb-4"
+                />
             </div>
-            <ServerPagination
-                currentPage={1}
-                href="./latest"
-                totalPages={totalPages}
-                className="mb-4"
-            />
             <InstallPrompt />
         </div>
     );
