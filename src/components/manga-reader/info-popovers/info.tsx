@@ -42,7 +42,7 @@ export function InfoPopover({
                                 {chapter.mangaTitle}
                             </Link>
                         </h2>
-                        <div>
+                        <div className="hidden md:block">
                             <label className="text-sm font-medium text-muted-foreground">
                                 Chapter
                             </label>
