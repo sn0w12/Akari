@@ -68,7 +68,7 @@ export default function PageReader({
             );
 
             if (currentPage >= threshold) {
-                router.prefetch(`/manga/${chapter.nextChapter}?_prefetch=1`);
+                router.prefetch(`./${chapter.nextChapter}?_prefetch=1`);
                 hasPrefetchedRef.current = true;
             }
         }
@@ -98,7 +98,7 @@ export default function PageReader({
 
     const nextPage = useCallback(() => {
         if (currentPage === chapter.images.length - 1 && chapter.nextChapter) {
-            router.push(`/manga/${chapter.nextChapter}`);
+            router.push(`./${chapter.nextChapter}`);
             return;
         }
 

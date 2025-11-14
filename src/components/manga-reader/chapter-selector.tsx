@@ -31,13 +31,8 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
     const router = useRouter();
     const selectedItemRef = React.useRef<HTMLDivElement>(null);
 
-    const onChange = (currentValue: string) => {
-        const currentUrl = window.location.href;
-        const newUrl = currentUrl.replace(
-            /\/[^\/]*$/,
-            `/chapter-${currentValue.replaceAll(".", "-")}`
-        );
-        router.push(newUrl);
+    const onChange = (value: string) => {
+        router.push(`./${value}`);
         setOpen(false);
     };
 

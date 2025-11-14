@@ -57,7 +57,7 @@ export function InfoPopover({
                             </div>
                             <div className="flex items-center gap-2">
                                 <ButtonLink
-                                    href={`/manga/${chapter.mangaId}/${chapter.lastChapter}`}
+                                    href={`./${chapter.lastChapter}`}
                                     variant="outline"
                                     className="flex-1"
                                     aria-label="Previous Chapter"
@@ -69,7 +69,7 @@ export function InfoPopover({
                                     Previous
                                 </ButtonLink>
                                 <ButtonLink
-                                    href={`/manga/${chapter.mangaId}/${chapter.nextChapter}`}
+                                    href={`./${chapter.nextChapter}`}
                                     variant="outline"
                                     className="flex-1"
                                     aria-label="Next Chapter"
