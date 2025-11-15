@@ -154,6 +154,12 @@ body {
     }
 }
 
+@custom-variant standalone {
+    @media (display-mode: standalone) {
+        @slot;
+    }
+}
+
 .ease-snappy {
     animation-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
     transition-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);

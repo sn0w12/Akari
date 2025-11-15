@@ -150,7 +150,7 @@ export function BaseLayout({
                             )}
                         </SidebarMenu>
                     </SidebarContent>
-                    <SidebarFooter>
+                    <SidebarFooter className="standalone:mb-4">
                         <Separator />
                         <SidebarMenuItem>
                             <SidebarMenuLink
