@@ -26,8 +26,8 @@ export default function AccountClient() {
         setSavedUsername(user.displayName);
     }, [user]);
 
-    const handleLogout = () => {
-        logOut(secondaryAccounts);
+    const handleLogout = async () => {
+        await logOut(secondaryAccounts);
         router.push("/");
     };
 
