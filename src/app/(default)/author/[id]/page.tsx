@@ -45,8 +45,8 @@ export default async function AuthorPage(props: PageProps) {
                 page: Number(searchParams.page) || 1,
                 pageSize: 24,
             },
-            headers: serverHeaders,
         },
+        headers: serverHeaders,
     });
 
     if (error) {

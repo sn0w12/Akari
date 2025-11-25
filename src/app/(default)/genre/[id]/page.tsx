@@ -47,8 +47,8 @@ export default async function GenrePage(props: PageProps) {
                 page: Number(searchParams.page) || 1,
                 pageSize: 24,
             },
-            headers: serverHeaders,
         },
+        headers: serverHeaders,
     });
 
     if (error) {
