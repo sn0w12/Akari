@@ -44,11 +44,11 @@ export default function GenrePicker({
                                     onCheckedChange={(checked) =>
                                         handleGenreChange(genre, checked)
                                     }
-                                    className="size-4"
+                                    className="size-5 md:size-4"
                                 />
                                 <Label
                                     htmlFor={genre}
-                                    className="text-xs cursor-pointer leading-none"
+                                    className="text-sm md:text-xs cursor-pointer leading-none"
                                 >
                                     {genre}
                                 </Label>

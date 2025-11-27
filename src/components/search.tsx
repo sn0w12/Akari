@@ -8,7 +8,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { MangaGrid } from "./manga/manga-grid";
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/api";
-import GenrePicker from "./genre-picker";
+import GenrePicker from "./search/genre-picker";
 import { Genre, genres } from "@/lib/api/search";
 import { Button } from "@/components/ui/button";
 import {
