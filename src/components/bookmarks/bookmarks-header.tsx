@@ -37,7 +37,19 @@ export default function BookmarksHeader() {
     const getBookmarkSearchResults = async (
         query: string
     ): Promise<components["schemas"]["BookmarkListResponse"]["items"]> => {
-        return [];
+        const { data, error } = await client.GET("/v2/bookmarks/search", {
+            params: {
+                query: {
+                    query,
+                },
+            },
+        });
+
+        if (error || !data) {
+            return [];
+        }
+
+        return data.data.items;
     };
 
     const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
