@@ -1,4 +1,5 @@
 import { client } from "../api";
+import { createClient } from "./client";
 import { SecondaryAccount } from "./secondary-accounts";
 
 export async function submitLogin(email: string, password: string) {
@@ -21,9 +22,6 @@ export async function logOut(secondaryAccounts: SecondaryAccount[]) {
         await account.logOut();
     });
 
-    const { error } = await client.POST("/v2/user/signout");
-
-    if (error) {
-        throw new Error(error.data.message || "Logout failed");
-    }
+    const supabase = createClient();
+    await supabase.auth.signOut();
 }

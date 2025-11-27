@@ -191,7 +191,7 @@ export function BaseLayout({
                             ) : (
                                 <SidebarMenuLink
                                     tooltip="Login"
-                                    href="/login"
+                                    href="/auth/login"
                                     data-no-prefetch
                                 >
                                     <User />
