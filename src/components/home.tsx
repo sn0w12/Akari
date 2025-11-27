@@ -25,7 +25,7 @@ export default async function MangaReaderHome({
                     currentPage={1}
                     href="./latest"
                     totalPages={totalPages}
-                    className="mb-4"
+                    className="my-4"
                 />
             </div>
             <InstallPrompt />
