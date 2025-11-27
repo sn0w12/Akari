@@ -7,10 +7,7 @@ import { createBrowserClient } from "@supabase/ssr";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5188/";
 const baseUrl = inDevelopment ? "http://localhost:5188/" : apiUrl;
 
-const authenticatedFetch = async (
-    url: RequestInfo | URL,
-    init?: RequestInit
-): Promise<Response> => {
+const authenticatedFetch = async (input: Request): Promise<Response> => {
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY!
@@ -18,13 +15,11 @@ const authenticatedFetch = async (
     const {
         data: { session },
     } = await supabase.auth.getSession();
-    const headers: Record<string, string> = {
-        ...((init?.headers as Record<string, string>) ?? {}),
-    };
+    const request = input.clone();
     if (session?.access_token) {
-        headers["Authorization"] = `Bearer ${session.access_token}`;
+        request.headers.set("Authorization", `Bearer ${session.access_token}`);
     }
-    return fetch(url, { ...init, headers });
+    return fetch(request);
 };
 
 export const client = createClient<paths>({
