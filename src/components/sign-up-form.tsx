@@ -21,6 +21,8 @@ export function SignUpForm({
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
     const [email, setEmail] = useState("");
+    const [userName, setUserName] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -45,6 +47,10 @@ export function SignUpForm({
                 password,
                 options: {
                     emailRedirectTo: `${window.location.origin}/account`,
+                    data: {
+                        username: userName,
+                        display_name: displayName,
+                    },
                 },
             });
             if (error) throw error;
@@ -77,6 +83,32 @@ export function SignUpForm({
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                    id="username"
+                                    placeholder="username"
+                                    required
+                                    value={userName}
+                                    onChange={(e) =>
+                                        setUserName(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="display-name">
+                                    Display Name
+                                </Label>
+                                <Input
+                                    id="display-name"
+                                    placeholder="Display Name"
+                                    required
+                                    value={displayName}
+                                    onChange={(e) =>
+                                        setDisplayName(e.target.value)
+                                    }
                                 />
                             </div>
                             <div className="grid gap-2">
