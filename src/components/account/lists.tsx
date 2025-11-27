@@ -165,59 +165,62 @@ export function ListsTabContent() {
                     </DialogContent>
                 </Dialog>
             </div>
-            {data.data.items.map((list) => (
-                <Link
-                    key={list.id}
-                    href={`/lists/${list.id}`}
-                    className="block"
-                >
-                    <Card className="relative p-0 hover:bg-accent transition-colors">
-                        <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="flex gap-2 items-center">
-                                        <h3 className="font-semibold">
-                                            {list.title}
-                                        </h3>
-                                        <Badge
-                                            variant={
-                                                list.isPublic
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                            className="py-0 px-1.5"
-                                        >
-                                            {list.isPublic
-                                                ? "Public"
-                                                : "Private"}
-                                        </Badge>
-                                    </div>
-                                    {list.description && (
-                                        <p className="text-sm text-muted-foreground">
-                                            {list.description}
+            {data &&
+                data.data &&
+                data.data.items &&
+                data.data.items.map((list) => (
+                    <Link
+                        key={list.id}
+                        href={`/lists/${list.id}`}
+                        className="block"
+                    >
+                        <Card className="relative p-0 hover:bg-accent transition-colors">
+                            <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="flex gap-2 items-center">
+                                            <h3 className="font-semibold">
+                                                {list.title}
+                                            </h3>
+                                            <Badge
+                                                variant={
+                                                    list.isPublic
+                                                        ? "default"
+                                                        : "secondary"
+                                                }
+                                                className="py-0 px-1.5"
+                                            >
+                                                {list.isPublic
+                                                    ? "Public"
+                                                    : "Private"}
+                                            </Badge>
+                                        </div>
+                                        {list.description && (
+                                            <p className="text-sm text-muted-foreground">
+                                                {list.description}
+                                            </p>
+                                        )}
+                                        <p className="text-sm">
+                                            Entries: {list.totalEntries}
                                         </p>
-                                    )}
-                                    <p className="text-sm">
-                                        Entries: {list.totalEntries}
-                                    </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <Button
-                                variant="destructive"
-                                size="sm"
-                                className="absolute top-2 right-2 h-6 w-6 p-0"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    deleteList(list.id);
-                                }}
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Link>
-            ))}
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-2 right-2 h-6 w-6 p-0"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        deleteList(list.id);
+                                    }}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                ))}
         </div>
     );
 }

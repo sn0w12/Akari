@@ -113,6 +113,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                         <CommandEmpty>No lists found.</CommandEmpty>
                         <CommandGroup>
                             {listData &&
+                                listData.items &&
                                 listData.items.map((list) => {
                                     const isInList =
                                         Array.isArray(existingListData) &&
