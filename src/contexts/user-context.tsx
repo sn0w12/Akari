@@ -7,7 +7,7 @@ import React, {
     useState,
     ReactNode,
 } from "react";
-import { client } from "@/lib/api";
+import { createClient } from "@/lib/auth/client";
 
 interface UserContextType {
     user: components["schemas"]["UserResponse"] | undefined;
@@ -35,15 +35,30 @@ export function UserProvider({ children }: UserProviderProps) {
         try {
             setIsLoading(true);
             setError(null);
-            const { data, error: apiError } = await client.GET("/v2/user/me");
+            const supabase = createClient();
+            const { data, error: authError } = await supabase.auth.getUser();
 
-            if (apiError) {
-                throw new Error(
-                    apiError.data?.message || "Failed to fetch user"
-                );
+            if (authError) {
+                throw new Error(authError.message || "Failed to fetch user");
             }
 
-            setUser(data.data);
+            if (data.user) {
+                const userResponse: components["schemas"]["UserResponse"] = {
+                    userId: data.user.id,
+                    username:
+                        data.user.user_metadata?.username ||
+                        data.user.email ||
+                        "",
+                    displayName:
+                        data.user.user_metadata?.displayName ||
+                        data.user.user_metadata?.username ||
+                        data.user.email ||
+                        "",
+                };
+                setUser(userResponse);
+            } else {
+                setUser(undefined);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred");
             setUser(undefined);
