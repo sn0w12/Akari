@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDevice } from "@/contexts/device-context";
+import { useSetting } from "@/lib/settings";
 
 const STORAGE_KEY = "pwa_last_page";
 const SESSION_KEY = "pwa_session_restored";
@@ -11,10 +12,11 @@ export function PWANavigationRestore() {
     const pathname = usePathname();
     const router = useRouter();
     const hasRestoredRef = useRef(false);
+    const pwaRestorePath = useSetting("pwaRestorePath");
     const { isPWA } = useDevice();
 
     useEffect(() => {
-        if (!isPWA) {
+        if (!isPWA || !pwaRestorePath) {
             return;
         }
 

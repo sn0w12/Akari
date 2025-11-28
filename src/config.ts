@@ -36,6 +36,15 @@ export const APP_SETTINGS = {
                 default: true,
                 groups: ["UI"],
             },
+            pwaRestorePath: {
+                label: "Navigation Restore",
+                description:
+                    "Restore the last visited page when reopening the app.",
+                type: "checkbox",
+                default: true,
+                groups: ["UI"],
+                visibility: ["pwa"],
+            },
             useToast: {
                 label: "Show Toasts",
                 description: "Show toast notifications for various actions.",
