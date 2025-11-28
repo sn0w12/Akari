@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { UAParser } from "ua-parser-js";
 import { Input, NumberInput } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -418,6 +419,44 @@ export type SettingType =
     | "slider"
     | "color"
     | "custom-render";
+export type SettingVisibility = "desktop" | "mobile" | "pwa";
+
+/**
+ * Determines if a setting should be visible based on device type and visibility rules.
+ * @param visibility - Array of visibility settings for the setting/category
+ * @param deviceType - The type of device from UAParser ("desktop", "mobile", "tablet", etc., or undefined)
+ * @param isPWA - Whether the app is running as a PWA
+ * @returns true if the setting should be visible, false otherwise
+ */
+export function shouldShowSetting(
+    visibility: SettingVisibility[] | undefined,
+    deviceType: UAParser.IDevice["type"],
+    isPWA: boolean
+): boolean {
+    if (!visibility || visibility.length === 0) {
+        return true;
+    }
+
+    if (isPWA && visibility.includes("pwa")) {
+        return true;
+    }
+
+    if (
+        (deviceType === "mobile" || deviceType === "tablet") &&
+        visibility.includes("mobile")
+    ) {
+        return true;
+    }
+
+    if (
+        (deviceType === "desktop" || !deviceType) &&
+        visibility.includes("desktop")
+    ) {
+        return true;
+    }
+
+    return false;
+}
 
 export interface ContextMenuItemDef {
     label: string;
@@ -434,6 +473,7 @@ interface BaseSetting {
     onChange?: (value: SettingValue) => void;
     contextMenuItems?: ContextMenuItemDef[];
     groups?: string[];
+    visibility?: SettingVisibility[];
 }
 
 interface CheckboxSetting extends BaseSetting {

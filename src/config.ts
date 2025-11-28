@@ -1,4 +1,4 @@
-import { Setting } from "./lib/settings";
+import { Setting, SettingVisibility } from "./lib/settings";
 
 /**
  * Determines if the application is running in development mode.
@@ -79,6 +79,7 @@ export const APP_SETTINGS = {
     },
     shortcuts: {
         label: "Shortcuts",
+        visibility: ["desktop"],
         settings: {
             showShortcuts: {
                 type: "checkbox",
@@ -135,6 +136,7 @@ export const APP_SETTINGS = {
 } as const satisfies {
     [key: string]: {
         label: string;
+        visibility?: SettingVisibility[];
         settings: {
             [key: string]:
                 | Setting

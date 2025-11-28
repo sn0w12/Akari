@@ -12,11 +12,13 @@ import { UAParser } from "ua-parser-js";
 interface DeviceInfo {
     deviceType: UAParser.IDevice["type"];
     os: string;
+    isPWA: boolean;
 }
 
 const DeviceContext = createContext<DeviceInfo>({
     deviceType: undefined,
     os: "unknown",
+    isPWA: false,
 });
 
 interface DeviceProviderProps {
@@ -27,7 +29,16 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
     const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
         deviceType: undefined,
         os: "unknown",
+        isPWA: false,
     });
+
+    function isPWA() {
+        return (
+            window.matchMedia("(display-mode: standalone)").matches ||
+            (window.navigator as any).standalone === true ||
+            document.referrer.includes("android-app://")
+        );
+    }
 
     useEffect(() => {
         const parser = new UAParser(navigator.userAgent);
@@ -36,6 +47,7 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         setDeviceInfo({
             deviceType: device.type,
             os: os.name || "unknown",
+            isPWA: isPWA(),
         });
     }, []);
 

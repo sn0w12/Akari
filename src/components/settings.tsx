@@ -12,14 +12,17 @@ import {
     renderInput,
     resetAllSettingsToDefault,
     Setting,
+    shouldShowSetting,
 } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/contexts/confirm-context";
+import { useDevice } from "@/contexts/device-context";
 import { Tree, TreeItem } from "@/components/ui/tree";
 import { useSticky } from "@/hooks/use-sticky";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { TableOfContents } from "lucide-react";
+import { APP_SETTINGS } from "@/config";
 
 import { SettingsSearch } from "@/components/settings/search";
 
@@ -31,8 +34,58 @@ interface HierarchicalGroup {
 export default function SettingsPage() {
     const { settings, setSettings } = useSettings();
     const { confirm } = useConfirm();
+    const { deviceType, isPWA } = useDevice();
 
-    const settingsMaps = createAllSettingsMaps(settings, setSettings);
+    const allSettingsMaps = createAllSettingsMaps(settings, setSettings);
+    const settingsMaps = React.useMemo(() => {
+        const filtered: Record<string, Record<string, Setting>> = {};
+
+        Object.entries(allSettingsMaps).forEach(
+            ([categoryLabel, settingsMap]) => {
+                const categoryKey = Object.keys(APP_SETTINGS).find(
+                    (key) =>
+                        APP_SETTINGS[key as keyof typeof APP_SETTINGS].label ===
+                        categoryLabel
+                );
+
+                if (categoryKey) {
+                    const category =
+                        APP_SETTINGS[categoryKey as keyof typeof APP_SETTINGS];
+                    const categoryVisibility =
+                        "visibility" in category
+                            ? category.visibility
+                            : undefined;
+                    if (
+                        !shouldShowSetting(
+                            categoryVisibility,
+                            deviceType,
+                            isPWA
+                        )
+                    ) {
+                        return; // Skip this entire category
+                    }
+                }
+
+                // Filter individual settings within the category
+                const filteredSettings: Record<string, Setting> = {};
+                Object.entries(settingsMap).forEach(([key, setting]) => {
+                    if (
+                        shouldShowSetting(setting.visibility, deviceType, isPWA)
+                    ) {
+                        filteredSettings[key] = setting;
+                    }
+                });
+
+                // Only include the category if it has visible settings
+                if (Object.keys(filteredSettings).length > 0) {
+                    filtered[categoryLabel] = filteredSettings;
+                }
+            }
+        );
+
+        return filtered;
+    }, [allSettingsMaps, deviceType, isPWA]);
+
     const firstTab = Object.keys(settingsMaps)[0];
     const [activeTab, setActiveTab] = React.useState(firstTab);
     const [stickyRef, isSticky] = useSticky(-16);
