@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
+import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -134,12 +135,12 @@ export default function BookmarksHeader() {
 
     return (
         <div className="relative mb-4">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-row gap-2 md:gap-4">
                 <Button
                     variant="outline"
                     size="lg"
                     className={
-                        "w-auto md:h-auto flex items-center justify-center"
+                        "hidden md:flex w-auto md:h-auto items-center justify-center"
                     }
                     onClick={exportBookmarks}
                 >
@@ -149,13 +150,13 @@ export default function BookmarksHeader() {
                     variant="outline"
                     size="lg"
                     className={
-                        "w-auto md:h-auto flex items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
+                        "hidden md:flex w-auto md:h-auto items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
                     }
                     onClick={syncToMal}
                 >
                     Sync to MAL
                 </Button>
-                <div className="relative w-full">
+                <div className="relative w-full h-10 md:h-9">
                     <Input
                         type="search"
                         placeholder="Search bookmarks..."
@@ -166,10 +167,14 @@ export default function BookmarksHeader() {
                             setTimeout(() => setIsFocused(false), 150)
                         }
                         onKeyDown={handleKeyDown}
-                        className="no-cancel text-sm"
+                        className="no-cancel text-sm h-full"
                     />
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 </div>
+                <BookmarksDropdown
+                    exportBookmarks={exportBookmarks}
+                    syncToMal={syncToMal}
+                />
             </div>
             {isFocused && searchResults.length > 0 && (
                 <Card className="absolute z-10 w-full mt-1 p-0">
