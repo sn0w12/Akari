@@ -119,7 +119,8 @@ export function MangaCommentList({
 
     const handleReply = async (
         parentId: string,
-        content: string
+        content: string,
+        attachment?: components["schemas"]["UploadResponse"]
     ): Promise<CommentData> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
@@ -131,6 +132,7 @@ export function MangaCommentList({
                 targetType: "manga",
                 content: content,
                 parentId: parentId,
+                attachmentId: attachment?.id,
             },
         });
 
@@ -178,7 +180,10 @@ export function MangaCommentList({
         return data.data;
     };
 
-    const handleNewComment = async (content: string): Promise<void> => {
+    const handleNewComment = async (
+        content: string,
+        attachment?: components["schemas"]["UploadResponse"]
+    ): Promise<void> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
                 path: {
@@ -188,6 +193,7 @@ export function MangaCommentList({
             body: {
                 targetType: "manga",
                 content: content,
+                attachmentId: attachment?.id,
             },
         });
 

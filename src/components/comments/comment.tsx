@@ -24,7 +24,11 @@ interface CommentProps {
     comment: CommentData;
     onLoadReplies?: (commentId: string) => Promise<void>;
     onVote?: (commentId: string, voteType: VoteType) => Promise<void>;
-    onReply?: (parentId: string, content: string) => Promise<CommentData>;
+    onReply?: (
+        parentId: string,
+        content: string,
+        attachment?: components["schemas"]["UploadResponse"]
+    ) => Promise<CommentData>;
     onEdit?: (commentId: string, content: string) => Promise<void>;
     onDelete?: (commentId: string) => Promise<void>;
     depth?: number;
@@ -126,10 +130,13 @@ export function Comment({
         }
     };
 
-    const handleReplySubmit = async (content: string) => {
+    const handleReplySubmit = async (
+        content: string,
+        attachment?: components["schemas"]["UploadResponse"]
+    ) => {
         if (!onReply) return;
         try {
-            await onReply(comment.id, content);
+            await onReply(comment.id, content, attachment);
             setShowReplyForm(false);
             // If replies aren't shown yet, show them after posting
             if (!showReplies && hasReplies) {
@@ -221,6 +228,16 @@ export function Comment({
                     <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">
                         {comment.content}
                     </p>
+                )}
+
+                {comment.attachment && (
+                    <div className="mt-2 mb-2">
+                        <img
+                            src={comment.attachment.url}
+                            alt="Comment attachment"
+                            className="max-w-64 h-auto rounded-md border"
+                        />
+                    </div>
                 )}
 
                 <div className="flex items-center gap-1 sm:gap-2">

@@ -6,9 +6,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AttachmentPopover } from "./attachment-popover";
+import { X } from "lucide-react";
 
 interface CommentFormProps {
-    onSubmit: (content: string) => Promise<void>;
+    onSubmit: (
+        content: string,
+        attachment?: components["schemas"]["UploadResponse"]
+    ) => Promise<void>;
     placeholder?: string;
     submitLabel?: string;
     onCancel?: () => void;
@@ -26,6 +31,9 @@ export function CommentForm({
 }: CommentFormProps) {
     const [content, setContent] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedAttachment, setSelectedAttachment] = useState<
+        components["schemas"]["UploadResponse"] | undefined
+    >(undefined);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,8 +41,9 @@ export function CommentForm({
 
         setIsSubmitting(true);
         try {
-            await onSubmit(content);
+            await onSubmit(content, selectedAttachment);
             setContent("");
+            setSelectedAttachment(undefined);
         } catch (error) {
             console.error("Failed to submit comment:", error);
         } finally {
@@ -69,7 +78,30 @@ export function CommentForm({
                     disabled={isSubmitting || !currentUser}
                 />
 
+                {selectedAttachment && (
+                    <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                        <img
+                            src={selectedAttachment.url}
+                            alt="Selected attachment"
+                            className="h-10 w-10 object-cover rounded"
+                        />
+                        <span className="text-sm text-muted-foreground flex-1">
+                            Attached image
+                        </span>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setSelectedAttachment(undefined)}
+                            className="h-6 w-6 p-0"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+
                 <div className="flex items-center gap-2 justify-end">
+                    <AttachmentPopover onSelect={setSelectedAttachment} />
                     {onCancel && (
                         <Button
                             type="button"
