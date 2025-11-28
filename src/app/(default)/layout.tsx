@@ -14,6 +14,7 @@ import { ConfirmProvider } from "@/contexts/confirm-context";
 import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { DeviceProvider } from "@/contexts/device-context";
 import { Toaster } from "@/components/ui/sonner";
+import { PWANavigationRestore } from "@/components/pwa-navigation-restore";
 
 import type { Metadata } from "next";
 import type { Viewport } from "next";
@@ -29,7 +30,7 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export const metadata: Metadata = { title: "灯 - Akari" };
+export const metadata: Metadata = { title: "Akari" };
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
@@ -63,6 +64,7 @@ export default async function RootLayout({
                                     <QueryProvider>
                                         <UserProvider>
                                             <BreadcrumbProvider>
+                                                <PWANavigationRestore />
                                                 <BaseLayout gutter={true}>
                                                     <AnalyticsWrapper />
                                                     <div className="flex-1">
