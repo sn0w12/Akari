@@ -13,6 +13,7 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { ButtonLink } from "./ui/button-link";
 import { usePathname } from "next/navigation";
 import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useTheme } from "next-themes";
@@ -20,6 +21,7 @@ import { useSettingsChange } from "@/lib/settings";
 import { inPreview } from "@/config";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
+import { HomeIcon } from "lucide-react";
 
 export function HeaderComponent() {
     const pathname = usePathname();
@@ -162,6 +164,14 @@ export function HeaderComponent() {
                     <SearchBar />
                     <div className="flex gap-2">
                         <SearchButton />
+                        <ButtonLink
+                            href="/"
+                            variant="ghost"
+                            size="icon"
+                            className="md:hidden border touch-manipulation size-10"
+                        >
+                            <HomeIcon className="size-5" />
+                        </ButtonLink>
                         <BookmarksButton notification={notification} />
                     </div>
                 </div>
