@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useDevice } from "@/contexts/device-context";
 
 const STORAGE_KEY = "pwa_last_page";
 const SESSION_KEY = "pwa_session_restored";
@@ -10,17 +11,10 @@ export function PWANavigationRestore() {
     const pathname = usePathname();
     const router = useRouter();
     const hasRestoredRef = useRef(false);
+    const { isPWA } = useDevice();
 
     useEffect(() => {
-        const isPWA = () => {
-            return (
-                window.matchMedia("(display-mode: standalone)").matches ||
-                (window.navigator as any).standalone === true ||
-                document.referrer.includes("android-app://")
-            );
-        };
-
-        if (!isPWA()) {
+        if (!isPWA) {
             return;
         }
 
