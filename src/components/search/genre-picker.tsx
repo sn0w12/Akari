@@ -32,7 +32,7 @@ export default function GenrePicker({
                     <h3 className="text-xs font-medium mb-1 text-muted-foreground">
                         {category}
                     </h3>
-                    <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
                         {genres.map((genre) => (
                             <div
                                 key={genre}

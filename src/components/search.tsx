@@ -112,7 +112,7 @@ export default function SearchPage() {
                             )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-128">
+                    <PopoverContent className="w-80 md:w-128">
                         <GenrePicker
                             selectedGenres={selectedGenres}
                             onChange={setSelectedGenres}
