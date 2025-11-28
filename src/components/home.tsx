@@ -2,6 +2,8 @@ import { ServerPagination } from "./ui/pagination/server-pagination";
 import { PopularManga } from "./home/popular-manga";
 import { MangaGrid } from "./manga/manga-grid";
 import { InstallPrompt } from "./home/install-prompt";
+import { NotificationPrompt } from "./home/notification-prompt";
+import { PromptStack } from "./ui/prompt-stack";
 
 export default async function MangaReaderHome({
     latest,
@@ -28,7 +30,10 @@ export default async function MangaReaderHome({
                     className="my-4"
                 />
             </div>
-            <InstallPrompt />
+            <PromptStack>
+                <InstallPrompt />
+                <NotificationPrompt />
+            </PromptStack>
         </div>
     );
 }

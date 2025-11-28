@@ -2344,6 +2344,133 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/notifications/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subscribe to push notifications */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The subscription request containing endpoint, p256dh, and auth. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PushSubscriptionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/notifications/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send push notification to users who bookmarked the manga */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The notification payload. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["NotificationPayload"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/uploads": {
         parameters: {
             query?: never;
@@ -3194,6 +3321,13 @@ export interface components {
         };
         /** @enum {string} */
         MangaType: "Manga" | "Manwha" | "Manhua" | "OEL";
+        NotificationPayload: {
+            title: string;
+            body: string;
+            url: string;
+            /** Format: uuid */
+            mangaId: string;
+        };
         PaginatedCommentResponse: {
             items: components["schemas"]["CommentResponse"][];
             /** Format: int32 */
@@ -3211,6 +3345,11 @@ export interface components {
             /** Format: int32 */
             status: number;
             data: components["schemas"]["PaginatedCommentResponse"];
+        };
+        PushSubscriptionRequest: {
+            endpoint: string;
+            p256dh: string;
+            auth: string;
         };
         RateMangaRequest: {
             /** Format: int32 */
