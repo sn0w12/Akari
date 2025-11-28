@@ -73,7 +73,7 @@ export default function BookmarksSkeleton() {
                             variant="outline"
                             size="lg"
                             className={
-                                "hidden md:flex w-auto md:h-auto flex items-center justify-center"
+                                "hidden md:flex w-auto md:h-auto items-center justify-center"
                             }
                             disabled={true}
                         >
@@ -83,7 +83,7 @@ export default function BookmarksSkeleton() {
                             variant="outline"
                             size="lg"
                             className={
-                                "hidden md:flex w-auto md:h-auto flex items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
+                                "hidden md:flex w-auto md:h-auto items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
                             }
                             disabled={true}
                         >
