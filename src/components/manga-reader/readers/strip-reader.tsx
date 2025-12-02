@@ -93,6 +93,7 @@ export default function StripReader({
                         }}
                         loading={"eager"}
                         priority={index < 3}
+                        unoptimized={true}
                     />
                 ))}
             </div>

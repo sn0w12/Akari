@@ -174,6 +174,7 @@ export default function PageReader({
                             loading="eager"
                             width={720}
                             height={1500}
+                            unoptimized={true}
                         />
                     )}
                     <EndOfManga
@@ -199,6 +200,7 @@ export default function PageReader({
                             loading="eager"
                             width={720}
                             height={1500}
+                            unoptimized={true}
                         />
                     )}
                 </div>
