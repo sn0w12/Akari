@@ -52,12 +52,13 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 
 ## General
 
-| Setting          | Default | Description                                           |
-| ---------------- | ------- | ----------------------------------------------------- |
-| Theme            | System  | Select the application theme.                         |
-| Fancy Animations | Enabled | Such as manga detail pages cover image.               |
-| Show Toasts      | Enabled | Show toast notifications for various actions.         |
-| Login Toasts     | Enabled | Show warnings when you aren't logged in to a service. |
+| Setting            | Default | Description                                           |
+| ------------------ | ------- | ----------------------------------------------------- |
+| Theme              | System  | Select the application theme.                         |
+| Fancy Animations   | Enabled | Such as manga detail pages cover image.               |
+| Navigation Restore | Enabled | Restore the last visited page when reopening the app. |
+| Show Toasts        | Enabled | Show toast notifications for various actions.         |
+| Login Toasts       | Enabled | Show warnings when you aren't logged in to a service. |
 
 ## Manga
 
@@ -68,14 +69,14 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 
 ## Shortcuts
 
-| Setting            | Default      | Description                 |
-| ------------------ | ------------ | --------------------------- |
-| Show Shortcuts     | Enabled      | Enable or disable shortcuts |
-| Search Manga       | Ctrl+K       | Open manga search           |
-| Toggle Sidebar     | Ctrl+B       | Toggle the sidebar          |
-| Open Settings      | Ctrl+,       | Open settings               |
-| Open Account       | Ctrl+.       | Open account page           |
-| Navigate Bookmarks | Ctrl+Shift+B | Navigate to bookmarks       |
+| Setting               | Default      | Description                           |
+| --------------------- | ------------ | ------------------------------------- |
+| Show Shortcuts        | Enabled      | Enable or disable keyboard shortcuts. |
+| Search Manga          | Ctrl+K       | Shortcut to search manga.             |
+| Toggle Sidebar        | Ctrl+B       | Shortcut to toggle the sidebar.       |
+| Open Settings         | Ctrl+,       | Shortcut to open settings.            |
+| Open Account          | Ctrl+.       | Shortcut to open account page.        |
+| Navigate to Bookmarks | Ctrl+Shift+B | Shortcut to navigate to bookmarks.    |
 
 # Technical Stack
 
