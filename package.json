@@ -9,7 +9,8 @@
         "build": "next build",
         "start": "next start",
         "lint": "eslint",
-        "generate-types": "openapi-typescript http://localhost:5188/swagger/v2/swagger.json --output ./src/types/api.d.ts"
+        "generate-types": "openapi-typescript http://localhost:5188/swagger/v2/swagger.json --output ./src/types/api.d.ts",
+        "generate-settings-md": "npx tsx ./scripts/generate-settings-md.ts"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
