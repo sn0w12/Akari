@@ -1,35 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { useState } from "react";
 import { X, Share, Plus, MoreHorizontal } from "lucide-react";
 import { useDevice } from "@/contexts/device-context";
 import { useStorage } from "@/lib/storage";
 
 export function InstallPrompt() {
     const { deviceType } = useDevice();
-    const [isIOS, setIsIOS] = useState(false);
-    const [isAndroid, setIsAndroid] = useState(false);
-    const [isStandalone, setIsStandalone] = useState(false);
-    const [isVisible, setIsVisible] = useState(true);
+    const isIOS =
+        typeof window !== "undefined" &&
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as Window & { MSStream?: unknown }).MSStream;
+
+    const isAndroid =
+        typeof window !== "undefined" && /Android/.test(navigator.userAgent);
+
+    const isStandalone =
+        typeof window !== "undefined" &&
+        window.matchMedia("(display-mode: standalone)").matches;
+
     const installPromptStorage = useStorage("installPromptDismissed");
-
-    useEffect(() => {
-        setIsIOS(
-            /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-                !(window as any).MSStream
-        );
-
-        setIsAndroid(/Android/.test(navigator.userAgent));
-
-        setIsStandalone(
-            window.matchMedia("(display-mode: standalone)").matches
-        );
-
-        if (installPromptStorage.get()?.dismissed) {
-            setIsVisible(false);
-        }
-    }, []);
+    const [isVisible, setIsVisible] = useState<boolean>(
+        () => !installPromptStorage.get()?.dismissed
+    );
 
     const handleClose = () => {
         installPromptStorage.set({ dismissed: true });
@@ -55,14 +48,14 @@ export function InstallPrompt() {
             {isIOS ? (
                 <p className="text-sm text-muted-foreground">
                     To install this app on your iOS device, tap the share button{" "}
-                    <Share size={16} className="inline" /> and then "Add to Home
-                    Screen" <Plus size={16} className="inline" />.
+                    <Share size={16} className="inline" /> and then &quot;Add to
+                    Home Screen&quot; <Plus size={16} className="inline" />.
                 </p>
             ) : isAndroid ? (
                 <p className="text-sm text-muted-foreground">
                     To install this app on your Android device, tap the menu
                     button <MoreHorizontal size={16} className="inline" /> and
-                    select "Add to Home screen".
+                    select &quot;Add to Home screen&quot;.
                 </p>
             ) : (
                 <p className="text-sm text-muted-foreground">
