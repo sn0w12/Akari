@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useUser } from "@/contexts/user-context";
 import { registerAndSubscribe } from "@/lib/notifications/subscribe";
+import { useStorage } from "@/lib/storage";
 
 export function NotificationPrompt() {
     const { user } = useUser();
     const [isVisible, setIsVisible] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const storage = useStorage("pushNotifications");
 
     useEffect(() => {
-        if (
-            localStorage.getItem("pushNotificationsDeclined") === "true" ||
-            localStorage.getItem("pushNotificationsEnabled") === "true"
-        ) {
+        const data = storage.get();
+        if (data?.declined || data?.enabled) {
             setIsVisible(false);
             return;
         }
@@ -26,10 +26,10 @@ export function NotificationPrompt() {
         } else {
             setIsVisible(true);
         }
-    }, [user]);
+    }, [user, storage]);
 
     const handleDecline = () => {
-        localStorage.setItem("pushNotificationsDeclined", "true");
+        storage.update({ declined: true });
         setIsVisible(false);
     };
 
@@ -41,11 +41,10 @@ export function NotificationPrompt() {
             const result = await registerAndSubscribe(vapidKey);
 
             if (result.status === "subscribed") {
-                localStorage.setItem("pushNotificationsEnabled", "true");
-                localStorage.removeItem("pushNotificationsPending");
+                storage.update({ enabled: true, pending: false });
                 setIsVisible(false);
             } else if (result.status === "pending") {
-                localStorage.setItem("pushNotificationsPending", "true");
+                storage.update({ pending: true });
                 setIsVisible(false);
             } else {
                 setIsVisible(false);
@@ -55,7 +54,7 @@ export function NotificationPrompt() {
             const message = err instanceof Error ? err.message : String(err);
             console.log("Push notification setup failed:", message);
             if (message.includes("Permission denied")) {
-                localStorage.setItem("pushNotificationsDeclined", "true");
+                storage.update({ declined: true });
                 setIsVisible(false);
             }
         } finally {

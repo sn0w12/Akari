@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { X, Share, Plus, MoreHorizontal } from "lucide-react";
 import { useDevice } from "@/contexts/device-context";
+import { useStorage } from "@/lib/storage";
 
 export function InstallPrompt() {
     const { deviceType } = useDevice();
@@ -11,6 +12,7 @@ export function InstallPrompt() {
     const [isAndroid, setIsAndroid] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
+    const installPromptStorage = useStorage("installPromptDismissed");
 
     useEffect(() => {
         setIsIOS(
@@ -24,13 +26,13 @@ export function InstallPrompt() {
             window.matchMedia("(display-mode: standalone)").matches
         );
 
-        if (localStorage.getItem("installPromptDismissed") === "true") {
+        if (installPromptStorage.get()?.dismissed) {
             setIsVisible(false);
         }
     }, []);
 
     const handleClose = () => {
-        localStorage.setItem("installPromptDismissed", "true");
+        installPromptStorage.set({ dismissed: true });
         setIsVisible(false);
     };
 

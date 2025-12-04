@@ -1,14 +1,17 @@
 import { client } from "../api";
+import { StorageManager } from "../storage";
 
 export async function registerAndSubscribe(vapidPublicKey?: string) {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
         throw new Error("Push not supported");
     }
 
+    const storage = StorageManager.get("pushNotifications");
+
     const reg = await navigator.serviceWorker.register("/sw.js");
     const perm = await Notification.requestPermission();
     if (perm !== "granted") {
-        localStorage.setItem("pushNotificationsDeclined", "true");
+        storage.update({ declined: true });
         throw new Error("Permission denied");
     }
 
@@ -48,13 +51,13 @@ export async function registerAndSubscribe(vapidPublicKey?: string) {
         }
 
         // Clear any pending flags and return the subscription.
-        localStorage.removeItem("pushNotificationsPending");
+        storage.update({ pending: false });
         return { status: "subscribed", subscription } as const;
     }
 
     // No subscription was created/sent: VAPID key missing — flag pending so
     // we can attempt to complete the flow later when the server key is known.
-    localStorage.setItem("pushNotificationsPending", "true");
+    storage.update({ pending: true });
     return { status: "pending", subscription: null } as const;
 }
 

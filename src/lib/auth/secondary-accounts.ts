@@ -3,6 +3,7 @@ import {
     generateMalAuth,
     logOutMal,
 } from "./secondary-accounts/mal";
+import { StorageManager } from "@/lib/storage";
 
 export interface SecondaryAccount {
     id: string;
@@ -40,13 +41,13 @@ export async function isAccountValid(accountId: SecondaryAccountId) {
     const account = SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
     if (!account) throw new Error(`Unknown account ID: ${accountId}`);
 
-    const cache = sessionStorage.getItem(account.sessionKey);
-    if (cache === "true") return true;
-    if (cache === "false") return false;
+    const cacheStorage = StorageManager.get("secondaryAccountCache");
+    const cache = cacheStorage.get({ accountId });
+
+    if (cache?.valid) return true;
 
     const valid = await account.validate();
-
-    sessionStorage.setItem(account.sessionKey, valid ? "true" : "false");
+    cacheStorage.set({ valid }, { accountId });
     return valid;
 }
 

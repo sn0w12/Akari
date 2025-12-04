@@ -2,6 +2,7 @@ import { client } from "@/lib/api";
 import { setCookie } from "@/lib/utils";
 import { getSecondaryAccountById } from "../secondary-accounts";
 import { getBaseUrl } from "@/lib/api/base-url";
+import { StorageManager } from "@/lib/storage";
 
 export async function syncMal(manga: components["schemas"]["ChapterResponse"]) {
     if (!manga.malId) {
@@ -51,7 +52,8 @@ export async function logOutMal() {
 
     const malAccount = getSecondaryAccountById("mal");
     if (malAccount) {
-        sessionStorage.removeItem(malAccount.sessionKey);
+        const cacheStorage = StorageManager.get("secondaryAccountCache");
+        cacheStorage.remove({ accountId: malAccount.id });
     }
 
     return true;

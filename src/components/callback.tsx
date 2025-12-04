@@ -7,6 +7,7 @@ import { client } from "@/lib/api";
 import Cookies from "js-cookie";
 import ErrorComponent from "./error-page";
 import { getSecondaryAccountById } from "@/lib/auth/secondary-accounts";
+import { StorageManager } from "@/lib/storage";
 
 const CallbackPage = () => {
     const router = useRouter();
@@ -62,7 +63,10 @@ const CallbackPage = () => {
                     return;
                 }
 
-                sessionStorage.setItem(acc.sessionKey, "true");
+                const cacheStorage = StorageManager.get(
+                    "secondaryAccountCache"
+                );
+                cacheStorage.set({ valid: true }, { accountId: acc.id });
 
                 router.push("/");
             } catch (error) {

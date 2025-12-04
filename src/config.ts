@@ -1,4 +1,6 @@
 import { Setting, SettingVisibility } from "./lib/settings";
+import { createDynamicKey, createField } from "./lib/storage";
+import { StorageSchemas } from "./types/storage";
 
 /**
  * Determines if the application is running in development mode.
@@ -161,3 +163,49 @@ export const APP_SETTINGS = {
         };
     };
 };
+
+export const STORAGE_SCHEMAS = {
+    readerMode: {
+        key: createDynamicKey("reading-{mangaId}-{chapterId}", [
+            "mangaId",
+            "chapterId",
+        ]),
+        schema: {
+            isStripMode: createField("boolean", false),
+        },
+    },
+    pushNotifications: {
+        key: "push-notifications",
+        schema: {
+            declined: createField("boolean", false),
+            enabled: createField("boolean", false),
+            pending: createField("boolean", false),
+        },
+    },
+    pwaLastPage: {
+        key: "pwa-last-page",
+        schema: {
+            path: createField("string", ""),
+        },
+    },
+    pwaSessionRestored: {
+        key: "pwa-session-restored",
+        schema: {
+            restored: createField("boolean", false),
+        },
+        storageBackend: "session",
+    },
+    installPromptDismissed: {
+        key: "install-prompt-dismissed",
+        schema: {
+            dismissed: createField("boolean", false),
+        },
+    },
+    secondaryAccountCache: {
+        key: createDynamicKey("secondary-account-{accountId}", ["accountId"]),
+        schema: {
+            valid: createField("boolean", false),
+        },
+        storageBackend: "session",
+    },
+} satisfies StorageSchemas;

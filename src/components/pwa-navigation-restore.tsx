@@ -4,9 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDevice } from "@/contexts/device-context";
 import { useSetting } from "@/lib/settings";
-
-const STORAGE_KEY = "pwa_last_page";
-const SESSION_KEY = "pwa_session_restored";
+import { useStorage } from "@/lib/storage";
 
 export function PWANavigationRestore() {
     const pathname = usePathname();
@@ -14,19 +12,22 @@ export function PWANavigationRestore() {
     const hasRestoredRef = useRef(false);
     const pwaRestorePath = useSetting("pwaRestorePath");
     const { isPWA } = useDevice();
+    const pwaLastPageStorage = useStorage("pwaLastPage");
+    const pwaSessionStorage = useStorage("pwaSessionRestored");
 
     useEffect(() => {
         if (!isPWA || !pwaRestorePath) {
             return;
         }
 
-        const isNewSession = !sessionStorage.getItem(SESSION_KEY);
+        const isNewSession = !pwaSessionStorage.get()?.restored;
         if (isNewSession && !hasRestoredRef.current) {
             hasRestoredRef.current = true;
-            sessionStorage.setItem(SESSION_KEY, "true");
+            pwaSessionStorage.set({ restored: true });
 
             try {
-                const lastPage = localStorage.getItem(STORAGE_KEY);
+                const data = pwaLastPageStorage.get();
+                const lastPage = data?.path;
 
                 if (lastPage && pathname === "/") {
                     router.replace(lastPage);
@@ -39,7 +40,7 @@ export function PWANavigationRestore() {
 
         // Save current page whenever it changes
         try {
-            localStorage.setItem(STORAGE_KEY, pathname);
+            pwaLastPageStorage.set({ path: pathname });
         } catch (error) {
             console.error("Failed to save current page:", error);
         }

@@ -5,6 +5,7 @@ import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ChapterInfo } from "./manga-reader/chapter-info";
+import { useStorage } from "@/lib/storage";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -48,6 +49,7 @@ export function Reader({ chapter }: ReaderProps) {
         percentage: 0,
     });
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
+    const readerModeStorage = useStorage("readerMode");
 
     useEffect(() => {
         switch (bookmarkState) {
@@ -62,28 +64,24 @@ export function Reader({ chapter }: ReaderProps) {
         }
     }, [bookmarkState]);
 
-    const localstorageId = useMemo(
-        () => `readerMode-${chapter.mangaId}`,
-        [chapter.mangaId]
-    );
-
     useEffect(() => {
-        const storedMode = localStorage.getItem(localstorageId);
-        if (!storedMode) {
-            setIsStripMode(["Manwha", "Manhua"].includes(chapter.type));
-            return;
-        }
-
-        if (storedMode === "strip") {
-            setIsStripMode(true);
+        const stored = readerModeStorage.get({
+            mangaId: chapter.mangaId,
+            chapterId: chapter.id,
+        });
+        if (stored && typeof stored.isStripMode === "boolean") {
+            setIsStripMode(stored.isStripMode);
         } else {
-            setIsStripMode(false);
+            setIsStripMode(["Manwha", "Manhua"].includes(chapter.type));
         }
-    }, [localstorageId]);
+    }, [chapter.mangaId, chapter.id, chapter.type, readerModeStorage]);
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
-        localStorage.setItem(localstorageId, isStrip ? "strip" : "page");
+        readerModeStorage.set(
+            { isStripMode: isStrip },
+            { mangaId: chapter.mangaId, chapterId: chapter.id }
+        );
     }
 
     function toggleReaderMode(override: boolean = true) {
