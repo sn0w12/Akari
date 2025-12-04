@@ -32,22 +32,29 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         isPWA: false,
     });
 
-    function isPWA() {
-        return (
-            window.matchMedia("(display-mode: standalone)").matches ||
-            (window.navigator as any).standalone === true ||
-            document.referrer.includes("android-app://")
-        );
+    interface NavigatorStandalone extends Navigator {
+        standalone?: boolean;
     }
 
     useEffect(() => {
+        function isPWA() {
+            const nav = window.navigator as NavigatorStandalone;
+            return (
+                window.matchMedia("(display-mode: standalone)").matches ||
+                nav.standalone === true ||
+                document.referrer.includes("android-app://")
+            );
+        }
+
         const parser = new UAParser(navigator.userAgent);
         const device = parser.getDevice();
         const os = parser.getOS();
-        setDeviceInfo({
-            deviceType: device.type,
-            os: os.name || "unknown",
-            isPWA: isPWA(),
+        queueMicrotask(() => {
+            setDeviceInfo({
+                deviceType: device.type,
+                os: os.name || "unknown",
+                isPWA: isPWA(),
+            });
         });
     }, []);
 
