@@ -223,6 +223,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
 
 // Centralized storage manager
 export class StorageManager {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private static instances = new Map<SchemaKey, StorageWrapper<any>>();
 
     // Get a wrapper for a specific schema
