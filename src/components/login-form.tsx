@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useUser } from "@/contexts/user-context";
 
 export function LoginForm({
     className,
@@ -24,6 +25,7 @@ export function LoginForm({
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { refreshUser } = useUser();
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -38,6 +40,7 @@ export function LoginForm({
                 password,
             });
             if (error) throw error;
+            await refreshUser();
             router.push("/account");
         } catch (error: unknown) {
             setError(

@@ -16,6 +16,7 @@ interface UserContextType {
     >;
     isLoading: boolean;
     error: string | null;
+    refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -67,12 +68,18 @@ export function UserProvider({ children }: UserProviderProps) {
         }
     };
 
+    const refreshUser = async () => {
+        await fetchUser();
+    };
+
     useEffect(() => {
         fetchUser();
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoading, error }}>
+        <UserContext.Provider
+            value={{ user, setUser, isLoading, error, refreshUser }}
+        >
             {children}
         </UserContext.Provider>
     );
