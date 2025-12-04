@@ -249,40 +249,6 @@ export class StorageManager {
         }
         this.instances.clear();
     }
-
-    // Migrate data from old keys to new ones
-    static migrate(
-        oldKey: string,
-        newSchemaKey: SchemaKey,
-        transform?: (oldData: any) => any
-    ): boolean {
-        if (typeof window === "undefined") return false;
-
-        const oldData = localStorage.getItem(oldKey);
-        if (!oldData) return false;
-
-        const wrapper = this.get(newSchemaKey);
-        let newData: any;
-
-        if (transform) {
-            newData = transform(oldData);
-        } else {
-            // Try to parse as JSON or use as-is
-            try {
-                newData = JSON.parse(oldData);
-            } catch {
-                newData = oldData;
-            }
-        }
-
-        if (typeof wrapper.key === "string") {
-            wrapper.set(newData);
-            localStorage.removeItem(oldKey);
-            return true;
-        }
-
-        return false;
-    }
 }
 
 export const createDynamicKey = (
