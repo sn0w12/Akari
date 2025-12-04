@@ -67,7 +67,7 @@ export default function BookmarksSkeleton() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <div className="mx-auto p-4">
-                <div className="relative mb-6">
+                <div className="relative mb-4">
                     <div className="flex flex-row gap-2 md:gap-4">
                         <Button
                             variant="outline"
