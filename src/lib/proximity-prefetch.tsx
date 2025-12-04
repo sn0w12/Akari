@@ -151,7 +151,9 @@ export function ProximityPrefetch({
     }, []);
     useEffect(() => {
         // Update links on mount and when DOM changes
-        updateLinks();
+        queueMicrotask(() => {
+            updateLinks();
+        });
 
         // Set up a MutationObserver to detect new links
         const observer = new MutationObserver(() => {
