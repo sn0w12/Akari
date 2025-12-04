@@ -21,14 +21,11 @@ export type KeyConfig<T extends SchemaDefinition> = {
 };
 
 export type StorageSchemas = {
-    [key: string]: KeyConfig<any>;
+    [key: string]: KeyConfig<unknown>;
 };
 
-export type SchemaFromConfig<T extends KeyConfig<any>> = T extends KeyConfig<
-    infer S
->
-    ? S
-    : never;
+export type SchemaFromConfig<T extends KeyConfig<unknown>> =
+    T extends KeyConfig<infer S> ? S : never;
 
 export type DataFromSchema<T extends SchemaDefinition> = {
     [K in keyof T]: T[K]["type"] extends "string"
