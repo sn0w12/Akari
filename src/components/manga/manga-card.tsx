@@ -46,6 +46,8 @@ export function MangaCard({
                     setComputedDirection(
                         spaceOnRight < expansionWidth + 20 ? "left" : "right"
                     );
+                } else {
+                    setComputedDirection(expandDirection);
                 }
             }
         };
@@ -53,12 +55,6 @@ export function MangaCard({
         updateDirection();
         window.addEventListener("resize", updateDirection);
         return () => window.removeEventListener("resize", updateDirection);
-    }, [expandDirection]);
-
-    useEffect(() => {
-        if (expandDirection !== "auto") {
-            setComputedDirection(expandDirection);
-        }
     }, [expandDirection]);
 
     const handleMouseEnter = () => {

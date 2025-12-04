@@ -23,12 +23,10 @@ export default function PageProgress({
     const [gradient, setGradient] = useState(
         "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
     );
-    const [windowWidth, setWindowWidth] = useState(0);
+    const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
     const isVisible = useSetting("showPageProgress");
 
     useEffect(() => {
-        setWindowWidth(window.innerWidth);
-
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
         };

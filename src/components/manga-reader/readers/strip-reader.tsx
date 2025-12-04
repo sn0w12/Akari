@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import MangaFooter from "../manga-footer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,8 +28,12 @@ export default function StripReader({
     const stripWidth = useSetting("stripWidth");
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
-    const mountTimeRef = useRef<number>(Date.now());
+    const mountTimeRef = useRef<number>(0);
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        mountTimeRef.current = Date.now();
+    }, []);
 
     useEffect(() => {
         if (!chapter) return;

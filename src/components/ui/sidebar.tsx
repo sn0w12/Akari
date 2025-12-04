@@ -777,9 +777,9 @@ function SidebarMenuSkeleton({
     showIcon = false,
     ...props
 }: React.ComponentProps<"div"> & { showIcon?: boolean }) {
-    const width = React.useMemo(() => {
-        return `${Math.floor(Math.random() * 40) + 50}%`;
-    }, []);
+    const [width] = React.useState(
+        () => `${Math.floor(Math.random() * 40) + 50}%`
+    );
 
     return (
         <div
@@ -979,7 +979,70 @@ function SidebarSection({
         itemRefs.current[index] = el;
     };
 
-    const updateIndicator = React.useCallback((index: number | null) => {
+    const handleItemHover = (index: number) => {
+        hoverIndexRef.current = index;
+        requestAnimationFrame(() => {
+            if (index === null || !indicatorRef.current) {
+                if (indicatorRef.current) {
+                    indicatorRef.current.style.opacity = "0";
+                }
+                return;
+            }
+
+            const item = itemRefs.current[index];
+            if (!item || !itemsContainerRef.current) return;
+
+            const itemRect = item.getBoundingClientRect();
+            const containerRect =
+                itemsContainerRef.current.getBoundingClientRect();
+            const top = itemRect.top - containerRect.top;
+
+            if (indicatorRef.current) {
+                indicatorRef.current.style.height = `${itemRect.height}px`;
+                indicatorRef.current.style.top = `${top}px`;
+                indicatorRef.current.style.opacity = isHoveringRef.current
+                    ? "1"
+                    : "0";
+            }
+        });
+    };
+
+    const handleMouseEnter = () => {
+        isHoveringRef.current = true;
+        if (hoverIndexRef.current !== null) {
+            const index = hoverIndexRef.current;
+            if (index === null || !indicatorRef.current) {
+                if (indicatorRef.current) {
+                    indicatorRef.current.style.opacity = "0";
+                }
+                return;
+            }
+
+            const item = itemRefs.current[index];
+            if (!item || !itemsContainerRef.current) return;
+
+            const itemRect = item.getBoundingClientRect();
+            const containerRect =
+                itemsContainerRef.current.getBoundingClientRect();
+            const top = itemRect.top - containerRect.top;
+
+            if (indicatorRef.current) {
+                indicatorRef.current.style.height = `${itemRect.height}px`;
+                indicatorRef.current.style.top = `${top}px`;
+                indicatorRef.current.style.opacity = isHoveringRef.current
+                    ? "1"
+                    : "0";
+            }
+        }
+
+        setTimeout(() => {
+            setIsHovering(true);
+        }, 50);
+    };
+
+    const handleMouseLeave = () => {
+        isHoveringRef.current = false;
+        const index = null;
         if (index === null || !indicatorRef.current) {
             if (indicatorRef.current) {
                 indicatorRef.current.style.opacity = "0";
@@ -1001,37 +1064,11 @@ function SidebarSection({
                 ? "1"
                 : "0";
         }
-    }, []);
-
-    const handleItemHover = React.useCallback(
-        (index: number) => {
-            hoverIndexRef.current = index;
-            requestAnimationFrame(() => {
-                updateIndicator(index);
-            });
-        },
-        [updateIndicator]
-    );
-
-    const handleMouseEnter = React.useCallback(() => {
-        isHoveringRef.current = true;
-        if (hoverIndexRef.current !== null) {
-            updateIndicator(hoverIndexRef.current);
-        }
-
-        setTimeout(() => {
-            setIsHovering(true);
-        }, 50);
-    }, [updateIndicator]);
-
-    const handleMouseLeave = React.useCallback(() => {
-        isHoveringRef.current = false;
-        updateIndicator(null);
 
         setTimeout(() => {
             setIsHovering(false);
         }, 50);
-    }, [updateIndicator]);
+    };
 
     const handleSectionToggle = (e: React.MouseEvent) => {
         e.stopPropagation();

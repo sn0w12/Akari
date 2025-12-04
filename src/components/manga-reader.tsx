@@ -35,46 +35,38 @@ function throttle<T extends (...args: unknown[]) => unknown>(
 }
 
 export function Reader({ chapter }: ReaderProps) {
-    const [isStripMode, setIsStripMode] = useState<boolean | undefined>(
-        undefined
-    );
+    const readerModeStorage = useStorage("readerMode");
+    const [isStripMode, setIsStripMode] = useState<boolean>(() => {
+        const stored = readerModeStorage.get({
+            mangaId: chapter.mangaId,
+            chapterId: chapter.id,
+        });
+        if (stored && typeof stored.isStripMode === "boolean") {
+            return stored.isStripMode;
+        } else {
+            return ["Manwha", "Manhua"].includes(chapter.type);
+        }
+    });
     const [isInactive, setIsInactive] = useState(false);
     const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
-    const [bgColor, setBgColor] = useState<string>("bg-background");
+    const bgColor = useMemo(() => {
+        switch (bookmarkState) {
+            case true:
+                return "bg-accent-positive/40";
+            case false:
+                return "bg-destructive";
+            default:
+                return "bg-background";
+        }
+    }, [bookmarkState]);
 
     const [scrollMetrics, setScrollMetrics] = useState({
         pixels: 0,
         percentage: 0,
     });
     const scrollHandlerRef = useRef<(() => void) | undefined>(undefined);
-    const readerModeStorage = useStorage("readerMode");
-
-    useEffect(() => {
-        switch (bookmarkState) {
-            case true:
-                setBgColor("bg-accent-positive/40");
-                break;
-            case false:
-                setBgColor("bg-destructive");
-                break;
-            default:
-                setBgColor("bg-background");
-        }
-    }, [bookmarkState]);
-
-    useEffect(() => {
-        const stored = readerModeStorage.get({
-            mangaId: chapter.mangaId,
-            chapterId: chapter.id,
-        });
-        if (stored && typeof stored.isStripMode === "boolean") {
-            setIsStripMode(stored.isStripMode);
-        } else {
-            setIsStripMode(["Manwha", "Manhua"].includes(chapter.type));
-        }
-    }, [chapter.mangaId, chapter.id, chapter.type, readerModeStorage]);
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
@@ -103,8 +95,9 @@ export function Reader({ chapter }: ReaderProps) {
     }, []);
 
     useEffect(() => {
-        // Initialize the inactivity timer
-        resetInactivityTimer();
+        inactivityTimer.current = setTimeout(() => {
+            setIsInactive(true);
+        }, 2000);
 
         const events = ["mousemove", "scroll", "touchstart"];
         events.forEach((event) => {

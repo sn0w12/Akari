@@ -1,28 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 
 interface SpinnerProps {
     size?: number;
 }
 
+const getForegroundColor = (): string => {
+    if (typeof window === "undefined") return "#000000";
+    const rootStyles = getComputedStyle(document.documentElement);
+    const foregroundColor = rootStyles.getPropertyValue("--foreground").trim();
+    return foregroundColor || "#000000";
+};
+
 const Spinner: React.FC<SpinnerProps> = ({ size = 60 }) => {
-    const [spinnerColor, setSpinnerColor] = useState<string>("");
-
-    useEffect(() => {
-        const rootStyles = getComputedStyle(document.documentElement);
-        const foregroundColor = rootStyles
-            .getPropertyValue("--foreground")
-            .trim();
-
-        if (foregroundColor) {
-            setSpinnerColor(foregroundColor);
-        } else {
-            setSpinnerColor("#000000");
-        }
-    }, []);
-
+    const spinnerColor = getForegroundColor();
     return <PuffLoader color={spinnerColor} size={size} />;
 };
 

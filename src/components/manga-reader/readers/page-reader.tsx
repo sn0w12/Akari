@@ -39,7 +39,6 @@ export default function PageReader({
             ? 0
             : pageNumber - 1;
     });
-    const [pageProgressHidden, setPageProgressHidden] = useState(false);
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
     const queryClient = useQueryClient();
@@ -73,14 +72,6 @@ export default function PageReader({
             }
         }
     }, [chapter, currentPage, router, setBookmarkState, queryClient]);
-
-    useEffect(() => {
-        if (scrollMetrics.pixels < 50) {
-            setPageProgressHidden(false);
-        } else {
-            setPageProgressHidden(true);
-        }
-    }, [scrollMetrics.pixels]);
 
     const updatePageUrl = useCallback((pageNum: number) => {
         const url = new URL(window.location.href);
@@ -221,7 +212,7 @@ export default function PageReader({
                     setCurrentPage={(page) => {
                         setPageWithUrlUpdate(page);
                     }}
-                    hidden={pageProgressHidden}
+                    hidden={scrollMetrics.pixels >= 50}
                 />
             </div>
             <MangaFooter
