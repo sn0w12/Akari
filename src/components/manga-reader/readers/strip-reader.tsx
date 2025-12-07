@@ -58,7 +58,7 @@ export default function StripReader({
         }
 
         if (prefetch && chapter.nextChapter && !hasPrefetchedRef.current) {
-            router.prefetch(`/manga/${chapter.nextChapter}?_prefetch=1`);
+            router.prefetch(`/manga/${chapter.nextChapter}`);
             hasPrefetchedRef.current = true;
         }
     }, [

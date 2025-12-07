@@ -67,7 +67,7 @@ export default function PageReader({
             );
 
             if (currentPage >= threshold) {
-                router.prefetch(`./${chapter.nextChapter}?_prefetch=1`);
+                router.prefetch(`./${chapter.nextChapter}`);
                 hasPrefetchedRef.current = true;
             }
         }
