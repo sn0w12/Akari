@@ -72,8 +72,8 @@ export default async function RootLayout({
                                                     </div>
                                                     <CookieConsent />
                                                     <Toaster
-                                                        richColors
                                                         position="top-right"
+                                                        visibleToasts={5}
                                                     />
                                                     <Footer />
                                                 </BaseLayout>

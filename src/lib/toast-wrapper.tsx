@@ -2,6 +2,14 @@
 
 import { toast } from "sonner";
 import { getSetting } from "./settings";
+import { cn } from "./utils";
+
+import { CircleCheck, CircleXIcon, InfoIcon, CircleAlert } from "lucide-react";
+
+type ToastType = "success" | "error" | "info" | "warning";
+interface ToastOptions {
+    autoClose?: number;
+}
 
 /**
  * A wrapper class for handling toast notifications with customizable options.
@@ -11,7 +19,7 @@ import { getSetting } from "./settings";
  *
  * @constructor
  * @param {string} message - The message to display in the toast notification
- * @param {"success" | "error" | "info" | "warning"} type - The type of toast notification to display
+ * @param {ToastType} type - The type of toast notification to display
  * @param {Object} [options={}] - Optional configuration options for the toast notification
  * @param {number} [options.autoClose=5000] - Auto close duration in ms (0 to disable)
  * @param {boolean} [options.closeOnClick=true] - Close the toast when clicked
@@ -28,29 +36,62 @@ import { getSetting } from "./settings";
  * toast.close();
  */
 class Toast {
-    constructor(
-        message: string,
-        type: "success" | "error" | "info" | "warning",
-        options = {}
-    ) {
+    constructor(message: string, type: ToastType, options: ToastOptions = {}) {
         const showToast = getSetting("useToast");
         if (!showToast) return;
 
-        const { autoClose, ...restOptions } = options as {
-            autoClose?: number;
-            [key: string]: unknown;
-        };
+        const { autoClose, ...restOptions } = options;
         const toastOptions = {
             duration: autoClose ?? 5000,
             ...restOptions,
         };
 
-        toast[type](message, toastOptions);
+        toast.custom(
+            () => <ToastComponent message={message} type={type} />,
+            toastOptions
+        );
     }
 
     close() {
         toast.dismiss();
     }
+}
+
+interface ToastProps {
+    message: string;
+    type: ToastType;
+}
+
+const ToastIcon = ({ type }: { type: ToastType }) => {
+    switch (type) {
+        case "success":
+            return <CircleCheck className="w-5 h-5" />;
+        case "error":
+            return <CircleXIcon className="w-5 h-5" />;
+        case "info":
+            return <InfoIcon className="w-5 h-5" />;
+        case "warning":
+            return <CircleAlert className="w-5 h-5" />;
+    }
+};
+
+function ToastComponent({ message, type }: ToastProps) {
+    return (
+        <div
+            className={cn("backdrop-blur-md rounded-md border select-none", {
+                "bg-accent-positive/70 border-accent-positive text-white":
+                    type === "success",
+                "bg-negative/70 border-negative text-white": type === "error",
+                "bg-info/70 border-info text-white": type === "info",
+                "bg-warning/70 border-warning text-white": type === "warning",
+            })}
+        >
+            <div className="flex items-center gap-1.5 px-3 py-2">
+                <ToastIcon type={type} />
+                <span>{message}</span>
+            </div>
+        </div>
+    );
 }
 
 export default Toast;
