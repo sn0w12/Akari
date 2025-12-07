@@ -15,6 +15,7 @@ export default function PWAPage() {
             try {
                 const data = pwaLastPageStorage.get();
                 const lastPage = data?.path;
+                console.log("Restoring PWA to last page:", lastPage);
                 if (lastPage) {
                     router.replace(lastPage);
                 } else {
