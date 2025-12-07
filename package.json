@@ -6,7 +6,8 @@
     },
     "scripts": {
         "dev": "next dev",
-        "build": "next build",
+        "build:sw": "tsc -p src/sw/tsconfig.json",
+        "build": "npm run build:sw && next build",
         "start": "next start",
         "lint": "eslint",
         "generate-types": "openapi-typescript http://localhost:5188/swagger/v2/swagger.json --output ./src/types/api.d.ts",
