@@ -37,6 +37,12 @@
             "type": "image/x-icon"
         }
     ],
+    "shortcuts": [
+        {
+            "name": "Bookmarks",
+            "url": "/bookmarks"
+        }
+    ],
     "categories": ["books", "reading", "entertainment", "manga"],
     "related_applications": [],
     "prefer_related_applications": false
