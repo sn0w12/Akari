@@ -15,7 +15,7 @@ export async function fetchBookmarks(page: number) {
         }
 
         return data;
-    } catch (err) {
+    } catch {
         return null;
     }
 }
@@ -26,6 +26,10 @@ export const fetchNotification = async () => {
 
         if (error) {
             return "";
+        }
+
+        if (data.data) {
+            navigator.setAppBadge(Number(data.data));
         }
 
         return data.data.toString();
