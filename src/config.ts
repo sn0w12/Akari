@@ -188,13 +188,6 @@ export const STORAGE_SCHEMAS = {
             path: createField("string", ""),
         },
     },
-    pwaSessionRestored: {
-        key: "pwa-session-restored",
-        schema: {
-            restored: createField("boolean", false),
-        },
-        storageBackend: "session",
-    },
     installPromptDismissed: {
         key: "install-prompt-dismissed",
         schema: {
