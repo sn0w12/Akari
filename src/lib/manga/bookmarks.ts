@@ -28,8 +28,12 @@ export const fetchNotification = async () => {
             return "";
         }
 
-        if (data.data) {
-            navigator.setAppBadge(Number(data.data));
+        try {
+            if (data.data) {
+                navigator.setAppBadge(Number(data.data));
+            }
+        } catch {
+            console.warn("Failed to set app badge");
         }
 
         return data.data.toString();
