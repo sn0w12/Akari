@@ -194,7 +194,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                         className={cn(
                                             "block p-2 rounded text-sm transition-colors duration-100 hover:bg-accent",
                                             {
-                                                "bg-indigo-600 hover:bg-indigo-700 text-white":
+                                                "bg-accent-positive hover:bg-accent-positive/90 text-white":
                                                     isLastRead,
                                             }
                                         )}

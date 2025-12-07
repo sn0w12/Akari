@@ -57,7 +57,7 @@ const MobileBookmarkCard: React.FC<{
                         href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
                         rel="noopener noreferrer"
                         className={cn(
-                            "mt-2 py-4 px-6 w-full text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors",
+                            "mt-2 py-4 px-6 w-full text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
                             {
                                 "bg-cyan-600 hover:bg-cyan-700":
                                     bookmark.lastReadChapter.number ===

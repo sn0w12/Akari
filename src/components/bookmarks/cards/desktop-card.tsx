@@ -92,7 +92,7 @@ function DesktopBookmarkCard({
                             href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
                             rel="noopener noreferrer"
                             className={cn(
-                                "w-fit py-4 px-6 text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors",
+                                "w-fit py-4 px-6 text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
                                 {
                                     "bg-cyan-600 hover:bg-cyan-700":
                                         bookmark.lastReadChapter.number ===
