@@ -31,6 +31,11 @@ function DesktopBookmarkCard({
         null!
     ) as React.RefObject<HTMLButtonElement>;
 
+    const newChapter =
+        bookmark.lastReadChapter.number === bookmark.chapters[1]?.number;
+    const upToDate =
+        bookmark.lastReadChapter.number === bookmark.chapters[0]?.number;
+
     function showChapters() {
         const newShowState = !showPopup;
         setShowPopup(!showPopup);
@@ -89,22 +94,26 @@ function DesktopBookmarkCard({
                     <div className="flex flex-row gap-2 mb-2">
                         {/* Continue Reading Button */}
                         <ButtonLink
-                            href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
+                            href={`/manga/${bookmark.mangaId}/${
+                                newChapter
+                                    ? bookmark.chapters[0]?.number
+                                    : bookmark.lastReadChapter.number
+                            }`}
                             rel="noopener noreferrer"
                             className={cn(
                                 "w-fit py-4 px-6 text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
                                 {
-                                    "bg-cyan-600 hover:bg-cyan-700":
-                                        bookmark.lastReadChapter.number ===
-                                        bookmark.chapters[1]?.number,
-                                    "bg-green-600 hover:bg-green-700":
-                                        bookmark.lastReadChapter.number ===
-                                        bookmark.chapters[0]?.number,
+                                    "bg-cyan-600 hover:bg-cyan-700": newChapter,
+                                    "bg-green-600 hover:bg-green-700": upToDate,
                                 }
                             )}
                             prefetch={false}
                         >
-                            <span>{bookmark.lastReadChapter.title}</span>
+                            <span>
+                                {newChapter
+                                    ? bookmark.chapters[0]?.title
+                                    : bookmark.lastReadChapter.title}
+                            </span>
                         </ButtonLink>
                         <Button
                             ref={buttonRef}

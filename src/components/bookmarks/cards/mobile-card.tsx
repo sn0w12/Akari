@@ -14,6 +14,11 @@ const MobileBookmarkCard: React.FC<{
         >
     >;
 }> = ({ bookmark, setUpdatedBookmarks }) => {
+    const newChapter =
+        bookmark.lastReadChapter.number === bookmark.chapters[1]?.number;
+    const upToDate =
+        bookmark.lastReadChapter.number === bookmark.chapters[0]?.number;
+
     return (
         <Card className="flex flex-row items-start  bg-card border border-border rounded-lg p-0 md:hidden">
             <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
@@ -54,22 +59,24 @@ const MobileBookmarkCard: React.FC<{
                     </div>
                     {/* Continue Reading Button */}
                     <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${bookmark.lastReadChapter.number}`}
+                        href={`/manga/${bookmark.mangaId}/${
+                            newChapter
+                                ? bookmark.chapters[0]?.number
+                                : bookmark.lastReadChapter.number
+                        }`}
                         rel="noopener noreferrer"
                         className={cn(
                             "mt-2 py-4 px-6 w-full text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
                             {
-                                "bg-cyan-600 hover:bg-cyan-700":
-                                    bookmark.lastReadChapter.number ===
-                                    bookmark.chapters[1]?.number,
-                                "bg-green-600 hover:bg-green-700":
-                                    bookmark.lastReadChapter.number ===
-                                    bookmark.chapters[0]?.number,
+                                "bg-cyan-600 hover:bg-cyan-700": newChapter,
+                                "bg-green-600 hover:bg-green-700": upToDate,
                             }
                         )}
                         prefetch={false}
                     >
-                        {bookmark.lastReadChapter.title}
+                        {newChapter
+                            ? bookmark.chapters[0]?.title
+                            : bookmark.lastReadChapter.title}
                     </ButtonLink>
                 </div>
                 <LatestChapterInfo bookmark={bookmark} />
