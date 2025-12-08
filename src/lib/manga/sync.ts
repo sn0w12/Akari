@@ -62,7 +62,7 @@ export async function syncAllServices(
     // Display a toast notification after all sync handlers are done
     if (success) {
         new Toast(`Bookmark updated successfully`, "success", {
-            Description: `${authorizedServices.join(", ")}`,
+            description: `${authorizedServices.join(", ")}`,
         });
     } else {
         new Toast("Failed to update bookmark.", "error");

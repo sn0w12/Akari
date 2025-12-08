@@ -9,6 +9,7 @@ import { CircleCheck, CircleXIcon, InfoIcon, CircleAlert } from "lucide-react";
 type ToastType = "success" | "error" | "info" | "warning";
 interface ToastOptions {
     autoClose?: number;
+    description?: string;
 }
 
 /**
@@ -40,14 +41,20 @@ class Toast {
         const showToast = getSetting("useToast");
         if (!showToast) return;
 
-        const { autoClose, ...restOptions } = options;
+        const { autoClose, description, ...restOptions } = options;
         const toastOptions = {
             duration: autoClose ?? 5000,
             ...restOptions,
         };
 
         toast.custom(
-            () => <ToastComponent message={message} type={type} />,
+            () => (
+                <ToastComponent
+                    message={message}
+                    type={type}
+                    description={description}
+                />
+            ),
             toastOptions
         );
     }
@@ -60,6 +67,7 @@ class Toast {
 interface ToastProps {
     message: string;
     type: ToastType;
+    description?: string;
 }
 
 const ToastIcon = ({ type }: { type: ToastType }) => {
@@ -75,21 +83,29 @@ const ToastIcon = ({ type }: { type: ToastType }) => {
     }
 };
 
-function ToastComponent({ message, type }: ToastProps) {
+function ToastComponent({ message, type, description }: ToastProps) {
     return (
         <div
-            className={cn("backdrop-blur-md rounded-md border select-none", {
-                "bg-accent-positive/70 border-accent-positive text-white":
-                    type === "success",
-                "bg-negative/70 border-negative text-white": type === "error",
-                "bg-info/70 border-info text-white": type === "info",
-                "bg-warning/70 border-warning text-white": type === "warning",
-            })}
+            className={cn(
+                "backdrop-blur-md rounded-md border select-none flex flex-col gap-1 px-3 py-2",
+                {
+                    "bg-accent-positive/70 border-accent-positive text-white":
+                        type === "success",
+                    "bg-negative/70 border-negative text-white":
+                        type === "error",
+                    "bg-info/70 border-info text-white": type === "info",
+                    "bg-warning/70 border-warning text-white":
+                        type === "warning",
+                }
+            )}
         >
-            <div className="flex items-center gap-1.5 px-3 py-2">
+            <div className="flex items-center gap-1.5">
                 <ToastIcon type={type} />
                 <span>{message}</span>
             </div>
+            {description && (
+                <div className="text-sm opacity-80">{description}</div>
+            )}
         </div>
     );
 }

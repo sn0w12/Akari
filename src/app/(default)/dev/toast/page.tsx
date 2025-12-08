@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 
 type ToastType = "success" | "error" | "info" | "warning";
 
@@ -21,9 +22,10 @@ export default function ToastTestPage() {
     const [message, setMessage] = useState("This is a test toast");
     const [type, setType] = useState<ToastType>("success");
     const [duration, setDuration] = useState(5000);
+    const [description, setDescription] = useState("");
 
     const showToast = () => {
-        new Toast(message, type, { autoClose: duration });
+        new Toast(message, type, { autoClose: duration, description });
     };
 
     return (
@@ -39,6 +41,15 @@ export default function ToastTestPage() {
                             id="message"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                            id="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Optional description for the toast"
                         />
                     </div>
                     <div>
