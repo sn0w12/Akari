@@ -16,7 +16,10 @@ const authenticatedFetch = async (input: Request): Promise<Response> => {
         data: { session },
     } = await supabase.auth.getSession();
     const request = input.clone();
-    if (session?.access_token) {
+    if (
+        session?.access_token &&
+        request.headers.get("Authorization") === null
+    ) {
         request.headers.set("Authorization", `Bearer ${session.access_token}`);
     }
     return fetch(request);

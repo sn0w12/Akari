@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { robots } from "@/lib/utils";
-import BookmarksPage from "@/components/bookmarks";
+import { client } from "@/lib/api";
+import { createClient as createSupabaseClient } from "@/lib/auth/server";
+import ErrorPage from "@/components/error-page";
+import BookmarksBody from "@/components/bookmarks/bookmarks-body";
 
 interface BookmarksProps {
     searchParams: Promise<{
         page: string;
-        [key: string]: string | string[] | undefined;
     }>;
 }
 
@@ -17,9 +19,37 @@ export const metadata: Metadata = {
 
 export default async function Bookmarks(props: BookmarksProps) {
     const searchParams = await props.searchParams;
+    const page = Number(searchParams.page) || 1;
+
+    const supabase = await createSupabaseClient();
+    const {
+        data: { session },
+    } = await supabase.auth.getSession();
+
+    const { data, error } = await client.GET("/v2/bookmarks", {
+        params: {
+            query: {
+                page: page,
+            },
+        },
+        headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+        },
+    });
+
+    if (error) {
+        return <ErrorPage error={data} />;
+    }
+
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <BookmarksPage page={Number(searchParams.page) || 1} />
+            <div className="mx-auto p-4">
+                <BookmarksBody
+                    bookmarks={data.data.items}
+                    page={page}
+                    totalPages={data.data.totalPages}
+                />
+            </div>
         </div>
     );
 }

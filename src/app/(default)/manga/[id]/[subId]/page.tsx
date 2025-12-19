@@ -13,7 +13,7 @@ export async function generateStaticParams(): Promise<
         params: {
             query: {
                 page: 1,
-                pageSize: 100,
+                pageSize: 50,
             },
         },
         headers: serverHeaders,
