@@ -11,11 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 import { useEffect, useState } from "react";
-import {
-    Tooltip,
-    TooltipTrigger,
-    TooltipContent,
-} from "@/components/ui/tooltip";
 
 function CookieConsentBody({
     onAcceptAll,
