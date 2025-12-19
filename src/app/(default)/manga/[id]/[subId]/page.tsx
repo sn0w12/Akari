@@ -8,6 +8,7 @@ import { ChapterComments } from "@/components/manga-reader/chapter-comments";
 export async function generateStaticParams(): Promise<
     { id: string; subId: string }[]
 > {
+    return [];
     if (!process.env.API_KEY) return [];
     const { data, error } = await client.GET("/v2/manga/chapter/ids", {
         params: {
