@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
 
+const NO_RESTORE_PATHS = ["/pwa", "/pwa/", "/", ""];
 export function PWANavigationRestore() {
     const pathname = usePathname();
     const router = useRouter();
@@ -12,7 +13,7 @@ export function PWANavigationRestore() {
     const pwaLastPageStorage = useStorage("pwaLastPage");
 
     useEffect(() => {
-        if (!pwaRestorePath || pathname === "/pwa") {
+        if (!pwaRestorePath || NO_RESTORE_PATHS.includes(pathname)) {
             return;
         }
 
