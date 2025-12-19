@@ -1,10 +1,39 @@
 import { Metadata } from "next";
 import { Reader } from "@/components/manga-reader";
-import { cacheLife } from "next/cache";
-import { createMetadata, robots } from "@/lib/utils";
+import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { ChapterComments } from "@/components/manga-reader/chapter-comments";
+
+export async function generateStaticParams(): Promise<
+    { id: string; subId: string }[]
+> {
+    if (!process.env.API_KEY) return [];
+    const { data, error } = await client.GET("/v2/manga/chapter/ids", {
+        params: {
+            query: {
+                page: 1,
+                pageSize: 100,
+            },
+        },
+        headers: serverHeaders,
+    });
+
+    if (error || !data) {
+        console.error(
+            "Failed to fetch manga chapter IDs for static params:",
+            error
+        );
+        return [];
+    }
+
+    return (data?.data.items ?? []).flatMap((manga) =>
+        manga.chapterIds.map((subId) => ({
+            id: manga.mangaId,
+            subId: String(subId),
+        }))
+    );
+}
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
@@ -13,9 +42,6 @@ interface MangaReaderProps {
 export async function generateMetadata({
     params,
 }: MangaReaderProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
-
     const mangaParams = await params;
     const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
         params: {
@@ -45,15 +71,12 @@ export async function generateMetadata({
     return createMetadata({
         title: title,
         description: description,
-        image: `/api/v1/manga/${mangaParams.id}/og`,
+        image: image,
         canonicalPath: `/manga/${mangaParams.id}`,
     });
 }
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
-    "use cache";
-    cacheLife("hours");
-
     const mangaParams = await params;
     const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
         params: {

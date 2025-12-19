@@ -1,19 +1,10 @@
 import MangaReaderHome from "@/components/home";
-import HomeSkeleton from "@/components/home/skeleton";
 import { client } from "@/lib/api";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
-import { Suspense } from "react";
 import ErrorPage from "@/components/error-page";
 import { serverHeaders } from "@/lib/api";
-import { cacheLife } from "next/cache";
-
-interface HomeProps {
-    searchParams: Promise<{
-        page: string;
-        [key: string]: string | string[] | undefined;
-    }>;
-}
+import { unstable_cache } from "next/cache";
 
 export const metadata: Metadata = createMetadata({
     title: "Home",
@@ -22,43 +13,43 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/",
 });
 
-async function getHomeData(currentPage: number) {
-    "use cache";
-    cacheLife("minutes");
-
-    const [latestResponse, popularResponse] = await Promise.all([
-        client.GET("/v2/manga/list", {
-            params: {
-                query: {
-                    page: currentPage,
-                    pageSize: 24,
+const getHomeData = unstable_cache(
+    async () => {
+        const [latestResponse, popularResponse] = await Promise.all([
+            client.GET("/v2/manga/list", {
+                params: {
+                    query: {
+                        page: 1,
+                        pageSize: 24,
+                    },
                 },
-            },
-            headers: serverHeaders,
-        }),
-        client.GET("/v2/manga/list/popular", {
-            params: {
-                query: {
-                    pageSize: 24,
-                    days: 30,
+                headers: serverHeaders,
+            }),
+            client.GET("/v2/manga/list/popular", {
+                params: {
+                    query: {
+                        pageSize: 24,
+                        days: 30,
+                    },
                 },
-            },
-            headers: serverHeaders,
-        }),
-    ]);
+                headers: serverHeaders,
+            }),
+        ]);
 
-    return {
-        latestData: latestResponse.data,
-        latestError: latestResponse.error,
-        popularData: popularResponse.data,
-        popularError: popularResponse.error,
-    };
-}
+        return {
+            latestData: latestResponse.data,
+            latestError: latestResponse.error,
+            popularData: popularResponse.data,
+            popularError: popularResponse.error,
+        };
+    },
+    ["home-data"],
+    { revalidate: false, tags: ["home"] }
+);
 
-export default async function Home(props: HomeProps) {
-    const currentPage = Number((await props.searchParams).page) || 1;
+export default async function Home() {
     const { latestData, latestError, popularData, popularError } =
-        await getHomeData(currentPage);
+        await getHomeData();
 
     if (latestError || !latestData) {
         return (
@@ -76,12 +67,10 @@ export default async function Home(props: HomeProps) {
     }
 
     return (
-        <Suspense fallback={<HomeSkeleton />}>
-            <MangaReaderHome
-                latest={latestData.data.items}
-                popular={popularData.data.items}
-                totalPages={latestData.data.totalPages}
-            />
-        </Suspense>
+        <MangaReaderHome
+            latest={latestData.data.items}
+            popular={popularData.data.items}
+            totalPages={latestData.data.totalPages}
+        />
     );
 }

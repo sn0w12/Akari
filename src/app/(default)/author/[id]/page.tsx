@@ -1,18 +1,27 @@
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
-import { getBaseUrl } from "@/lib/api/base-url";
 import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
+import { getAllAuthors } from "@/lib/api/pre-render";
 
 interface PageProps {
-    params: Promise<{ id: string; sort?: string }>;
+    params: Promise<{ id: string }>;
     searchParams: Promise<{
         page: string;
-        sort?: string;
-        [key: string]: string | string[] | undefined;
     }>;
+}
+
+export async function generateStaticParams(): Promise<
+    { params: { id: string } }[]
+> {
+    if (!process.env.API_KEY) return [];
+    const authors = await getAllAuthors();
+
+    return authors.map((author) => ({
+        params: { id: author },
+    }));
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {

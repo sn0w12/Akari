@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
-import { cacheLife } from "next/cache";
 import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
+import { getAllMangaIds } from "@/lib/api/pre-render";
 import ErrorPage from "@/components/error-page";
 
 interface PageProps {
@@ -14,10 +14,16 @@ function truncate(text: string, maxLength: number): string {
     return text.slice(0, maxLength - 1).trimEnd() + "…";
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
+export async function generateStaticParams() {
+    if (!process.env.API_KEY) return [];
+    const mangaIds = await getAllMangaIds();
 
+    return mangaIds.map((id) => ({
+        id,
+    }));
+}
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const { data, error } = await client.GET("/v2/manga/{id}", {
         params: {

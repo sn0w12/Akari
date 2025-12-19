@@ -15,7 +15,7 @@ function throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
     limit: number
 ): (...args: Parameters<T>) => void {
-    let lastFunc: number | undefined;
+    let lastFunc: NodeJS.Timeout | undefined;
     let lastRan: number | undefined;
 
     return function (...args: Parameters<T>): void {
@@ -24,7 +24,7 @@ function throttle<T extends (...args: unknown[]) => unknown>(
             lastRan = Date.now();
         } else {
             clearTimeout(lastFunc);
-            lastFunc = window.setTimeout(() => {
+            lastFunc = setTimeout(() => {
                 if (Date.now() - lastRan! >= limit) {
                     func(...args);
                     lastRan = Date.now();

@@ -12,10 +12,7 @@ export function ChapterInfo({
     chapter: components["schemas"]["ChapterResponse"];
 }) {
     const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
-        () =>
-            window.matchMedia("(min-width: 768px)").matches
-                ? "vertical"
-                : "horizontal"
+        "horizontal"
     );
 
     useEffect(() => {
@@ -24,6 +21,7 @@ export function ChapterInfo({
             setOrientation(e.matches ? "vertical" : "horizontal");
         };
 
+        setOrientation(mediaQuery.matches ? "vertical" : "horizontal");
         mediaQuery.addEventListener("change", handleChange);
 
         return () => mediaQuery.removeEventListener("change", handleChange);
