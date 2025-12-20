@@ -11,7 +11,7 @@ import {
     Edit,
     Trash,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
 import { useConfirm } from "@/contexts/confirm-context";
 
@@ -164,15 +164,6 @@ export function Comment({
         return date.toLocaleDateString();
     };
 
-    const getInitials = (displayName: string) => {
-        return displayName
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
-
     const displayReplies =
         "replies" in comment && Array.isArray(comment.replies)
             ? comment.replies
@@ -185,7 +176,10 @@ export function Comment({
                 depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4"
             )}
         >
-            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 shrink-0">
+            <Avatar
+                name={comment.userProfile.displayName}
+                className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
+            >
                 <AvatarFallback className="text-xs">
                     {getInitials(comment.userProfile.displayName)}
                 </AvatarFallback>

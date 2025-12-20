@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { getInitials } from "@/lib/utils";
 
 function Entry({
     entry,
@@ -58,10 +61,12 @@ function Entry({
     return (
         <Card className="flex flex-row items-center gap-4 p-4">
             <Link href={`/manga/${entry.mangaId}`} className="shrink-0">
-                <img
+                <Image
                     src={entry.mangaCover}
                     alt={entry.mangaTitle}
                     className="w-12 h-16 object-cover rounded"
+                    width={48}
+                    height={64}
                 />
             </Link>
             <div className="flex-1 min-w-0">
@@ -155,14 +160,20 @@ export function ListComponent({ id }: { id: string }) {
                     <h1 className="text-2xl font-bold">{data.title}</h1>
                     <p className="text-muted-foreground">{data.description}</p>
                 </div>
-                <div>
-                    <Link
-                        href={`/users/${data.user.userId}`}
-                        className="text-lg font-medium hover:underline"
+                <Link
+                    href={`/users/${data.user.userId}`}
+                    className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
+                >
+                    <Avatar
+                        name={data.user.displayName}
+                        className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
                     >
-                        {data.user.displayName}
-                    </Link>
-                </div>
+                        <AvatarFallback className="text-xs">
+                            {getInitials(data.user.displayName)}
+                        </AvatarFallback>
+                    </Avatar>
+                    {data.user.displayName}
+                </Link>
             </div>
             <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {data.entries.map((item) => (

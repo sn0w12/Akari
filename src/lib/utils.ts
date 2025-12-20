@@ -24,14 +24,13 @@ export const setCookie = (
     return true;
 };
 
-export function imageUrl(url: string, baseUrl?: string): string {
-    if (url.includes("myanimelist")) {
-        return url;
-    }
-
-    return `${baseUrl || ""}/api/v1/image-proxy?imageUrl=${encodeURIComponent(
-        url
-    )}`;
+export function getInitials(displayName: string) {
+    return displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
 }
 
 export function formatRelativeDate(dateString: string): string {

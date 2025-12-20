@@ -62,7 +62,10 @@ export function CommentForm({
 
     return (
         <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
-            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 shrink-0">
+            <Avatar
+                name={currentUser?.displayName || ""}
+                className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
+            >
                 <AvatarFallback className="text-xs">
                     {getInitials(currentUser?.displayName || "")}
                 </AvatarFallback>

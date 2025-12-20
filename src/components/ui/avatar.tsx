@@ -2,13 +2,16 @@
 
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import BoringAvatar from "boring-avatars";
 
 import { cn } from "@/lib/utils";
 
-function Avatar({
-    className,
-    ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+interface AvatarProps
+    extends React.ComponentProps<typeof AvatarPrimitive.Root> {
+    name: string;
+}
+
+function Avatar({ className, name, ...props }: AvatarProps) {
     return (
         <AvatarPrimitive.Root
             data-slot="avatar"
@@ -17,7 +20,18 @@ function Avatar({
                 className
             )}
             {...props}
-        />
+        >
+            <BoringAvatar
+                name={name}
+                variant="bauhaus"
+                colors={[
+                    "var(--background)",
+                    "var(--secondary)",
+                    "var(--accent)",
+                    "var(--accent-color)",
+                ]}
+            />
+        </AvatarPrimitive.Root>
     );
 }
 
