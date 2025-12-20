@@ -16,7 +16,8 @@ interface PageProps {
 export async function generateStaticParams(): Promise<
     { params: { id: string } }[]
 > {
-    if (!process.env.API_KEY) return [];
+    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1")
+        return [];
     const authors = await getAllAuthors();
 
     return authors.map((author) => ({

@@ -15,7 +15,8 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export async function generateStaticParams() {
-    if (!process.env.API_KEY) return [];
+    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1")
+        return [];
     const mangaIds = await getAllMangaIds();
 
     return mangaIds.map((id) => ({
