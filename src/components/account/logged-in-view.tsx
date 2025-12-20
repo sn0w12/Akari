@@ -20,15 +20,14 @@ import {
 import { ListsTabContent } from "./lists";
 import Link from "next/link";
 import { Link as LinkIcon } from "lucide-react";
+import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 
 interface LoggedInViewProps {
-    secondaryAccounts: SecondaryAccount[];
     savedUsername: string;
     handleLogout: () => void;
 }
 
 export default function LoggedInView({
-    secondaryAccounts,
     savedUsername,
     handleLogout,
 }: LoggedInViewProps) {
@@ -44,7 +43,9 @@ export default function LoggedInView({
             tabParam &&
             ["account", "connections", "history"].includes(tabParam)
         ) {
-            setActiveTab(tabParam);
+            queueMicrotask(() => {
+                setActiveTab(tabParam);
+            });
         }
     }, [searchParams]);
 
@@ -137,7 +138,7 @@ export default function LoggedInView({
             </TabsContent>
 
             <TabsContent value="connections" className="space-y-6">
-                {secondaryAccounts.map((account) => {
+                {SECONDARY_ACCOUNTS.map((account) => {
                     const validAccount = validAccounts.find(
                         (validAccount) => validAccount.id === account.id
                     );

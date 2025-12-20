@@ -58,6 +58,8 @@ export function BaseLayout({
         router.push("/settings");
     };
 
+    const openAccount = useSetting("openAccount");
+
     useShortcutSetting("openSettings", handleSettingsClick, {
         preventDefault: true,
     });
@@ -180,7 +182,7 @@ export function BaseLayout({
                                     <User />
                                     <span>Account</span>
                                     <KeyboardShortcut
-                                        keys={useSetting("openAccount")}
+                                        keys={openAccount}
                                         className={`gap-1 transition-opacity transition-duration-200 ${
                                             isSidebarCollapsed
                                                 ? "opacity-0"
@@ -197,7 +199,7 @@ export function BaseLayout({
                                     <User />
                                     <span>Login</span>
                                     <KeyboardShortcut
-                                        keys={useSetting("openAccount")}
+                                        keys={openAccount}
                                         className={`gap-1 transition-opacity transition-duration-200 ${
                                             isSidebarCollapsed
                                                 ? "opacity-0"

@@ -1,9 +1,10 @@
 import { APP_SETTINGS } from "../src/config";
+import { Setting } from "@/lib/settings";
 
 /**
  * Formats the default value of a setting for display in markdown tables.
  */
-function formatDefault(setting: any): string {
+function formatDefault(setting: Setting): string {
     const def =
         typeof setting.default === "function"
             ? setting.default()
@@ -12,10 +13,10 @@ function formatDefault(setting: any): string {
         case "checkbox":
             return def ? "Enabled" : "Disabled";
         case "select":
-            const option = setting.options?.find((o: any) => o.value === def);
+            const option = setting.options?.find((o) => o.value === def);
             return option ? option.label : String(def);
         case "checkbox-group":
-            return def.length > 0 ? "Enabled" : "Disabled";
+            return (def as string[]).length > 0 ? "Enabled" : "Disabled";
         default:
             return String(def);
     }

@@ -24,10 +24,6 @@ export function PopularManga({ manga }: PopularMangaProps) {
 
     const totalPopularPages = Math.ceil(manga.length / itemsPerPage);
 
-    useEffect(() => {
-        setCurrentPopularPage(1);
-    }, [itemsPerPage]);
-
     const paginatedPopularList = manga.slice(
         (currentPopularPage - 1) * itemsPerPage,
         currentPopularPage * itemsPerPage

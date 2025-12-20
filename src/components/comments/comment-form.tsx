@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AttachmentPopover } from "./attachment-popover";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 interface CommentFormProps {
     onSubmit: (
@@ -83,10 +84,12 @@ export function CommentForm({
 
                 {selectedAttachment && (
                     <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
-                        <img
+                        <Image
                             src={selectedAttachment.url}
                             alt="Selected attachment"
                             className="h-10 w-10 object-cover rounded"
+                            height={40}
+                            width={40}
                         />
                         <span className="text-sm text-muted-foreground flex-1">
                             Attached image

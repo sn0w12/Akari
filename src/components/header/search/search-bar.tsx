@@ -17,7 +17,6 @@ export default function SearchBar() {
     const [searchText, setSearchText] = useState("");
     const [debouncedSearchText, setDebouncedSearchText] = useState("");
     const [isFocused, setIsFocused] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState<number>(-1);
     const shouldCloseRef = useRef(true);
     const popupRef = useRef<HTMLDivElement | null>(null);
@@ -31,10 +30,7 @@ export default function SearchBar() {
         return () => clearTimeout(timer);
     }, [searchText]);
 
-    // Update showPopup based on focus and search text
-    useEffect(() => {
-        setShowPopup(isFocused && debouncedSearchText.trim().length > 0);
-    }, [isFocused, debouncedSearchText]);
+    const showPopup = isFocused && debouncedSearchText.trim().length > 0;
 
     // Fetch search results using React Query
     const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
@@ -54,7 +50,6 @@ export default function SearchBar() {
         setTimeout(() => {
             if (shouldCloseRef.current) {
                 setIsFocused(false);
-                setShowPopup(false);
             }
         }, 100);
     };
@@ -68,7 +63,6 @@ export default function SearchBar() {
                 // Navigate to search page if no result selected
                 router.push(`/search?q=${encodeURIComponent(searchText)}`);
             }
-            setShowPopup(false);
             inputRef.current?.blur();
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
@@ -79,7 +73,6 @@ export default function SearchBar() {
             e.preventDefault();
             setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
         } else if (e.key === "Escape") {
-            setShowPopup(false);
             setFocusedIndex(-1);
             inputRef.current?.blur();
         }

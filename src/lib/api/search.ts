@@ -1,10 +1,6 @@
 import { client } from ".";
 
-export async function getSearchResults(
-    query: string,
-    page: number = 1,
-    n: number = 5
-) {
+export async function getSearchResults(query: string, n: number = 5) {
     const { data, error } = await client.GET("/v2/manga/search", {
         params: {
             query: {

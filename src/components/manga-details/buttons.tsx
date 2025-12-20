@@ -2,7 +2,6 @@
 
 import BookmarkButton from "./bookmark-button";
 import ReadingButton from "./reading-button";
-import { ListSelector } from "../list/list-selector";
 import { useQuery } from "@tanstack/react-query";
 import { checkIfBookmarked } from "@/lib/manga/bookmarks";
 import { Skeleton } from "../ui/skeleton";

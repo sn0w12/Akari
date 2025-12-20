@@ -32,7 +32,9 @@ export default function BookmarksHeader() {
     }, [searchQuery]);
 
     useEffect(() => {
-        setSelectedIndex(-1);
+        queueMicrotask(() => {
+            setSelectedIndex(-1);
+        });
     }, [debouncedSearchQuery]);
 
     const getBookmarkSearchResults = async (
@@ -61,7 +63,8 @@ export default function BookmarksHeader() {
     });
 
     async function exportBookmarks() {
-        let allBookmarks: any[] = [];
+        const allBookmarks: components["schemas"]["BookmarkListResponse"]["items"] =
+            [];
         let currentPage = 1;
         let totalPages = 1;
         const pageSize = 100;

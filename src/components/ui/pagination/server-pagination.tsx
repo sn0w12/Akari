@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ButtonLink } from "../button-link";
 import { cn } from "@/lib/utils";
 import { JumpToPagePopover } from "./pagination-popover";

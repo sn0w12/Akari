@@ -22,12 +22,14 @@ const CallbackPage = () => {
         const codeVerifier = Cookies.get("pkce_code_verifier");
 
         if (!code || !codeVerifier) {
-            setError({
-                result: "Error",
-                status: 500,
-                data: {
-                    message: "Missing code or code verifier",
-                },
+            queueMicrotask(() => {
+                setError({
+                    result: "Error",
+                    status: 500,
+                    data: {
+                        message: "Missing code or code verifier",
+                    },
+                });
             });
             return;
         }

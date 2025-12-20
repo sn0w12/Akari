@@ -61,7 +61,9 @@ export function HeaderComponent() {
         const modifiedSegments = pathSegments.map(
             (segment) => overrides[segment] || segment
         );
-        setSegments(modifiedSegments);
+        queueMicrotask(() => {
+            setSegments(modifiedSegments);
+        });
     }, [pathname, overrides]);
 
     useEffect(() => {

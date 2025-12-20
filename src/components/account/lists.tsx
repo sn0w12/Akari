@@ -55,7 +55,7 @@ export function ListsTabContent() {
         e.preventDefault();
         if (!form.title.trim()) return;
 
-        const { data, error } = await client.POST("/v2/lists", { body: form });
+        const { error } = await client.POST("/v2/lists", { body: form });
         if (error) {
             new Toast("Failed to create list", "error");
         } else {

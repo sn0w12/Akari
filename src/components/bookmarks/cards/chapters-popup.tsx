@@ -90,7 +90,9 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
 
     useEffect(() => {
         // Fade in animation for popup
-        setIsVisible(true);
+        queueMicrotask(() => {
+            setIsVisible(true);
+        });
         const mainElement = document.querySelector("main") as HTMLElement;
         if (!mainElement) return;
 

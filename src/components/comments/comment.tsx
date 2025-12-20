@@ -14,6 +14,7 @@ import {
 import { cn, getInitials } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
 import { useConfirm } from "@/contexts/confirm-context";
+import Image from "next/image";
 
 export type CommentData =
     | components["schemas"]["CommentWithRepliesResponse"]
@@ -226,10 +227,12 @@ export function Comment({
 
                 {comment.attachment && (
                     <div className="mt-2 mb-2">
-                        <img
+                        <Image
                             src={comment.attachment.url}
                             alt="Comment attachment"
                             className="max-w-64 h-auto rounded-md border"
+                            height={160}
+                            width={160}
                         />
                     </div>
                 )}

@@ -47,10 +47,11 @@ export default function AboutPage() {
                 </p>
                 <p className="text-lg mb-4">
                     As an open-source project, Akari welcomes contributions from
-                    the community. Whether you're a developer looking to add new
-                    features or a user reporting issues, your input helps make
-                    Akari better for everyone. The project is hosted on GitHub,
-                    where you can explore the codebase and get involved.
+                    the community. Whether you&apos;re a developer looking to
+                    add new features or a user reporting issues, your input
+                    helps make Akari better for everyone. The project is hosted
+                    on GitHub, where you can explore the codebase and get
+                    involved.
                 </p>
             </div>
         </div>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { CookieConsentFooter } from "./cookie-consent";
 import pkg from "../../package.json";
 import { Separator } from "./ui/separator";

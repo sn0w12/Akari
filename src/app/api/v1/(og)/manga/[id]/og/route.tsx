@@ -21,22 +21,6 @@ export async function GET(
 ): Promise<ImageResponse> {
     const params = await props.params;
     const id = params.id;
-
-    const isDevelopment = process.env.NODE_ENV === "development";
-    let host =
-        req.headers.get("x-forwarded-host") ||
-        req.headers.get("host") ||
-        "localhost:3000";
-    let protocol =
-        req.headers.get("x-forwarded-proto") ||
-        (host.startsWith("localhost") ? "http" : "https");
-
-    if (!isDevelopment) {
-        if (process.env.NEXT_PUBLIC_HOST) {
-            host = process.env.NEXT_PUBLIC_HOST;
-            protocol = "https";
-        }
-    }
     const bgUrl = bg();
 
     const { data, error } = await client.GET("/v2/manga/{id}", {

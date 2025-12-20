@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/contexts/user-context";
+import Image from "next/image";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
 
@@ -87,7 +88,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
 
         try {
             const { data } = await client.POST("/v2/uploads", {
-                body: formData as any,
+                body: formData as unknown as undefined,
             });
             if (data) {
                 queryClient.invalidateQueries({ queryKey: ["uploads"] });
@@ -145,12 +146,14 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                             onSelect?.(upload);
                                             setOpen(false);
                                         }}
-                                        className="aspect-square overflow-hidden rounded border hover:border-primary transition-colors"
+                                        className="max-h-24 w-auto overflow-hidden rounded border hover:border-primary transition-colors"
                                     >
-                                        <img
+                                        <Image
                                             src={upload.url}
-                                            alt=""
+                                            alt={upload.tags.join(", ")}
                                             className="w-full h-full object-cover"
+                                            height={96}
+                                            width={96}
                                         />
                                     </button>
                                 ))}
@@ -187,10 +190,12 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                             >
                                 {file ? (
                                     <div className="space-y-2">
-                                        <img
+                                        <Image
                                             src={previewUrl!}
                                             alt="Preview"
                                             className="max-h-20 mx-auto rounded"
+                                            height={80}
+                                            width={80}
                                         />
                                         <p className="text-sm">{file.name}</p>
                                     </div>
@@ -250,12 +255,14 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                                 onSelect?.(upload);
                                                 setOpen(false);
                                             }}
-                                            className="aspect-square overflow-hidden rounded border hover:border-primary transition-colors"
+                                            className="max-h-24 w-auto overflow-hidden rounded border hover:border-primary transition-colors"
                                         >
-                                            <img
+                                            <Image
                                                 src={upload.url}
-                                                alt=""
+                                                alt={upload.tags.join(", ")}
                                                 className="w-full h-full object-cover"
+                                                height={80}
+                                                width={80}
                                             />
                                         </button>
                                     ))}

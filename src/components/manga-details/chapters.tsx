@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
@@ -20,9 +20,6 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
     const { user } = useUser();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortedChapters, setSortedChapters] = useState<
-        components["schemas"]["MangaChapter"][]
-    >([]);
     const chaptersPerPage = 24;
 
     const { data, isLoading } = useQuery({
@@ -43,17 +40,12 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         });
     }, [manga.chapters, sortOrder]);
 
-    useEffect(() => {
-        const sortedChapters = getSortedChapters();
-        setSortedChapters(sortedChapters);
-    }, [getSortedChapters]);
-
     const navigateToLastRead = () => {
         if (!lastRead || !manga) {
             new Toast("No previous reading history found", "error");
             return;
         }
-        const chapterIndex = sortedChapters?.findIndex(
+        const chapterIndex = getSortedChapters().findIndex(
             (chapter) => chapter.id === lastRead
         );
 
@@ -74,8 +66,9 @@ export function ChaptersSection({ manga }: ChaptersSectionProps) {
         }, 100);
     };
 
+    const sortedChapters = getSortedChapters();
     const totalPages = Math.ceil(sortedChapters.length / chaptersPerPage);
-    const currentChapters = sortedChapters?.slice(
+    const currentChapters = sortedChapters.slice(
         (currentPage - 1) * chaptersPerPage,
         currentPage * chaptersPerPage
     );
