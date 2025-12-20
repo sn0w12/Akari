@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
             revalidatePath(page);
         }
         revalidateTag("home", "max");
+        revalidatePath("/");
         return NextResponse.json({ revalidated: true });
     } catch {
         return NextResponse.json(
