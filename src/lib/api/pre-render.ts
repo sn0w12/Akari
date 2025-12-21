@@ -11,7 +11,7 @@ export async function getAllPaginated<T>(
     try {
         const allItems: T[] = [];
         let page = 1;
-        let totalPages = 1;
+        let totalPages = 2;
 
         while (page <= totalPages) {
             const { data, error } = await client.GET(path, {
