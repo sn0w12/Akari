@@ -152,7 +152,7 @@ export function Reader({ chapter }: ReaderProps) {
 
         const handleScroll = throttle(() => {
             requestAnimationFrame(calculateScrollMetrics);
-        }, 300);
+        }, 100);
 
         scrollHandlerRef.current = handleScroll;
 

@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import MangaFooter from "../manga-footer";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -30,10 +31,30 @@ export default function StripReader({
     const hasPrefetchedRef = useRef(false);
     const mountTimeRef = useRef<number>(0);
     const queryClient = useQueryClient();
+    const lastImageRef = useRef<HTMLImageElement>(null);
+    const readerRef = useRef<HTMLDivElement>(null);
+    const [progress, setProgress] = useState(0);
+    const [imagesLoaded, setImagesLoaded] = useState(0);
 
     useEffect(() => {
         mountTimeRef.current = Date.now();
     }, []);
+
+    useEffect(() => {
+        if (
+            !lastImageRef.current ||
+            !readerRef.current ||
+            imagesLoaded !== chapter.images.length
+        )
+            return;
+        const image = lastImageRef.current;
+        const imageBottom = image.offsetTop + image.offsetHeight;
+        const viewportBottom = scrollMetrics.pixels;
+
+        const distance = imageBottom - viewportBottom;
+        const newProgress = Math.max(0, Math.min(1, viewportBottom / distance));
+        setProgress(newProgress);
+    }, [scrollMetrics, imagesLoaded, chapter.images.length]);
 
     useEffect(() => {
         if (!chapter) return;
@@ -73,11 +94,17 @@ export default function StripReader({
         <div>
             <div
                 id="reader"
+                ref={readerRef}
                 className={`flex flex-col items-center overflow-auto transition-colors duration-500 ${bgColor}`}
             >
                 {chapter.images.map((img, index) => (
                     <Image
                         key={index}
+                        ref={
+                            index === chapter.images.length - 1
+                                ? lastImageRef
+                                : null
+                        }
                         src={img}
                         alt={`${chapter.title} - ${chapter.title} Page ${
                             index + 1
@@ -98,9 +125,11 @@ export default function StripReader({
                         loading={"eager"}
                         priority={index < 3}
                         unoptimized={true}
+                        onLoad={() => setImagesLoaded((prev) => prev + 1)}
                     />
                 ))}
             </div>
+            <StripPageProgress progress={progress} hidden={progress === 1} />
             <MangaFooter
                 chapter={chapter}
                 toggleReaderMode={toggleReaderMode}
