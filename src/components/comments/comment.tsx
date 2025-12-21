@@ -179,7 +179,7 @@ export function Comment({
         >
             <Avatar
                 name={comment.userProfile.displayName}
-                className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
+                className="size-8 shrink-0"
             >
                 <AvatarFallback className="text-xs">
                     {getInitials(comment.userProfile.displayName)}

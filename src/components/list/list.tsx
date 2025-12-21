@@ -161,12 +161,12 @@ export function ListComponent({ id }: { id: string }) {
                     <p className="text-muted-foreground">{data.description}</p>
                 </div>
                 <Link
-                    href={`/users/${data.user.userId}`}
+                    href={`/user/${data.user.userId}`}
                     className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
                 >
                     <Avatar
                         name={data.user.displayName}
-                        className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
+                        className="size-8 shrink-0"
                     >
                         <AvatarFallback className="text-xs">
                             {getInitials(data.user.displayName)}
