@@ -11,7 +11,6 @@ import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
-import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
@@ -22,7 +21,6 @@ export default function BookmarksHeader() {
     const [isFocused, setIsFocused] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const router = useRouter();
-    const { confirm } = useConfirm();
 
     useEffect(() => {
         const timer = setTimeout(() => {
