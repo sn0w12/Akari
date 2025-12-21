@@ -306,7 +306,7 @@ export async function MangaDetailsComponent({
 
             <ViewManga manga={manga} />
             <ChaptersSection manga={manga} />
-            <MangaComments manga={manga} />
+            <MangaComments id={manga.id} />
         </div>
     );
 }

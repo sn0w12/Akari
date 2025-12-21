@@ -21,17 +21,12 @@ const getMangaComments = unstable_cache(
 
         return { data: data.data, error: null };
     },
-    ["manga", "id"],
+    ["comments"],
     { revalidate: 60 }
 );
 
-export async function MangaComments({
-    manga,
-}: {
-    manga: components["schemas"]["MangaDetailResponse"];
-}) {
-    const { data, error } = await getMangaComments(manga.id);
-
+export async function MangaComments({ id }: { id: string }) {
+    const { data, error } = await getMangaComments(id);
     if (error) {
         return (
             <div>
@@ -59,7 +54,7 @@ export async function MangaComments({
             <h2 className="text-2xl font-bold mb-2 pb-2 border-b">Comments</h2>
             <MangaCommentList
                 initialComments={commentsWithReplies}
-                mangaId={manga.id}
+                mangaId={id}
             />
         </div>
     );

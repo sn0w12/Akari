@@ -3,7 +3,32 @@ import { Reader } from "@/components/manga-reader";
 import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
-import { ChapterComments } from "@/components/manga-reader/chapter-comments";
+import { MangaComments } from "@/components/manga-details/manga-comments";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 60; // Revalidate the page every 60 seconds for frequent comment updates
+
+const getChapter = unstable_cache(
+    async (id: string, subId: number) => {
+        const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
+            params: {
+                path: {
+                    id: id,
+                    subId: subId,
+                },
+            },
+            headers: serverHeaders,
+        });
+
+        if (error) {
+            return { data: null, error };
+        }
+
+        return { data: data.data, error: null };
+    },
+    ["manga", "id"],
+    { revalidate: 3600 }
+);
 
 export async function generateStaticParams(): Promise<
     { id: string; subId: string }[]
@@ -44,15 +69,10 @@ export async function generateMetadata({
     params,
 }: MangaReaderProps): Promise<Metadata> {
     const mangaParams = await params;
-    const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
-        params: {
-            path: {
-                id: mangaParams.id,
-                subId: Number(mangaParams.subId),
-            },
-        },
-        headers: serverHeaders,
-    });
+    const { data, error } = await getChapter(
+        mangaParams.id,
+        Number(mangaParams.subId)
+    );
 
     if (error) {
         return {
@@ -61,7 +81,7 @@ export async function generateMetadata({
         };
     }
 
-    const chapter = data.data;
+    const chapter = data;
     const title = `${chapter.mangaTitle} - ${chapter.title}`;
     const description = `Read ${chapter.mangaTitle} ${chapter.title}.`;
     let image = `/api/v1/manga/${mangaParams.id}/og`;
@@ -79,15 +99,10 @@ export async function generateMetadata({
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
     const mangaParams = await params;
-    const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
-        params: {
-            path: {
-                id: mangaParams.id,
-                subId: Number(mangaParams.subId),
-            },
-        },
-        headers: serverHeaders,
-    });
+    const { data, error } = await getChapter(
+        mangaParams.id,
+        Number(mangaParams.subId)
+    );
 
     if (error) {
         return <ErrorPage error={error} />;
@@ -95,9 +110,9 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
 
     return (
         <div className="bg-background text-foreground">
-            <Reader chapter={data.data} />
+            <Reader chapter={data} />
             <div className="p-4">
-                <ChapterComments chapter={data.data} />
+                <MangaComments id={data.id} />
             </div>
         </div>
     );
