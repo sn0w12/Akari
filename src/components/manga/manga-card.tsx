@@ -24,7 +24,6 @@ export function MangaCard({
     const [cardWidth, setCardWidth] = useState(200);
     const [cardHeight, setCardHeight] = useState(300);
     const [useFixedHeight, setUseFixedHeight] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
     const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -80,11 +79,9 @@ export function MangaCard({
             }
         }
 
-        setIsAnimating(true);
         setUseFixedHeight(true);
         expandTimeoutRef.current = setTimeout(() => {
             setShouldExpand(true);
-            setIsAnimating(false);
         }, 300);
     };
 
@@ -98,10 +95,8 @@ export function MangaCard({
         }
 
         setShouldExpand(false);
-        setIsAnimating(true);
         collapseTimeoutRef.current = setTimeout(() => {
             setUseFixedHeight(false);
-            setIsAnimating(false);
         }, 300);
     };
 
@@ -131,35 +126,21 @@ export function MangaCard({
                 zIndex: shouldExpand ? 50 : 1,
             }}
         >
+            {/* Cover Image - Always stays in place */}
             <div
                 ref={innerCardRef}
-                className={cn(
-                    "relative flex overflow-hidden rounded-lg bg-card shadow-lg transition-all duration-300 ease-snappy",
-                    direction === "left" && "flex-row-reverse"
-                )}
+                className="relative overflow-hidden rounded-lg bg-card shadow-lg z-10"
                 style={{
-                    width: shouldExpand ? `${cardWidth * 2}px` : "100%",
                     height: useFixedHeight ? `${cardHeight}px` : undefined,
                     aspectRatio: useFixedHeight ? undefined : "2 / 3",
-                    transform:
-                        shouldExpand && direction === "left"
-                            ? `translateX(-${cardWidth}px)`
-                            : "translateX(0)",
                 }}
             >
-                {/* Cover Image */}
                 <Link
                     href={`/manga/${manga.id}`}
-                    className="relative h-full shrink-0"
-                    style={{
-                        width:
-                            shouldExpand || isAnimating
-                                ? `${cardWidth}px`
-                                : "100%",
-                    }}
+                    className="relative block h-full w-full"
                 >
                     <Image
-                        src={manga.cover || "/placeholder.svg"}
+                        src={manga.cover}
                         alt={manga.title}
                         className="h-full w-full object-cover"
                         width={200}
@@ -167,68 +148,87 @@ export function MangaCard({
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
+            </div>
 
-                {/* Metadata Panel - Fixed width to prevent content wrapping during animation */}
+            {/* Metadata Panel - Absolutely positioned */}
+            <div
+                className={cn(
+                    "absolute top-0 border flex h-full shrink-0 flex-col gap-3 overflow-hidden bg-card p-4 shadow-lg transition-all duration-300 ease-snappy pointer-events-none opacity-0",
+                    {
+                        "rounded-r-lg border-l-0": direction === "right",
+                        "rounded-l-lg border-r-0": direction === "left",
+                        "opacity-100": shouldExpand,
+                    }
+                )}
+                style={
+                    {
+                        "--card-padding": "calc(var(--spacing) * 4)",
+                        width: `${cardWidth}px`,
+                        [direction === "left" ? "right" : "left"]:
+                            "calc(100% - var(--card-padding))",
+                        transform: shouldExpand
+                            ? "translateX(0)"
+                            : direction === "left"
+                            ? "translateX(20px)"
+                            : "translateX(-20px)",
+                    } as React.CSSProperties
+                }
+            >
                 <div
-                    className={cn(
-                        "flex shrink-0 flex-col gap-3 bg-card p-4 transition-opacity duration-300",
-                        shouldExpand
-                            ? "opacity-100"
-                            : "pointer-events-none opacity-0"
-                    )}
-                    style={{ width: `${cardWidth}px` }}
+                    className={cn("space-y-2", {
+                        "pl-4": direction === "right",
+                        "pr-4": direction === "left",
+                    })}
                 >
-                    <div className="space-y-2">
-                        <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-card-foreground border-b pb-1">
-                            {manga.title}
-                        </h3>
+                    <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-card-foreground border-b pb-1">
+                        {manga.title}
+                    </h3>
 
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                                Authors
-                            </p>
-                            <p className="line-clamp-1 text-sm text-foreground">
-                                {manga.authors.join(", ")}
-                            </p>
-                        </div>
+                    <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Authors
+                        </p>
+                        <p className="line-clamp-1 text-sm text-foreground">
+                            {manga.authors.join(", ")}
+                        </p>
+                    </div>
 
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                                Status
-                            </p>
-                            <p className="text-sm capitalize text-foreground">
-                                {manga.status}
-                            </p>
-                        </div>
+                    <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Status
+                        </p>
+                        <p className="text-sm capitalize text-foreground">
+                            {manga.status}
+                        </p>
+                    </div>
 
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                                Type
-                            </p>
-                            <p className="text-sm capitalize text-foreground">
-                                {manga.type}
-                            </p>
-                        </div>
+                    <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Type
+                        </p>
+                        <p className="text-sm capitalize text-foreground">
+                            {manga.type}
+                        </p>
+                    </div>
 
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                                Genres
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                                {manga.genres.slice(0, 6).map((genre) => (
-                                    <span
-                                        key={genre}
-                                        className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
-                                    >
-                                        {genre}
-                                    </span>
-                                ))}
-                                {manga.genres.length > 6 && (
-                                    <span className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                                        +{manga.genres.length - 6}
-                                    </span>
-                                )}
-                            </div>
+                    <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Genres
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                            {manga.genres.slice(0, 6).map((genre) => (
+                                <span
+                                    key={genre}
+                                    className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
+                                >
+                                    {genre}
+                                </span>
+                            ))}
+                            {manga.genres.length > 6 && (
+                                <span className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
+                                    +{manga.genres.length - 6}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
