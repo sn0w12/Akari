@@ -15,6 +15,7 @@ import { cn, getInitials } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
 import { useConfirm } from "@/contexts/confirm-context";
 import Image from "next/image";
+import Link from "next/link";
 
 export type CommentData =
     | components["schemas"]["CommentWithRepliesResponse"]
@@ -197,9 +198,12 @@ export function Comment({
 
             <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
-                    <span className="font-medium text-foreground">
+                    <Link
+                        href={`/user/${comment.userProfile.id}`}
+                        className="font-medium text-foreground hover:underline"
+                    >
                         {comment.userProfile.displayName}
-                    </span>
+                    </Link>
                     <span className="text-muted-foreground truncate">
                         @{comment.userProfile.username}
                     </span>
