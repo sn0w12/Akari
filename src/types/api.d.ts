@@ -2982,6 +2982,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/user/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get user profile details by user ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unique identifier of the user. */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserProfileDetailsResponseSuccessResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3805,6 +3862,33 @@ export interface components {
             id: string;
             username: string;
             displayName: string;
+        };
+        UserProfileDetailsResponse: {
+            /** Format: uuid */
+            userId: string;
+            username: string;
+            displayName: string;
+            /** Format: date-time */
+            createdAt?: string | null;
+            /** Format: int64 */
+            totalComments: number;
+            /** Format: int64 */
+            totalUpvotes: number;
+            /** Format: int64 */
+            totalDownvotes: number;
+            /** Format: int64 */
+            totalBookmarks: number;
+            /** Format: int64 */
+            totalUploads: number;
+            /** Format: int64 */
+            totalLists: number;
+        };
+        UserProfileDetailsResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["UserProfileDetailsResponse"];
         };
         UserResponse: {
             /** Format: uuid */
