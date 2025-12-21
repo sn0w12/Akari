@@ -95,14 +95,5 @@ export const GENRE_CATEGORIES: Record<string, readonly Genre[]> = {
         "Yaoi",
         "Yuri",
     ],
-    Mature: [
-        "Adult",
-        "Hentai",
-        "Lolicon",
-        "Mature",
-        "Shotacon",
-        "Shoujo Ai",
-        "Shounen Ai",
-        "Smut",
-    ],
+    Mature: ["Adult", "Hentai", "Mature", "Shoujo Ai", "Shounen Ai", "Smut"],
 };
