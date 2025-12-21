@@ -21,6 +21,7 @@ export function MangaCommentList({
     const { data: userVoteData } = useQuery({
         queryKey: [mangaId],
         refetchOnMount: false,
+        enabled: initialComments.length > 0,
         queryFn: async () => {
             const { data, error } = await client.GET(
                 "/v2/comments/{id}/votes",
