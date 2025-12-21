@@ -96,7 +96,7 @@ export function HeaderComponent() {
 
     return (
         <header className="top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10">
-            <div className="py-1 pr-4 md:pr-11 pl-11 mx-auto flex items-center justify-between">
+            <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
                     <span
@@ -117,11 +117,7 @@ export function HeaderComponent() {
                     </span>
                 ) : null}
                 <div
-                    className={`hidden md:block flex h-full items-center pr-2 transition-all pl-4 ${
-                        isSidebarCollapsed && notification
-                            ? "md:pl-3"
-                            : "md:pl-2"
-                    }`}
+                    className={`hidden md:block flex h-full items-center pr-2 transition-all pl-4 md:pl-2`}
                 >
                     <Breadcrumb>
                         <BreadcrumbList>
