@@ -29,6 +29,7 @@ export function HeaderComponent() {
     const { overrides } = useBreadcrumb();
     const [notification, setNotification] = useState<string>("");
     const [segments, setSegments] = useState<string[]>([]);
+    const [originalSegments, setOriginalSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = useMemo(
         () => sidebarState === "collapsed",
@@ -62,6 +63,7 @@ export function HeaderComponent() {
             (segment) => overrides[segment] || segment
         );
         queueMicrotask(() => {
+            setOriginalSegments(pathSegments);
             setSegments(modifiedSegments);
         });
     }, [pathname, overrides]);
@@ -129,7 +131,7 @@ export function HeaderComponent() {
                                     <BreadcrumbItem>
                                         {index != 0 ? (
                                             <BreadcrumbLink
-                                                href={`/${segments
+                                                href={`/${originalSegments
                                                     .slice(0, index + 1)
                                                     .join("/")}`}
                                                 title={getSegmentDisplayName(
