@@ -11,6 +11,7 @@ import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import { getSearchResults } from "@/lib/api/search";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
+import { cn } from "@/lib/utils";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -21,6 +22,7 @@ export default function SearchBar() {
     const shouldCloseRef = useRef(true);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const hasSearchText = searchText.trim().length > 0;
 
     // Debounce search text
     useEffect(() => {
@@ -29,8 +31,6 @@ export default function SearchBar() {
         }, 300);
         return () => clearTimeout(timer);
     }, [searchText]);
-
-    const showPopup = isFocused && debouncedSearchText.trim().length > 0;
 
     // Fetch search results using React Query
     const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
@@ -100,7 +100,7 @@ export default function SearchBar() {
                     onFocus={() => {
                         setIsFocused(true);
                     }}
-                    aria-expanded={showPopup}
+                    aria-expanded={isFocused}
                     aria-controls="search-results"
                     aria-autocomplete="list"
                     aria-activedescendant={
@@ -117,7 +117,7 @@ export default function SearchBar() {
                     }`}
                 />
             </div>
-            {showPopup && (
+            {isFocused && (
                 <Card
                     ref={popupRef}
                     className="hidden absolute p-2 z-10 mt-1 m-auto md:w-full md:block"
@@ -154,23 +154,28 @@ export default function SearchBar() {
                                         {result.title}
                                     </Link>
                                 ))}
-                                <Link
-                                    href={`/search?q=${encodeURIComponent(
-                                        searchText
-                                    )}`}
-                                    className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
-                                    onMouseDown={() => {
-                                        shouldCloseRef.current = false;
-                                    }}
-                                >
-                                    View all results
-                                </Link>
                             </>
-                        ) : (
+                        ) : hasSearchText ? (
                             <div className="text-center text-muted-foreground p-4">
                                 No Results
                             </div>
-                        )}
+                        ) : null}
+                        <Link
+                            href={`/search?q=${encodeURIComponent(searchText)}`}
+                            className={cn(
+                                "block text-center text-primary hover:text-primary/80",
+                                {
+                                    "border-t pt-4 mt-2": hasSearchText,
+                                }
+                            )}
+                            onMouseDown={() => {
+                                shouldCloseRef.current = false;
+                            }}
+                        >
+                            {hasSearchText
+                                ? "View all results"
+                                : "Go to search page"}
+                        </Link>
                     </CardContent>
                 </Card>
             )}
