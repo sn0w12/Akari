@@ -1,10 +1,8 @@
 import { Metadata } from "next";
-import { cacheLife } from "next/cache";
 import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
-import { getAllAuthors } from "@/lib/api/pre-render";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -13,22 +11,7 @@ interface PageProps {
     }>;
 }
 
-export async function generateStaticParams(): Promise<
-    { params: { id: string } }[]
-> {
-    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1")
-        return [];
-    const authors = await getAllAuthors();
-
-    return authors.map((author) => ({
-        params: { id: author },
-    }));
-}
-
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
-
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name} on Akari for free.`;
