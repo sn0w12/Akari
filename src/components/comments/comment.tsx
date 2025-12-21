@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,11 +57,20 @@ export function Comment({
     const [editContent, setEditContent] = useState(comment.content);
 
     const initialVote = userVotes.find((v) => v.commentId === comment.id);
-    const [userVote, setUserVote] = useState<VoteType | null>(
-        initialVote ? (initialVote.value === 1 ? "up" : "down") : null
-    );
+    const [userVote, setUserVote] = useState<VoteType | null>(null);
     const [localUpvotes, setLocalUpvotes] = useState(comment.upvotes);
     const [localDownvotes, setLocalDownvotes] = useState(comment.downvotes);
+
+    useEffect(() => {
+        setUserVote(
+            initialVote ? (initialVote.value === 1 ? "up" : "down") : null
+        );
+    }, [initialVote]);
+
+    useEffect(() => {
+        setLocalUpvotes(comment.upvotes);
+        setLocalDownvotes(comment.downvotes);
+    }, [comment.upvotes, comment.downvotes]);
 
     const hasReplies =
         ("replyCount" in comment && (comment.replyCount ?? 0) > 0) ||

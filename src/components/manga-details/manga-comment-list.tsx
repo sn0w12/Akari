@@ -7,6 +7,7 @@ import type { CommentData, VoteType } from "@/components/comments/comment";
 import { useUser } from "@/contexts/user-context";
 import { Skeleton } from "../ui/skeleton";
 import { client } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 interface MangaCommentListProps {
     initialComments: components["schemas"]["CommentWithRepliesResponse"][];
@@ -17,6 +18,30 @@ export function MangaCommentList({
     initialComments,
     mangaId,
 }: MangaCommentListProps) {
+    const { data: userVoteData } = useQuery({
+        queryKey: [mangaId],
+        refetchOnMount: false,
+        queryFn: async () => {
+            const { data, error } = await client.GET(
+                "/v2/comments/{id}/votes",
+                {
+                    params: {
+                        path: {
+                            id: mangaId,
+                        },
+                    },
+                }
+            );
+
+            if (error) {
+                throw new Error(
+                    error.data.message || "Error fetching search results"
+                );
+            }
+
+            return data.data;
+        },
+    });
     const [comments, setComments] =
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
             initialComments
@@ -279,7 +304,7 @@ export function MangaCommentList({
             onEdit={handleEdit}
             onDelete={handleDelete}
             onNewComment={handleNewComment}
-            userVotes={[]}
+            userVotes={userVoteData}
             currentUser={user}
         />
     );
