@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useConfirm } from "@/contexts/confirm-context";
 
 export default function SyncMalPage() {
@@ -24,6 +25,7 @@ export default function SyncMalPage() {
     >([]);
     const [malLoading, setMalLoading] = useState(true);
     const [bookmarksLoading, setBookmarksLoading] = useState(true);
+    const [bookmarksProgress, setBookmarksProgress] = useState(0);
     const { confirm } = useConfirm();
 
     const getStatusVariant = (status: string | null) => {
@@ -90,6 +92,7 @@ export default function SyncMalPage() {
             let allData: components["schemas"]["BookmarkListResponse"]["items"] =
                 [];
             let page: number = 1;
+            let totalPages = 0;
 
             while (true) {
                 const { data, error } = await client.GET("/v2/bookmarks", {
@@ -109,6 +112,14 @@ export default function SyncMalPage() {
 
                 if (data.data?.items) {
                     allData = [...allData, ...data.data.items];
+                }
+
+                if (!totalPages && data.data?.totalPages) {
+                    totalPages = data.data.totalPages;
+                }
+
+                if (totalPages) {
+                    setBookmarksProgress((page / totalPages) * 100);
                 }
 
                 if (page >= (data.data?.totalPages || 0)) {
@@ -193,13 +204,14 @@ export default function SyncMalPage() {
         }
     }
 
+    const overallProgress = bookmarksProgress;
+
     return (
         <div className="container mx-auto p-4">
             {malLoading || bookmarksLoading ? (
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-lg">
-                        Loading MAL data and bookmarks...
-                    </div>
+                <div className="flex flex-col items-center justify-center h-64 gap-4">
+                    <p className="text-lg">Loading MAL data and bookmarks...</p>
+                    <Progress value={overallProgress} className="w-64" />
                 </div>
             ) : (
                 <>
