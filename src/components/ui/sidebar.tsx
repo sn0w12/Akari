@@ -59,6 +59,9 @@ type SidebarContextProps = {
     toggleSidebar: () => void;
     isAnimating: boolean;
     onAnimationComplete: (callback: () => void) => () => void;
+    tooltipOpen: boolean;
+    onTooltipHoverStart: () => void;
+    onTooltipHoverEnd: () => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -88,7 +91,10 @@ function SidebarProvider({
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
+    const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const animationCallbacksRef = React.useRef<Set<() => void>>(new Set());
+    const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    const resetTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const [_open, _setOpen] = React.useState(() => {
         if (typeof window === "undefined") return defaultOpen;
@@ -137,6 +143,28 @@ function SidebarProvider({
         };
     }, []);
 
+    const onTooltipHoverStart = React.useCallback(() => {
+        if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+            resetTimeoutRef.current = null;
+        }
+        if (!tooltipOpen) {
+            hoverTimeoutRef.current = setTimeout(() => {
+                setTooltipOpen(true);
+            }, 700);
+        }
+    }, [tooltipOpen]);
+
+    const onTooltipHoverEnd = React.useCallback(() => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+            hoverTimeoutRef.current = null;
+        }
+        resetTimeoutRef.current = setTimeout(() => {
+            setTooltipOpen(false);
+        }, 700);
+    }, []);
+
     const toggleSidebar = React.useCallback(() => {
         return isMobile
             ? setOpenMobile((open) => !open)
@@ -159,6 +187,9 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
+            tooltipOpen,
+            onTooltipHoverStart,
+            onTooltipHoverEnd,
         }),
         [
             state,
@@ -170,12 +201,15 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
+            tooltipOpen,
+            onTooltipHoverStart,
+            onTooltipHoverEnd,
         ]
     );
 
     return (
         <SidebarContext.Provider value={contextValue}>
-            <TooltipProvider delayDuration={0}>
+            <TooltipProvider>
                 <div
                     data-slot="sidebar-wrapper"
                     style={
@@ -591,7 +625,13 @@ function SidebarMenuButton({
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const {
+        isMobile,
+        state,
+        tooltipOpen,
+        onTooltipHoverStart,
+        onTooltipHoverEnd,
+    } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -615,6 +655,8 @@ function SidebarMenuButton({
                 sidebarMenuButtonVariants({ variant, size }),
                 className
             )}
+            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
+            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
             {...props}
         >
             {wrappedChildren}
@@ -630,7 +672,7 @@ function SidebarMenuButton({
     }
 
     return (
-        <Tooltip>
+        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
             <TooltipTrigger asChild>{button}</TooltipTrigger>
             <TooltipContent
                 side="right"
@@ -661,7 +703,14 @@ function SidebarMenuLink({
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : Link;
-    const { isMobile, state, setOpenMobile } = useSidebar();
+    const {
+        isMobile,
+        state,
+        tooltipOpen,
+        setOpenMobile,
+        onTooltipHoverStart,
+        onTooltipHoverEnd,
+    } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -691,6 +740,8 @@ function SidebarMenuLink({
                     setOpenMobile(false);
                 }
             }}
+            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
+            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
             prefetch={false}
             {...props}
         >
@@ -707,7 +758,7 @@ function SidebarMenuLink({
     }
 
     return (
-        <Tooltip>
+        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
             <TooltipTrigger asChild>{link}</TooltipTrigger>
             <TooltipContent
                 side="right"
