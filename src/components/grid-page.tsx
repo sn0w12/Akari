@@ -11,6 +11,9 @@ interface PageProps {
     currentSort?: string;
 }
 
+export const GRID_CLASS =
+    "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6";
+
 export default async function GridPage({
     title,
     mangaList,
@@ -47,7 +50,7 @@ export async function GridPageSkeleton({
         <div className="min-h-screen bg-background text-foreground">
             <div className="mx-auto px-4 pt-2 pb-4">
                 <Skeleton className="h-[36px] mb-2 w-96" />
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div className={GRID_CLASS}>
                     {[...Array(pageSize)].map((_, index) => (
                         <MangaCardSkeleton key={index} />
                     ))}

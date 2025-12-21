@@ -17,6 +17,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Filter } from "lucide-react";
+import { GRID_CLASS } from "./grid-page";
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -126,7 +127,7 @@ export default function SearchPage() {
             </div>
 
             {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mt-4">
+                <div className={`${GRID_CLASS} mt-4`}>
                     {Array.from({ length: 24 }).map((_, i) => (
                         <MangaCardSkeleton key={i} />
                     ))}

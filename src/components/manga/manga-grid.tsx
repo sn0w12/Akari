@@ -1,3 +1,4 @@
+import { GRID_CLASS } from "../grid-page";
 import { MangaCard } from "./manga-card";
 interface MangaGridProps {
     mangaList: components["schemas"]["MangaResponse"][];
@@ -5,7 +6,7 @@ interface MangaGridProps {
 
 export function MangaGrid({ mangaList }: MangaGridProps) {
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className={GRID_CLASS}>
             {mangaList.map((manga) => (
                 <MangaCard key={manga.id} manga={manga} />
             ))}
