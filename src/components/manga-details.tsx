@@ -12,7 +12,6 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { cacheLife } from "next/cache";
 import { formatRelativeDate } from "@/lib/utils";
 import { MangaComments } from "./manga-details/manga-comments";
 import { ViewManga } from "./manga-reader/view-manga";
@@ -101,9 +100,6 @@ export async function MangaDetailsComponent({
 }: {
     manga: components["schemas"]["MangaDetailResponse"];
 }) {
-    "use cache";
-    cacheLife("hours");
-
     return (
         <div className="mx-auto p-4">
             <BreadcrumbSetter orig={manga.id} title={manga.title} />

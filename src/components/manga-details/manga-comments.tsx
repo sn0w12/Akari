@@ -2,24 +2,35 @@
 
 import { client, serverHeaders } from "@/lib/api";
 import { MangaCommentList } from "./manga-comment-list";
-import { cacheLife } from "next/cache";
+import { unstable_cache } from "next/cache";
+
+const getMangaComments = unstable_cache(
+    async (id: string) => {
+        const { data, error } = await client.GET("/v2/comments/{id}", {
+            params: {
+                path: {
+                    id: id,
+                },
+            },
+            headers: serverHeaders,
+        });
+
+        if (error) {
+            return { data: null, error };
+        }
+
+        return { data: data.data, error: null };
+    },
+    ["manga", "id"],
+    { revalidate: 60 }
+);
 
 export async function MangaComments({
     manga,
 }: {
     manga: components["schemas"]["MangaDetailResponse"];
 }) {
-    "use cache";
-    cacheLife("minutes");
-
-    const { data, error } = await client.GET("/v2/comments/{id}", {
-        params: {
-            path: {
-                id: manga.id,
-            },
-        },
-        headers: serverHeaders,
-    });
+    const { data, error } = await getMangaComments(manga.id);
 
     if (error) {
         return (
@@ -38,7 +49,7 @@ export async function MangaComments({
 
     // Convert CommentResponse[] to CommentWithRepliesResponse[] with empty replies
     const commentsWithReplies: components["schemas"]["CommentWithRepliesResponse"][] =
-        (data.data.items || []).map((comment) => ({
+        (data.items || []).map((comment) => ({
             ...comment,
             replies: [],
         }));
