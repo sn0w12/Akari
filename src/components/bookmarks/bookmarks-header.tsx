@@ -105,19 +105,6 @@ export default function BookmarksHeader() {
         URL.revokeObjectURL(url);
     }
 
-    async function syncToMal() {
-        const confirmed = await confirm({
-            title: "Sync bookmarks to MyAnimeList",
-            description:
-                "Your sync request will be queued and processed shortly. You will not be able to make another sync request until the current one is completed.",
-            confirmText: "Yes, Sync",
-            cancelText: "Cancel",
-        });
-        if (!confirmed) return;
-
-        return null;
-    }
-
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (searchResults.length === 0) return;
         if (searchResults[selectedIndex] === undefined) return;
@@ -149,16 +136,6 @@ export default function BookmarksHeader() {
                 >
                     Export Bookmarks
                 </Button>
-                <Button
-                    variant="outline"
-                    size="lg"
-                    className={
-                        "hidden md:flex w-auto md:h-auto items-center justify-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white"
-                    }
-                    onClick={syncToMal}
-                >
-                    Sync to MAL
-                </Button>
                 <div className="relative w-full h-10 md:h-9">
                     <Input
                         type="search"
@@ -176,7 +153,6 @@ export default function BookmarksHeader() {
                 </div>
                 <BookmarksDropdown
                     exportBookmarks={exportBookmarks}
-                    syncToMal={syncToMal}
                 />
             </div>
             {isFocused && searchResults.length > 0 && (

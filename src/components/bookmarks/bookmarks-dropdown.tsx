@@ -9,13 +9,9 @@ import { MoreVertical } from "lucide-react";
 
 interface BookmarksDropdownProps {
     exportBookmarks: () => Promise<void>;
-    syncToMal: () => Promise<null | undefined>;
 }
 
-export function BookmarksDropdown({
-    exportBookmarks,
-    syncToMal,
-}: BookmarksDropdownProps) {
+export function BookmarksDropdown({ exportBookmarks }: BookmarksDropdownProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -30,12 +26,6 @@ export function BookmarksDropdown({
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={exportBookmarks}>
                     Export Bookmarks
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={syncToMal}
-                    className="bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600 text-white focus:bg-blue-600 focus:text-white"
-                >
-                    Sync to MAL
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
