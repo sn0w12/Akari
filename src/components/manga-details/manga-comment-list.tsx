@@ -7,16 +7,19 @@ import type { CommentData, VoteType } from "@/components/comments/comment";
 import { useUser } from "@/contexts/user-context";
 import { Skeleton } from "../ui/skeleton";
 import { client } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Button } from "../ui/button";
 
 interface MangaCommentListProps {
     initialComments: components["schemas"]["CommentWithRepliesResponse"][];
     mangaId: string;
+    totalPages: number;
 }
 
 export function MangaCommentList({
     initialComments,
     mangaId,
+    totalPages,
 }: MangaCommentListProps) {
     const { data: userVoteData } = useQuery({
         queryKey: [mangaId],
@@ -48,6 +51,37 @@ export function MangaCommentList({
             initialComments
         );
     const { user, isLoading: userLoading } = useUser();
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const loadMoreMutation = useMutation({
+        mutationFn: (page: number) =>
+            client
+                .GET("/v2/comments/{id}", {
+                    params: {
+                        path: {
+                            id: mangaId,
+                        },
+                        query: {
+                            page: page,
+                            pageSize: 20,
+                        },
+                    },
+                })
+                .then((res) => res.data?.data),
+        onSuccess: (data) => {
+            if (!data) return;
+            const newComments: components["schemas"]["CommentWithRepliesResponse"][] =
+                (data.items || []).map((comment) => ({
+                    ...comment,
+                    replies: [],
+                }));
+            setComments((prev) => [...prev, ...newComments]);
+            setCurrentPage((prev) => prev + 1);
+        },
+        onError: () => {
+            new Toast("Failed to load more comments.", "error");
+        },
+    });
 
     // Helper function to recursively update comment content
     const updateCommentContent = (
@@ -297,16 +331,32 @@ export function MangaCommentList({
     }
 
     return (
-        <CommentList
-            comments={comments}
-            onLoadReplies={handleLoadReplies}
-            onVote={handleVote}
-            onReply={handleReply}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onNewComment={handleNewComment}
-            userVotes={userVoteData}
-            currentUser={user}
-        />
+        <>
+            <CommentList
+                comments={comments}
+                onLoadReplies={handleLoadReplies}
+                onVote={handleVote}
+                onReply={handleReply}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onNewComment={handleNewComment}
+                userVotes={userVoteData}
+                currentUser={user}
+            />
+            {currentPage < totalPages && (
+                <div className="flex flex-1 justify-center mt-4">
+                    <Button
+                        onClick={() => loadMoreMutation.mutate(currentPage + 1)}
+                        disabled={loadMoreMutation.isPending}
+                        variant="outline"
+                        className="w-full"
+                    >
+                        {loadMoreMutation.isPending
+                            ? "Loading..."
+                            : "Load More Comments"}
+                    </Button>
+                </div>
+            )}
+        </>
     );
 }

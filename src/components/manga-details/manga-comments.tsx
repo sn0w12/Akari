@@ -11,6 +11,10 @@ const getMangaComments = unstable_cache(
                 path: {
                     id: id,
                 },
+                query: {
+                    page: 1,
+                    pageSize: 20,
+                },
             },
             headers: serverHeaders,
         });
@@ -55,6 +59,7 @@ export async function MangaComments({ id }: { id: string }) {
             <MangaCommentList
                 initialComments={commentsWithReplies}
                 mangaId={id}
+                totalPages={data.totalPages}
             />
         </div>
     );
