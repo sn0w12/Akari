@@ -3,6 +3,7 @@ import { createMetadata } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
+import { unstable_cache } from "next/cache";
 
 interface PageProps {
     searchParams: Promise<{
@@ -17,22 +18,24 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/popular",
 });
 
-async function getPopularData(page: number) {
-    "use cache";
-
-    const { data, error } = await client.GET("/v2/manga/list/popular", {
-        params: {
-            query: {
-                page: page,
-                pageSize: 24,
-                days: 30,
+const getPopularData = unstable_cache(
+    async (page: number) => {
+        const { data, error } = await client.GET("/v2/manga/list/popular", {
+            params: {
+                query: {
+                    page: page,
+                    pageSize: 24,
+                    days: 30,
+                },
             },
-        },
-        headers: serverHeaders,
-    });
+            headers: serverHeaders,
+        });
 
-    return { data, error };
-}
+        return { data, error };
+    },
+    ["popular-data"],
+    { revalidate: 1200, tags: ["popular"] }
+);
 
 export default async function Popular(props: PageProps) {
     const searchParams = await props.searchParams;
