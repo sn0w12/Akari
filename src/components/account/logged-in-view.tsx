@@ -19,6 +19,7 @@ import {
 } from "@/lib/auth/secondary-accounts";
 import { ListsTabContent } from "./lists";
 import Link from "next/link";
+import { ButtonLink } from "../ui/button-link";
 import { Link as LinkIcon } from "lucide-react";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 
@@ -176,21 +177,31 @@ export default function LoggedInView({
                                                 Connected
                                             </p>
                                         </div>
-                                        <ButtonConfirmDialog
-                                            triggerButton={
-                                                <Button variant="destructive">
-                                                    Disconnect
-                                                </Button>
-                                            }
-                                            title="Disconnect Account"
-                                            description={`Are you sure you want to disconnect your ${account.name} account? This will stop syncing your manga data.`}
-                                            confirmText="Disconnect"
-                                            cancelText="Cancel"
-                                            variant="destructive"
-                                            onConfirm={() =>
-                                                handleSecondaryLogout(account)
-                                            }
-                                        />
+                                        <div className="flex flex-row gap-2">
+                                            <ButtonLink
+                                                href={`/sync/${account.id}`}
+                                                variant="outline"
+                                            >
+                                                Import Manga
+                                            </ButtonLink>
+                                            <ButtonConfirmDialog
+                                                triggerButton={
+                                                    <Button variant="destructive">
+                                                        Disconnect
+                                                    </Button>
+                                                }
+                                                title="Disconnect Account"
+                                                description={`Are you sure you want to disconnect your ${account.name} account? This will stop syncing your manga data.`}
+                                                confirmText="Disconnect"
+                                                cancelText="Cancel"
+                                                variant="destructive"
+                                                onConfirm={() =>
+                                                    handleSecondaryLogout(
+                                                        account
+                                                    )
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </CardContent>
