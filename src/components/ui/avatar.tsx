@@ -24,6 +24,7 @@ function Avatar({ className, name, ...props }: AvatarProps) {
             <BoringAvatar
                 name={name}
                 variant="bauhaus"
+                size={32}
                 colors={[
                     "var(--background)",
                     "var(--secondary)",
