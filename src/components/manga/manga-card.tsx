@@ -138,6 +138,7 @@ export function MangaCard({
                 <Link
                     href={`/manga/${manga.id}`}
                     className="relative block h-full w-full"
+                    prefetch={false}
                 >
                     <Image
                         src={manga.cover}
