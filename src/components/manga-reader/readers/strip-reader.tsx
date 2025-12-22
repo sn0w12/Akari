@@ -129,7 +129,12 @@ export default function StripReader({
                     />
                 ))}
             </div>
-            <StripPageProgress progress={progress} hidden={progress === 1} />
+            <div className={`sm:opacity-0 lg:opacity-100`}>
+                <StripPageProgress
+                    progress={progress}
+                    hidden={progress === 1}
+                />
+            </div>
             <MangaFooter
                 chapter={chapter}
                 toggleReaderMode={toggleReaderMode}
