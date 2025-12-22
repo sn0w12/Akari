@@ -280,7 +280,10 @@ export async function MangaDetailsComponent({
                                     </div>
                                 </div>
                                 <div className="my-2 flex-grow block">
-                                    <ScoreDisplay score={manga.score / 2} />
+                                    <ScoreDisplay
+                                        mangaId={manga.id}
+                                        score={manga.score / 2}
+                                    />
                                 </div>
                             </div>
 

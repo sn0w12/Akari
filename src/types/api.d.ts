@@ -2154,6 +2154,104 @@ export interface paths {
                 };
             };
         };
+        /** Remove user's rating for a manga */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unique identifier of the manga. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/rating": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get user's rating for a manga */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unique identifier of the manga. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Int32NullableSuccessResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2670,7 +2768,11 @@ export interface paths {
             };
             requestBody?: {
                 content: {
-                    "*/*"?: never;
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        File?: string;
+                        Tags?: string[];
+                    };
                 };
             };
             responses: {
@@ -3296,6 +3398,14 @@ export interface components {
             status: number;
             data: string[];
         };
+        Int32NullableSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            /** Format: int32 */
+            data: number;
+        };
         Int32SuccessResponse: {
             /** @enum {string} */
             result: "Success";
@@ -3500,7 +3610,6 @@ export interface components {
             pageSize: number;
             /** Format: int32 */
             readonly totalPages: number;
-            ids?: string[] | null;
         };
         MangaIdsResponseSuccessResponse: {
             /** @enum {string} */
