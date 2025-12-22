@@ -19,7 +19,13 @@ export default function StripPageProgress({
     const [gradient, setGradient] = useState(
         "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
     );
-    const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState(() => {
+        if (typeof window === "undefined") {
+            return cutoff;
+        }
+
+        return window.innerWidth;
+    });
     const isVisible = useSetting("showPageProgress");
 
     useEffect(() => {
