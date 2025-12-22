@@ -53,7 +53,6 @@ export default function LoggedInView({
     useEffect(() => {
         async function validate() {
             const results = await validateSecondaryAccounts();
-            console.log(results);
             setValidAccounts(results);
         }
         validate();

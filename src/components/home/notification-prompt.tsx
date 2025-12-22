@@ -52,7 +52,6 @@ export function NotificationPrompt() {
         } catch (err: unknown) {
             // If permission was denied inside the handler, record it and stop showing
             const message = err instanceof Error ? err.message : String(err);
-            console.log("Push notification setup failed:", message);
             if (message.includes("Permission denied")) {
                 storage.update({ declined: true });
                 setIsVisible(false);
