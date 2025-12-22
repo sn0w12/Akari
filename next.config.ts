@@ -10,6 +10,8 @@ const config: NextConfig = {
                 pathname: "/**",
             },
         ],
+        loader: "custom",
+        loaderFile: "./scripts/image-loader.ts",
     },
     reactCompiler: true,
     experimental: {
