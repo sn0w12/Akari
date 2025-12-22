@@ -103,6 +103,10 @@ interface MetadataOptions {
     type?: OpenGraphType;
 }
 
+export function createOgImage(type: "manga" | "author" | "genre", id: string) {
+    return `https://img.akarimanga.dpdns.org/og/${type}/${id}.webp`;
+}
+
 export function createMetadata(options: MetadataOptions): Metadata {
     const title = `${options.title} - Akari`;
     const description = `Akari Manga - ${options.description}`;

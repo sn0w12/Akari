@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import { getAllMangaIds } from "@/lib/api/pre-render";
 import ErrorPage from "@/components/error-page";
@@ -65,7 +65,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return createMetadata({
         title: manga.title,
         description: description,
-        image: `/api/v1/manga/${params.id}/og`,
+        image: createOgImage("manga", manga.id),
         canonicalPath: `/manga/${params.id}`,
     });
 }

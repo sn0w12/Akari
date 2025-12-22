@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Reader } from "@/components/manga-reader";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
@@ -84,15 +84,11 @@ export async function generateMetadata({
     const chapter = data;
     const title = `${chapter.mangaTitle} - ${chapter.title}`;
     const description = `Read ${chapter.mangaTitle} ${chapter.title}.`;
-    let image = `/api/v1/manga/${mangaParams.id}/og`;
-    if (process.env.NEXT_PUBLIC_HOST) {
-        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${mangaParams.id}/og`;
-    }
 
     return createMetadata({
         title: title,
         description: description,
-        image: image,
+        image: createOgImage("manga", chapter.mangaId),
         canonicalPath: `/manga/${mangaParams.id}`,
     });
 }

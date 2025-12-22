@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import { cacheLife } from "next/cache";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
@@ -15,20 +14,14 @@ interface PageProps {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
-
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all ${name} manga`;
-    const ogImage = `/og/categories/${params.id
-        .toLowerCase()
-        .replaceAll(" ", "-")}.webp`;
 
     return createMetadata({
         title: name,
         description: description,
-        image: ogImage,
+        image: createOgImage("genre", params.id),
         canonicalPath: `/genre/${params.id}`,
     });
 }

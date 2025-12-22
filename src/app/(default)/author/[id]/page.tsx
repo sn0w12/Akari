@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
@@ -19,7 +19,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return createMetadata({
         title: name,
         description: description,
-        image: `/api/v1/author/${params.id}/og`,
+        image: createOgImage("author", params.id),
         canonicalPath: `/author/${params.id}`,
     });
 }
