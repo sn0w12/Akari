@@ -149,6 +149,8 @@ export function MangaCard({
                         width={200}
                         height={300}
                         priority={priority}
+                        loading={priority ? "eager" : "lazy"}
+                        fetchPriority={priority ? "high" : "auto"}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
