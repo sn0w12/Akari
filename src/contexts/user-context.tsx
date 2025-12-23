@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthCookie } from "@/lib/api";
 import React, {
     createContext,
     useContext,
@@ -7,7 +8,6 @@ import React, {
     useState,
     ReactNode,
 } from "react";
-import { createClient } from "@/lib/auth/client";
 
 interface UserContextType {
     user: components["schemas"]["UserResponse"] | undefined;
@@ -36,12 +36,7 @@ export function UserProvider({ children }: UserProviderProps) {
         try {
             setIsLoading(true);
             setError(null);
-            const supabase = createClient();
-            const { data, error: authError } = await supabase.auth.getUser();
-
-            if (authError) {
-                throw new Error(authError.message || "Failed to fetch user");
-            }
+            const data = getAuthCookie();
 
             if (data.user) {
                 const userResponse: components["schemas"]["UserResponse"] = {

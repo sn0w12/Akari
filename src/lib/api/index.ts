@@ -2,26 +2,38 @@ import createClient from "openapi-fetch";
 import type { paths } from "@/types/api";
 import { inDevelopment, inPreview } from "@/config";
 import pkg from "../../../package.json";
-import { createBrowserClient } from "@supabase/ssr";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5188/";
 const baseUrl = inDevelopment ? "http://localhost:5188/" : apiUrl;
 
-const authenticatedFetch = async (input: Request): Promise<Response> => {
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY!
+export function getAuthCookie() {
+    if (typeof document === "undefined") {
+        return null;
+    }
+
+    const sbAuthTokenRow = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("sb-db-auth-token"));
+    if (!sbAuthTokenRow) {
+        return null;
+    }
+
+    return JSON.parse(
+        atob(sbAuthTokenRow.split("=")[1].replace("base64-", ""))
     );
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+}
+
+const authenticatedFetch = async (input: Request): Promise<Response> => {
     const request = input.clone();
+    const session = getAuthCookie();
+
     if (
         session?.access_token &&
         request.headers.get("Authorization") === null
     ) {
         request.headers.set("Authorization", `Bearer ${session.access_token}`);
     }
+
     return fetch(request);
 };
 
