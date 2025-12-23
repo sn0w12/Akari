@@ -175,66 +175,6 @@ input:-webkit-autofill:active {
     box-shadow: inset 0 0 20px 20px #23232329;
 }
 
-/* HEADER */
-.header {
-    position: fixed;
-    top: -100px; /* Hide it initially */
-    opacity: 0;
-    left: 0;
-    right: 0;
-    transition: top 0.3s ease, opacity 0.3s ease; /* Smooth scroll effect */
-    z-index: 1000;
-}
-
-.header-visible {
-    top: 0; /* Slide it into view */
-    opacity: 1;
-}
-
-.footer {
-    position: fixed;
-    bottom: -100px; /* Hide it initially */
-    opacity: 0;
-    left: 0;
-    right: 0;
-    transition: bottom 0.3s ease, opacity 0.3s ease; /* Smooth scroll effect */
-    z-index: 30;
-    pointer-events: none;
-}
-
-.footer-visible {
-    bottom: 0; /* Slide it into view */
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.manga-title {
-    transition: top 0.3s ease, opacity 0.3s ease;
-    top: 0;
-}
-
-.manga-title.header-visible {
-    top: 50px;
-    z-index: 100;
-}
-
-@media (max-width: 1400px) {
-    .manga-title {
-        opacity: 0;
-        z-index: 100;
-    }
-
-    .manga-title.header-visible {
-        opacity: 1;
-    }
-}
-
-@media (max-width: 700px) {
-    .manga-title {
-        opacity: 0;
-    }
-}
-
 .settings-description a {
     color: hsl(var(--primary));
 }
@@ -245,10 +185,6 @@ input:-webkit-autofill:active {
 }
 
 /* INPUTS */
-input:invalid {
-    border-color: red;
-}
-
 input[type="search"].no-cancel::-webkit-search-cancel-button {
     display: none;
 }
