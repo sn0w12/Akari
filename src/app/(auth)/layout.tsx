@@ -9,11 +9,6 @@ const geistSans = localFont({
     variable: "--font-geist-sans",
     weight: "100 900",
 });
-const geistMono = localFont({
-    src: "../../../public/fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
 
 export default async function RootLayout({
     children,
@@ -26,9 +21,7 @@ export default async function RootLayout({
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
             </head>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
-            >
+            <body className={`${geistSans.variable} antialiased bg-background`}>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
