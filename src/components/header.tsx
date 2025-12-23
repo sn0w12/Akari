@@ -81,7 +81,11 @@ export function HeaderComponent({ notification }: HeaderProps) {
                 if (validNotifs.includes(account.id) && !account.valid) {
                     new Toast(
                         `${account.name} session has expired. Please log in again.`,
-                        "error"
+                        "error",
+                        {
+                            description:
+                                "You can disable this notification in settings.",
+                        }
                     );
                 }
             }
