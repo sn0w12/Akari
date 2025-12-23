@@ -16,7 +16,7 @@ const config: NextConfig = {
     reactCompiler: true,
     experimental: {
         useCache: true,
-        cssChunking: true,
+        inlineCss: true,
     },
 };
 
