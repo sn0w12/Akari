@@ -13,6 +13,11 @@
         "generate-types": "openapi-typescript http://localhost:5188/swagger/v2/swagger.json --output ./src/types/api.d.ts",
         "generate-settings-md": "npx tsx ./scripts/generate-settings-md.ts"
     },
+    "browserslist": [
+        "last 2 versions",
+        ">0.3%",
+        "not dead"
+    ],
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
         "@radix-ui/react-avatar": "^1.1.10",
