@@ -10,12 +10,14 @@ interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
     expandDirection?: "left" | "right" | "auto";
     className?: string;
+    priority?: boolean;
 }
 
 export function MangaCard({
     manga,
     expandDirection = "auto",
     className,
+    priority = false,
 }: MangaCardProps) {
     const [shouldExpand, setShouldExpand] = useState(false);
     const [computedDirection, setComputedDirection] = useState<
@@ -146,6 +148,7 @@ export function MangaCard({
                         className="h-full w-full object-cover"
                         width={200}
                         height={300}
+                        priority={priority}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
