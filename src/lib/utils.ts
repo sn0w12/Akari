@@ -94,7 +94,19 @@ export function generateSizes(options: {
     }
 
     // Add the fallback size for smallest screens
-    const fallback = options.sm || options.default || "100vw";
+    let fallback = "100vw";
+    if (options.default !== undefined) {
+        fallback = options.default;
+    } else {
+        // Find the smallest breakpoint that has a value
+        for (const bp of breakpoints) {
+            const size = options[bp.key as keyof typeof options];
+            if (size) {
+                fallback = size;
+                break;
+            }
+        }
+    }
     sizes.push(fallback);
 
     return sizes.join(", ");
