@@ -27,11 +27,11 @@ import {
 import { Separator } from "./ui/separator";
 import { GENRE_CATEGORIES } from "@/lib/api/search";
 import { fetchNotification } from "@/lib/manga/bookmarks";
-import { useEffect, useState } from "react";
 import { useShortcutSetting, useSetting } from "@/lib/settings";
 import { useRouter } from "next/navigation";
 import { KeyboardShortcut } from "./ui/keyboard-shortcut";
 import { useUser } from "@/contexts/user-context";
+import { useQuery } from "@tanstack/react-query";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -50,9 +50,14 @@ export function BaseLayout({
 }) {
     const router = useRouter();
     const { user } = useUser();
-    const [notification, setNotification] = useState<string>("");
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = sidebarState === "collapsed";
+
+    const { data: notification = "" } = useQuery({
+        queryKey: ["notification"],
+        queryFn: fetchNotification,
+        enabled: !!user,
+    });
 
     const handleSettingsClick = () => {
         router.push("/settings");
@@ -74,15 +79,9 @@ export function BaseLayout({
         { preventDefault: true }
     );
 
-    useEffect(() => {
-        fetchNotification().then((value) => {
-            setNotification(value);
-        });
-    }, [setNotification]);
-
     return (
         <div className="flex flex-col w-full">
-            <HeaderComponent />
+            <HeaderComponent notification={notification} />
             <div className="bg-sidebar flex flex-1">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent data-scrollbar-custom="true">

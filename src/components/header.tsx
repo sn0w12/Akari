@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ButtonLink } from "./ui/button-link";
 import { usePathname } from "next/navigation";
-import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useTheme } from "next-themes";
 import { useSettingsChange } from "@/lib/settings";
 import { inPreview } from "@/config";
@@ -23,11 +22,14 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
 import { HomeIcon } from "lucide-react";
 
-export function HeaderComponent() {
+interface HeaderProps {
+    notification: string;
+}
+
+export function HeaderComponent({ notification }: HeaderProps) {
     const pathname = usePathname();
     const { user } = useUser();
     const { overrides } = useBreadcrumb();
-    const [notification, setNotification] = useState<string>("");
     const [segments, setSegments] = useState<string[]>([]);
     const [originalSegments, setOriginalSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
@@ -71,9 +73,6 @@ export function HeaderComponent() {
     useEffect(() => {
         if (!user) return;
 
-        fetchNotification().then((value) => {
-            setNotification(value);
-        });
         validateSecondaryAccounts();
     }, [user]);
 
