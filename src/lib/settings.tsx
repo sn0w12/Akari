@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { UAParser } from "ua-parser-js";
 import { Input, NumberInput } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -29,6 +28,7 @@ import { RotateCcw } from "lucide-react";
 import { ShortcutOptions, useShortcut } from "@/hooks/use-shortcut";
 import { APP_SETTINGS } from "@/config";
 import { cn } from "@/lib/utils";
+import { DeviceType } from "@/contexts/device-context";
 
 type AppSettingsCategories = typeof APP_SETTINGS;
 type CategoryKeys = keyof AppSettingsCategories;
@@ -424,13 +424,13 @@ export type SettingVisibility = "desktop" | "mobile" | "pwa";
 /**
  * Determines if a setting should be visible based on device type and visibility rules.
  * @param visibility - Array of visibility settings for the setting/category
- * @param deviceType - The type of device from UAParser ("desktop", "mobile", "tablet", etc., or undefined)
+ * @param deviceType - The type of device from DeviceType
  * @param isPWA - Whether the app is running as a PWA
  * @returns true if the setting should be visible, false otherwise
  */
 export function shouldShowSetting(
     visibility: SettingVisibility[] | undefined,
-    deviceType: UAParser.IDevice["type"],
+    deviceType: DeviceType,
     isPWA: boolean
 ): boolean {
     if (!visibility || visibility.length === 0) {

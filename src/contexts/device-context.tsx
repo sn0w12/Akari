@@ -7,12 +7,61 @@ import {
     useState,
     ReactNode,
 } from "react";
-import { UAParser } from "ua-parser-js";
+
+export type DeviceType = "mobile" | "tablet" | "desktop" | undefined;
+export type OsType =
+    | "Windows"
+    | "macOS"
+    | "Linux"
+    | "Android"
+    | "iOS"
+    | "unknown";
 
 interface DeviceInfo {
-    deviceType: UAParser.IDevice["type"];
-    os: string;
+    deviceType: DeviceType;
+    os: OsType;
     isPWA: boolean;
+}
+
+interface NavigatorStandalone extends Navigator {
+    standalone?: boolean;
+}
+
+function isPWA() {
+    const nav = window.navigator as NavigatorStandalone;
+    return (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        nav.standalone === true ||
+        document.referrer.includes("android-app://")
+    );
+}
+
+function parseUserAgent(userAgent: string): DeviceInfo {
+    const ua = userAgent.toLowerCase();
+
+    // Basic OS detection
+    let os = "unknown" as OsType;
+    if (ua.includes("windows")) os = "Windows";
+    else if (ua.includes("mac os x") || ua.includes("macos")) os = "macOS";
+    else if (ua.includes("linux")) os = "Linux";
+    else if (ua.includes("android")) os = "Android";
+    else if (ua.includes("ios") || ua.includes("iphone") || ua.includes("ipad"))
+        os = "iOS";
+
+    // Basic device type detection
+    let deviceType: DeviceInfo["deviceType"] = undefined;
+    if (
+        ua.includes("mobile") ||
+        (ua.includes("android") && !ua.includes("tablet"))
+    ) {
+        deviceType = "mobile";
+    } else if (ua.includes("tablet") || ua.includes("ipad")) {
+        deviceType = "tablet";
+    } else {
+        deviceType = "desktop";
+    }
+
+    return { deviceType, os, isPWA: isPWA() };
 }
 
 const DeviceContext = createContext<DeviceInfo>({
@@ -32,28 +81,13 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         isPWA: false,
     });
 
-    interface NavigatorStandalone extends Navigator {
-        standalone?: boolean;
-    }
-
     useEffect(() => {
-        function isPWA() {
-            const nav = window.navigator as NavigatorStandalone;
-            return (
-                window.matchMedia("(display-mode: standalone)").matches ||
-                nav.standalone === true ||
-                document.referrer.includes("android-app://")
-            );
-        }
-
-        const parser = new UAParser(navigator.userAgent);
-        const device = parser.getDevice();
-        const os = parser.getOS();
+        const { deviceType, os, isPWA } = parseUserAgent(navigator.userAgent);
         queueMicrotask(() => {
             setDeviceInfo({
-                deviceType: device.type,
-                os: os.name || "unknown",
-                isPWA: isPWA(),
+                deviceType,
+                os,
+                isPWA,
             });
         });
     }, []);
