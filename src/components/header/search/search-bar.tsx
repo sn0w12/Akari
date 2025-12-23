@@ -11,7 +11,7 @@ import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import { getSearchResults } from "@/lib/api/search";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
-import { cn } from "@/lib/utils";
+import { cn, generateSizes } from "@/lib/utils";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -148,8 +148,11 @@ export default function SearchBar() {
                                             src={result.cover}
                                             alt={result.title}
                                             className="max-h-24 w-auto rounded mr-2"
-                                            height={100}
-                                            width={70}
+                                            height={144}
+                                            width={96}
+                                            sizes={generateSizes({
+                                                default: "96px",
+                                            })}
                                         />
                                         {result.title}
                                     </Link>

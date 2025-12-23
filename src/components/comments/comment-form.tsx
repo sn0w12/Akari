@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AttachmentPopover } from "./attachment-popover";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { generateSizes } from "@/lib/utils";
 
 interface CommentFormProps {
     onSubmit: (
@@ -90,6 +91,9 @@ export function CommentForm({
                             className="h-10 w-10 object-cover rounded"
                             height={40}
                             width={40}
+                            sizes={generateSizes({
+                                default: "48px",
+                            })}
                         />
                         <span className="text-sm text-muted-foreground flex-1">
                             Attached image

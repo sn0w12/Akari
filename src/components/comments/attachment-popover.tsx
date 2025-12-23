@@ -14,6 +14,7 @@ import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/contexts/user-context";
 import Image from "next/image";
+import { generateSizes } from "@/lib/utils";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
 
@@ -154,6 +155,9 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                             className="w-full h-full object-cover"
                                             height={96}
                                             width={96}
+                                            sizes={generateSizes({
+                                                default: "128px",
+                                            })}
                                         />
                                     </button>
                                 ))}
@@ -263,6 +267,9 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                                 className="w-full h-full object-cover"
                                                 height={80}
                                                 width={80}
+                                                sizes={generateSizes({
+                                                    default: "128px",
+                                                })}
                                             />
                                         </button>
                                     ))}

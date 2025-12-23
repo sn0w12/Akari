@@ -11,7 +11,7 @@ import {
     Edit,
     Trash,
 } from "lucide-react";
-import { cn, getInitials } from "@/lib/utils";
+import { cn, generateSizes, getInitials } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
 import { useConfirm } from "@/contexts/confirm-context";
 import Image from "next/image";
@@ -246,6 +246,9 @@ export function Comment({
                             className="max-w-64 h-auto rounded-md border"
                             height={160}
                             width={160}
+                            sizes={generateSizes({
+                                default: "256px",
+                            })}
                         />
                     </div>
                 )}

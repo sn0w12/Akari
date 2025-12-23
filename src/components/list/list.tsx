@@ -12,7 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { generateSizes, getInitials } from "@/lib/utils";
 
 function Entry({
     entry,
@@ -64,9 +64,12 @@ function Entry({
                 <Image
                     src={entry.mangaCover}
                     alt={entry.mangaTitle}
-                    className="w-12 h-16 object-cover rounded"
+                    className="w-12 h-18 object-cover rounded"
                     width={48}
-                    height={64}
+                    height={72}
+                    sizes={generateSizes({
+                        default: "48px",
+                    })}
                 />
             </Link>
             <div className="flex-1 min-w-0">

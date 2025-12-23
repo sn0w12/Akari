@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { client } from "@/lib/api";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
+import { generateSizes } from "@/lib/utils";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -149,9 +150,7 @@ export default function BookmarksHeader() {
                     />
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 </div>
-                <BookmarksDropdown
-                    exportBookmarks={exportBookmarks}
-                />
+                <BookmarksDropdown exportBookmarks={exportBookmarks} />
             </div>
             {isFocused && searchResults.length > 0 && (
                 <Card className="absolute z-10 w-full mt-1 p-0">
@@ -181,9 +180,12 @@ export default function BookmarksHeader() {
                                             <Image
                                                 src={result.cover}
                                                 alt={result.title}
-                                                width={300}
-                                                height={450}
-                                                className="max-h-24 w-auto rounded mr-2"
+                                                width={48}
+                                                height={72}
+                                                className="w-12 h-18 rounded mr-2"
+                                                sizes={generateSizes({
+                                                    default: "48px",
+                                                })}
                                             />
                                             {result.title}
                                         </div>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button-link";
 import LatestChapterInfo from "./latest-chapter-info";
-import { cn } from "@/lib/utils";
+import { cn, generateSizes } from "@/lib/utils";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
 const MobileBookmarkCard: React.FC<{
@@ -39,6 +39,9 @@ const MobileBookmarkCard: React.FC<{
                                     width={300}
                                     height={450}
                                     className="w-full h-auto object-cover rounded"
+                                    sizes={generateSizes({
+                                        sm: "80px",
+                                    })}
                                 />
                             </Link>
                         </div>

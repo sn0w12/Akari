@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import LatestChapterInfo from "./latest-chapter-info";
-import { cn } from "@/lib/utils";
+import { cn, generateSizes } from "@/lib/utils";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
@@ -56,7 +56,7 @@ function DesktopBookmarkCard({
     }
 
     return (
-        <Card className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full">
+        <Card className="hidden md:flex flex-row items-start p-6 pr-2 bg-card border border-border rounded-lg xl:h-full">
             <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
                 <Link
                     href={`/manga/${bookmark.mangaId}`}
@@ -72,6 +72,10 @@ function DesktopBookmarkCard({
                         width={300}
                         height={450}
                         className="w-full h-auto object-cover rounded"
+                        sizes={generateSizes({
+                            md: "128px",
+                            lg: "160px",
+                        })}
                     />
                 </Link>
             </div>
