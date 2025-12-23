@@ -166,7 +166,6 @@ export default function PageReader({
                             width={720}
                             height={1500}
                             unoptimized={true}
-                            priority={true}
                             preload={true}
                             fetchPriority="high"
                         />
