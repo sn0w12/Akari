@@ -227,30 +227,6 @@ export function getSetting<K extends SettingKeys>(
 }
 
 /**
- * Retrieves multiple settings from local storage.
- *
- * @param keys - Array of setting keys to retrieve
- * @returns Object containing the requested settings with their values
- */
-export function getSettings<K extends SettingKeys>(keys: K[]) {
-    if (typeof window === "undefined") return null;
-
-    const storedSettings = localStorage.getItem("settings");
-    if (!storedSettings) {
-        return keys.reduce<Partial<SettingsInterface>>((acc, key) => {
-            acc[key] = defaultSettings[key];
-            return acc;
-        }, {});
-    }
-
-    const settings = JSON.parse(storedSettings);
-    return keys.reduce<Partial<SettingsInterface>>((acc, key) => {
-        acc[key] = settings[key] ?? defaultSettings[key];
-        return acc;
-    }, {});
-}
-
-/**
  * React hook to bind a callback to a shortcut defined in settings.
  * @param key - The key of the shortcut setting (type-safe)
  * @param callback - The function to call when the shortcut is triggered
@@ -323,68 +299,6 @@ export const createAllSettingsMaps = (
     });
 
     return settingsMap;
-};
-
-/**
- * Creates a static map of all settings with their default values.
- * Unlike createAllSettingsMaps, this doesn't include change handlers and uses default values.
- * Useful for server-side rendering or static contexts.
- *
- * @returns A record object mapping setting labels to their respective setting maps with default values
- */
-export const getDefaultSettingsMaps = (): Record<
-    string,
-    Record<string, Setting>
-> => {
-    const staticSettingsMap: Record<string, Record<string, Setting>> = {};
-
-    Object.entries(APP_SETTINGS).forEach(([, category]) => {
-        const groupMap: Record<string, Setting> = {};
-
-        Object.entries(category.settings).forEach(([key, settingDef]) => {
-            const setting = settingDef as Setting;
-
-            // Create a type-safe copy of the setting with its default value
-            const settingCopy = { ...setting };
-            const defaultValue =
-                typeof setting.default === "function"
-                    ? setting.default()
-                    : setting.default;
-
-            // Type-safe assignment of value based on setting type
-            switch (setting.type) {
-                case "checkbox":
-                    (settingCopy as CheckboxSetting).value =
-                        defaultValue as boolean;
-                    break;
-                case "checkbox-group":
-                    (settingCopy as CheckboxGroupSetting).value =
-                        defaultValue as string[];
-                    break;
-                case "text":
-                case "password":
-                case "email":
-                case "number":
-                case "textarea":
-                case "select":
-                case "radio":
-                case "shortcut":
-                case "slider":
-                case "color":
-                    (settingCopy as BaseSetting).value = defaultValue as string;
-                    break;
-            }
-
-            // Add no-op onChange handler
-            settingCopy.onChange = () => {};
-
-            groupMap[key] = settingCopy;
-        });
-
-        staticSettingsMap[category.label] = groupMap;
-    });
-
-    return staticSettingsMap;
 };
 
 /**
@@ -622,39 +536,6 @@ function findDuplicateShortcuts(
     });
 
     return duplicates;
-}
-
-/**
- * Normalizes a KeyboardEvent or string to a canonical shortcut key name.
- * Examples: "Control" => "Ctrl", " " => "Space", "a" => "A"
- */
-export function normalizeKeyInput(key: string | KeyboardEvent): string {
-    const k = typeof key === "string" ? key : key.key;
-
-    switch (k) {
-        case "Control":
-        case "Ctrl":
-            return "Ctrl";
-        case "Shift":
-            return "Shift";
-        case "Alt":
-            return "Alt";
-        case " ":
-        case "Spacebar":
-        case "Space":
-            return "Space";
-        case "Meta":
-        case "Command":
-        case "Cmd":
-            return "Meta";
-        default:
-            // For single characters, return uppercase
-            if (k.length === 1) return k.toUpperCase();
-            // For function keys, keep as is (e.g., F1, F2)
-            if (/^F\d+$/.test(k)) return k.toUpperCase();
-            // Otherwise, return as-is
-            return k;
-    }
 }
 
 export function renderInput(
