@@ -192,7 +192,7 @@ export async function MangaDetailsComponent({
                         )}
 
                     {/* Middle section grows as needed */}
-                    <div className="flex flex-col lg:flex-row gap-4 flex-grow overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
@@ -289,7 +289,7 @@ export async function MangaDetailsComponent({
                                         ))}
                                     </div>
                                 </div>
-                                <div className="my-2 flex-grow block">
+                                <div className="my-2 flex-grow block lg:hidden xl:block">
                                     <ScoreDisplay
                                         mangaId={manga.id}
                                         score={manga.score / 2}
@@ -303,7 +303,13 @@ export async function MangaDetailsComponent({
                             </div>
                         </div>
                         {/* Right section for the description */}
-                        <div className="lg:w-1/2 flex-grow h-full">
+                        <div className="lg:w-1/2 flex-grow h-full flex flex-col">
+                            <div className="my-2 flex-grow hidden lg:block xl:hidden">
+                                <ScoreDisplay
+                                    mangaId={manga.id}
+                                    score={manga.score / 2}
+                                />
+                            </div>
                             <Card
                                 className="w-full h-full max-h-60 md:max-h-96 lg:max-h-none p-4 overflow-y-auto"
                                 aria-label="Description"
