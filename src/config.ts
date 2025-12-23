@@ -59,8 +59,8 @@ export const APP_SETTINGS = {
                 description:
                     "Show warnings when you aren't logged in to a service.",
                 type: "checkbox-group",
-                options: [{ label: "MAL", value: "MAL" }],
-                default: ["MAL"],
+                options: [{ label: "MAL", value: "mal" }],
+                default: ["mal"],
                 groups: ["UI", "Notifications"],
             },
         },

@@ -16,11 +16,12 @@ import {
 import { ButtonLink } from "./ui/button-link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useSettingsChange } from "@/lib/settings";
+import { useSetting, useSettingsChange } from "@/lib/settings";
 import { inPreview } from "@/config";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
 import { HomeIcon } from "lucide-react";
+import Toast from "@/lib/toast-wrapper";
 
 interface HeaderProps {
     notification: string;
@@ -38,6 +39,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
         [sidebarState]
     );
     const { setTheme } = useTheme();
+    const validNotifs = useSetting("groupLoginToasts") as string[];
 
     useSettingsChange((event) => {
         setTheme(String(event.detail.value));
@@ -71,10 +73,21 @@ export function HeaderComponent({ notification }: HeaderProps) {
     }, [pathname, overrides]);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || !validNotifs) return;
 
-        validateSecondaryAccounts();
-    }, [user]);
+        async function validate() {
+            const validated = await validateSecondaryAccounts();
+            for (const account of validated) {
+                if (validNotifs.includes(account.id) && !account.valid) {
+                    new Toast(
+                        `${account.name} session has expired. Please log in again.`,
+                        "error"
+                    );
+                }
+            }
+        }
+        validate();
+    }, [user, validNotifs]);
 
     const getSegmentDisplayName = (
         segment: string,
