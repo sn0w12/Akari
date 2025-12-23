@@ -66,6 +66,40 @@ export function formatRelativeDate(dateString: string): string {
     }
 }
 
+export function generateSizes(options: {
+    default?: string;
+    sm?: string;
+    md?: string;
+    lg?: string;
+    xl?: string;
+    "2xl"?: string;
+}): string {
+    const breakpoints = [
+        { key: "sm", min: 640 },
+        { key: "md", min: 768 },
+        { key: "lg", min: 1024 },
+        { key: "xl", min: 1280 },
+        { key: "2xl", min: 1536 },
+    ];
+
+    const sizes: string[] = [];
+
+    // Add min-width conditions from largest to smallest (most restrictive first)
+    for (const bp of breakpoints.slice().reverse()) {
+        const size = options[bp.key as keyof typeof options];
+        if (size && bp.key !== "sm") {
+            // Skip 'sm' since it's the fallback
+            sizes.push(`(min-width: ${bp.min}px) ${size}`);
+        }
+    }
+
+    // Add the fallback size for smallest screens
+    const fallback = options.sm || options.default || "100vw";
+    sizes.push(fallback);
+
+    return sizes.join(", ");
+}
+
 export function robots() {
     if (inDevelopment || inPreview) {
         return {

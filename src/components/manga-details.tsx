@@ -12,7 +12,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils";
+import { formatRelativeDate, generateSizes } from "@/lib/utils";
 import { MangaComments } from "./manga-details/manga-comments";
 import { ViewManga } from "./manga-reader/view-manga";
 
@@ -115,6 +115,11 @@ export async function MangaDetailsComponent({
                         height={600}
                         preload={true}
                         fetchPriority="high"
+                        sizes={generateSizes({
+                            sm: "120px",
+                            md: "160px",
+                            lg: "400px",
+                        })}
                     />
                 </div>
 
@@ -130,6 +135,11 @@ export async function MangaDetailsComponent({
                             height={600}
                             preload={true}
                             fetchPriority="high"
+                            sizes={generateSizes({
+                                sm: "120px",
+                                md: "160px",
+                                lg: "400px",
+                            })}
                         />
                         <div className="flex items-center gap-2">
                             <h1 className="text-2xl md:text-3xl font-bold">

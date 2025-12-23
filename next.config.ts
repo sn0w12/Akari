@@ -12,6 +12,7 @@ const config: NextConfig = {
         ],
         loader: "custom",
         loaderFile: "./scripts/image-loader.ts",
+        imageSizes: [48, 128, 240, 320, 400, 640, 1080, 1920],
     },
     reactCompiler: true,
     experimental: {

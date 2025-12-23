@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn, generateSizes } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -152,7 +152,14 @@ export function MangaCard({
                         priority={priority}
                         loading={priority ? "eager" : "lazy"}
                         fetchPriority={priority ? "high" : "auto"}
-                        sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1535px) 25vw, 17vw"
+                        sizes={generateSizes({
+                            sm: "50vw",
+                            md: "33vw",
+                            lg: "25vw",
+                            xl: "20vw",
+                            "2xl": "17vw",
+                            default: "25vw",
+                        })}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
