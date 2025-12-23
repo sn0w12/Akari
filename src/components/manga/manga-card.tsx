@@ -152,6 +152,7 @@ export function MangaCard({
                         priority={priority}
                         loading={priority ? "eager" : "lazy"}
                         fetchPriority={priority ? "high" : "auto"}
+                        preload={priority}
                         sizes={generateSizes({
                             sm: "50vw",
                             md: "33vw",
