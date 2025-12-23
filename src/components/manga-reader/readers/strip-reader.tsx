@@ -123,7 +123,9 @@ export default function StripReader({
                             width: `calc(var(--spacing) * ${stripWidth})`,
                         }}
                         loading={"eager"}
-                        priority={index < 3}
+                        priority={index === 0}
+                        preload={index === 0}
+                        fetchPriority={index === 0 ? "high" : "auto"}
                         unoptimized={true}
                         onLoad={() => setImagesLoaded((prev) => prev + 1)}
                     />
