@@ -99,7 +99,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                     role="combobox"
                     aria-expanded={open}
                     aria-label="Select list"
-                    className="w-full justify-between hidden md:flex h-10"
+                    className="w-full justify-between flex h-10"
                     disabled={!user}
                 >
                     <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
