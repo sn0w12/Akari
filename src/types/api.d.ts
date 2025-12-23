@@ -3436,15 +3436,15 @@ export interface components {
             data: components["schemas"]["LastReadResponse"];
         };
         MalListStatus: {
-            status?: string | null;
-            isRereading?: boolean;
+            status: string;
+            isRereading: boolean;
             /** Format: int32 */
-            numVolumesRead?: number;
+            numVolumesRead: number;
             /** Format: int32 */
-            numChaptersRead?: number;
+            numChaptersRead: number;
             /** Format: int32 */
-            score?: number;
-            updatedAt?: string | null;
+            score: number;
+            updatedAt: string;
         };
         MalMainPicture: {
             medium: string | null;
@@ -3452,7 +3452,7 @@ export interface components {
         };
         MalMangaListItem: {
             node: components["schemas"]["MalMangaNode"];
-            listStatus?: components["schemas"]["MalListStatus"];
+            listStatus: components["schemas"]["MalListStatus"];
         };
         MalMangaListResponse: {
             data: components["schemas"]["MalMangaListItem"][] | null;
@@ -3494,8 +3494,9 @@ export interface components {
         MalMangaNode: {
             /** Format: int32 */
             id: number;
-            title: string | null;
-            mainPicture?: components["schemas"]["MalMainPicture"];
+            title: string;
+            mainPicture: components["schemas"]["MalMainPicture"];
+            mediaType: string;
         };
         MalPaging: {
             next?: string | null;

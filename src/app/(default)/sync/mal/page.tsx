@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useConfirm } from "@/contexts/confirm-context";
 
+const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
+
 export default function SyncMalPage() {
     const [malData, setMalData] = useState<
         components["schemas"]["MalMangaListItem"][]
@@ -51,6 +53,9 @@ export default function SyncMalPage() {
             let offset: number = 0;
 
             while (true) {
+                if (offset > 0) {
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                }
                 const { data, error } = await client.GET("/v2/mal/mangalist", {
                     params: {
                         query: {
@@ -81,10 +86,13 @@ export default function SyncMalPage() {
                     break;
                 }
                 offset = parseInt(nextOffset, 10);
-                await new Promise((resolve) => setTimeout(resolve, 500));
             }
 
-            setMalData(allData);
+            setMalData(
+                allData.filter((item) => {
+                    return ALLOWED_MEDIA_TYPES.includes(item.node.mediaType);
+                })
+            );
             setMalLoading(false);
         }
 
