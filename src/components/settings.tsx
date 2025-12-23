@@ -9,11 +9,11 @@ import {
     createAllSettingsMaps,
     CustomRenderSettingKeys,
     defaultSettings,
-    renderInput,
     resetAllSettingsToDefault,
     Setting,
     shouldShowSetting,
 } from "@/lib/settings";
+import { SettingsInput } from "@/components/settings/settings-input";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useDevice } from "@/contexts/device-context";
@@ -529,15 +529,23 @@ export default function SettingsPage() {
                                                                                             </div>
                                                                                             <div className="mt-1">
                                                                                                 {setting.type ===
-                                                                                                "custom-render"
-                                                                                                    ? customRenderers[
-                                                                                                          key as keyof typeof customRenderers
-                                                                                                      ]
-                                                                                                    : renderInput(
-                                                                                                          key,
-                                                                                                          setting as Setting,
-                                                                                                          settingsMap
-                                                                                                      )}
+                                                                                                "custom-render" ? (
+                                                                                                    customRenderers[
+                                                                                                        key as keyof typeof customRenderers
+                                                                                                    ]
+                                                                                                ) : (
+                                                                                                    <SettingsInput
+                                                                                                        settingKey={
+                                                                                                            key
+                                                                                                        }
+                                                                                                        setting={
+                                                                                                            setting as Setting
+                                                                                                        }
+                                                                                                        settingsMap={
+                                                                                                            settingsMap
+                                                                                                        }
+                                                                                                    />
+                                                                                                )}
                                                                                             </div>
                                                                                         </div>
                                                                                     );

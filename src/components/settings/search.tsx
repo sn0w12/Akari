@@ -1,7 +1,8 @@
 "use client";
 
 import { useSettings } from "@/hooks/use-settings";
-import { createAllSettingsMaps, renderInput, Setting } from "@/lib/settings";
+import { createAllSettingsMaps, Setting } from "@/lib/settings";
+import { SettingsInput } from "./settings-input";
 import React from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -108,11 +109,17 @@ export function SettingsSearch() {
                                                     )}
                                                 </div>
                                                 <div className="mt-1">
-                                                    {renderInput(
-                                                        key,
-                                                        setting as Setting,
-                                                        settingsMaps[groupName]
-                                                    )}
+                                                    <SettingsInput
+                                                        settingKey={key}
+                                                        setting={
+                                                            setting as Setting
+                                                        }
+                                                        settingsMap={
+                                                            settingsMaps[
+                                                                groupName
+                                                            ]
+                                                        }
+                                                    />
                                                 </div>
                                             </div>
                                         ))}

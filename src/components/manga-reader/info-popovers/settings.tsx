@@ -5,7 +5,7 @@ import { createSettingsMap } from "@/lib/settings";
 import { Button } from "../../ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
 import { Settings } from "lucide-react";
-import { renderInput } from "@/lib/settings";
+import { SettingsInput } from "../../settings/settings-input";
 import { Label } from "../../ui/label";
 
 export function SettingsPopover({
@@ -46,7 +46,11 @@ export function SettingsPopover({
                                     )}
                                 </div>
                                 <div className="ml-0">
-                                    {renderInput(key, setting, settingsMap)}
+                                    <SettingsInput
+                                        settingKey={key}
+                                        setting={setting}
+                                        settingsMap={settingsMap}
+                                    />
                                 </div>
                             </div>
                         ))}
