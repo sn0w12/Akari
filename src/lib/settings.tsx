@@ -897,7 +897,7 @@ export function renderInput(
 
                 return (
                     <div className="flex w-full flex-col gap-2">
-                        <div className="flex items-center justify-between font-mono">
+                        <div className="flex items-center justify-between">
                             <span
                                 style={{
                                     minWidth: `${maxLen}ch`,

@@ -24,11 +24,6 @@ const geistSans = localFont({
     variable: "--font-geist-sans",
     weight: "100 900",
 });
-const geistMono = localFont({
-    src: "../../../public/fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
 
 export const metadata: Metadata = { title: "Akari" };
 export const viewport: Viewport = {
@@ -49,7 +44,7 @@ export default async function RootLayout({
                 )}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
+                className={`${geistSans.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
             >
                 <ProximityPrefetch>
                     <ThemeProvider

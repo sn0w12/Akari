@@ -118,7 +118,7 @@ export default async function UserPage(props: PageProps) {
                         @{data.data.username}
                     </p>
                 </div>
-                <div className="flex flex-row divide-x font-medium font-mono">
+                <div className="flex flex-row divide-x font-medium">
                     <TooltipProvider>
                         <UserStat
                             icon={<Bookmark className="size-5" />}
