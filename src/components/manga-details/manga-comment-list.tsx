@@ -5,7 +5,6 @@ import { CommentList } from "@/components/comments/comment-list";
 import Toast from "@/lib/toast-wrapper";
 import type { CommentData, VoteType } from "@/components/comments/comment";
 import { useUser } from "@/contexts/user-context";
-import { Skeleton } from "../ui/skeleton";
 import { client } from "@/lib/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "../ui/button";
@@ -50,7 +49,7 @@ export function MangaCommentList({
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
             initialComments
         );
-    const { user, isLoading: userLoading } = useUser();
+    const { user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
 
     const loadMoreMutation = useMutation({
@@ -319,16 +318,6 @@ export function MangaCommentList({
 
         new Toast("Comment deleted successfully!", "success");
     };
-
-    if (userLoading) {
-        return (
-            <div className="space-y-4">
-                <Skeleton className="h-24" />
-                <Skeleton className="h-24" />
-                <Skeleton className="h-24" />
-            </div>
-        );
-    }
 
     return (
         <>

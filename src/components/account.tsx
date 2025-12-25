@@ -10,10 +10,9 @@ import { useUser } from "@/contexts/user-context";
 export default function AccountClient() {
     const [savedUsername, setSavedUsername] = useState("");
     const router = useRouter();
-    const { user, isLoading } = useUser();
+    const { user } = useUser();
 
     useEffect(() => {
-        if (isLoading) return;
         if (!user) {
             router.push("/auth/login");
             return;
@@ -21,16 +20,12 @@ export default function AccountClient() {
         queueMicrotask(() => {
             setSavedUsername(user.displayName);
         });
-    }, [isLoading, router, user]);
+    }, [router, user]);
 
     const handleLogout = async () => {
         await logOut(SECONDARY_ACCOUNTS);
         router.push("/");
     };
-
-    if (isLoading) {
-        return;
-    }
 
     if (savedUsername) {
         return (

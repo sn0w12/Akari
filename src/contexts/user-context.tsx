@@ -14,9 +14,8 @@ interface UserContextType {
     setUser: React.Dispatch<
         React.SetStateAction<components["schemas"]["UserResponse"] | undefined>
     >;
-    isLoading: boolean;
     error: string | null;
-    refreshUser: () => Promise<void>;
+    refreshUser: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,12 +28,10 @@ export function UserProvider({ children }: UserProviderProps) {
     const [user, setUser] = useState<
         components["schemas"]["UserResponse"] | undefined
     >(undefined);
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchUser = async () => {
+    const fetchUser = () => {
         try {
-            setIsLoading(true);
             setError(null);
             const data = getAuthCookie();
 
@@ -58,23 +55,24 @@ export function UserProvider({ children }: UserProviderProps) {
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred");
             setUser(undefined);
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    const refreshUser = async () => {
-        await fetchUser();
+    const refreshUser = () => {
+        fetchUser();
     };
 
     useEffect(() => {
-        fetchUser();
+        queueMicrotask(() => {
+            fetchUser();
+        });
+        setTimeout(() => {
+            fetchUser();
+        }, 50);
     }, []);
 
     return (
-        <UserContext.Provider
-            value={{ user, setUser, isLoading, error, refreshUser }}
-        >
+        <UserContext.Provider value={{ user, setUser, error, refreshUser }}>
             {children}
         </UserContext.Provider>
     );
