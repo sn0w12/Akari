@@ -12,7 +12,13 @@ import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scrollMetrics: { pixels: number; percentage: number };
+    scrollMetrics: {
+        pixels: number;
+        percentage: number;
+        useDocumentScroll: boolean;
+        mainTop: number;
+        clientHeight: number;
+    };
     toggleReaderMode: () => void;
     bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
@@ -47,19 +53,34 @@ export default function StripReader({
             imagesLoaded !== chapter.images.length
         )
             return;
-        const image = lastImageRef.current;
-        const imageBottom = image.offsetTop + image.offsetHeight;
-        const viewportBottom = scrollMetrics.pixels;
+        const { useDocumentScroll, mainTop, clientHeight } = scrollMetrics;
+        const firstImage = readerRef.current.querySelector(
+            "img"
+        ) as HTMLImageElement;
+        if (!firstImage) return;
+        const firstImageTop = useDocumentScroll
+            ? firstImage.offsetTop
+            : firstImage.offsetTop - mainTop;
+        const lastImage = lastImageRef.current;
+        const lastImageBottom = useDocumentScroll
+            ? lastImage.offsetTop + lastImage.offsetHeight
+            : lastImage.offsetTop + lastImage.offsetHeight - mainTop;
+        const totalHeight = lastImageBottom - clientHeight - firstImageTop;
+        const currentPosition = scrollMetrics.pixels - firstImageTop;
+        const newProgress = Math.max(
+            0,
+            Math.min(1, currentPosition / totalHeight)
+        );
 
-        const distance = imageBottom - viewportBottom;
-        const newProgress = Math.max(0, Math.min(1, viewportBottom / distance));
-        setProgress(newProgress);
+        queueMicrotask(() => {
+            setProgress(newProgress);
+        });
     }, [scrollMetrics, imagesLoaded, chapter.images.length]);
 
     useEffect(() => {
         if (!chapter) return;
-        const halfWay = scrollMetrics.percentage > 50;
-        const prefetch = scrollMetrics.percentage > 80;
+        const halfWay = progress > 0.5;
+        const prefetch = progress > 0.8;
         const currentTime = Date.now();
         const timeElapsed = currentTime - mountTimeRef.current;
         const minSyncTime = 5000; // 5 seconds minimum before syncing
@@ -82,20 +103,14 @@ export default function StripReader({
             router.prefetch(`/manga/${chapter.nextChapter}`);
             hasPrefetchedRef.current = true;
         }
-    }, [
-        scrollMetrics.percentage,
-        chapter,
-        router,
-        setBookmarkState,
-        queryClient,
-    ]);
+    }, [progress, chapter, router, setBookmarkState, queryClient]);
 
     return (
         <div>
             <div
                 id="reader"
                 ref={readerRef}
-                className={`flex flex-col items-center overflow-auto transition-colors duration-500 ${bgColor}`}
+                className={`flex flex-col items-center transition-colors duration-500 ${bgColor}`}
             >
                 {chapter.images.map((img, index) => (
                     <Image
