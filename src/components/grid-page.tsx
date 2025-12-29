@@ -2,13 +2,14 @@ import { ServerPagination } from "./ui/pagination/server-pagination";
 import { MangaGrid } from "./manga/manga-grid";
 import { Skeleton } from "./ui/skeleton";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
+import { GridSortSelect, Sorting } from "./grid/grid-sort";
 
 interface PageProps {
     title: string;
     mangaList: components["schemas"]["MangaResponse"][];
     currentPage: number;
     totalPages: number;
-    currentSort?: string;
+    sorting?: Sorting;
 }
 
 export const GRID_CLASS =
@@ -19,13 +20,18 @@ export default async function GridPage({
     mangaList,
     currentPage,
     totalPages,
-    currentSort,
+    sorting,
 }: PageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <div className="mx-auto px-4 pt-2 pb-4">
                 <div className="flex gap-4">
                     <h2 className="text-3xl font-bold mb-2">{title}</h2>
+                    {sorting && (
+                        <div className="ml-auto">
+                            <GridSortSelect sorting={sorting} />
+                        </div>
+                    )}
                 </div>
 
                 <MangaGrid mangaList={mangaList} />
@@ -34,7 +40,12 @@ export default async function GridPage({
             <ServerPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                searchParams={[{ key: "sort", value: currentSort || "" }]}
+                searchParams={[
+                    {
+                        key: sorting?.currentSort.key || "",
+                        value: sorting?.currentSort.value || "",
+                    },
+                ]}
                 className="mb-4"
             />
         </div>
