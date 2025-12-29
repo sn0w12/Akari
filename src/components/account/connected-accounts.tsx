@@ -13,6 +13,7 @@ import {
     validateSecondaryAccounts,
 } from "@/lib/auth/secondary-accounts";
 import { ButtonConfirmDialog } from "../ui/confirm";
+import { cn } from "@/lib/utils";
 
 export function ConnectedAccounts() {
     const [validAccounts, setValidAccounts] = useState<SmallSecondaryAccount[]>(
@@ -50,17 +51,27 @@ export function ConnectedAccounts() {
                 </p>
             </div>
 
-            <div className="space-y-4">
-                {SECONDARY_ACCOUNTS.map((account) => {
+            <div>
+                {SECONDARY_ACCOUNTS.map((account, index) => {
                     const validAccount = validAccounts.find(
                         (validAccount) => validAccount.id === account.id
                     );
                     const isValid = validAccount?.valid;
 
+                    const isFirst = index === 0;
+                    const isLast = index === SECONDARY_ACCOUNTS.length - 1;
+
                     return (
                         <div
                             key={account.id}
-                            className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+                            className={cn(
+                                "flex flex-col border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between",
+                                {
+                                    "rounded-t-lg": isFirst,
+                                    "rounded-b-lg": isLast,
+                                    "border-b-0": !isLast,
+                                }
+                            )}
                             style={
                                 {
                                     "--color": account.color,
