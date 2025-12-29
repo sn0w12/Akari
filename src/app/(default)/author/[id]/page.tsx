@@ -3,6 +3,7 @@ import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -24,23 +25,38 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-export default async function AuthorPage(props: PageProps) {
-    const searchParams = await props.searchParams;
-    const params = await props.params;
-    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+async function getAuthor(name: string, page: number) {
+    "use cache";
+    cacheLife("hours");
+    cacheTag("author-page");
 
     const { data, error } = await client.GET("/v2/author/{name}", {
         params: {
             path: {
-                name: title,
+                name,
             },
             query: {
-                page: Number(searchParams.page) || 1,
+                page: page,
                 pageSize: 24,
             },
         },
         headers: serverHeaders,
     });
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    return { data, error: null };
+}
+
+export default async function AuthorPage(props: PageProps) {
+    const searchParams = await props.searchParams;
+    const params = await props.params;
+    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    const page = parseInt(searchParams.page) || 1;
+    const { data, error } = await getAuthor(title, page);
 
     if (error) {
         return <ErrorPage error={error} />;

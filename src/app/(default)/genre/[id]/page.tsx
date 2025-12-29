@@ -3,6 +3,7 @@ import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -26,10 +27,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-export default async function GenrePage(props: PageProps) {
-    const searchParams = await props.searchParams;
-    const params = await props.params;
-    const name = decodeURIComponent(params.id).replaceAll("-", " ");
+async function getGenre(name: string, page: number) {
+    "use cache";
+    cacheLife("minutes");
+    cacheTag("genre-page");
 
     const { data, error } = await client.GET("/v2/genre/{name}", {
         params: {
@@ -37,12 +38,27 @@ export default async function GenrePage(props: PageProps) {
                 name: name,
             },
             query: {
-                page: Number(searchParams.page) || 1,
+                page: page,
                 pageSize: 24,
             },
         },
         headers: serverHeaders,
     });
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    return { data, error: null };
+}
+
+export default async function GenrePage(props: PageProps) {
+    const searchParams = await props.searchParams;
+    const params = await props.params;
+    const name = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    const page = parseInt(searchParams.page) || 1;
+    const { data, error } = await getGenre(name, page);
 
     if (error) {
         return <ErrorPage error={error} />;
