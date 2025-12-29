@@ -1,6 +1,8 @@
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { ListComponent } from "@/components/list/list";
+import { Suspense } from "react";
+import { UserListsSkeleton } from "@/components/user/use-lists-server";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -16,8 +18,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-export default async function ListPage(props: PageProps) {
-    const params = await props.params;
+async function ListPageContent({ params }: PageProps) {
+    const { id } = await params;
+    return <ListComponent id={id} />;
+}
 
-    return <ListComponent id={params.id} />;
+export default function ListPage(props: PageProps) {
+    return (
+        <Suspense fallback={<UserListsSkeleton />}>
+            <ListPageContent params={props.params} />
+        </Suspense>
+    );
 }

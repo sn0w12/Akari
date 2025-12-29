@@ -6,6 +6,7 @@ import { client } from "@/lib/api";
 import { ListItem } from "../account/list-item";
 import { Skeleton } from "../ui/skeleton";
 import ClientPagination from "../ui/pagination/client-pagination";
+import { UserListsSkeleton } from "./use-lists-server";
 
 interface UserListsProps {
     userId: string;
@@ -45,13 +46,7 @@ export function UserLists({ userId }: UserListsProps) {
     };
 
     if (isLoading || !data) {
-        return (
-            <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 2 }).map((_, i) => (
-                    <Skeleton key={i} className="h-24 w-full rounded-xl" />
-                ))}
-            </div>
-        );
+        return <UserListsSkeleton />;
     }
 
     return (

@@ -2,9 +2,8 @@ import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
 import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
-import { getAllMangaIds } from "@/lib/api/pre-render";
 import ErrorPage from "@/components/error-page";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -15,38 +14,26 @@ function truncate(text: string, maxLength: number): string {
     return text.slice(0, maxLength - 1).trimEnd() + "…";
 }
 
-export const revalidate = 60; // Revalidate the page every 60 seconds for frequent comment updates
+const getManga = async (id: string) => {
+    "use cache";
+    cacheLife("quarterHour");
+    cacheTag("manga");
 
-const getManga = unstable_cache(
-    async (id: string) => {
-        const { data, error } = await client.GET("/v2/manga/{id}", {
-            params: {
-                path: {
-                    id,
-                },
+    const { data, error } = await client.GET("/v2/manga/{id}", {
+        params: {
+            path: {
+                id,
             },
-            headers: serverHeaders,
-        });
+        },
+        headers: serverHeaders,
+    });
 
-        if (error) {
-            return { data: null, error };
-        }
+    if (error) {
+        return { data: null, error };
+    }
 
-        return { data: data.data, error: null };
-    },
-    ["manga", "id"],
-    { revalidate: 600 }
-);
-
-export async function generateStaticParams() {
-    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1")
-        return [];
-    const mangaIds = await getAllMangaIds();
-
-    return mangaIds.map((id) => ({
-        id,
-    }));
-}
+    return { data: data.data, error: null };
+};
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;

@@ -16,8 +16,15 @@ const config: NextConfig = {
         qualities: [20, 40, 60, 80, 100],
     },
     reactCompiler: true,
+    cacheComponents: true,
+    cacheLife: {
+        quarterHour: {
+            stale: 5 * 60, // 5 minutes
+            revalidate: 15 * 60, // 15 minutes
+            expire: 60 * 60, // 1 hour
+        },
+    },
     experimental: {
-        useCache: true,
         inlineCss: true,
     },
 };

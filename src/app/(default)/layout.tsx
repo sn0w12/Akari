@@ -15,6 +15,7 @@ import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { DeviceProvider } from "@/contexts/device-context";
 import { Toaster } from "@/components/ui/sonner";
 import { PWANavigationRestore } from "@/components/pwa-navigation-restore";
+import { Suspense } from "react";
 
 import type { Metadata } from "next";
 import type { Viewport } from "next";
@@ -59,7 +60,9 @@ export default async function RootLayout({
                                     <QueryProvider>
                                         <UserProvider>
                                             <BreadcrumbProvider>
-                                                <PWANavigationRestore />
+                                                <Suspense fallback={null}>
+                                                    <PWANavigationRestore />
+                                                </Suspense>
                                                 <BaseLayout gutter={true}>
                                                     <AnalyticsWrapper />
                                                     <div className="flex-1">

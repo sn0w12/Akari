@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface HomeProps {
     searchParams: Promise<{
@@ -19,23 +19,23 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/latest",
 });
 
-const getLatestData = unstable_cache(
-    async (currentPage: number) => {
-        const { data, error } = await client.GET("/v2/manga/list", {
-            params: {
-                query: {
-                    page: currentPage,
-                    pageSize: 24,
-                },
-            },
-            headers: serverHeaders,
-        });
+const getLatestData = async (currentPage: number) => {
+    "use cache";
+    cacheLife("minutes");
+    cacheTag("latest");
 
-        return { data, error };
-    },
-    ["latest-data"],
-    { revalidate: 300, tags: ["latest"] }
-);
+    const { data, error } = await client.GET("/v2/manga/list", {
+        params: {
+            query: {
+                page: currentPage,
+                pageSize: 24,
+            },
+        },
+        headers: serverHeaders,
+    });
+
+    return { data, error };
+};
 
 export default async function Home(props: HomeProps) {
     const currentPage = Number((await props.searchParams).page) || 1;

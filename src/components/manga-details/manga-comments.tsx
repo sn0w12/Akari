@@ -2,32 +2,32 @@
 
 import { client, serverHeaders } from "@/lib/api";
 import { MangaCommentList } from "./manga-comment-list";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
-const getMangaComments = unstable_cache(
-    async (id: string) => {
-        const { data, error } = await client.GET("/v2/comments/{id}", {
-            params: {
-                path: {
-                    id: id,
-                },
-                query: {
-                    page: 1,
-                    pageSize: 20,
-                },
+const getMangaComments = async (id: string) => {
+    "use cache";
+    cacheLife("minutes");
+    cacheTag("comments");
+
+    const { data, error } = await client.GET("/v2/comments/{id}", {
+        params: {
+            path: {
+                id: id,
             },
-            headers: serverHeaders,
-        });
+            query: {
+                page: 1,
+                pageSize: 20,
+            },
+        },
+        headers: serverHeaders,
+    });
 
-        if (error) {
-            return { data: null, error };
-        }
+    if (error) {
+        return { data: null, error };
+    }
 
-        return { data: data.data, error: null };
-    },
-    ["comments"],
-    { revalidate: 60 }
-);
+    return { data: data.data, error: null };
+};
 
 export async function MangaComments({ id }: { id: string }) {
     const { data, error } = await getMangaComments(id);

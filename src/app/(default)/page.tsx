@@ -4,7 +4,7 @@ import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import ErrorPage from "@/components/error-page";
 import { serverHeaders } from "@/lib/api";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 export const metadata: Metadata = createMetadata({
     title: "Home",
@@ -13,39 +13,39 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/",
 });
 
-const getHomeData = unstable_cache(
-    async () => {
-        const [latestResponse, popularResponse] = await Promise.all([
-            client.GET("/v2/manga/list", {
-                params: {
-                    query: {
-                        page: 1,
-                        pageSize: 24,
-                    },
-                },
-                headers: serverHeaders,
-            }),
-            client.GET("/v2/manga/list/popular", {
-                params: {
-                    query: {
-                        pageSize: 24,
-                        days: 30,
-                    },
-                },
-                headers: serverHeaders,
-            }),
-        ]);
+async function getHomeData() {
+    "use cache";
+    cacheLife("minutes");
+    cacheTag("manga-list-latest");
 
-        return {
-            latestData: latestResponse.data,
-            latestError: latestResponse.error,
-            popularData: popularResponse.data,
-            popularError: popularResponse.error,
-        };
-    },
-    ["home-data"],
-    { revalidate: 300, tags: ["home"] }
-);
+    const [latestResponse, popularResponse] = await Promise.all([
+        client.GET("/v2/manga/list", {
+            params: {
+                query: {
+                    page: 1,
+                    pageSize: 24,
+                },
+            },
+            headers: serverHeaders,
+        }),
+        client.GET("/v2/manga/list/popular", {
+            params: {
+                query: {
+                    pageSize: 24,
+                    days: 30,
+                },
+            },
+            headers: serverHeaders,
+        }),
+    ]);
+
+    return {
+        latestData: latestResponse.data,
+        latestError: latestResponse.error,
+        popularData: popularResponse.data,
+        popularError: popularResponse.error,
+    };
+}
 
 export default async function Home() {
     const { latestData, latestError, popularData, popularError } =

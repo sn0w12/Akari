@@ -4,62 +4,29 @@ import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
-export const revalidate = 60; // Revalidate the page every 60 seconds for frequent comment updates
+const getChapter = async (id: string, subId: number) => {
+    "use cache";
+    cacheLife("hours");
+    cacheTag("manga");
 
-const getChapter = unstable_cache(
-    async (id: string, subId: number) => {
-        const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
-            params: {
-                path: {
-                    id: id,
-                    subId: subId,
-                },
-            },
-            headers: serverHeaders,
-        });
-
-        if (error) {
-            return { data: null, error };
-        }
-
-        return { data: data.data, error: null };
-    },
-    ["manga", "id"],
-    { revalidate: 3600 }
-);
-
-export async function generateStaticParams(): Promise<
-    { id: string; subId: string }[]
-> {
-    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1")
-        return [];
-    const { data, error } = await client.GET("/v2/manga/chapter/ids", {
+    const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
         params: {
-            query: {
-                page: 1,
-                pageSize: 50,
+            path: {
+                id: id,
+                subId: subId,
             },
         },
         headers: serverHeaders,
     });
 
-    if (error || !data) {
-        console.error(
-            "Failed to fetch manga chapter IDs for static params:",
-            error
-        );
-        return [];
+    if (error) {
+        return { data: null, error };
     }
 
-    return (data?.data.items ?? []).flatMap((manga) =>
-        manga.chapterIds.map((subId) => ({
-            id: manga.mangaId,
-            subId: String(subId),
-        }))
-    );
-}
+    return { data: data.data, error: null };
+};
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;

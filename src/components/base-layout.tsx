@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { KeyboardShortcut } from "./ui/keyboard-shortcut";
 import { useUser } from "@/contexts/user-context";
 import { useQuery } from "@tanstack/react-query";
+import { Suspense } from "react";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -81,7 +82,11 @@ export function BaseLayout({
 
     return (
         <div className="flex flex-col w-full">
-            <HeaderComponent notification={notification} />
+            <Suspense
+                fallback={<div className="h-12 md:h-10 bg-sidebar border-b" />}
+            >
+                <HeaderComponent notification={notification} />
+            </Suspense>
             <div className="bg-sidebar flex flex-1">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent data-scrollbar-custom="true">
