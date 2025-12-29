@@ -287,7 +287,11 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {RATINGS.map((rating) => (
+                                {RATINGS.filter(
+                                    (rating) =>
+                                        rating.value !== -1 ||
+                                        userScore !== null
+                                ).map((rating) => (
                                     <SelectItem
                                         key={rating.value}
                                         className={cn("", {
