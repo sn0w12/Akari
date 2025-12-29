@@ -61,13 +61,19 @@ export function ConnectedAccounts() {
                         <div
                             key={account.id}
                             className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+                            style={
+                                {
+                                    "--color": account.color,
+                                    "--text-color": account.textColor,
+                                } as React.CSSProperties
+                            }
                         >
                             <div className="flex items-center gap-3">
                                 <div
-                                    className={`flex h-12 w-12 items-center justify-center rounded-lg ${account.buttonColor} text-white`}
+                                    className={`flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color)] text-[var(--text-color)]`}
                                 >
                                     <span className="font-semibold">
-                                        {account.displayName}
+                                        {account.id.toUpperCase()}
                                     </span>
                                 </div>
 
@@ -118,10 +124,10 @@ export function ConnectedAccounts() {
                                     <ButtonLink
                                         href={account.getAuthUrl()}
                                         size="sm"
-                                        className={`gap-2 ${account.buttonColor} ${account.hoverColor} text-white`}
+                                        className="gap-2 bg-[var(--color)] hover:bg-[var(--color)]/80 text-[var(--text-color)]"
                                     >
                                         <LogIn className="h-4 w-4" />
-                                        Connect {account.displayName}
+                                        Connect {account.name}
                                     </ButtonLink>
                                 )}
                             </div>

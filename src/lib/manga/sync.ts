@@ -1,17 +1,18 @@
 import Toast from "../toast-wrapper";
-import { syncMal } from "../auth/secondary-accounts/mal";
+import { SECONDARY_ACCOUNTS } from "../auth/secondary-accounts";
 import { checkIfBookmarked, updateBookmark } from "./bookmarks";
 import { getSetting } from "../settings";
+import { SyncHandler } from "../auth/secondary-accounts";
 
-type SyncHandler = (
-    data: components["schemas"]["ChapterResponse"]
-) => Promise<boolean>;
-const services = ["Akari", "MAL"];
+const services = ["Akari", ...SECONDARY_ACCOUNTS.map((acc) => acc.name)];
 
 export async function syncAllServices(
     data: components["schemas"]["ChapterResponse"]
 ) {
-    const syncHandlers: SyncHandler[] = [updateBookmark, syncMal];
+    const syncHandlers: SyncHandler[] = [
+        updateBookmark,
+        ...SECONDARY_ACCOUNTS.map((acc) => acc.sync),
+    ];
     let success = true;
 
     const mangaId = data.mangaId;
@@ -33,15 +34,16 @@ export async function syncAllServices(
     const authorizedServices: string[] = [];
     const unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
-        if (result.status === "rejected") {
-            const error = result.reason;
-            if (error instanceof Response) {
+        if (result.status === "fulfilled") {
+            if (result.value === false) {
                 unAuthorizedServices.push(services[index]!);
             } else {
-                console.error(`Failed to sync with handler:`, error);
+                authorizedServices.push(services[index]!);
             }
         } else {
-            authorizedServices.push(services[index]!);
+            // Handle rejected promises (e.g., treat as unauthorized or log error)
+            console.error(`Sync failed for ${services[index]}:`, result.reason);
+            unAuthorizedServices.push(services[index]!);
         }
     });
     if (unAuthorizedServices.length > 0) {
