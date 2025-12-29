@@ -16,7 +16,7 @@ export const metadata: Metadata = createMetadata({
 async function getHomeData() {
     "use cache";
     cacheLife("minutes");
-    cacheTag("manga-list-latest");
+    cacheTag("home");
 
     const [latestResponse, popularResponse] = await Promise.all([
         client.GET("/v2/manga/list", {

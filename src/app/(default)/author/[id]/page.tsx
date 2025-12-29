@@ -28,7 +28,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 async function getAuthor(name: string, page: number) {
     "use cache";
     cacheLife("hours");
-    cacheTag("author-page");
+    cacheTag("author", `author-${name}`);
 
     const { data, error } = await client.GET("/v2/author/{name}", {
         params: {

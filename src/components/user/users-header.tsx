@@ -43,7 +43,7 @@ function UserStat({ icon, label, value }: UserStatProps) {
 async function getUserData(userId: string, accesToken: string | undefined) {
     "use cache";
     cacheLife("default");
-    cacheTag("user-profiles");
+    cacheTag("user-profiles", `user-${userId}`);
 
     const { data, error } = await client.GET("/v2/user/{userId}", {
         params: {

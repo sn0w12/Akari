@@ -7,7 +7,7 @@ import { cacheLife, cacheTag } from "next/cache";
 const getMangaComments = async (id: string) => {
     "use cache";
     cacheLife("minutes");
-    cacheTag("comments");
+    cacheTag("comments", `comments-${id}`);
 
     const { data, error } = await client.GET("/v2/comments/{id}", {
         params: {

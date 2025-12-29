@@ -30,7 +30,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 async function getGenre(name: string, page: number) {
     "use cache";
     cacheLife("minutes");
-    cacheTag("genre-page");
+    cacheTag("genre", `genre-${name}`);
 
     const { data, error } = await client.GET("/v2/genre/{name}", {
         params: {

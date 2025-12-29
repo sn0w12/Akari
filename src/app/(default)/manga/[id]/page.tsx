@@ -17,7 +17,7 @@ function truncate(text: string, maxLength: number): string {
 const getManga = async (id: string) => {
     "use cache";
     cacheLife("quarterHour");
-    cacheTag("manga");
+    cacheTag("manga", `manga-${id}`);
 
     const { data, error } = await client.GET("/v2/manga/{id}", {
         params: {
