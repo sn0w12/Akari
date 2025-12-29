@@ -1,6 +1,5 @@
 "use client";
 
-import { getAuthCookie } from "@/lib/api";
 import React, {
     createContext,
     useContext,
@@ -8,6 +7,7 @@ import React, {
     useState,
     ReactNode,
 } from "react";
+import { client } from "@/lib/api";
 
 interface UserContextType {
     user: components["schemas"]["UserResponse"] | undefined;
@@ -30,25 +30,17 @@ export function UserProvider({ children }: UserProviderProps) {
     >(undefined);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchUser = () => {
+    const fetchUser = async () => {
         try {
             setError(null);
-            const data = getAuthCookie();
+            const { data, error } = await client.GET("/v2/user/me");
 
-            if (data.user) {
-                const userResponse: components["schemas"]["UserResponse"] = {
-                    userId: data.user.id,
-                    username:
-                        data.user.user_metadata?.username ||
-                        data.user.email ||
-                        "",
-                    displayName:
-                        data.user.user_metadata?.displayName ||
-                        data.user.user_metadata?.username ||
-                        data.user.email ||
-                        "",
-                };
-                setUser(userResponse);
+            if (error || !data) {
+                setUser(undefined);
+            }
+
+            if (data && data.data) {
+                setUser(data.data);
             } else {
                 setUser(undefined);
             }
@@ -66,30 +58,6 @@ export function UserProvider({ children }: UserProviderProps) {
         queueMicrotask(() => {
             fetchUser();
         });
-        setTimeout(() => {
-            fetchUser();
-        }, 50);
-
-        let cookieStoreListener = null;
-        if ("cookieStore" in window) {
-            cookieStoreListener = cookieStore.addEventListener(
-                "change",
-                (event) => {
-                    console.log(
-                        "Cookies changed:",
-                        event.changed,
-                        event.deleted
-                    );
-                    fetchUser();
-                }
-            );
-        }
-
-        return () => {
-            if (cookieStoreListener) {
-                cookieStore.removeEventListener("change", cookieStoreListener);
-            }
-        };
     }, []);
 
     return (
