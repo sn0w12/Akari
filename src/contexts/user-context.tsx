@@ -69,6 +69,27 @@ export function UserProvider({ children }: UserProviderProps) {
         setTimeout(() => {
             fetchUser();
         }, 50);
+
+        let cookieStoreListener = null;
+        if ("cookieStore" in window) {
+            cookieStoreListener = cookieStore.addEventListener(
+                "change",
+                (event) => {
+                    console.log(
+                        "Cookies changed:",
+                        event.changed,
+                        event.deleted
+                    );
+                    fetchUser();
+                }
+            );
+        }
+
+        return () => {
+            if (cookieStoreListener) {
+                cookieStore.removeEventListener("change", cookieStoreListener);
+            }
+        };
     }, []);
 
     return (
