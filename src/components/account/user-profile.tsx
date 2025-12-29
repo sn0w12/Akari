@@ -8,6 +8,7 @@ import { LogOut } from "lucide-react";
 import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function UserProfile({
     user,
@@ -28,9 +29,11 @@ export function UserProfile({
                     <Avatar name={user.displayName} size={64} />
 
                     <div>
-                        <h2 className="text-xl font-semibold text-foreground">
-                            {user.displayName}
-                        </h2>
+                        <Link href={`/user/${user.userId}`}>
+                            <h2 className="text-xl font-semibold text-foreground hover:underline">
+                                {user.displayName}
+                            </h2>
+                        </Link>
                         <p className="text-sm text-muted-foreground">
                             @{user.username}
                         </p>
