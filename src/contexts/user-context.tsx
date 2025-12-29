@@ -1,20 +1,13 @@
 "use client";
 
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    ReactNode,
-} from "react";
+import { createContext, useContext, ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 
 interface UserContextType {
     user: components["schemas"]["UserResponse"] | undefined;
-    setUser: React.Dispatch<
-        React.SetStateAction<components["schemas"]["UserResponse"] | undefined>
-    >;
     error: string | null;
+    isLoading: boolean;
     refreshUser: () => void;
 }
 
@@ -25,43 +18,38 @@ interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps) {
-    const [user, setUser] = useState<
-        components["schemas"]["UserResponse"] | undefined
-    >(undefined);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchUser = async () => {
-        try {
-            setError(null);
+    const {
+        data: user,
+        error,
+        isLoading,
+        refetch,
+    } = useQuery({
+        queryKey: ["user"],
+        queryFn: async () => {
             const { data, error } = await client.GET("/v2/user/me");
 
-            if (error || !data) {
-                setUser(undefined);
+            if (error) {
+                throw new Error(error.data.message || "Failed to fetch user");
             }
 
-            if (data && data.data) {
-                setUser(data.data);
-            } else {
-                setUser(undefined);
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "An error occurred");
-            setUser(undefined);
-        }
-    };
+            return data.data;
+        },
+        retry: false,
+    });
 
     const refreshUser = () => {
-        fetchUser();
+        refetch();
     };
 
-    useEffect(() => {
-        queueMicrotask(() => {
-            fetchUser();
-        });
-    }, []);
-
     return (
-        <UserContext.Provider value={{ user, setUser, error, refreshUser }}>
+        <UserContext.Provider
+            value={{
+                user,
+                error: error?.message || null,
+                isLoading,
+                refreshUser,
+            }}
+        >
             {children}
         </UserContext.Provider>
     );
