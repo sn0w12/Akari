@@ -20,11 +20,10 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
-    const [gradient, setGradient] = useState(
-        "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
-    );
     const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
     const isVisible = useSetting("showPageProgress");
+    const gradient =
+        "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
 
     useEffect(() => {
         const handleResize = () => {
@@ -59,18 +58,12 @@ export default function PageProgress({
                             height: `${top + buttonRect.height - offset}px`,
                             width: "calc(100% - 8px)",
                         });
-                        setGradient(
-                            "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-positive/40"
-                        );
                     } else {
                         const left = buttonRect.left - containerRect.left;
                         setBackgroundStyle({
                             width: `${left + buttonRect.width - offset}px`,
                             height: "calc(100% - 8px)",
                         });
-                        setGradient(
-                            "bg-gradient-to-r from-primary/20 via-primary/30 to-accent-positive/40"
-                        );
                     }
                 }
             }
