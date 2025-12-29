@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 import { ListItem } from "../account/list-item";
 import { Skeleton } from "../ui/skeleton";
@@ -13,6 +13,7 @@ interface UserListsProps {
 
 export function UserLists({ userId }: UserListsProps) {
     const [currentPage, setCurrentPage] = useState(1);
+    const queryClient = useQueryClient();
     const { data, isLoading } = useQuery({
         queryKey: ["user-lists"],
         refetchOnMount: false,
@@ -39,6 +40,10 @@ export function UserLists({ userId }: UserListsProps) {
         },
     });
 
+    const handleDelete = () => {
+        queryClient.invalidateQueries({ queryKey: ["user-lists"] });
+    };
+
     if (isLoading || !data) {
         return (
             <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
@@ -53,7 +58,11 @@ export function UserLists({ userId }: UserListsProps) {
         <div className="flex flex-col justify-between flex-1">
             <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {data.data.items.map((item) => (
-                    <ListItem key={item.id} list={item} />
+                    <ListItem
+                        key={item.id}
+                        list={item}
+                        onDelete={handleDelete}
+                    />
                 ))}
             </div>
             {data.data.totalPages > 1 && (
