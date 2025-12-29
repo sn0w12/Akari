@@ -7,18 +7,17 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { useUser } from "@/contexts/user-context";
 import { useConfirm } from "@/contexts/confirm-context";
-import { useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 
 interface ListItemProps {
     list: components["schemas"]["UserMangaListResponse"];
+    onDelete: (listId: string) => void;
 }
 
-export function ListItem({ list }: ListItemProps) {
+export function ListItem({ list, onDelete }: ListItemProps) {
     const { user } = useUser();
     const { confirm } = useConfirm();
-    const queryClient = useQueryClient();
 
     async function deleteList(listId: string) {
         const confirmed = await confirm({
@@ -42,7 +41,7 @@ export function ListItem({ list }: ListItemProps) {
             new Toast("Failed to delete list", "error");
         } else {
             new Toast("List deleted successfully", "success");
-            queryClient.invalidateQueries({ queryKey: ["user-lists"] });
+            onDelete(listId);
         }
     }
 

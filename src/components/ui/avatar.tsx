@@ -6,17 +6,27 @@ import BoringAvatar from "boring-avatars";
 
 import { cn } from "@/lib/utils";
 
+type AvatarSize = 16 | 32 | 48 | 64;
+const AVATAR_SIZE_CLASSES: Record<AvatarSize, string> = {
+    16: "size-4",
+    32: "size-8",
+    48: "size-12",
+    64: "size-16",
+};
+
 interface AvatarProps
     extends React.ComponentProps<typeof AvatarPrimitive.Root> {
     name: string;
+    size?: AvatarSize;
 }
 
-function Avatar({ className, name, ...props }: AvatarProps) {
+function Avatar({ className, name, size = 32, ...props }: AvatarProps) {
     return (
         <AvatarPrimitive.Root
             data-slot="avatar"
             className={cn(
-                "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+                "relative flex shrink-0 overflow-hidden rounded-full",
+                AVATAR_SIZE_CLASSES[size],
                 className
             )}
             {...props}
@@ -24,7 +34,7 @@ function Avatar({ className, name, ...props }: AvatarProps) {
             <BoringAvatar
                 name={name}
                 variant="bauhaus"
-                size={32}
+                size={size}
                 colors={[
                     "var(--background)",
                     "var(--secondary)",

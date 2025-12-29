@@ -1,7 +1,5 @@
 "use client";
 
-import { useUser } from "@/contexts/user-context";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 import { Button } from "../ui/button";
 import { useState } from "react";
@@ -20,9 +18,12 @@ import { Label } from "@/components/ui/label";
 import Toast from "@/lib/toast-wrapper";
 import { ListItem } from "./list-item";
 
-export function ListsTabContent() {
-    const { user } = useUser();
-    const queryClient = useQueryClient();
+interface UserMangaListsProps {
+    initialLists: components["schemas"]["UserMangaListResponse"][];
+}
+
+export function UserMangaLists({ initialLists }: UserMangaListsProps) {
+    const [lists, setLists] = useState(initialLists);
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState<
         components["schemas"]["CreateUserMangaListRequest"]
@@ -32,51 +33,31 @@ export function ListsTabContent() {
         isPublic: false,
     });
 
-    const { data, isLoading } = useQuery({
-        queryKey: ["user-lists"],
-        queryFn: async () => {
-            if (!user) return null;
-
-            const { data, error } = await client.GET("/v2/lists/user/me");
-            if (error) {
-                return null;
-            }
-
-            return data;
-        },
-    });
-
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!form.title.trim()) return;
 
-        const { error } = await client.POST("/v2/lists", { body: form });
+        const { data, error } = await client.POST("/v2/lists", { body: form });
         if (error) {
             new Toast("Failed to create list", "error");
         } else {
             new Toast("List created successfully", "success");
+            setLists((prev) => [...prev, data.data]);
             setOpen(false);
             setForm({ title: "", description: "", isPublic: false });
-            queryClient.invalidateQueries({ queryKey: ["user-lists"] });
         }
     }
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (!data || !data.data) {
-        return null;
-    }
-
-    if (data.data.items.length === 0) {
-        return <div>No lists found.</div>;
+    function handleDelete(listId: string) {
+        setLists((prev) => prev.filter((list) => list.id !== listId));
     }
 
     return (
         <div className="space-y-4">
             <div className="flex flex-row justify-between items-center">
-                <h2 className="text-lg font-semibold">Your Manga Lists</h2>
+                <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+                    Your Manga Lists
+                </h2>
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline">Create List</Button>
@@ -134,12 +115,15 @@ export function ListsTabContent() {
                     </DialogContent>
                 </Dialog>
             </div>
-            {data &&
-                data.data &&
-                data.data.items &&
-                data.data.items.map((list) => (
-                    <ListItem key={list.id} list={list} />
-                ))}
+            {lists.length === 0 ? (
+                <div>No lists found.</div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {lists.map((list) => (
+                        <ListItem key={list.id} list={list} onDelete={handleDelete} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
