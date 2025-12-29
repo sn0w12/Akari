@@ -4,6 +4,7 @@ import { getSecondaryAccountById } from "../secondary-accounts";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { StorageManager } from "@/lib/storage";
 import { SecondaryAccountBase } from "./general";
+import Cookies from "js-cookie";
 
 export class MalAccount extends SecondaryAccountBase {
     readonly id = "mal";
@@ -85,6 +86,47 @@ export class MalAccount extends SecondaryAccountBase {
         } catch {
             return false;
         }
+    }
+
+    async handleCallback(
+        params: Record<string, string>,
+        hash: string,
+        origin: string
+    ): Promise<boolean> {
+        const code = params.code;
+        const codeVerifier = Cookies.get("pkce_code_verifier");
+
+        if (!code || !codeVerifier) {
+            return false;
+        }
+
+        const redirectUri = `${origin}/auth/callback`;
+        const { error } = await client.POST("/v2/mal/token", {
+            body: {
+                code,
+                codeVerifier,
+                redirectUri,
+            },
+        });
+
+        if (error) {
+            return false;
+        }
+
+        const { error: userError } = await client.GET("/v2/mal/mangalist", {
+            params: {
+                query: {
+                    limit: 1,
+                },
+            },
+        });
+
+        if (userError) {
+            return false;
+        }
+
+        Cookies.remove("pkce_code_verifier");
+        return true;
     }
 }
 

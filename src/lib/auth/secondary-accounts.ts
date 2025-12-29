@@ -1,3 +1,4 @@
+import { AniAccount } from "./secondary-accounts/ani";
 import { MalAccount } from "./secondary-accounts/mal";
 import { StorageManager } from "@/lib/storage";
 
@@ -14,9 +15,15 @@ export interface SecondaryAccount {
     logOut: () => Promise<boolean>;
     validate: () => Promise<boolean>;
     sync: SyncHandler;
+    handleCallback: (
+        params: Record<string, string>,
+        hash: string,
+        origin: string
+    ) => Promise<boolean>;
 }
 export const SECONDARY_ACCOUNTS = [
     new MalAccount(),
+    new AniAccount(),
 ] as const satisfies SecondaryAccount[];
 export type SecondaryAccountId = (typeof SECONDARY_ACCOUNTS)[number]["id"];
 

@@ -23,4 +23,9 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
     abstract sync(
         manga: components["schemas"]["ChapterResponse"]
     ): Promise<boolean>;
+    abstract handleCallback(
+        params: Record<string, string>,
+        hash: string,
+        origin: string
+    ): Promise<boolean>;
 }
