@@ -201,4 +201,11 @@ export const STORAGE_SCHEMAS = {
         },
         storageBackend: "session",
     },
+    aniListUser: {
+        key: "anilist-user",
+        schema: {
+            id: createField("number", 0),
+            name: createField("string", ""),
+        },
+    },
 } satisfies StorageSchemas;

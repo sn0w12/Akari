@@ -7,32 +7,31 @@ import { Check, X } from "lucide-react";
 import { useConfirm } from "@/contexts/confirm-context";
 import { SyncBody } from "@/components/sync/sync-body";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { StorageManager } from "@/lib/storage";
 
-const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
-
-export default function SyncMalPage() {
-    const [malData, setMalData] = useState<
-        components["schemas"]["MalMangaListItem"][]
-    >([]);
+export default function SyncAniPage() {
+    const [aniData, setAniData] = useState<components["schemas"]["AniEntry"][]>(
+        []
+    );
     const [bookmarks, setBookmarks] = useState<
         components["schemas"]["BookmarkListResponse"]["items"]
     >([]);
-    const [malLoading, setMalLoading] = useState(true);
+    const [aniLoading, setAniLoading] = useState(true);
     const [bookmarksLoading, setBookmarksLoading] = useState(true);
     const [bookmarksProgress, setBookmarksProgress] = useState(0);
     const { confirm } = useConfirm();
 
     const getStatusVariant = (status: string | null) => {
         switch (status) {
-            case "completed":
+            case "COMPLETED":
                 return "default";
-            case "reading":
+            case "CURRENT":
                 return "secondary";
-            case "on_hold":
+            case "PAUSED":
                 return "outline";
-            case "dropped":
+            case "DROPPED":
                 return "destructive";
-            case "plan_to_read":
+            case "PLANNING":
                 return "shadow";
             default:
                 return "outline";
@@ -40,52 +39,30 @@ export default function SyncMalPage() {
     };
 
     useEffect(() => {
-        async function fetchAllMalList() {
-            let allData: components["schemas"]["MalMangaListItem"][] = [];
-            let offset: number = 0;
-
-            while (true) {
-                if (offset > 0) {
-                    await new Promise((resolve) => setTimeout(resolve, 500));
-                }
-                const { data, error } = await client.GET("/v2/mal/mangalist", {
-                    params: {
-                        query: {
-                            limit: 1000,
-                            offset: offset,
-                        },
-                    },
-                });
-
-                if (error || !data) {
-                    console.error("Error fetching MAL manga list:", error);
-                    setMalLoading(false);
-                    break;
-                }
-
-                if (data.data?.data) {
-                    allData = [...allData, ...data.data.data];
-                }
-
-                const next = data.data?.paging?.next;
-                if (!next) {
-                    break;
-                }
-
-                const url = new URL(next);
-                const nextOffset = url.searchParams.get("offset");
-                if (!nextOffset) {
-                    break;
-                }
-                offset = parseInt(nextOffset, 10);
+        async function fetchAllAniList() {
+            const aniListUserStorage = StorageManager.get("aniListUser");
+            const userName = aniListUserStorage.get()?.name;
+            if (!userName) {
+                setAniLoading(false);
+                return;
             }
 
-            setMalData(
-                allData.filter((item) => {
-                    return ALLOWED_MEDIA_TYPES.includes(item.node.mediaType);
-                })
-            );
-            setMalLoading(false);
+            const { data, error } = await client.GET("/v2/ani/mangalist", {
+                params: {
+                    query: {
+                        userName: userName,
+                    },
+                },
+            });
+
+            if (error) {
+                console.error("Error fetching AniList manga list:", error);
+                setAniLoading(false);
+                return;
+            }
+
+            setAniData(data?.data.lists[0].entries);
+            setAniLoading(false);
         }
 
         async function fetchAllBookmarks() {
@@ -133,12 +110,12 @@ export default function SyncMalPage() {
             setBookmarksLoading(false);
         }
 
-        fetchAllMalList();
+        fetchAllAniList();
         fetchAllBookmarks();
     }, []);
 
-    async function syncMalToBookmarks() {
-        if (malData.length === 0) return;
+    async function syncAniToBookmarks() {
+        if (aniData.length === 0) return;
         const confirmed = await confirm({
             title: "Confirm MAL Sync",
             description:
@@ -148,26 +125,26 @@ export default function SyncMalPage() {
         });
         if (!confirmed) return;
 
-        const malDataToSync = malData.filter(
+        const aniDataToSync = aniData.filter(
             (item) =>
-                !bookmarks.some((bookmark) => bookmark.malId === item.node.id)
+                !bookmarks.some((bookmark) => bookmark.aniId === item.media.id)
         );
 
-        if (malDataToSync.length === 0) return;
+        if (aniDataToSync.length === 0) return;
 
         const batchSize = 50;
         const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
             [];
 
-        for (let i = 0; i < malDataToSync.length; i += batchSize) {
-            const batch = malDataToSync
+        for (let i = 0; i < aniDataToSync.length; i += batchSize) {
+            const batch = aniDataToSync
                 .slice(i, i + batchSize)
-                .map((item) => item.node.id);
+                .map((item) => item.media.id);
 
             await new Promise((resolve) => setTimeout(resolve, 500));
 
-            const { data, error } = await client.POST("/v2/manga/mal/batch", {
-                body: { malIds: batch },
+            const { data, error } = await client.POST("/v2/manga/ani/batch", {
+                body: { aniIds: batch },
             });
 
             if (error || !data) {
@@ -176,13 +153,13 @@ export default function SyncMalPage() {
             }
 
             for (const manga of data.data) {
-                const malItem = malDataToSync.find(
-                    (item) => item.node.id === manga.malId
+                const aniItem = aniDataToSync.find(
+                    (item) => item.media.id === manga.aniId
                 );
-                if (malItem) {
+                if (aniItem) {
                     updateItems.push({
                         mangaId: manga.id,
-                        chapterNumber: malItem.listStatus?.numChaptersRead ?? 0,
+                        chapterNumber: aniItem.progress ?? 0,
                     });
                 }
             }
@@ -204,25 +181,23 @@ export default function SyncMalPage() {
         }
     }
 
-    const loading = malLoading || bookmarksLoading;
+    const loading = aniLoading || bookmarksLoading;
     const progress = bookmarksProgress;
 
-    const renderRow = (item: components["schemas"]["MalMangaListItem"]) => (
-        <TableRow key={item.node.id}>
+    const renderRow = (item: components["schemas"]["AniEntry"]) => (
+        <TableRow key={item.media.id}>
             <TableCell className="font-medium max-w-xs truncate">
-                {item.node.title || "Unknown Title"}
+                {item.media.title.english || "Unknown Title"}
             </TableCell>
-            <TableCell>{item.listStatus?.numChaptersRead}</TableCell>
+            <TableCell>{item.progress}</TableCell>
             <TableCell className="min-w-[100px]">
-                <Badge
-                    variant={getStatusVariant(item.listStatus?.status || null)}
-                >
-                    {item.listStatus?.status || "Unknown"}
+                <Badge variant={getStatusVariant(item.status)}>
+                    {item.status || "Unknown"}
                 </Badge>
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.malId === item.node.id
+                    (bookmark) => bookmark.aniId === item.media.id
                 ) ? (
                     <Check className="h-4 w-4 text-green-600" />
                 ) : (
@@ -234,14 +209,14 @@ export default function SyncMalPage() {
 
     return (
         <SyncBody
-            title="MAL Sync"
+            title="ANI Sync"
             loading={loading}
             progress={progress}
             buttonText="Sync to Bookmarks"
-            onButtonClick={syncMalToBookmarks}
+            onButtonClick={syncAniToBookmarks}
             tableHeaders={["Name", "Chapters Read", "Status", "Bookmarked"]}
             renderRow={renderRow}
-            data={malData}
+            data={aniData}
         />
     );
 }
