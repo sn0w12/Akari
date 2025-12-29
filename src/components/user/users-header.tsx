@@ -40,27 +40,28 @@ function UserStat({ icon, label, value }: UserStatProps) {
     );
 }
 
-async function getUserData(userId: string) {
+async function getUserData(userId: string, accesToken: string | undefined) {
     "use cache";
     cacheLife("default");
     cacheTag("user-profiles");
 
-    const supabase = await createSupabaseClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
-
-    return await client.GET("/v2/user/{userId}", {
+    const { data, error } = await client.GET("/v2/user/{userId}", {
         params: {
             path: {
                 userId,
             },
         },
         headers: {
-            Authorization: `Bearer ${session?.access_token}`,
+            Authorization: `Bearer ${accesToken}`,
             ...serverHeaders,
         },
     });
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    return { data, error: null };
 }
 
 export async function UserHeader({
@@ -69,7 +70,12 @@ export async function UserHeader({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const { data, error } = await getUserData(id);
+    const supabase = await createSupabaseClient();
+    const {
+        data: { session },
+    } = await supabase.auth.getSession();
+
+    const { data, error } = await getUserData(id, session?.access_token);
 
     if (error) {
         return <ErrorPage title="Failed to load user" error={error} />;
