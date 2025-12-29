@@ -113,18 +113,6 @@ export class MalAccount extends SecondaryAccountBase {
             return false;
         }
 
-        const { error: userError } = await client.GET("/v2/mal/mangalist", {
-            params: {
-                query: {
-                    limit: 1,
-                },
-            },
-        });
-
-        if (userError) {
-            return false;
-        }
-
         Cookies.remove("pkce_code_verifier");
         return true;
     }

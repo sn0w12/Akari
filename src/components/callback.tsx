@@ -21,8 +21,10 @@ const CallbackPage = () => {
     useEffect(() => {
         const provider = searchParams.get("provider") || "mal";
 
-        const getToken = async (accountId: SecondaryAccountId) => {
-            const account = getSecondaryAccountById(accountId);
+        const getToken = async (accountId: string) => {
+            const account = getSecondaryAccountById(
+                accountId as SecondaryAccountId
+            );
             if (!account) {
                 throw new Error("Unknown provider");
             }
@@ -34,14 +36,39 @@ const CallbackPage = () => {
 
         const processCallback = async () => {
             try {
-                const success = await getToken(provider as SecondaryAccountId);
+                const account = getSecondaryAccountById(
+                    provider as SecondaryAccountId
+                );
+                if (!account) {
+                    setError({
+                        result: "Error",
+                        status: 500,
+                        data: {
+                            message: "Unknown provider",
+                        },
+                    });
+                    return;
+                }
+                const tokenSuccess = await getToken(account.id);
 
-                if (!success) {
+                if (!tokenSuccess) {
                     setError({
                         result: "Error",
                         status: 500,
                         data: {
                             message: "Failed to handle callback",
+                        },
+                    });
+                    return;
+                }
+
+                const validateSuccess = await account.validate();
+                if (!validateSuccess) {
+                    setError({
+                        result: "Error",
+                        status: 500,
+                        data: {
+                            message: "Failed to validate account",
                         },
                     });
                     return;
