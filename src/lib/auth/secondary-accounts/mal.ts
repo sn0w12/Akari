@@ -79,7 +79,7 @@ export function generateCodeChallenge(codeVerifier: string): string {
 export function generateMalAuth() {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = generateCodeChallenge(codeVerifier);
-    const clientId = process.env.NEXT_PUBLIC_CLIENT_ID!;
+    const clientId = process.env.NEXT_PUBLIC_MAL_CLIENT_ID!;
 
     setCookie("pkce_code_verifier", codeVerifier, "necessary");
 
