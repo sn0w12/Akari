@@ -292,3 +292,13 @@ li {
         width: calc(100% - 8px);
     }
 }
+
+::selection {
+    background-color: var(--accent-color);
+    color: oklch(0.985 0 0);
+}
+
+::-moz-selection {
+    background-color: var(--accent-color);
+    color: oklch(0.985 0 0);
+}
