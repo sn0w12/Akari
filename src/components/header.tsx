@@ -79,14 +79,10 @@ export function HeaderComponent({ notification }: HeaderProps) {
             const validated = await validateSecondaryAccounts();
             for (const account of validated) {
                 if (validNotifs.includes(account.id) && !account.valid) {
-                    new Toast(
-                        `${account.name} session has expired. Please log in again.`,
-                        "error",
-                        {
-                            description:
-                                "You can disable this notification in settings.",
-                        }
-                    );
+                    new Toast(`${account.name} session has expired.`, "error", {
+                        description:
+                            "You can disable this notification in settings.",
+                    });
                 }
             }
         }
