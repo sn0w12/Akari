@@ -58,6 +58,7 @@ export function BaseLayout({
         queryKey: ["notification"],
         queryFn: fetchNotification,
         enabled: !!user,
+        refetchOnWindowFocus: false,
     });
 
     const handleSettingsClick = () => {
