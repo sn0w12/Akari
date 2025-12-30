@@ -2,7 +2,7 @@ import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { ListComponent } from "@/components/list/list";
 import { Suspense } from "react";
-import { UserListsSkeleton } from "@/components/user/use-lists-server";
+import { ListSkeleton } from "@/components/list/list-skeleton";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -25,7 +25,7 @@ async function ListPageContent({ params }: PageProps) {
 
 export default function ListPage(props: PageProps) {
     return (
-        <Suspense fallback={<UserListsSkeleton />}>
+        <Suspense fallback={<ListSkeleton />}>
             <ListPageContent params={props.params} />
         </Suspense>
     );

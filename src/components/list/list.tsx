@@ -6,13 +6,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { generateSizes, getInitials } from "@/lib/utils";
+import { ListSkeleton } from "./list-skeleton";
 
 function Entry({
     entry,
@@ -118,17 +118,7 @@ export function ListComponent({ id }: { id: string }) {
     });
 
     if (isLoading) {
-        return (
-            <div className="space-y-2 px-4 pb-4 pt-2">
-                <Skeleton className="h-8 w-40" />
-                <Skeleton className="h-4 w-60" />
-                <div className="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <Skeleton key={i} className="h-20 w-full rounded-lg" />
-                    ))}
-                </div>
-            </div>
-        );
+        return <ListSkeleton />;
     }
 
     if (isError) {
