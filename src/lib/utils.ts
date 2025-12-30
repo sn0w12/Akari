@@ -160,7 +160,7 @@ export function createMetadata(options: MetadataOptions): Metadata {
         ? options.canonicalPath.slice(1)
         : options.canonicalPath;
     let image = options.image;
-    if (process.env.NEXT_PUBLIC_HOST && image) {
+    if (process.env.NEXT_PUBLIC_HOST && image && !image.startsWith("http")) {
         image = `https://${process.env.NEXT_PUBLIC_HOST}/${
             image.startsWith("/") ? image.slice(1) : image
         }`;
