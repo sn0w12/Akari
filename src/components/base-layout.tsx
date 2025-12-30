@@ -163,7 +163,6 @@ export function BaseLayout({
                             <SidebarMenuLink
                                 tooltip="Settings"
                                 href="/settings"
-                                data-no-prefetch
                             >
                                 <SettingsIcon />
                                 <span>Settings</span>
@@ -182,7 +181,6 @@ export function BaseLayout({
                                 <SidebarMenuLink
                                     tooltip="Account"
                                     href="/account"
-                                    data-no-prefetch
                                 >
                                     <User />
                                     <span>Account</span>
@@ -199,7 +197,6 @@ export function BaseLayout({
                                 <SidebarMenuLink
                                     tooltip="Login"
                                     href="/auth/login"
-                                    data-no-prefetch
                                 >
                                     <User />
                                     <span>Login</span>
