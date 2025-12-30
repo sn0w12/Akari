@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
 import { ListItem } from "../account/list-item";
-import { Skeleton } from "../ui/skeleton";
 import ClientPagination from "../ui/pagination/client-pagination";
 import { UserListsSkeleton } from "./use-lists-server";
 
