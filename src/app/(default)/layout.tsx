@@ -46,40 +46,40 @@ export default async function RootLayout({
             <body
                 className={`${geistSans.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
             >
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <DeviceProvider>
-                            <SidebarProvider defaultOpen={false}>
-                                <ConfirmProvider>
-                                    <QueryProvider>
-                                        <UserProvider>
-                                            <BreadcrumbProvider>
-                                                <Suspense fallback={null}>
-                                                    <PWANavigationRestore />
-                                                </Suspense>
-                                                <BaseLayout gutter={true}>
-                                                    <AnalyticsWrapper />
-                                                    <div className="flex-1">
-                                                        {children}
-                                                    </div>
-                                                    <CookieConsent />
-                                                    <Toaster
-                                                        position="top-right"
-                                                        visibleToasts={5}
-                                                    />
-                                                    <Footer />
-                                                </BaseLayout>
-                                            </BreadcrumbProvider>
-                                        </UserProvider>
-                                    </QueryProvider>
-                                </ConfirmProvider>
-                            </SidebarProvider>
-                        </DeviceProvider>
-                    </ThemeProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <DeviceProvider>
+                        <SidebarProvider defaultOpen={false}>
+                            <ConfirmProvider>
+                                <QueryProvider>
+                                    <UserProvider>
+                                        <BreadcrumbProvider>
+                                            <Suspense fallback={null}>
+                                                <PWANavigationRestore />
+                                            </Suspense>
+                                            <BaseLayout gutter={true}>
+                                                <AnalyticsWrapper />
+                                                <div className="flex-1">
+                                                    {children}
+                                                </div>
+                                                <CookieConsent />
+                                                <Toaster
+                                                    position="top-right"
+                                                    visibleToasts={5}
+                                                />
+                                                <Footer />
+                                            </BaseLayout>
+                                        </BreadcrumbProvider>
+                                    </UserProvider>
+                                </QueryProvider>
+                            </ConfirmProvider>
+                        </SidebarProvider>
+                    </DeviceProvider>
+                </ThemeProvider>
             </body>
         </html>
     );
