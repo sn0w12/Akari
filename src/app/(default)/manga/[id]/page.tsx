@@ -4,6 +4,7 @@ import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { cacheLife, cacheTag } from "next/cache";
+import { getAllMangaIds } from "@/lib/api/pre-render";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -34,6 +35,20 @@ const getManga = async (id: string) => {
 
     return { data: data.data, error: null };
 };
+
+export async function generateStaticParams() {
+    let limit = undefined;
+    if (!process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1") {
+        limit = 1;
+    }
+
+    const mangaIds = await getAllMangaIds(limit);
+    if (limit === 1) {
+        return [{ id: mangaIds[0] }];
+    }
+
+    return mangaIds.map((id) => ({ id }));
+}
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;

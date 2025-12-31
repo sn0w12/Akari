@@ -12,7 +12,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { formatRelativeDate, generateSizes } from "@/lib/utils";
+import { generateSizes } from "@/lib/utils";
 import { MangaComments } from "./manga-details/manga-comments";
 import { ViewManga } from "./manga-reader/view-manga";
 
@@ -20,6 +20,7 @@ import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ListSelector } from "./list/list-selector";
+import { MangaUpdatedAt } from "./manga-details/updated-at";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -244,9 +245,9 @@ export async function MangaDetailsComponent({
                                     <div className="text-lg font-semibold">
                                         Updated:
                                     </div>
-                                    <Badge className="hover:bg-primary">
-                                        {formatRelativeDate(manga.updatedAt)}
-                                    </Badge>
+                                    <MangaUpdatedAt
+                                        updatedAt={manga.updatedAt}
+                                    />
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
