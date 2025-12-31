@@ -2,6 +2,9 @@ import { client } from "@/lib/api";
 import { serverHeaders } from "@/lib/api";
 import type { GetPaths, PaginatedResponse } from "@/types/api-utils";
 
+export const STATIC_GENERATION_DISABLED =
+    !process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1";
+
 export async function getAllPaginated<T>(
     path: GetPaths,
     pageSize: number,
@@ -67,6 +70,22 @@ export async function getAllPaginated<T>(
 
 export async function getAllMangaIds(maxPages?: number): Promise<string[]> {
     return getAllPaginated("/v2/manga/ids", 1000, (id: string) => id, maxPages);
+}
+
+interface ChapterIdsResponse {
+    mangaId: string;
+    chapterIds: number[];
+}
+
+export async function getAllChapterIds(
+    maxPages?: number
+): Promise<ChapterIdsResponse[]> {
+    return getAllPaginated(
+        "/v2/manga/chapter/ids",
+        500,
+        (item: ChapterIdsResponse) => item,
+        maxPages
+    );
 }
 
 export async function getAllAuthors(maxPages?: number): Promise<string[]> {

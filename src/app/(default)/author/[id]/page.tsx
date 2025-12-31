@@ -4,12 +4,30 @@ import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
 import { cacheLife, cacheTag } from "next/cache";
+import {
+    getAllAuthors,
+    STATIC_GENERATION_DISABLED,
+} from "@/lib/api/pre-render";
 
 interface PageProps {
     params: Promise<{ id: string }>;
     searchParams: Promise<{
         page: string;
     }>;
+}
+
+export async function generateStaticParams() {
+    let limit = undefined;
+    if (STATIC_GENERATION_DISABLED) {
+        limit = 1;
+    }
+
+    const authorIds = await getAllAuthors(limit);
+    if (STATIC_GENERATION_DISABLED) {
+        return [{ id: authorIds[0] }];
+    }
+
+    return authorIds.map((id) => ({ id }));
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {

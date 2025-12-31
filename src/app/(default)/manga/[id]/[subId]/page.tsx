@@ -5,6 +5,10 @@ import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { cacheLife, cacheTag } from "next/cache";
+import {
+    getAllChapterIds,
+    STATIC_GENERATION_DISABLED,
+} from "@/lib/api/pre-render";
 
 const getChapter = async (id: string, subId: number) => {
     "use cache";
@@ -30,6 +34,27 @@ const getChapter = async (id: string, subId: number) => {
 
 interface MangaReaderProps {
     params: Promise<{ id: string; subId: string }>;
+}
+
+export async function generateStaticParams() {
+    const limit = 1;
+
+    const mangaIds = await getAllChapterIds(limit);
+    if (STATIC_GENERATION_DISABLED) {
+        return [
+            {
+                id: mangaIds[0].mangaId,
+                subId: mangaIds[0].chapterIds[0].toString(),
+            },
+        ];
+    }
+
+    return mangaIds.flatMap(({ mangaId, chapterIds }) =>
+        chapterIds.map((chapterId) => ({
+            id: mangaId,
+            subId: chapterId.toString(),
+        }))
+    );
 }
 
 export async function generateMetadata({

@@ -4,6 +4,7 @@ import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import GridPage from "@/components/grid-page";
 import { cacheLife, cacheTag } from "next/cache";
+import { genres } from "@/lib/api/search";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -12,6 +13,10 @@ interface PageProps {
         sort?: string;
         [key: string]: string | string[] | undefined;
     }>;
+}
+
+export async function generateStaticParams() {
+    return genres.map((id) => ({ id }));
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
