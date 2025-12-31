@@ -201,7 +201,6 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                             }
                                         )}
                                         prefetch={false}
-                                        data-no-prefetch
                                         aria-label={`Read ${chapter.title} ${
                                             isLastRead ? "(Last Read)" : ""
                                         }`}

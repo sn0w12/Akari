@@ -62,7 +62,6 @@ export function InfoPopover({
                                     aria-label="Previous Chapter"
                                     prefetch={false}
                                     disabled={!lastChapterExists}
-                                    data-no-prefetch
                                 >
                                     <ChevronLeft className="mr-2 h-4 w-4" />
                                     Previous
@@ -74,7 +73,6 @@ export function InfoPopover({
                                     aria-label="Next Chapter"
                                     prefetch={false}
                                     disabled={!nextChapterExists}
-                                    data-no-prefetch
                                 >
                                     Next
                                     <ChevronRight className="ml-2 h-4 w-4" />

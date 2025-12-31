@@ -214,7 +214,6 @@ export async function MangaDetailsComponent({
                                                     )}`}
                                                     key={index}
                                                     prefetch={false}
-                                                    data-no-prefetch
                                                 >
                                                     <Badge
                                                         withShadow={true}
@@ -275,7 +274,6 @@ export async function MangaDetailsComponent({
                                                     genre.replaceAll(" ", "-")
                                                 )}`}
                                                 prefetch={false}
-                                                data-no-prefetch
                                             >
                                                 <Badge
                                                     variant="secondary"

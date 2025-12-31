@@ -53,7 +53,6 @@ export default function MangaFooter({
                                 className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background  hover:bg-accent hover:text-accent-foreground h-9 w-28 px-4 py-2"
                                 aria-label="Previous Chapter"
                                 prefetch={false}
-                                data-no-prefetch
                             >
                                 <ChevronLeft className="mr-2 h-4 w-4" />
                                 Previous
@@ -75,7 +74,6 @@ export default function MangaFooter({
                                 className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 w-28 px-4 py-2"
                                 aria-label="Next Chapter"
                                 prefetch={false}
-                                data-no-prefetch
                             >
                                 Next
                                 <ChevronRight className="ml-2 h-4 w-4" />

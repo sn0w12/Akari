@@ -34,7 +34,6 @@ export default function LatestChapterInfo({
                     )}
                     style={{ WebkitBoxDecorationBreak: "clone" }}
                     prefetch={false}
-                    data-no-prefetch
                     aria-label={`Latest chapter ${bookmark.chapters[0].number}`}
                 >
                     {bookmark.chapters[0]?.title}

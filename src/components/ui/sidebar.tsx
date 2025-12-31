@@ -1199,7 +1199,6 @@ function SidebarSection({
                                             href={`${basePath}/${item.id}`}
                                             className="flex items-center w-full"
                                             onClick={handleLinkClick}
-                                            data-no-prefetch
                                         >
                                             {item.name}
                                         </Link>
@@ -1270,7 +1269,6 @@ function SidebarSection({
                                         itemPinned && "font-medium"
                                     )}
                                     onMouseEnter={() => handleItemHover(index)}
-                                    data-no-prefetch
                                 >
                                     <div className="flex max-w-[150px] items-center gap-1.5">
                                         {itemPinned && (

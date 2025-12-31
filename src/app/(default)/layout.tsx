@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { BaseLayout } from "@/components/base-layout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { UserProvider } from "@/contexts/user-context";
-import { ProximityPrefetch } from "@/lib/proximity-prefetch";
 import { CookieConsent } from "@/components/cookie-consent";
 import Footer from "@/components/footer";
 import { QueryProvider } from "@/components/query-provider";
@@ -47,7 +46,6 @@ export default async function RootLayout({
             <body
                 className={`${geistSans.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
             >
-                <ProximityPrefetch>
                     <ThemeProvider
                         attribute="class"
                         defaultTheme="system"
@@ -82,7 +80,6 @@ export default async function RootLayout({
                             </SidebarProvider>
                         </DeviceProvider>
                     </ThemeProvider>
-                </ProximityPrefetch>
             </body>
         </html>
     );

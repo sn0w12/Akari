@@ -149,7 +149,6 @@ export function HeaderComponent({ notification }: HeaderProps) {
                                                     9999
                                                 )}
                                                 tabIndex={-1}
-                                                data-no-prefetch
                                             >
                                                 {getSegmentDisplayName(
                                                     segment,
