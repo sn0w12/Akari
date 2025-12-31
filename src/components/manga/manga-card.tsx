@@ -5,6 +5,7 @@ import { cn, generateSizes } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRouter } from "next/navigation";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -31,6 +32,7 @@ export function MangaCard({
     const cardRef = useRef<HTMLDivElement>(null);
     const innerCardRef = useRef<HTMLDivElement>(null);
     const isMobile = useIsMobile();
+    const router = useRouter();
 
     useEffect(() => {
         const updateDirection = () => {
@@ -59,6 +61,7 @@ export function MangaCard({
     }, [expandDirection]);
 
     const handleMouseEnter = () => {
+        router.prefetch(`/manga/${manga.id}`);
         if (isMobile) return;
 
         // Clear any pending collapse timeout
@@ -103,6 +106,10 @@ export function MangaCard({
     };
 
     useEffect(() => {
+        queueMicrotask(() => {
+            setShouldExpand(false);
+        });
+
         return () => {
             if (expandTimeoutRef.current) {
                 clearTimeout(expandTimeoutRef.current);
