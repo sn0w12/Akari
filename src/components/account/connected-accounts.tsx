@@ -65,7 +65,7 @@ export function ConnectedAccounts() {
                         <div
                             key={account.id}
                             className={cn(
-                                "flex flex-col border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between",
+                                "flex flex-col border border-border bg-card p-4 gap-2 sm:flex-row sm:items-center sm:justify-between",
                                 {
                                     "rounded-t-lg": isFirst,
                                     "rounded-b-lg": isLast,
@@ -109,14 +109,17 @@ export function ConnectedAccounts() {
                                         <ButtonLink
                                             href={`/sync/${account.id}`}
                                             variant="default"
-                                            className="gap-2"
+                                            className="gap-2 flex-1 sm:flex-initial"
                                         >
                                             <Download className="h-4 w-4" />
                                             Import Manga
                                         </ButtonLink>
                                         <ButtonConfirmDialog
                                             triggerButton={
-                                                <Button variant="destructive">
+                                                <Button
+                                                    variant="destructive"
+                                                    className="flex-1 sm:flex-initial"
+                                                >
                                                     <LogOut className="h-4 w-4" />
                                                     Disconnect
                                                 </Button>
@@ -135,7 +138,7 @@ export function ConnectedAccounts() {
                                     <ButtonLink
                                         href={account.getAuthUrl()}
                                         size="sm"
-                                        className="gap-2 bg-[var(--color)] hover:bg-[var(--color)]/80 text-[var(--text-color)]"
+                                        className="gap-2 flex-1 sm:flex-initial bg-[var(--color)] hover:bg-[var(--color)]/80 text-[var(--text-color)]"
                                     >
                                         <LogIn className="h-4 w-4" />
                                         Connect {account.name}
