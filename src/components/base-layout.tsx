@@ -10,7 +10,6 @@ import {
     SettingsIcon,
     Theater,
     TrendingUp,
-    User,
     Users,
 } from "lucide-react";
 import { HeaderComponent } from "./header";
@@ -33,6 +32,7 @@ import { KeyboardShortcut } from "./ui/keyboard-shortcut";
 import { useUser } from "@/contexts/user-context";
 import { useQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
+import { AccountButton } from "./account/account-button";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -64,12 +64,7 @@ export function BaseLayout({
         router.push("/settings");
     };
 
-    const openAccount = useSetting("openAccount");
-
     useShortcutSetting("openSettings", handleSettingsClick, {
-        preventDefault: true,
-    });
-    useShortcutSetting("openAccount", () => router.push("/account"), {
         preventDefault: true,
     });
     useShortcutSetting(
@@ -175,39 +170,9 @@ export function BaseLayout({
                             </SidebarMenuLink>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            {user ? (
-                                <SidebarMenuLink
-                                    tooltip="Account"
-                                    href="/account"
-                                >
-                                    <User />
-                                    <span>Account</span>
-                                    <KeyboardShortcut
-                                        keys={openAccount}
-                                        className={`gap-1 transition-opacity transition-duration-200 ${
-                                            isSidebarCollapsed
-                                                ? "opacity-0"
-                                                : "opacity-100"
-                                        }`}
-                                    />
-                                </SidebarMenuLink>
-                            ) : (
-                                <SidebarMenuLink
-                                    tooltip="Login"
-                                    href="/auth/login"
-                                >
-                                    <User />
-                                    <span>Login</span>
-                                    <KeyboardShortcut
-                                        keys={openAccount}
-                                        className={`gap-1 transition-opacity transition-duration-200 ${
-                                            isSidebarCollapsed
-                                                ? "opacity-0"
-                                                : "opacity-100"
-                                        }`}
-                                    />
-                                </SidebarMenuLink>
-                            )}
+                            <AccountButton
+                                sidebarCollapsed={isSidebarCollapsed}
+                            />
                         </SidebarMenuItem>
                     </SidebarFooter>
                 </Sidebar>

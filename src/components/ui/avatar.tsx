@@ -6,12 +6,14 @@ import BoringAvatar from "boring-avatars";
 
 import { cn } from "@/lib/utils";
 
-type AvatarSize = 16 | 32 | 48 | 64;
+type AvatarSize = 16 | 24 | 32 | 48 | 64 | 96;
 const AVATAR_SIZE_CLASSES: Record<AvatarSize, string> = {
     16: "size-4",
+    24: "size-6",
     32: "size-8",
     48: "size-12",
     64: "size-16",
+    96: "size-24",
 };
 
 interface AvatarProps
