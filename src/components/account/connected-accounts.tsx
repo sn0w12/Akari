@@ -57,6 +57,7 @@ export function ConnectedAccounts() {
                         (validAccount) => validAccount.id === account.id
                     );
                     const isValid = validAccount?.valid;
+                    const accountName = account.userStorage.get()?.name ?? null;
 
                     const isFirst = index === 0;
                     const isLast = index === SECONDARY_ACCOUNTS.length - 1;
@@ -89,11 +90,22 @@ export function ConnectedAccounts() {
                                 </div>
 
                                 <div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                                         <h3 className="font-medium text-foreground">
                                             {account.name}
                                         </h3>
-                                        {isValid && <Badge>Connected</Badge>}
+                                        {isValid && (
+                                            <Badge className="w-fit">
+                                                Connected{" "}
+                                                {accountName ? (
+                                                    <p className="ml-1 pl-0.5 border-l border-primary-foreground">
+                                                        {accountName}
+                                                    </p>
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </Badge>
+                                        )}
                                     </div>
                                     <p className="text-sm text-muted-foreground">
                                         {isValid
