@@ -32,8 +32,8 @@ export class MalAccount extends SecondaryAccountBase {
     }
 
     async logOut(): Promise<boolean> {
-        Cookies.remove("mal_access_token", { path: "/" });
-        Cookies.remove("mal_refresh_token", { path: "/" });
+        Cookies.remove("mal_access_token");
+        Cookies.remove("mal_refresh_token");
 
         return true;
     }
