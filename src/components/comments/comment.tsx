@@ -187,7 +187,7 @@ export function Comment({
                 depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4"
             )}
         >
-            <Avatar name={comment.userProfile.displayName} />
+            <Avatar name={comment.userProfile.username} />
             <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
                     <Link

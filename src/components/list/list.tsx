@@ -157,7 +157,7 @@ export function ListComponent({ id }: { id: string }) {
                     href={`/user/${data.user.userId}`}
                     className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
                 >
-                    <Avatar name={data.user.displayName} size={32} />
+                    <Avatar name={data.user.username} size={32} />
                     {data.user.displayName}
                 </Link>
             </div>

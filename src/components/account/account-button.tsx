@@ -21,7 +21,7 @@ export function AccountButton({
         <>
             {user ? (
                 <SidebarMenuLink tooltip="Account" href="/account">
-                    <Avatar name={user.displayName} size={24} />
+                    <Avatar name={user.username} size={24} />
                     <span>Account</span>
                     <KeyboardShortcut
                         keys={openAccount}

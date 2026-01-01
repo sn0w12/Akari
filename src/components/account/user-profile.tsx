@@ -26,7 +26,7 @@ export function UserProfile({
         <Card className="p-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Avatar name={user.displayName} size={64} />
+                    <Avatar name={user.username} size={64} />
 
                     <div>
                         <Link href={`/user/${user.userId}`}>

@@ -84,7 +84,7 @@ export async function UserHeader({
     return (
         <div className="flex flex-row justify-between items-center">
             <div className="flex flex-row gap-2 items-baseline">
-                <Avatar name={data.data.displayName} />
+                <Avatar name={data.data.username} />
                 <h2 className="text-4xl font-bold">
                     {data.data.displayName || data.data.username}
                 </h2>
