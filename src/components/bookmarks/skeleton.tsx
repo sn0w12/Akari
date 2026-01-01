@@ -11,9 +11,9 @@ function desktopCard(index: number) {
             key={`desktop-${index}`}
             className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full gap-0"
         >
-            <div className="w-40 h-full mb-0 shrink-0">
+            <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
                 {/* Skeleton for the image */}
-                <Skeleton className="w-full h-60 object-cover rounded" />
+                <Skeleton className="w-full h-45 lg:h-60 object-cover rounded" />
             </div>
 
             <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
