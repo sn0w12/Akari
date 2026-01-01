@@ -35,7 +35,6 @@ export function UserProvider({ children }: UserProviderProps) {
             return data.data;
         },
         retry: false,
-        refetchOnWindowFocus: false,
     });
 
     const refreshUser = () => {

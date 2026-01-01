@@ -31,7 +31,6 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
         enabled: !!user && open,
         staleTime: Infinity,
         refetchOnMount: false,
-        refetchOnWindowFocus: false,
         queryFn: async () => {
             if (!user) return null;
 
@@ -48,7 +47,6 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
         enabled: !!user && open,
         staleTime: Infinity,
         refetchOnMount: false,
-        refetchOnWindowFocus: false,
         queryFn: async () => {
             if (!user) return null;
 
