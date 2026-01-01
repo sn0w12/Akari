@@ -90,20 +90,13 @@ export function ConnectedAccounts() {
                                 </div>
 
                                 <div>
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                                    <div className="flex items-center gap-2">
                                         <h3 className="font-medium text-foreground">
                                             {account.name}
                                         </h3>
-                                        {isValid && (
+                                        {isValid && accountName && (
                                             <Badge className="w-fit">
-                                                Connected{" "}
-                                                {accountName ? (
-                                                    <p className="ml-1 pl-0.5 border-l border-primary-foreground">
-                                                        {accountName}
-                                                    </p>
-                                                ) : (
-                                                    ""
-                                                )}
+                                                {accountName}
                                             </Badge>
                                         )}
                                     </div>
