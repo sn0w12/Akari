@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import LatestChapterInfo from "./latest-chapter-info";
 import { cn, generateSizes } from "@/lib/utils";
 import { ConfirmDialogs } from "./confirm-dialogs";
+import { ChaptersPopup } from "./chapters-popup";
 
 const MobileBookmarkCard: React.FC<{
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
@@ -22,7 +23,7 @@ const MobileBookmarkCard: React.FC<{
     return (
         <Card className="flex flex-row items-start  bg-card border border-border rounded-lg p-0 md:hidden">
             <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
-                <div className="mb-2">
+                <div className="mb-1">
                     <div className="flex items-center gap-2">
                         <div className="w-20 h-full shrink-0">
                             <Link
@@ -60,27 +61,33 @@ const MobileBookmarkCard: React.FC<{
                             className="gap-1"
                         />
                     </div>
-                    {/* Continue Reading Button */}
-                    <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${
-                            newChapter
-                                ? bookmark.chapters[0]?.number
-                                : bookmark.lastReadChapter.number
-                        }`}
-                        rel="noopener noreferrer"
-                        className={cn(
-                            "mt-2 py-4 px-6 w-full text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
-                            {
-                                "bg-cyan-600 hover:bg-cyan-700": newChapter,
-                                "bg-green-600 hover:bg-green-700": upToDate,
-                            }
-                        )}
-                        prefetch={false}
-                    >
-                        {newChapter
-                            ? bookmark.chapters[0]?.title
-                            : bookmark.lastReadChapter.title}
-                    </ButtonLink>
+                    <div className="mt-2 flex flex-row items-center gap-2">
+                        {/* Continue Reading Button */}
+                        <ButtonLink
+                            href={`/manga/${bookmark.mangaId}/${
+                                newChapter
+                                    ? bookmark.chapters[0]?.number
+                                    : bookmark.lastReadChapter.number
+                            }`}
+                            rel="noopener noreferrer"
+                            className={cn(
+                                "py-4 px-6 flex-1 text-lg font-bold text-white bg-accent-positive hover:bg-accent-positive/90 transition-colors",
+                                {
+                                    "bg-cyan-600 hover:bg-cyan-700": newChapter,
+                                    "bg-green-600 hover:bg-green-700": upToDate,
+                                }
+                            )}
+                            prefetch={false}
+                        >
+                            {newChapter
+                                ? bookmark.chapters[0]?.title
+                                : bookmark.lastReadChapter.title}
+                        </ButtonLink>
+                        <ChaptersPopup
+                            mangaId={bookmark.mangaId}
+                            lastReadChapter={bookmark.lastReadChapter}
+                        />
+                    </div>
                 </div>
                 <LatestChapterInfo bookmark={bookmark} />
             </CardContent>

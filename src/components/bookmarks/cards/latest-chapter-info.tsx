@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { cn, formatRelativeDate } from "@/lib/utils";
+import { formatRelativeDate } from "@/lib/utils";
 
 export default function LatestChapterInfo({
     bookmark,
@@ -15,31 +14,11 @@ export default function LatestChapterInfo({
     }
 
     return (
-        <div className="text-sm text-muted-foreground">
-            <p>
-                Latest Chapter:{" "}
-                <Link
-                    href={`/manga/${bookmark.mangaId}/${bookmark.chapters[0].number}`}
-                    rel="noopener noreferrer"
-                    className={cn(
-                        "box-decoration-clone text-white p-0.5 md:px-1 rounded-sm bg-accent-positive hover:bg-accent-positive/90 transition-colors",
-                        {
-                            "bg-cyan-600 hover:bg-cyan-700":
-                                bookmark.lastReadChapter.number ===
-                                bookmark.chapters[1]?.number,
-                            "bg-green-600 hover:bg-green-700":
-                                bookmark.lastReadChapter.number ===
-                                bookmark.chapters[0]?.number,
-                        }
-                    )}
-                    style={{ WebkitBoxDecorationBreak: "clone" }}
-                    prefetch={false}
-                    aria-label={`Latest chapter ${bookmark.chapters[0].number}`}
-                >
-                    {bookmark.chapters[0]?.title}
-                </Link>
+        <div className="text-sm text-muted-foreground flex flex-row">
+            <p className="pr-0.5 border-r">
+                Pages: {bookmark.chapters[0].pages}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="pl-0.5">
                 Updated: {formatRelativeDate(bookmark.chapters[0].updatedAt)}
             </p>
         </div>

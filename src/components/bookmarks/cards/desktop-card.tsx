@@ -3,14 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-import LatestChapterInfo from "./latest-chapter-info";
 import { cn, generateSizes } from "@/lib/utils";
-import { ChevronsUpDownIcon } from "lucide-react";
-import { useRef, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
+import LatestChapterInfo from "./latest-chapter-info";
 
 interface DesktopBookmarkCardProps {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
@@ -25,35 +22,10 @@ function DesktopBookmarkCard({
     bookmark,
     setUpdatedBookmarks,
 }: DesktopBookmarkCardProps) {
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-    const buttonRef = useRef<HTMLButtonElement>(
-        null!
-    ) as React.RefObject<HTMLButtonElement>;
-
     const newChapter =
         bookmark.lastReadChapter.number === bookmark.chapters[1]?.number;
     const upToDate =
         bookmark.lastReadChapter.number === bookmark.chapters[0]?.number;
-
-    function showChapters() {
-        const newShowState = !showPopup;
-        setShowPopup(!showPopup);
-        if (newShowState && buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-
-            // Check if popup would extend beyond the right edge
-            const popupWidth = 140;
-            const idealLeft = rect.right;
-            const adjustedLeft = Math.min(
-                idealLeft,
-                viewportWidth - popupWidth - 20
-            ); // 20px safety margin
-
-            setPopupPosition({ top: rect.bottom, left: adjustedLeft });
-        }
-    }
 
     return (
         <Card className="hidden md:flex flex-row items-start p-6 pr-2 bg-card border border-border rounded-lg xl:h-full">
@@ -119,26 +91,12 @@ function DesktopBookmarkCard({
                                     : bookmark.lastReadChapter.title}
                             </span>
                         </ButtonLink>
-                        <Button
-                            ref={buttonRef}
-                            className="w-10 p-0"
-                            onClick={showChapters}
-                            aria-label="Browse chapters"
-                        >
-                            <ChevronsUpDownIcon className="h-5 w-5" />
-                        </Button>
-                    </div>
-                    <LatestChapterInfo bookmark={bookmark} />
-
-                    {showPopup && (
                         <ChaptersPopup
-                            onClose={() => setShowPopup(false)}
                             mangaId={bookmark.mangaId}
                             lastReadChapter={bookmark.lastReadChapter}
-                            position={popupPosition}
-                            buttonRef={buttonRef}
                         />
-                    )}
+                    </div>
+                    <LatestChapterInfo bookmark={bookmark} />
                 </div>
             </CardContent>
         </Card>

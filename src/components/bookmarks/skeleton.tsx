@@ -25,10 +25,7 @@ function desktopCard(index: number) {
                     <Skeleton className="w-72 h-10 mb-1" />
 
                     {/* Skeleton for Latest Chapter Info */}
-                    <div className="flex flex-col gap-1">
-                        <Skeleton className="w-44 h-5" />
-                        <Skeleton className="w-28 h-3" />
-                    </div>
+                    <Skeleton className="w-44 h-5" />
                 </div>
             </CardContent>
         </Card>
@@ -54,10 +51,7 @@ function mobileCard(index: number) {
                     {/* Continue Reading Button */}
                     <Skeleton className="w-full h-10 mt-2" />
                 </div>
-                <div className="flex flex-col gap-1">
-                    <Skeleton className="w-44 h-5" />
-                    <Skeleton className="w-28 h-3" />
-                </div>
+                <Skeleton className="w-44 h-5" />
             </CardContent>
         </Card>
     );
