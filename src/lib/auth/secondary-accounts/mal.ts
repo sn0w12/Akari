@@ -1,8 +1,6 @@
 import { client } from "@/lib/api";
 import { setCookie } from "@/lib/utils";
-import { getSecondaryAccountById } from "../secondary-accounts";
 import { getBaseUrl } from "@/lib/api/base-url";
-import { StorageManager } from "@/lib/storage";
 import { SecondaryAccountBase } from "./general";
 import Cookies from "js-cookie";
 
@@ -36,12 +34,6 @@ export class MalAccount extends SecondaryAccountBase {
 
         if (error) {
             return false;
-        }
-
-        const malAccount = getSecondaryAccountById("mal");
-        if (malAccount) {
-            const cacheStorage = StorageManager.get("secondaryAccountCache");
-            cacheStorage.remove({ accountId: malAccount.id });
         }
 
         return true;

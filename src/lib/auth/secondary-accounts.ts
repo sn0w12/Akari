@@ -14,6 +14,7 @@ export interface SecondaryAccount {
     getAuthUrl: () => string;
     logOut: () => Promise<boolean>;
     validate: () => Promise<boolean>;
+    invalidate: () => void;
     sync: SyncHandler;
     handleCallback: (
         params: Record<string, string>,

@@ -1,4 +1,5 @@
 import type { SecondaryAccount } from "../secondary-accounts";
+import { StorageManager } from "@/lib/storage";
 
 export abstract class SecondaryAccountBase implements SecondaryAccount {
     abstract readonly id: string;
@@ -19,6 +20,10 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
 
     abstract getAuthUrl(): string;
     abstract logOut(): Promise<boolean>;
+    public invalidate(): void {
+        const cacheStorage = StorageManager.get("secondaryAccountCache");
+        cacheStorage.remove({ accountId: this.id });
+    }
     abstract validate(): Promise<boolean>;
     abstract sync(
         manga: components["schemas"]["ChapterResponse"]

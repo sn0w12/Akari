@@ -20,6 +20,9 @@ export class AniAccount extends SecondaryAccountBase {
 
     logOut(): Promise<boolean> {
         Cookies.remove("ani_access_token", { path: "/" });
+        const aniListUserStorage = StorageManager.get("aniListUser");
+        aniListUserStorage.remove();
+
         return Promise.resolve(true);
     }
 
