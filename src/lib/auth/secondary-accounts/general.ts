@@ -1,5 +1,6 @@
+import { StorageValue } from "@/types/storage";
 import type { SecondaryAccount } from "../secondary-accounts";
-import { StorageManager } from "@/lib/storage";
+import { StorageManager, StorageWrapper } from "@/lib/storage";
 
 /**
  * Abstract base class for secondary account implementations.
@@ -22,6 +23,17 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      * Hex color code associated with the secondary account (e.g., "#FF0000").
      */
     abstract readonly color: string;
+
+    abstract readonly userStorage: StorageWrapper<{
+        id: {
+            readonly type: "number";
+            readonly default: StorageValue;
+        };
+        name: {
+            readonly type: "string";
+            readonly default: StorageValue;
+        };
+    }>;
 
     /**
      * Calculates and returns the appropriate text color (#000000 or #FFFFFF)

@@ -1,6 +1,7 @@
 import { client } from "@/lib/api";
 import { setCookie } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/api/base-url";
+import { StorageManager } from "@/lib/storage";
 import { SecondaryAccountBase } from "./general";
 import Cookies from "js-cookie";
 
@@ -8,6 +9,7 @@ export class MalAccount extends SecondaryAccountBase {
     readonly id = "mal";
     readonly name = "MyAnimeList";
     readonly color = "#2b4c95";
+    readonly userStorage = StorageManager.get("malUser");
 
     getAuthUrl(): string {
         const codeVerifier = generateCodeVerifier();
@@ -30,28 +32,22 @@ export class MalAccount extends SecondaryAccountBase {
     }
 
     async logOut(): Promise<boolean> {
-        const { error } = await client.POST("/v2/mal/logout");
-
-        if (error) {
-            return false;
-        }
+        Cookies.remove("mal_access_token", { path: "/" });
+        Cookies.remove("mal_refresh_token", { path: "/" });
 
         return true;
     }
 
     async validate(): Promise<boolean> {
-        const { error } = await client.GET("/v2/mal/mangalist", {
-            params: {
-                query: {
-                    limit: 1,
-                },
-            },
-        });
-
+        const { data, error } = await client.GET("/v2/mal/me");
         if (error) {
             return false;
         }
 
+        this.userStorage.set({
+            id: data.data.id,
+            name: data.data.name,
+        });
         return true;
     }
 

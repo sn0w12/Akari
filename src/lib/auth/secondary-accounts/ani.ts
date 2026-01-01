@@ -7,6 +7,7 @@ export class AniAccount extends SecondaryAccountBase {
     readonly id = "ani";
     readonly name = "AniList";
     readonly color = "#1f232c";
+    readonly userStorage = StorageManager.get("aniListUser");
 
     getAuthUrl(): string {
         const clientId = process.env.NEXT_PUBLIC_ANI_CLIENT_ID!;
@@ -20,8 +21,7 @@ export class AniAccount extends SecondaryAccountBase {
 
     logOut(): Promise<boolean> {
         Cookies.remove("ani_access_token", { path: "/" });
-        const aniListUserStorage = StorageManager.get("aniListUser");
-        aniListUserStorage.remove();
+        this.userStorage.remove();
 
         return Promise.resolve(true);
     }
@@ -32,8 +32,7 @@ export class AniAccount extends SecondaryAccountBase {
             return false;
         }
 
-        const aniListUserStorage = StorageManager.get("aniListUser");
-        aniListUserStorage.set({
+        this.userStorage.set({
             id: data.data.id,
             name: data.data.name,
         });
