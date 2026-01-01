@@ -9,7 +9,7 @@ function desktopCard(index: number) {
     return (
         <Card
             key={`desktop-${index}`}
-            className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full"
+            className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full gap-0"
         >
             <div className="w-40 h-full mb-0 shrink-0">
                 {/* Skeleton for the image */}

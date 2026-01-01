@@ -28,7 +28,7 @@ function DesktopBookmarkCard({
         bookmark.lastReadChapter.number === bookmark.chapters[0]?.number;
 
     return (
-        <Card className="hidden md:flex flex-row items-start p-6 pr-2 bg-card border border-border rounded-lg xl:h-full">
+        <Card className="hidden md:flex flex-row items-start p-6 pr-2 bg-card border border-border rounded-lg xl:h-full gap-0">
             <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
                 <Link
                     href={`/manga/${bookmark.mangaId}`}
@@ -67,7 +67,7 @@ function DesktopBookmarkCard({
                             setUpdatedBookmarks={setUpdatedBookmarks}
                         />
                     </div>
-                    <div className="flex flex-row gap-2 mb-2">
+                    <div className="flex flex-row gap-2 mb-1">
                         {/* Continue Reading Button */}
                         <ButtonLink
                             href={`/manga/${bookmark.mangaId}/${
