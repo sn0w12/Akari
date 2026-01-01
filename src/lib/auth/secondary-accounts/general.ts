@@ -74,7 +74,7 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      */
     public invalidate(): void {
         const cacheStorage = StorageManager.get("secondaryAccountCache");
-        cacheStorage.remove({ accountId: this.id });
+        cacheStorage.set({ valid: false }, { accountId: this.id });
     }
 
     /**
