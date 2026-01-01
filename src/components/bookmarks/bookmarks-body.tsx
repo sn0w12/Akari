@@ -17,7 +17,7 @@ export default function BookmarksBody({
 }: BookmarksBodyProps) {
     if (bookmarks.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+            <div className="h-full flex flex-col items-center justify-center text-center">
                 <p className="text-lg text-muted-foreground">
                     No bookmarks yet.
                 </p>

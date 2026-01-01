@@ -42,8 +42,8 @@ export default async function Bookmarks(props: BookmarksProps) {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto p-4">
+        <div className="h-full bg-background text-foreground">
+            <div className="mx-auto p-4 h-full">
                 <BookmarksBody
                     bookmarks={data.data.items}
                     page={page}
