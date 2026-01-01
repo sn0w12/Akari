@@ -2,6 +2,7 @@
 
 import BookmarksHeader from "./bookmarks-header";
 import BookmarksGrid from "./bookmarks-grid";
+import { ButtonLink } from "../ui/button-link";
 
 interface BookmarksBodyProps {
     bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
@@ -14,6 +15,22 @@ export default function BookmarksBody({
     page,
     totalPages,
 }: BookmarksBodyProps) {
+    if (bookmarks.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+                <p className="text-lg text-muted-foreground">
+                    No bookmarks yet.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    Start reading and bookmark your favorite series!
+                </p>
+                <ButtonLink href="/" className="mt-1.5">
+                    Browse Series
+                </ButtonLink>
+            </div>
+        );
+    }
+
     return (
         <>
             <BookmarksHeader />
