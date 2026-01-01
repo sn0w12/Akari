@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import {
     ChevronUp,
@@ -11,7 +11,7 @@ import {
     Edit,
     Trash,
 } from "lucide-react";
-import { cn, generateSizes, getInitials } from "@/lib/utils";
+import { cn, generateSizes } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
 import { useConfirm } from "@/contexts/confirm-context";
 import Image from "next/image";
@@ -187,15 +187,7 @@ export function Comment({
                 depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4"
             )}
         >
-            <Avatar
-                name={comment.userProfile.displayName}
-                className="size-8 shrink-0"
-            >
-                <AvatarFallback className="text-xs">
-                    {getInitials(comment.userProfile.displayName)}
-                </AvatarFallback>
-            </Avatar>
-
+            <Avatar name={comment.userProfile.displayName} />
             <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
                     <Link

@@ -24,15 +24,6 @@ export const setCookie = (
     return true;
 };
 
-export function getInitials(displayName: string) {
-    return displayName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .substring(0, 2);
-}
-
 export function formatRelativeDate(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();

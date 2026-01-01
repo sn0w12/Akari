@@ -10,8 +10,8 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Toast from "@/lib/toast-wrapper";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { generateSizes, getInitials } from "@/lib/utils";
+import { Avatar } from "../ui/avatar";
+import { generateSizes } from "@/lib/utils";
 import { ListSkeleton } from "./list-skeleton";
 
 function Entry({
@@ -157,14 +157,7 @@ export function ListComponent({ id }: { id: string }) {
                     href={`/user/${data.user.userId}`}
                     className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
                 >
-                    <Avatar
-                        name={data.user.displayName}
-                        className="size-8 shrink-0"
-                    >
-                        <AvatarFallback className="text-xs">
-                            {getInitials(data.user.displayName)}
-                        </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={data.user.displayName} size={32} />
                     {data.user.displayName}
                 </Link>
             </div>

@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { AttachmentPopover } from "./attachment-popover";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -53,26 +53,11 @@ export function CommentForm({
         }
     };
 
-    const getInitials = (displayName: string) => {
-        return displayName
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
-
     return (
         <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
             <Avatar
                 name={currentUser?.displayName || ""}
-                className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
-            >
-                <AvatarFallback className="text-xs">
-                    {getInitials(currentUser?.displayName || "")}
-                </AvatarFallback>
-            </Avatar>
-
+            />
             <div className="flex-1 space-y-2">
                 <Textarea
                     value={content}

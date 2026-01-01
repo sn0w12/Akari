@@ -14,8 +14,7 @@ import {
     ImageIcon,
     Bookmark,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { Avatar } from "@/components/ui/avatar";
 import { cacheLife, cacheTag } from "next/cache";
 
 interface UserStatProps {
@@ -85,14 +84,7 @@ export async function UserHeader({
     return (
         <div className="flex flex-row justify-between items-center">
             <div className="flex flex-row gap-2 items-baseline">
-                <Avatar
-                    name={data.data.displayName}
-                    className="size-8 shrink-0 self-center"
-                >
-                    <AvatarFallback className="text-xs">
-                        {getInitials(data.data.displayName)}
-                    </AvatarFallback>
-                </Avatar>
+                <Avatar name={data.data.displayName} />
                 <h2 className="text-4xl font-bold">
                     {data.data.displayName || data.data.username}
                 </h2>
