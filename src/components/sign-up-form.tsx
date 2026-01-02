@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Providers } from "./auth/oauth";
 
 export function SignUpForm({
     className,
@@ -153,6 +154,7 @@ export function SignUpForm({
                                     ? "Creating an account..."
                                     : "Sign up"}
                             </Button>
+                            <Providers />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Already have an account?{" "}

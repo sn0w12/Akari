@@ -3438,6 +3438,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/user/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update user profile */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The update profile request containing new username and display name. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4162,6 +4230,10 @@ export interface components {
         UpdateCommentRequest: {
             content: string;
         };
+        UpdateProfileRequest: {
+            username: string;
+            displayName: string;
+        };
         UpdateUserMangaListEntryRequest: {
             /** Format: int32 */
             newOrderIndex: number;
@@ -4350,12 +4422,14 @@ export interface components {
             id: string;
             username: string;
             displayName: string;
+            role: string;
         };
         UserProfileDetailsResponse: {
             /** Format: uuid */
             userId: string;
             username: string;
             displayName: string;
+            role: string;
             /** Format: date-time */
             createdAt?: string | null;
             /** Format: int64 */
@@ -4383,6 +4457,7 @@ export interface components {
             userId: string;
             username: string;
             displayName: string;
+            role: string;
         };
         UserResponseSuccessResponse: {
             /** @enum {string} */

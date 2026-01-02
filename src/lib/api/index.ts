@@ -11,16 +11,42 @@ export function getAuthCookie() {
         return null;
     }
 
-    const sbAuthTokenRow = document.cookie
+    const authCookies = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("sb-db-auth-token"));
-    if (!sbAuthTokenRow) {
+        .filter((row) => row.startsWith("sb-db-auth-token"));
+    if (authCookies.length === 0) {
         return null;
     }
 
-    return JSON.parse(
-        atob(sbAuthTokenRow.split("=")[1].replace("base64-", ""))
-    );
+    try {
+        const singleCookie = authCookies.find((row) => !row.includes("."));
+        if (singleCookie) {
+            // Old format: single cookie
+            const value = singleCookie.split("=")[1];
+            return JSON.parse(atob(value.replace("base64-", "")));
+        } else {
+            // New format: multi-part cookies
+            const parts = authCookies
+                .map((row) => {
+                    const [key, value] = row.split("=");
+                    const match = key.match(/^sb-db-auth-token\.(\d+)$/);
+                    if (!match) return null;
+                    return { num: parseInt(match[1]), value };
+                })
+                .filter((item): item is { num: number; value: string } => item !== null)
+                .sort((a, b) => a.num - b.num)
+                .map((p) => p.value);
+            if (parts.length === 0) return null;
+            const fullValue = parts.join("");
+            const base64 = fullValue.startsWith("base64-")
+                ? fullValue.replace("base64-", "")
+                : fullValue;
+            return JSON.parse(atob(base64));
+        }
+    } catch (error) {
+        console.error("Failed to parse auth cookie:", error);
+        return null;
+    }
 }
 
 const authenticatedFetch = async (input: Request): Promise<Response> => {

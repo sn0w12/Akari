@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
@@ -14,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useUser } from "@/contexts/user-context";
+import { Providers } from "./auth/oauth";
 
 export function LoginForm({
     className,
@@ -104,6 +105,7 @@ export function LoginForm({
                             >
                                 {isLoading ? "Logging in..." : "Login"}
                             </Button>
+                            <Providers />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
