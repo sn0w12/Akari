@@ -55,13 +55,10 @@ export async function MangaComments({ id }: { id: string }) {
         }));
 
     return (
-        <div>
-            <h2 className="text-2xl font-bold mb-2 pb-2 border-b">Comments</h2>
-            <MangaCommentList
-                initialComments={commentsWithReplies}
-                mangaId={id}
-                totalPages={data.totalPages}
-            />
-        </div>
+        <MangaCommentList
+            initialComments={commentsWithReplies}
+            mangaId={id}
+            totalPages={data.totalPages}
+        />
     );
 }

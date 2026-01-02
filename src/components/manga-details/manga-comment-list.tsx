@@ -8,6 +8,7 @@ import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "../ui/button";
+import { CommentSorting } from "../comments/sorting";
 
 interface MangaCommentListProps {
     initialComments: components["schemas"]["CommentWithRepliesResponse"][];
@@ -20,6 +21,9 @@ export function MangaCommentList({
     mangaId,
     totalPages,
 }: MangaCommentListProps) {
+    const [sortOrder, setSortOrder] =
+        useState<components["schemas"]["CommentSortOrder"]>("Upvoted");
+
     const { data: userVoteData } = useQuery({
         queryKey: [mangaId],
         refetchOnMount: false,
@@ -52,6 +56,13 @@ export function MangaCommentList({
     const { user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
 
+    const handleSortChange = (
+        newSort: components["schemas"]["CommentSortOrder"]
+    ) => {
+        setSortOrder(newSort);
+        sortMutation.mutate(newSort);
+    };
+
     const loadMoreMutation = useMutation({
         mutationFn: (page: number) =>
             client
@@ -63,6 +74,7 @@ export function MangaCommentList({
                         query: {
                             page: page,
                             pageSize: 20,
+                            sort: sortOrder,
                         },
                     },
                 })
@@ -79,6 +91,37 @@ export function MangaCommentList({
         },
         onError: () => {
             new Toast("Failed to load more comments.", "error");
+        },
+    });
+
+    const sortMutation = useMutation({
+        mutationFn: (sort: components["schemas"]["CommentSortOrder"]) =>
+            client
+                .GET("/v2/comments/{id}", {
+                    params: {
+                        path: {
+                            id: mangaId,
+                        },
+                        query: {
+                            page: 1,
+                            pageSize: 20,
+                            sort: sort,
+                        },
+                    },
+                })
+                .then((res) => res.data?.data),
+        onSuccess: (data) => {
+            if (!data) return;
+            const newComments: components["schemas"]["CommentWithRepliesResponse"][] =
+                (data.items || []).map((comment) => ({
+                    ...comment,
+                    replies: [],
+                }));
+            setComments(newComments);
+            setCurrentPage(1);
+        },
+        onError: () => {
+            new Toast("Failed to load comments.", "error");
         },
     });
 
@@ -321,6 +364,13 @@ export function MangaCommentList({
 
     return (
         <>
+            <div className="flex flex-row justify-between mb-2 pb-2 border-b">
+                <h2 className="text-2xl font-bold">Comments</h2>
+                <CommentSorting
+                    sort={sortOrder}
+                    onSortChange={handleSortChange}
+                />
+            </div>
             <CommentList
                 comments={comments}
                 onLoadReplies={handleLoadReplies}

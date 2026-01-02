@@ -1,6 +1,10 @@
 "use client";
 
-import { Comment, VoteType, type CommentData } from "@/components/comments/comment";
+import {
+    Comment,
+    VoteType,
+    type CommentData,
+} from "@/components/comments/comment";
 import { CommentForm } from "@/components/comments/comment-form";
 
 interface CommentListProps {
@@ -27,7 +31,7 @@ export function CommentList({
     currentUser,
 }: CommentListProps) {
     return (
-        <div className="space-y-6">
+        <div className="space-y-2">
             {onNewComment && (
                 <CommentForm
                     onSubmit={onNewComment}
