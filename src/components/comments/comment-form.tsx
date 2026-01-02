@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "../ui/button-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { AttachmentPopover } from "./attachment-popover";
@@ -55,9 +56,7 @@ export function CommentForm({
 
     return (
         <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
-            <Avatar
-                name={currentUser?.username || ""}
-            />
+            <Avatar name={currentUser?.username || ""} />
             <div className="flex-1 space-y-2">
                 <Textarea
                     value={content}
@@ -97,26 +96,28 @@ export function CommentForm({
 
                 <div className="flex items-center gap-2 justify-end">
                     <AttachmentPopover onSelect={setSelectedAttachment} />
-                    {onCancel && (
+                    <ButtonGroup orientation="horizontal">
+                        {onCancel && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={onCancel}
+                                disabled={isSubmitting}
+                            >
+                                Cancel
+                            </Button>
+                        )}
                         <Button
-                            type="button"
-                            variant="ghost"
+                            type="submit"
                             size="sm"
-                            onClick={onCancel}
-                            disabled={isSubmitting}
+                            disabled={
+                                !content.trim() || isSubmitting || !currentUser
+                            }
                         >
-                            Cancel
+                            {isSubmitting ? "Posting..." : submitLabel}
                         </Button>
-                    )}
-                    <Button
-                        type="submit"
-                        size="sm"
-                        disabled={
-                            !content.trim() || isSubmitting || !currentUser
-                        }
-                    >
-                        {isSubmitting ? "Posting..." : submitLabel}
-                    </Button>
+                    </ButtonGroup>
                 </div>
             </div>
         </form>
