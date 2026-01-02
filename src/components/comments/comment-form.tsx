@@ -56,7 +56,7 @@ export function CommentForm({
     return (
         <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
             <Avatar
-                name={currentUser?.displayName || ""}
+                name={currentUser?.username || ""}
             />
             <div className="flex-1 space-y-2">
                 <Textarea
