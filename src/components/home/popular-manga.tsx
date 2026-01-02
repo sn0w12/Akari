@@ -131,7 +131,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 fetchPriority={priority ? "high" : "auto"}
                 preload={priority}
                 sizes={generateSizes({
-                    sm: "640px",
+                    sm: "400px",
                     md: "256px",
                 })}
             />
