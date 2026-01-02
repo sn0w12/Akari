@@ -49,7 +49,7 @@ export function ReportCommentDialog({
                     },
                     body: {
                         reason,
-                        details: details || undefined,
+                        description: details || undefined,
                     },
                 }
             );
