@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Avatar } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import {
     ChevronUp,
     ChevronDown,
     MessageSquare,
-    Edit,
-    Trash,
+    MessageSquareReply,
 } from "lucide-react";
 import { cn, generateSizes } from "@/lib/utils";
 import { CommentForm } from "@/components/comments/comment-form";
+import { ReportCommentDialog } from "@/components/comments/report";
+import { CommentMenu } from "@/components/comments/comment-menu";
 import { useConfirm } from "@/contexts/confirm-context";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,6 +58,7 @@ export function Comment({
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(comment.content);
+    const [showReportDialog, setShowReportDialog] = useState(false);
 
     const initialVote = userVotes.find((v) => v.commentId === comment.id);
     const [userVote, setUserVote] = useState<VoteType | null>(null);
@@ -76,6 +79,13 @@ export function Comment({
     const hasReplies =
         ("replyCount" in comment && (comment.replyCount ?? 0) > 0) ||
         ("replies" in comment && comment.replies && comment.replies.length > 0);
+
+    const replyCount =
+        "replyCount" in comment
+            ? comment.replyCount ?? 0
+            : Array.isArray(comment.replies)
+            ? comment.replies.length
+            : 0;
 
     const handleShowReplies = async () => {
         if (
@@ -215,6 +225,35 @@ export function Comment({
                             </span>
                         </>
                     )}
+
+                    <CommentMenu
+                        onReport={() => setShowReportDialog(true)}
+                        onEdit={() => setIsEditing(true)}
+                        onDelete={
+                            onDelete
+                                ? async () => {
+                                      if (
+                                          await confirm({
+                                              title: "Are you sure you want to delete this comment?",
+                                              description:
+                                                  "This action cannot be undone. The comment will be permanently deleted.",
+                                              variant: "destructive",
+                                          })
+                                      ) {
+                                          await onDelete(comment.id);
+                                      }
+                                  }
+                                : undefined
+                        }
+                        isOwner={
+                            currentUser
+                                ? comment.userProfile.id === currentUser.userId
+                                : false
+                        }
+                        commentDeleted={comment.deleted}
+                        showReplyForm={showReplyForm}
+                        isEditing={isEditing}
+                    />
                 </div>
 
                 {isEditing ? (
@@ -278,145 +317,82 @@ export function Comment({
                         </Button>
                     </div>
 
-                    {!isEditing && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                                "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
-                                showReplyForm &&
-                                    "bg-primary/10 text-primary hover:bg-primary/20"
+                    {isEditing ? (
+                        <ButtonGroup orientation="horizontal">
+                            <Button
+                                onClick={async () => {
+                                    if (!onEdit) return;
+                                    try {
+                                        await onEdit(comment.id, editContent);
+                                        setIsEditing(false);
+                                    } catch (error) {
+                                        console.error(
+                                            "Failed to edit comment:",
+                                            error
+                                        );
+                                    }
+                                }}
+                                size="sm"
+                                className="h-8 sm:h-7 px-2 text-xs"
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setIsEditing(false);
+                                    setEditContent(comment.content);
+                                }}
+                                size="sm"
+                                className="h-8 sm:h-7 px-2 text-xs"
+                            >
+                                Cancel
+                            </Button>
+                        </ButtonGroup>
+                    ) : (
+                        <ButtonGroup orientation="horizontal">
+                            {hasReplies && (
+                                <>
+                                    <Button
+                                        onClick={handleShowReplies}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                                    >
+                                        <MessageSquare className="h-3 w-3" />
+                                        <span className="sr-only sm:not-sr-only">
+                                            {isLoadingReplies
+                                                ? "Loading..."
+                                                : showReplies
+                                                ? "Hide replies"
+                                                : `Show ${replyCount} ${
+                                                      replyCount === 1
+                                                          ? "reply"
+                                                          : "replies"
+                                                  }`}
+                                        </span>
+                                    </Button>
+                                    <ButtonGroupSeparator />
+                                </>
                             )}
-                            onClick={() => setShowReplyForm(!showReplyForm)}
-                            disabled={comment.deleted}
-                        >
-                            <MessageSquare className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">Reply</span>
-                        </Button>
-                    )}
-
-                    {hasReplies && !isEditing && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
-                            onClick={handleShowReplies}
-                            disabled={
-                                (isLoadingReplies && depth === 0) ||
-                                showReplyForm
-                            }
-                        >
-                            <MessageSquare className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">
-                                {isLoadingReplies && depth === 0
-                                    ? "Loading..."
-                                    : showReplies
-                                    ? "Hide replies"
-                                    : `Show ${
-                                          "replyCount" in comment
-                                              ? comment.replyCount ?? 0
-                                              : Array.isArray(comment.replies)
-                                              ? comment.replies.length
-                                              : 0
-                                      } ${
-                                          ("replyCount" in comment
-                                              ? comment.replyCount ?? 0
-                                              : Array.isArray(comment.replies)
-                                              ? comment.replies.length
-                                              : 0) === 1
-                                              ? "reply"
-                                              : "replies"
-                                      }`}
-                            </span>
-                            <span className="sm:hidden">
-                                {isLoadingReplies && depth === 0
-                                    ? "..."
-                                    : showReplies
-                                    ? "Hide"
-                                    : `${
-                                          "replyCount" in comment
-                                              ? comment.replyCount ?? 0
-                                              : Array.isArray(comment.replies)
-                                              ? comment.replies.length
-                                              : 0
-                                      }`}
-                            </span>
-                        </Button>
-                    )}
-                    {currentUser &&
-                        comment.userProfile.id === currentUser.userId &&
-                        !comment.deleted && (
-                            <>
-                                {isEditing ? (
-                                    <>
-                                        <Button
-                                            onClick={async () => {
-                                                await onEdit?.(
-                                                    comment.id,
-                                                    editContent
-                                                );
-                                                setIsEditing(false);
-                                            }}
-                                            size="sm"
-                                            className="h-8 sm:h-7 px-2 text-xs"
-                                        >
-                                            Save
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                setIsEditing(false);
-                                                setEditContent(comment.content);
-                                            }}
-                                            size="sm"
-                                            className="h-8 sm:h-7 px-2 text-xs"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
-                                            onClick={() => setIsEditing(true)}
-                                            disabled={showReplyForm}
-                                        >
-                                            <Edit className="h-3 w-3 sm:mr-1" />
-                                            <span className="hidden sm:inline">
-                                                Edit
-                                            </span>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
-                                            onClick={async () => {
-                                                if (
-                                                    await confirm({
-                                                        title: "Are you sure you want to delete this comment?",
-                                                        description:
-                                                            "This action cannot be undone. The comment will be permanently deleted.",
-                                                        variant: "destructive",
-                                                    })
-                                                ) {
-                                                    await onDelete?.(
-                                                        comment.id
-                                                    );
-                                                }
-                                            }}
-                                            disabled={showReplyForm}
-                                        >
-                                            <Trash className="h-3 w-3 sm:mr-1" />
-                                            <span className="hidden sm:inline">
-                                                Delete
-                                            </span>
-                                        </Button>
-                                    </>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
+                                    showReplyForm &&
+                                        "bg-primary/10 text-primary hover:bg-primary/20"
                                 )}
-                            </>
-                        )}
+                                onClick={() => setShowReplyForm(!showReplyForm)}
+                                disabled={comment.deleted}
+                            >
+                                <MessageSquareReply className="h-3 w-3" />
+                                <span className="sr-only sm:not-sr-only">
+                                    Reply
+                                </span>
+                            </Button>
+                        </ButtonGroup>
+                    )}
                 </div>
 
                 {showReplyForm && !isEditing && (
@@ -451,6 +427,12 @@ export function Comment({
                     </div>
                 )}
             </div>
+
+            <ReportCommentDialog
+                commentId={comment.id}
+                isOpen={showReportDialog}
+                onOpenChange={setShowReportDialog}
+            />
         </div>
     );
 }

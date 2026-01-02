@@ -707,6 +707,8 @@ export interface paths {
                     page?: number;
                     /** @description The number of items per page. */
                     pageSize?: number;
+                    /** @description The sort order: Latest or Upvoted. Defaults to Latest. */
+                    sort?: components["schemas"]["CommentSortOrder"];
                 };
                 header?: never;
                 path: {
@@ -3740,6 +3742,8 @@ export interface components {
             status: number;
             data: components["schemas"]["CommentResponse"];
         };
+        /** @enum {string} */
+        CommentSortOrder: "Latest" | "Upvoted";
         CommentVoteResponse: {
             /** Format: uuid */
             commentId: string;

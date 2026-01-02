@@ -17,6 +17,7 @@ const getMangaComments = async (id: string) => {
             query: {
                 page: 1,
                 pageSize: 20,
+                sort: "Upvoted",
             },
         },
         headers: serverHeaders,
