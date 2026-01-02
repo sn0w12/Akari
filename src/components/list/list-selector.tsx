@@ -17,6 +17,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "../ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
@@ -123,14 +124,28 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                                             onSelect={() =>
                                                 handleAddToList(list.id)
                                             }
-                                            className="cursor-pointer"
+                                            className="cursor-pointer justify-between"
                                         >
-                                            {isInList ? (
-                                                <CheckSquare className="h-4 w-4" />
-                                            ) : (
-                                                <Square className="h-4 w-4" />
-                                            )}
-                                            {list.title}
+                                            <div className="flex items-center gap-2">
+                                                {isInList ? (
+                                                    <CheckSquare className="h-4 w-4" />
+                                                ) : (
+                                                    <Square className="h-4 w-4" />
+                                                )}
+                                                {list.title}
+                                            </div>
+                                            <Badge
+                                                variant={
+                                                    list.isPublic
+                                                        ? "default"
+                                                        : "outline"
+                                                }
+                                                className="w-16 text-center justify-center"
+                                            >
+                                                {list.isPublic
+                                                    ? "Public"
+                                                    : "Private"}
+                                            </Badge>
                                         </CommandItem>
                                     );
                                 })}
