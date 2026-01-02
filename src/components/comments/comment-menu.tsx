@@ -9,6 +9,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Flag, Edit, Trash } from "lucide-react";
+import { useUser } from "@/contexts/user-context";
 
 interface CommentMenuProps {
     onReport: () => void;
@@ -29,6 +30,8 @@ export function CommentMenu({
     showReplyForm,
     isEditing,
 }: CommentMenuProps) {
+    const { user } = useUser();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -42,8 +45,11 @@ export function CommentMenu({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={onReport} disabled={commentDeleted}>
-                    <Flag className="h-3 w-3 mr-2" />
+                <DropdownMenuItem
+                    onClick={onReport}
+                    disabled={commentDeleted || !user}
+                >
+                    <Flag className="h-3 w-3" />
                     <span>Report</span>
                 </DropdownMenuItem>
                 {isOwner && !commentDeleted && (
@@ -53,7 +59,7 @@ export function CommentMenu({
                             onClick={onEdit}
                             disabled={showReplyForm}
                         >
-                            <Edit className="h-3 w-3 mr-2" />
+                            <Edit className="h-3 w-3" />
                             <span>Edit</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -61,7 +67,7 @@ export function CommentMenu({
                             disabled={showReplyForm}
                             variant="destructive"
                         >
-                            <Trash className="h-3 w-3 mr-2" />
+                            <Trash className="h-3 w-3" />
                             <span>Delete</span>
                         </DropdownMenuItem>
                     </>

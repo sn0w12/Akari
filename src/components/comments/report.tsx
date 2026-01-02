@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { client } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import Toast from "@/lib/toast-wrapper";
 
 interface ReportCommentDialogProps {
     commentId: string;
@@ -31,20 +32,43 @@ export function ReportCommentDialog({
     isOpen,
     onOpenChange,
 }: ReportCommentDialogProps) {
-    const [reason, setReason] = useState("");
+    const [reason, setReason] = useState<
+        components["schemas"]["CommentReportReason"] | null
+    >(null);
     const [details, setDetails] = useState("");
 
-    const handleReport = () => {
-        // For now, just log the report details
-        console.log("Reporting comment", commentId, { reason, details });
-        // Reset form and close dialog
-        setReason("");
-        setDetails("");
-        onOpenChange(false);
+    const handleReport = async () => {
+        if (!reason) return;
+
+        try {
+            const { error } = await client.POST(
+                "/v2/comments/{commentId}/report",
+                {
+                    params: {
+                        path: { commentId },
+                    },
+                    body: {
+                        reason,
+                        details: details || undefined,
+                    },
+                }
+            );
+
+            if (error) {
+                new Toast("Failed to report comment.", "error");
+                return;
+            }
+
+            new Toast("Comment reported successfully.", "success");
+        } finally {
+            setReason(null);
+            setDetails("");
+            onOpenChange(false);
+        }
     };
 
     const handleCancel = () => {
-        setReason("");
+        setReason(null);
         setDetails("");
         onOpenChange(false);
     };
@@ -58,7 +82,16 @@ export function ReportCommentDialog({
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="reason">Reason for reporting</Label>
-                        <Select value={reason} onValueChange={setReason}>
+                        <Select
+                            value={reason || ""}
+                            onValueChange={(value) =>
+                                setReason(
+                                    value === ""
+                                        ? null
+                                        : (value as components["schemas"]["CommentReportReason"])
+                                )
+                            }
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a reason" />
                             </SelectTrigger>
@@ -72,7 +105,7 @@ export function ReportCommentDialog({
                                 <SelectItem value="inappropriate">
                                     Inappropriate content
                                 </SelectItem>
-                                <SelectItem value="hate-speech">
+                                <SelectItem value="hate_speech">
                                     Hate speech
                                 </SelectItem>
                                 <SelectItem value="other">Other</SelectItem>

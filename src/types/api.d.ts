@@ -1005,6 +1005,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/comments/{commentId}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Report a comment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unique identifier of the comment. */
+                    commentId: string;
+                };
+                cookie?: never;
+            };
+            /** @description The report request. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ReportCommentRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/comments/{commentId}": {
         parameters: {
             query?: never;
@@ -3711,6 +3800,8 @@ export interface components {
             status: number;
             data: components["schemas"]["ChapterResponse"];
         };
+        /** @enum {string} */
+        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
         CommentResponse: {
             /** Format: uuid */
             id: string;
@@ -4186,6 +4277,10 @@ export interface components {
         RateMangaRequest: {
             /** Format: int32 */
             rating: number;
+        };
+        ReportCommentRequest: {
+            reason: components["schemas"]["CommentReportReason"];
+            description?: string | null;
         };
         /** @enum {string} */
         ResultType: "Success" | "Error";
