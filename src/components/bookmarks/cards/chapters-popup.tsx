@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -22,8 +23,10 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     mangaId,
     lastReadChapter,
 }) => {
+    const [open, setOpen] = useState(false);
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
+        enabled: open,
         queryFn: async () => {
             const { data, error } = await client.GET(
                 "/v2/manga/{id}/chapters",
@@ -45,7 +48,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     });
 
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button className="w-10 p-0" aria-label="Browse chapters">
                     <ChevronsUpDownIcon className="h-5 w-5" />
