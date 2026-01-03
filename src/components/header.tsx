@@ -22,6 +22,8 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
 import { HomeIcon } from "lucide-react";
 import Toast from "@/lib/toast-wrapper";
+import { Badge } from "./ui/badge";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
     notification: string;
@@ -111,22 +113,33 @@ export function HeaderComponent({ notification }: HeaderProps) {
             <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
-                    <span
-                        className={`hidden md:block bg-accent-positive text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${
-                            isSidebarCollapsed ? "ml-1" : ""
-                        }`}
+                    <Badge
+                        variant="positive"
+                        className={cn(
+                            "hidden md:block text-xs font-bold px-2 h-5",
+                            {
+                                "ml-1": isSidebarCollapsed,
+                            }
+                        )}
                     >
                         {notification}
-                    </span>
+                    </Badge>
+                ) : null}
+                {user?.banned ? (
+                    <Badge
+                        variant="destructive"
+                        className="hidden md:block text-xs font-bold px-2 h-5 ml-2"
+                    >
+                        Banned
+                    </Badge>
                 ) : null}
                 {inPreview ? (
-                    <span
-                        className={`hidden md:block bg-amber-700 text-white text-xs font-bold rounded-full px-2 h-5 flex content-center transition-all ${
-                            isSidebarCollapsed ? "ml-1" : ""
-                        }`}
+                    <Badge
+                        variant="warning"
+                        className="hidden md:block text-xs font-bold px-2 h-5 ml-2"
                     >
                         Preview
-                    </span>
+                    </Badge>
                 ) : null}
                 <div
                     className={`hidden md:block flex h-full items-center pr-2 transition-all pl-4 md:pl-2`}
