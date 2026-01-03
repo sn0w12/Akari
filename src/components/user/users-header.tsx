@@ -15,6 +15,7 @@ import {
     Bookmark,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "../ui/badge";
 import { cacheLife, cacheTag } from "next/cache";
 
 interface UserStatProps {
@@ -89,6 +90,11 @@ export async function UserHeader({
                     {data.data.displayName || data.data.username}
                 </h2>
                 <p className="text-muted-foreground">@{data.data.username}</p>
+                {data.data.banned ? (
+                    <Badge className="self-center mt-2" variant="destructive">
+                        Banned
+                    </Badge>
+                ) : null}
             </div>
             <div className="flex flex-row divide-x font-medium">
                 <TooltipProvider>
