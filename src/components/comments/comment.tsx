@@ -64,6 +64,7 @@ export function Comment({
     const [userVote, setUserVote] = useState<VoteType | null>(null);
     const [localUpvotes, setLocalUpvotes] = useState(comment.upvotes);
     const [localDownvotes, setLocalDownvotes] = useState(comment.downvotes);
+    const isBanned = currentUser?.banned;
 
     useEffect(() => {
         setUserVote(
@@ -295,7 +296,7 @@ export function Comment({
                                     "bg-primary/10 text-primary hover:bg-primary/20"
                             )}
                             onClick={() => handleVote("up")}
-                            disabled={comment.deleted}
+                            disabled={comment.deleted || isBanned}
                         >
                             <ChevronUp className="h-4 w-4" />
                         </Button>
@@ -311,7 +312,7 @@ export function Comment({
                                     "bg-destructive/10 text-destructive hover:bg-destructive/20"
                             )}
                             onClick={() => handleVote("down")}
-                            disabled={comment.deleted}
+                            disabled={comment.deleted || isBanned}
                         >
                             <ChevronDown className="h-4 w-4" />
                         </Button>
@@ -384,7 +385,7 @@ export function Comment({
                                         "bg-primary/10 text-primary hover:bg-primary/20"
                                 )}
                                 onClick={() => setShowReplyForm(!showReplyForm)}
-                                disabled={comment.deleted}
+                                disabled={comment.deleted || isBanned}
                             >
                                 <MessageSquareReply className="h-3 w-3" />
                                 <span className="sr-only sm:not-sr-only">

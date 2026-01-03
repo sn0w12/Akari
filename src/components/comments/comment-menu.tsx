@@ -47,7 +47,7 @@ export function CommentMenu({
             <DropdownMenuContent align="start">
                 <DropdownMenuItem
                     onClick={onReport}
-                    disabled={commentDeleted || !user}
+                    disabled={commentDeleted || !user || user.banned}
                 >
                     <Flag className="h-3 w-3" />
                     <span>Report</span>
@@ -57,14 +57,14 @@ export function CommentMenu({
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={onEdit}
-                            disabled={showReplyForm}
+                            disabled={showReplyForm || !user || user.banned}
                         >
                             <Edit className="h-3 w-3" />
                             <span>Edit</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={onDelete}
-                            disabled={showReplyForm}
+                            disabled={showReplyForm || !user || user.banned}
                             variant="destructive"
                         >
                             <Trash className="h-3 w-3" />

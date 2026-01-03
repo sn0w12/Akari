@@ -64,7 +64,9 @@ export function CommentForm({
                     placeholder={placeholder}
                     className="min-h-[80px] resize-none text-sm sm:text-base"
                     autoFocus={autoFocus}
-                    disabled={isSubmitting || !currentUser}
+                    disabled={
+                        isSubmitting || !currentUser || currentUser.banned
+                    }
                 />
 
                 {selectedAttachment && (
@@ -112,7 +114,10 @@ export function CommentForm({
                             type="submit"
                             size="sm"
                             disabled={
-                                !content.trim() || isSubmitting || !currentUser
+                                !content.trim() ||
+                                isSubmitting ||
+                                !currentUser ||
+                                currentUser.banned
                             }
                         >
                             {isSubmitting ? "Posting..." : submitLabel}

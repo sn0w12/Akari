@@ -4522,6 +4522,7 @@ export interface components {
             username: string;
             displayName: string;
             role: string;
+            banned: boolean;
         };
         UserProfileDetailsResponse: {
             /** Format: uuid */
@@ -4529,6 +4530,7 @@ export interface components {
             username: string;
             displayName: string;
             role: string;
+            banned: boolean;
             /** Format: date-time */
             createdAt?: string | null;
             /** Format: int64 */
@@ -4557,6 +4559,7 @@ export interface components {
             username: string;
             displayName: string;
             role: string;
+            banned: boolean;
         };
         UserResponseSuccessResponse: {
             /** @enum {string} */
