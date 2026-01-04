@@ -19,19 +19,22 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga }) => {
     const hasChapters = manga.chapters.length > 0;
     const isDisabled = isLoading || !hasChapters;
 
-    const getButtonText = () => {
-        if (isLoading) return "Loading...";
-        if (!hasChapters) return "No Chapters";
-        if (data && `chapter-${data.id}` === manga.chapters[0]?.id)
-            return "Up To Date";
-        if (data) return "Continue Reading";
-        return "Start Reading";
-    };
+    function getButtonInfo(): { text: string; link: number | null } {
+        if (isLoading) return { text: "Loading...", link: null };
+        if (!hasChapters) return { text: "No Chapters", link: null };
+        if (data && data.id === manga.chapters[manga.chapters.length - 1].id)
+            return {
+                text: "Up To Date",
+                link: manga.chapters[manga.chapters.length - 1].number,
+            };
+        if (data) return { text: "Continue Reading", link: data.number };
+        return {
+            text: "Start Reading",
+            link: manga.chapters[0].number,
+        };
+    }
 
-    const text = getButtonText();
-    const link = data
-        ? `chapter-${data.number}`
-        : manga.chapters[manga.chapters.length - 1]?.number;
+    const { text, link } = getButtonInfo();
 
     return (
         <Button
@@ -41,7 +44,7 @@ const ReadingButton: React.FC<ReadingButtonProps> = ({ manga }) => {
             asChild={hasChapters}
         >
             {hasChapters ? (
-                <Link href={`./${manga.id}/${link}`}>{text}</Link>
+                <Link href={link ? `./${manga.id}/${link}` : ""}>{text}</Link>
             ) : (
                 <p>{text}</p>
             )}
