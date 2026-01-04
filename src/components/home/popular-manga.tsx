@@ -31,7 +31,7 @@ export function PopularManga({ manga }: PopularMangaProps) {
                 {manga.map((mangaItem, index) => (
                     <CarouselItem
                         key={mangaItem.id}
-                        className="pl-4 2xl:basis-1/2"
+                        className="pl-4 pr-[1px] 2xl:basis-1/2"
                     >
                         <PopularMangaCard
                             manga={mangaItem}
@@ -118,7 +118,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
     return (
         <Link
             href={`/manga/${manga.id}`}
-            className="flex flex-row h-full w-full rounded-lg border"
+            className="flex flex-row h-full w-full rounded-lg border bg-card"
         >
             <Image
                 src={manga.cover}
