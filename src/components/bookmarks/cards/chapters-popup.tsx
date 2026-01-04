@@ -16,7 +16,7 @@ import {
 
 interface ChaptersPopupProps {
     mangaId: string;
-    lastReadChapter?: components["schemas"]["MangaChapter"];
+    lastReadChapter: components["schemas"]["MangaChapter"];
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
@@ -36,7 +36,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                             id: mangaId,
                         },
                     },
-                }
+                },
             );
 
             if (error) {
@@ -50,7 +50,11 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button className="w-10 p-0" aria-label="Browse chapters">
+                <Button
+                    size="sm"
+                    className="size-8"
+                    aria-label="Browse chapters"
+                >
                     <ChevronsUpDownIcon className="h-5 w-5" />
                 </Button>
             </PopoverTrigger>
@@ -86,7 +90,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                                 {
                                                     "bg-accent-positive hover:bg-accent-positive/90 text-white":
                                                         isLastRead,
-                                                }
+                                                },
                                             )}
                                             prefetch={false}
                                             aria-label={`Read ${
@@ -102,11 +106,11 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                                         "text-xs",
                                                         isLastRead
                                                             ? "text-white"
-                                                            : "text-muted-foreground"
+                                                            : "text-muted-foreground",
                                                     )}
                                                 >
                                                     {formatRelativeDate(
-                                                        chapter.createdAt
+                                                        chapter.createdAt,
                                                     )}
                                                 </span>
                                             </div>

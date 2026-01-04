@@ -5,54 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Search, MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-function desktopCard(index: number) {
+function BookmarkCardSkeleton() {
     return (
-        <Card
-            key={`desktop-${index}`}
-            className="hidden md:flex flex-row items-start p-6 pr-2  bg-card border border-border rounded-lg xl:h-full gap-0"
-        >
-            <div className="w-30 lg:w-40 h-full mb-0 shrink-0">
-                {/* Skeleton for the image */}
-                <Skeleton className="w-full h-45 lg:h-60 object-cover rounded" />
-            </div>
-
-            <CardContent className="px-4 flex flex-col flex-shrink justify-between relative">
-                <div className="flex flex-col gap-2">
-                    {/* Skeleton for the story name (title) */}
-                    <Skeleton className="w-48 h-8" />
-
-                    {/* Skeleton for the button */}
-                    <Skeleton className="w-72 h-10 mb-1" />
-
-                    {/* Skeleton for Latest Chapter Info */}
-                    <Skeleton className="w-44 h-5" />
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
-function mobileCard(index: number) {
-    return (
-        <Card
-            key={`mobile-${index}`}
-            className="flex flex-row items-start bg-card border border-border rounded-lg p-0 md:hidden"
-        >
-            <CardContent className="p-4 flex flex-col flex-shrink justify-between w-full">
-                <div className="mb-2">
-                    <div className="flex items-center gap-2">
-                        <div className="w-20 h-full mb-0 shrink-0">
-                            <Skeleton className="w-full h-[120px] object-cover rounded" />
-                        </div>
-                        <div className="flex justify-center w-full">
-                            <Skeleton className="w-48 h-8 mb-2" />
-                        </div>
+        <Card className="overflow-hidden p-0">
+            <div className="flex flex-col gap-2 p-4">
+                <div className="flex gap-2">
+                    {/* Cover Image */}
+                    <div className="w-20 lg:w-30 h-full mb-0 shrink-0">
+                        <Skeleton
+                            className="w-full h-auto object-cover rounded-sm"
+                            style={{ aspectRatio: "2 / 3" }}
+                        />
                     </div>
-                    {/* Continue Reading Button */}
-                    <Skeleton className="w-full h-10 mt-2" />
+
+                    {/* Content */}
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                        {/* Title */}
+                        <div>
+                            <div className="flex items-center gap-2 justify-between">
+                                <Skeleton className="h-6 w-40" />
+                                <div className="flex flex-row items-center gap-2 self-start">
+                                    <Skeleton className="size-8 rounded-sm" />
+                                    <Skeleton className="size-8 rounded-sm" />
+                                </div>
+                            </div>
+
+                            <span className="flex items-center gap-1.5 text-muted-foreground text-sm leading-4">
+                                <Skeleton className="h-4 w-28" />
+                            </span>
+                            <span className="flex items-center gap-1.5 text-muted-foreground text-sm leading-4">
+                                <Skeleton className="h-4 w-32" />
+                            </span>
+                        </div>
+                        <Skeleton className="h-8 w-full hidden md:flex" />
+                    </div>
                 </div>
-                <Skeleton className="w-44 h-5" />
-            </CardContent>
+                <Skeleton className="h-8 w-full md:hidden" />
+            </div>
         </Card>
     );
 }
@@ -96,10 +85,7 @@ export default function BookmarksSkeleton() {
                 </div>
                 <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 xl:gap-6">
                     {[...Array(24)].map((_, index) => (
-                        <React.Fragment key={`cards-${index}`}>
-                            {desktopCard(index)}
-                            {mobileCard(index)}
-                        </React.Fragment>
+                        <BookmarkCardSkeleton key={`skeleton-card-${index}`} />
                     ))}
                 </div>
             </div>

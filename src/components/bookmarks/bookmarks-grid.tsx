@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ServerPagination } from "../ui/pagination/server-pagination";
-import DesktopBookmarkCard from "./cards/desktop-card";
-import MobileBookmarkCard from "./cards/mobile-card";
+import { BookmarkCard } from "./cards/bookmark-card";
 
 interface BookmarksGridProps {
     bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
@@ -18,7 +17,7 @@ export default function BookmarksGrid({
 }: BookmarksGridProps) {
     const [updatedBookmarks, setUpdatedBookmarks] =
         useState<components["schemas"]["BookmarkListResponse"]["items"]>(
-            bookmarks
+            bookmarks,
         );
 
     useEffect(() => {
@@ -30,11 +29,7 @@ export default function BookmarksGrid({
             <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
                 {updatedBookmarks.map((bookmark) => (
                     <div key={bookmark.bookmarkId}>
-                        <DesktopBookmarkCard
-                            bookmark={bookmark}
-                            setUpdatedBookmarks={setUpdatedBookmarks}
-                        />
-                        <MobileBookmarkCard
+                        <BookmarkCard
                             bookmark={bookmark}
                             setUpdatedBookmarks={setUpdatedBookmarks}
                         />

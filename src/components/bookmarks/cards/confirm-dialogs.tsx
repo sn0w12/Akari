@@ -24,7 +24,7 @@ export function ConfirmDialogs({
 
         if (data) {
             setUpdatedBookmarks((prev) =>
-                prev.filter((bookmark) => bookmark.mangaId !== mangaId)
+                prev.filter((bookmark) => bookmark.mangaId !== mangaId),
             );
         }
     }
@@ -54,15 +54,15 @@ export function ConfirmDialogs({
         <div
             className={cn(
                 "flex flex-row items-center gap-2 self-start",
-                className
+                className,
             )}
         >
             <ButtonConfirmDialog
                 triggerButton={
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-negative text-accent hover:text-negative focus:outline-none"
+                        size="sm"
+                        className="size-8 rounded-sm bg-negative border border-negative text-accent hover:text-negative focus:outline-none"
                         aria-label="Remove bookmark"
                     >
                         <X className="h-5 w-5" />
@@ -79,8 +79,8 @@ export function ConfirmDialogs({
                 triggerButton={
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-accent-positive text-accent hover:text-accent-positive focus:outline-none"
+                        size="sm"
+                        className="size-8 rounded-sm bg-accent-positive border border-accent-positive text-accent hover:text-accent-positive focus:outline-none"
                         aria-label="Mark as read"
                     >
                         <Check className="h-5 w-5" />
@@ -93,7 +93,7 @@ export function ConfirmDialogs({
                 onConfirm={() =>
                     handleUpdateBookmark(
                         bookmark.mangaId,
-                        bookmark.chapters[0]?.number
+                        bookmark.chapters[0]?.number,
                     )
                 }
             />
