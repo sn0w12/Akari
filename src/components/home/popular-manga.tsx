@@ -68,7 +68,7 @@ function CarouselControls() {
     }, [api]);
 
     return (
-        <div className="flex items-center gap-2 pt-1 w-full justify-between sm:p-0 sm:w-auto sm:absolute sm:bottom-2 sm:right-2">
+        <div className="flex items-center gap-2 pt-2 w-full justify-between sm:p-0 sm:w-auto sm:absolute sm:bottom-2 sm:right-2">
             <span className="order-2 sm:order-1 text-sm text-muted-foreground">
                 {currentPage} / {totalPages}
             </span>
