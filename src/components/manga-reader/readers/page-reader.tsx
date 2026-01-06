@@ -9,6 +9,7 @@ import { useSetting } from "@/lib/settings";
 import { useShortcut } from "@/hooks/use-shortcut";
 import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
+import { ChapterInfo } from "../chapter-info";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -138,6 +139,10 @@ export default function PageReader({
 
     return (
         <>
+            <ChapterInfo
+                chapter={chapter}
+                hidden={scrollMetrics.pixels >= 50}
+            />
             <div
                 className={`w-full h-full flex flex-col relative transition-colors duration-500 ${
                     currentPage === chapter.images.length

@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import StripPageProgress from "../strip-page-progress";
+import { ChapterInfo } from "../chapter-info";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -104,55 +105,58 @@ export default function StripReader({
     }, [progress, chapter, router, setBookmarkState, queryClient]);
 
     return (
-        <div>
-            <div
-                id="reader"
-                ref={readerRef}
-                className={`flex flex-col items-center transition-colors duration-500`}
-            >
-                {chapter.images.map((img, index) => (
-                    <Image
-                        key={index}
-                        ref={
-                            index === chapter.images.length - 1
-                                ? lastImageRef
-                                : null
-                        }
-                        src={img}
-                        alt={`${chapter.title} - ${chapter.title} Page ${
-                            index + 1
-                        }`}
-                        width={720}
-                        height={1500}
-                        className={cn(
-                            "object-contain z-20 relative max-w-full",
-                            {
-                                "rounded-t": index === 0,
-                                "rounded-b":
-                                    index === chapter.images.length - 1,
+        <>
+            <ChapterInfo chapter={chapter} hidden={progress === 1} />
+            <div>
+                <div
+                    id="reader"
+                    ref={readerRef}
+                    className={`flex flex-col items-center transition-colors duration-500`}
+                >
+                    {chapter.images.map((img, index) => (
+                        <Image
+                            key={index}
+                            ref={
+                                index === chapter.images.length - 1
+                                    ? lastImageRef
+                                    : null
                             }
-                        )}
-                        style={{
-                            width: `calc(var(--spacing) * ${stripWidth})`,
-                        }}
-                        loading={"eager"}
-                        preload={index === 0}
-                        fetchPriority={index === 0 ? "high" : "auto"}
-                        unoptimized={true}
-                        onLoad={() => setImagesLoaded((prev) => prev + 1)}
+                            src={img}
+                            alt={`${chapter.title} - ${chapter.title} Page ${
+                                index + 1
+                            }`}
+                            width={720}
+                            height={1500}
+                            className={cn(
+                                "object-contain z-20 relative max-w-full",
+                                {
+                                    "rounded-t": index === 0,
+                                    "rounded-b":
+                                        index === chapter.images.length - 1,
+                                }
+                            )}
+                            style={{
+                                width: `calc(var(--spacing) * ${stripWidth})`,
+                            }}
+                            loading={"eager"}
+                            preload={index === 0}
+                            fetchPriority={index === 0 ? "high" : "auto"}
+                            unoptimized={true}
+                            onLoad={() => setImagesLoaded((prev) => prev + 1)}
+                        />
+                    ))}
+                </div>
+                <div className={`sm:opacity-0 lg:opacity-100`}>
+                    <StripPageProgress
+                        progress={progress}
+                        hidden={progress === 1}
                     />
-                ))}
-            </div>
-            <div className={`sm:opacity-0 lg:opacity-100`}>
-                <StripPageProgress
-                    progress={progress}
-                    hidden={progress === 1}
+                </div>
+                <MangaFooter
+                    chapter={chapter}
+                    toggleReaderMode={toggleReaderMode}
                 />
             </div>
-            <MangaFooter
-                chapter={chapter}
-                toggleReaderMode={toggleReaderMode}
-            />
-        </div>
+        </>
     );
 }

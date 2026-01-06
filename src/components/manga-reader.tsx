@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
-import { ChapterInfo } from "./manga-reader/chapter-info";
 import { useStorage } from "@/lib/storage";
 import { getSetting } from "@/lib/settings";
 import { useBorderColor } from "@/contexts/border-color-context";
@@ -189,7 +188,6 @@ export function Reader({ chapter }: ReaderProps) {
                 title={chapter.mangaTitle}
             />
             <div>
-                <ChapterInfo chapter={chapter} />
                 {isStripMode ? (
                     <StripReader
                         chapter={chapter}
