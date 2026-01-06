@@ -6,6 +6,8 @@ import Image from "next/image";
 import PageProgress from "../page-progress";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSetting } from "@/lib/settings";
+import { useShortcut } from "@/hooks/use-shortcut";
 import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
 
@@ -28,6 +30,7 @@ export default function PageReader({
 }: PageReaderProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const readingDir = useSetting("readingDirection");
     const [currentPage, setCurrentPage] = useState(() => {
         const pageParam = searchParams.get("page");
         if (!chapter) return 0;
@@ -73,18 +76,12 @@ export default function PageReader({
         }
     }, [chapter, currentPage, router, setBookmarkState, queryClient]);
 
-    const updatePageUrl = useCallback((pageNum: number) => {
-        const url = new URL(window.location.href);
-        url.searchParams.set("page", (pageNum + 1).toString());
-        window.history.replaceState({}, "", url.toString());
-    }, []);
-
     const setPageWithUrlUpdate = useCallback(
         (newPage: number) => {
             setCurrentPage(newPage);
-            updatePageUrl(newPage);
+            router.replace(`?page=${newPage + 1}`, { scroll: false });
         },
-        [updatePageUrl]
+        [router]
     );
 
     const nextPage = useCallback(() => {
@@ -110,34 +107,35 @@ export default function PageReader({
         }
     }, [currentPage, setPageWithUrlUpdate]);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "ArrowRight") {
-                nextPage();
-            } else if (e.key === "ArrowLeft") {
-                prevPage();
+    useShortcut(readingDir === "rtl" ? "ARROWLEFT" : "ARROWRIGHT", nextPage);
+    useShortcut(readingDir === "rtl" ? "ARROWRIGHT" : "ARROWLEFT", prevPage);
+
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            const screenWidth = window.innerWidth;
+            const clickX = e.clientX;
+            const clickY = e.clientY;
+            const middleZoneStart = screenWidth * 0.4;
+            const middleZoneEnd = screenWidth * 0.6;
+
+            if (clickY < 100 || clickY > window.innerHeight - 100) return;
+
+            if (readingDir === "rtl") {
+                if (clickX > middleZoneEnd) {
+                    prevPage();
+                } else if (clickX < middleZoneStart) {
+                    nextPage();
+                }
+            } else {
+                if (clickX > middleZoneEnd) {
+                    nextPage();
+                } else if (clickX < middleZoneStart) {
+                    prevPage();
+                }
             }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [nextPage, prevPage]);
-
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        const screenWidth = window.innerWidth;
-        const clickX = e.clientX;
-        const clickY = e.clientY;
-        const middleZoneStart = screenWidth * 0.4;
-        const middleZoneEnd = screenWidth * 0.6;
-
-        if (clickY < 100 || clickY > window.innerHeight - 100) return;
-
-        if (clickX > middleZoneEnd) {
-            nextPage();
-        } else if (clickX < middleZoneStart) {
-            prevPage();
-        }
-    };
+        },
+        [nextPage, prevPage, readingDir]
+    );
 
     return (
         <>

@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -14,73 +13,29 @@ import {
     getSettingValue,
     getDefaultSettingsValue,
 } from "@/lib/settings";
-
-// Dynamic imports for UI components
-const Input = dynamic(() =>
-    import("@/components/ui/input").then((mod) => mod.Input)
-);
-const NumberInput = dynamic(() =>
-    import("@/components/ui/input").then((mod) => mod.NumberInput)
-);
-const Switch = dynamic(() =>
-    import("@/components/ui/switch").then((mod) => mod.Switch)
-);
-const Label = dynamic(() =>
-    import("@/components/ui/label").then((mod) => mod.Label)
-);
-const Select = dynamic(() =>
-    import("@/components/ui/select").then((mod) => mod.Select)
-);
-const SelectContent = dynamic(() =>
-    import("@/components/ui/select").then((mod) => mod.SelectContent)
-);
-const SelectItem = dynamic(() =>
-    import("@/components/ui/select").then((mod) => mod.SelectItem)
-);
-const SelectTrigger = dynamic(() =>
-    import("@/components/ui/select").then((mod) => mod.SelectTrigger)
-);
-const SelectValue = dynamic(() =>
-    import("@/components/ui/select").then((mod) => mod.SelectValue)
-);
-const Textarea = dynamic(() =>
-    import("@/components/ui/textarea").then((mod) => mod.Textarea)
-);
-const RadioGroup = dynamic(() =>
-    import("@/components/ui/radio-group").then((mod) => mod.RadioGroup)
-);
-const RadioGroupItem = dynamic(() =>
-    import("@/components/ui/radio-group").then((mod) => mod.RadioGroupItem)
-);
-const ButtonConfirmDialog = dynamic(() =>
-    import("@/components/ui/confirm").then((mod) => mod.ButtonConfirmDialog)
-);
-const Button = dynamic(() =>
-    import("@/components/ui/button").then((mod) => mod.Button)
-);
-const Slider = dynamic(() =>
-    import("@/components/ui/slider").then((mod) => mod.Slider)
-);
-const ColorPicker = dynamic(() =>
-    import("@/components/ui/color-picker").then((mod) => mod.ColorPicker)
-);
-const ContextMenu = dynamic(() =>
-    import("@/components/ui/context-menu").then((mod) => mod.ContextMenu)
-);
-const ContextMenuContent = dynamic(() =>
-    import("@/components/ui/context-menu").then((mod) => mod.ContextMenuContent)
-);
-const ContextMenuItem = dynamic(() =>
-    import("@/components/ui/context-menu").then((mod) => mod.ContextMenuItem)
-);
-const ContextMenuTrigger = dynamic(() =>
-    import("@/components/ui/context-menu").then((mod) => mod.ContextMenuTrigger)
-);
-const ContextMenuSeparator = dynamic(() =>
-    import("@/components/ui/context-menu").then(
-        (mod) => mod.ContextMenuSeparator
-    )
-);
+import { Input, NumberInput } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ButtonConfirmDialog } from "@/components/ui/confirm";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { ColorPicker } from "@/components/ui/color-picker";
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+    ContextMenuSeparator,
+} from "@/components/ui/context-menu";
 
 interface SettingsInputProps {
     settingKey: string;

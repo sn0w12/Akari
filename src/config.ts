@@ -89,6 +89,17 @@ export const APP_SETTINGS = {
                 step: 8,
                 groups: ["Reading"],
             },
+            readingDirection: {
+                label: "Reading Direction",
+                description: "Select the reading direction for manga.",
+                type: "select",
+                options: [
+                    { label: "Left to Right", value: "ltr" },
+                    { label: "Right to Left", value: "rtl" },
+                ],
+                default: "ltr",
+                groups: ["Reading"],
+            },
         },
     },
     shortcuts: {
