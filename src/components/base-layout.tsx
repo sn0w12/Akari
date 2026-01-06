@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import {
     BadgeAlert,
     Bookmark,
@@ -31,8 +32,9 @@ import { useRouter } from "next/navigation";
 import { KeyboardShortcut } from "./ui/keyboard-shortcut";
 import { useUser } from "@/contexts/user-context";
 import { useQuery } from "@tanstack/react-query";
-import { Suspense } from "react";
 import { AccountButton } from "./account/account-button";
+import { cn } from "@/lib/utils";
+import { useBorderColor } from "@/contexts/border-color-context";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -52,6 +54,7 @@ export function BaseLayout({
     const router = useRouter();
     const { user } = useUser();
     const { state: sidebarState } = useSidebar();
+    const { borderClass } = useBorderColor();
     const isSidebarCollapsed = sidebarState === "collapsed";
 
     const { data: notification = "" } = useQuery({
@@ -177,7 +180,10 @@ export function BaseLayout({
                     </SidebarFooter>
                 </Sidebar>
                 <main
-                    className="bg-background flex flex-col flex-1 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full"
+                    className={cn(
+                        `bg-background flex flex-col flex-1 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full`,
+                        borderClass
+                    )}
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                     id="scroll-element"
                 >

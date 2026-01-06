@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PageProgress from "../page-progress";
 import { syncAllServices } from "@/lib/manga/sync";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSetting } from "@/lib/settings";
 import { useShortcut } from "@/hooks/use-shortcut";
 import EndOfManga from "../end-of-manga";
@@ -16,7 +15,6 @@ interface PageReaderProps {
     scrollMetrics: { pixels: number; percentage: number };
     toggleReaderMode: () => void;
     isInactive: boolean;
-    bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
 }
 
@@ -25,7 +23,6 @@ export default function PageReader({
     scrollMetrics,
     toggleReaderMode,
     isInactive,
-    bgColor,
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
@@ -44,7 +41,6 @@ export default function PageReader({
     });
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
-    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!chapter) return;
@@ -56,9 +52,6 @@ export default function PageReader({
             bookmarkUpdatedRef.current = true;
             syncAllServices(chapter).then((success) => {
                 setBookmarkState(success);
-                if (success) {
-                    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-                }
             });
         }
 
@@ -74,7 +67,7 @@ export default function PageReader({
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [chapter, currentPage, router, setBookmarkState, queryClient]);
+    }, [chapter, currentPage, router, setBookmarkState]);
 
     const setPageWithUrlUpdate = useCallback(
         (newPage: number) => {
@@ -140,7 +133,7 @@ export default function PageReader({
     return (
         <>
             <div
-                className={`w-full h-full flex flex-col relative transition-colors duration-500 ${bgColor} ${
+                className={`w-full h-full flex flex-col relative transition-colors duration-500 ${
                     currentPage === chapter.images.length
                         ? ""
                         : isInactive

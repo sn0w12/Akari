@@ -20,7 +20,6 @@ interface StripReaderProps {
         clientHeight: number;
     };
     toggleReaderMode: () => void;
-    bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
 }
 
@@ -28,7 +27,6 @@ export default function StripReader({
     chapter,
     scrollMetrics,
     toggleReaderMode,
-    bgColor,
     setBookmarkState,
 }: StripReaderProps) {
     const router = useRouter();
@@ -110,7 +108,7 @@ export default function StripReader({
             <div
                 id="reader"
                 ref={readerRef}
-                className={`flex flex-col items-center transition-colors duration-500 ${bgColor}`}
+                className={`flex flex-col items-center transition-colors duration-500`}
             >
                 {chapter.images.map((img, index) => (
                     <Image

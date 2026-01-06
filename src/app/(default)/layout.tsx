@@ -14,6 +14,7 @@ import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { DeviceProvider } from "@/contexts/device-context";
 import { Toaster } from "@/components/ui/sonner";
 import { PWANavigationRestore } from "@/components/pwa-navigation-restore";
+import { BorderColorProvider } from "@/contexts/border-color-context";
 import { Suspense } from "react";
 
 import type { Metadata } from "next";
@@ -58,21 +59,23 @@ export default async function RootLayout({
                                 <QueryProvider>
                                     <UserProvider>
                                         <BreadcrumbProvider>
-                                            <Suspense fallback={null}>
-                                                <PWANavigationRestore />
-                                            </Suspense>
-                                            <BaseLayout gutter={true}>
-                                                <AnalyticsWrapper />
-                                                <div className="flex-1">
-                                                    {children}
-                                                </div>
-                                                <CookieConsent />
-                                                <Toaster
-                                                    position="top-right"
-                                                    visibleToasts={5}
-                                                />
-                                                <Footer />
-                                            </BaseLayout>
+                                            <BorderColorProvider baseColor="border-border">
+                                                <Suspense fallback={null}>
+                                                    <PWANavigationRestore />
+                                                </Suspense>
+                                                <BaseLayout gutter={true}>
+                                                    <AnalyticsWrapper />
+                                                    <div className="flex-1">
+                                                        {children}
+                                                    </div>
+                                                    <CookieConsent />
+                                                    <Toaster
+                                                        position="top-right"
+                                                        visibleToasts={5}
+                                                    />
+                                                    <Footer />
+                                                </BaseLayout>
+                                            </BorderColorProvider>
                                         </BreadcrumbProvider>
                                     </UserProvider>
                                 </QueryProvider>

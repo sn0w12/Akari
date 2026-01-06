@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ChapterInfo } from "./manga-reader/chapter-info";
 import { useStorage } from "@/lib/storage";
+import { useBorderColor } from "@/contexts/border-color-context";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -36,6 +37,7 @@ function throttle<T extends (...args: unknown[]) => unknown>(
 
 export function Reader({ chapter }: ReaderProps) {
     const readerModeStorage = useStorage("readerMode");
+    const { flashColor } = useBorderColor();
     const [isStripMode, setIsStripMode] = useState<boolean>(() => {
         const stored = readerModeStorage.get({
             mangaId: chapter.mangaId,
@@ -51,16 +53,13 @@ export function Reader({ chapter }: ReaderProps) {
     const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
-    const bgColor = useMemo(() => {
-        switch (bookmarkState) {
-            case true:
-                return "bg-accent-positive/40";
-            case false:
-                return "bg-destructive";
-            default:
-                return "bg-background";
+    useEffect(() => {
+        if (bookmarkState !== null) {
+            flashColor(
+                bookmarkState ? "border-accent-positive" : "border-destructive"
+            );
         }
-    }, [bookmarkState]);
+    }, [bookmarkState, flashColor]);
 
     const [scrollMetrics, setScrollMetrics] = useState({
         pixels: 0,
@@ -191,7 +190,6 @@ export function Reader({ chapter }: ReaderProps) {
                         chapter={chapter}
                         scrollMetrics={scrollMetrics}
                         toggleReaderMode={toggleReaderMode}
-                        bgColor={bgColor}
                         setBookmarkState={setBookmarkState}
                     />
                 ) : (
@@ -200,7 +198,6 @@ export function Reader({ chapter }: ReaderProps) {
                         scrollMetrics={scrollMetrics}
                         toggleReaderMode={toggleReaderMode}
                         isInactive={isInactive}
-                        bgColor={bgColor}
                         setBookmarkState={setBookmarkState}
                     />
                 )}

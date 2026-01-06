@@ -24,6 +24,7 @@ import { HomeIcon } from "lucide-react";
 import Toast from "@/lib/toast-wrapper";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
+import { useBorderColor } from "@/contexts/border-color-context";
 
 interface HeaderProps {
     notification: string;
@@ -33,6 +34,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
     const pathname = usePathname();
     const { user } = useUser();
     const { overrides } = useBreadcrumb();
+    const { borderClass } = useBorderColor();
     const [segments, setSegments] = useState<string[]>([]);
     const [originalSegments, setOriginalSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
@@ -109,7 +111,12 @@ export function HeaderComponent({ notification }: HeaderProps) {
     };
 
     return (
-        <header className="top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10">
+        <header
+            className={cn(
+                `top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
+                borderClass
+            )}
+        >
             <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
