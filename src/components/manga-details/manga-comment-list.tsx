@@ -364,7 +364,10 @@ export function MangaCommentList({
 
     return (
         <>
-            <div className="flex flex-row justify-between mb-2 pb-2 border-b">
+            <div
+                className="flex flex-row justify-between mb-2 pb-2 border-b"
+                id="comments"
+            >
                 <h2 className="text-2xl font-bold">Comments</h2>
                 <CommentSorting
                     sort={sortOrder}
