@@ -6,6 +6,7 @@ import StripReader from "./manga-reader/readers/strip-reader";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ChapterInfo } from "./manga-reader/chapter-info";
 import { useStorage } from "@/lib/storage";
+import { getSetting } from "@/lib/settings";
 import { useBorderColor } from "@/contexts/border-color-context";
 
 interface ReaderProps {
@@ -45,9 +46,13 @@ export function Reader({ chapter }: ReaderProps) {
         });
         if (stored && typeof stored.isStripMode === "boolean") {
             return stored.isStripMode;
-        } else {
-            return ["Manwha", "Manhua"].includes(chapter.type);
         }
+
+        const readerType = getSetting("readerType");
+        if (readerType === "page") return false;
+        if (readerType === "strip") return true;
+
+        return ["Manwha", "Manhua"].includes(chapter.type);
     });
     const [isInactive, setIsInactive] = useState(false);
     const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);

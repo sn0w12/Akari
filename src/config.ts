@@ -71,13 +71,37 @@ export const APP_SETTINGS = {
     manga: {
         label: "Manga",
         settings: {
+            readerType: {
+                label: "Page Display Type",
+                description: "Select the default reader type for manga.",
+                type: "select",
+                options: [
+                    { label: "Auto", value: "auto" },
+                    { label: "Single Page", value: "page" },
+                    { label: "Strip", value: "strip" },
+                ],
+                default: "auto",
+                groups: ["UI"],
+                onChange: () => {
+                    if (typeof window === "undefined") return;
+
+                    const mangaReaderRegex =
+                        /^\/manga\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/\d+$/;
+                    const isMangaReaderPage = mangaReaderRegex.test(
+                        window.location.pathname
+                    );
+                    if (isMangaReaderPage) {
+                        window.location.reload();
+                    }
+                },
+            },
             showPageProgress: {
                 label: "Show Page Progress",
                 description:
                     "Shows a progress bar at the side/ bottom when reading.",
                 type: "checkbox",
                 default: true,
-                groups: ["Reading"],
+                groups: ["UI"],
             },
             stripWidth: {
                 label: "Strip Reader Width",
@@ -87,7 +111,7 @@ export const APP_SETTINGS = {
                 min: 32,
                 max: 256,
                 step: 8,
-                groups: ["Reading"],
+                groups: ["UI"],
             },
             readingDirection: {
                 label: "Reading Direction",
@@ -98,6 +122,14 @@ export const APP_SETTINGS = {
                     { label: "Right to Left", value: "rtl" },
                 ],
                 default: "ltr",
+                groups: ["Reading"],
+            },
+            continueAfterChapter: {
+                label: "Advance chapter on last page",
+                description:
+                    "Automatically advance to the next chapter when reaching the last page.",
+                type: "checkbox",
+                default: true,
                 groups: ["Reading"],
             },
         },

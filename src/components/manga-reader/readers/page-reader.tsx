@@ -28,6 +28,7 @@ export default function PageReader({
     const router = useRouter();
     const searchParams = useSearchParams();
     const readingDir = useSetting("readingDirection");
+    const continueAfterChapter = useSetting("continueAfterChapter");
     const [currentPage, setCurrentPage] = useState(() => {
         const pageParam = searchParams.get("page");
         if (!chapter) return 0;
@@ -78,7 +79,11 @@ export default function PageReader({
     );
 
     const nextPage = useCallback(() => {
-        if (currentPage === chapter.images.length - 1 && chapter.nextChapter) {
+        if (
+            currentPage === chapter.images.length - 1 &&
+            chapter.nextChapter &&
+            continueAfterChapter
+        ) {
             router.push(`./${chapter.nextChapter}`);
             return;
         }
@@ -91,6 +96,7 @@ export default function PageReader({
         chapter.images.length,
         chapter.nextChapter,
         router,
+        continueAfterChapter,
         setPageWithUrlUpdate,
     ]);
 
