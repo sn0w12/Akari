@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import ScoreDisplay from "./manga-details/score";
 import Buttons from "./manga-details/buttons";
 import EnhancedImage from "./ui/enhanced-image";
-import { ChaptersSection } from "./manga-details/chapters";
 import {
     Tooltip,
     TooltipContent,
@@ -13,14 +12,15 @@ import {
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { generateSizes } from "@/lib/utils";
-import { MangaComments } from "./manga-details/manga-comments";
 import { ViewManga } from "./manga-reader/view-manga";
-
-import MalImage from "@/public/img/icons/MAL-logo.webp";
-import AniImage from "@/public/img/icons/AniList-logo.webp";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ListSelector } from "./list/list-selector";
 import { MangaUpdatedAt } from "./manga-details/updated-at";
+import { MangaDetailsBody } from "./manga-details/body";
+import { MangaComments } from "./manga-details/manga-comments";
+
+import MalImage from "@/public/img/icons/MAL-logo.webp";
+import AniImage from "@/public/img/icons/AniList-logo.webp";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -98,8 +98,10 @@ function ExternalLinks({
 
 export async function MangaDetailsComponent({
     manga,
+    rec,
 }: {
     manga: components["schemas"]["MangaDetailResponse"];
+    rec: components["schemas"]["MangaResponse"][];
 }) {
     return (
         <div className="mx-auto p-4">
@@ -323,7 +325,7 @@ export async function MangaDetailsComponent({
             </div>
 
             <ViewManga manga={manga} />
-            <ChaptersSection manga={manga} />
+            <MangaDetailsBody manga={manga} rec={rec} />
             <MangaComments id={manga.id} />
         </div>
     );

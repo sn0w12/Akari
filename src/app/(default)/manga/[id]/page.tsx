@@ -4,7 +4,10 @@ import { createMetadata, createOgImage } from "@/lib/utils";
 import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { cacheLife, cacheTag } from "next/cache";
-import { getAllMangaIds, STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
+import {
+    getAllMangaIds,
+    STATIC_GENERATION_DISABLED,
+} from "@/lib/api/pre-render";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -15,26 +18,58 @@ function truncate(text: string, maxLength: number): string {
     return text.slice(0, maxLength - 1).trimEnd() + "…";
 }
 
-const getManga = async (id: string) => {
+async function getManga(id: string) {
     "use cache";
     cacheLife("quarterHour");
     cacheTag("manga", `manga-${id}`);
 
-    const { data, error } = await client.GET("/v2/manga/{id}", {
-        params: {
-            path: {
-                id,
+    const [
+        { data: mangaData, error: mangaError },
+        { data: recData, error: recError },
+    ] = await Promise.all([
+        client.GET("/v2/manga/{id}", {
+            params: {
+                path: {
+                    id,
+                },
             },
-        },
-        headers: serverHeaders,
-    });
+            headers: serverHeaders,
+        }),
+        client.GET("/v2/manga/{id}/recommendations", {
+            params: {
+                path: {
+                    id,
+                },
+                query: {
+                    limit: 12,
+                },
+            },
+            headers: serverHeaders,
+        }),
+    ]);
 
-    if (error) {
-        return { data: null, error };
+    if (mangaError) {
+        return {
+            mangaData: null,
+            recData: null,
+            error: mangaError,
+        };
     }
 
-    return { data: data.data, error: null };
-};
+    if (recError) {
+        return {
+            mangaData: null,
+            recData: null,
+            error: recError,
+        };
+    }
+
+    return {
+        mangaData: mangaData.data,
+        recData: recData.data,
+        error: null,
+    };
+}
 
 export async function generateStaticParams() {
     let limit = undefined;
@@ -52,7 +87,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
-    const { data, error } = await getManga(params.id);
+    const { mangaData, error } = await getManga(params.id);
 
     if (error) {
         return {
@@ -61,7 +96,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         };
     }
 
-    const manga = data;
+    const manga = mangaData;
     const description = truncate(manga.description, 300);
 
     return createMetadata({
@@ -74,11 +109,11 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function MangaPage(props: PageProps) {
     const params = await props.params;
-    const { data, error } = await getManga(params.id);
+    const { mangaData, recData, error } = await getManga(params.id);
 
     if (error) {
         return <ErrorPage title="Failed to load manga" error={error} />;
     }
 
-    return <MangaDetailsComponent manga={data} />;
+    return <MangaDetailsComponent manga={mangaData} rec={recData} />;
 }
