@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { ChapterSelector } from "./chapter-selector";
 import { FooterBookmarkButton } from "./footer-bookmark";
 import { cn } from "@/lib/utils";
+import { ButtonLink } from "../ui/button-link";
 
 export default function MangaFooter({
     chapter,
@@ -16,7 +17,7 @@ export default function MangaFooter({
     const nextChapterExists = chapter.nextChapter !== null;
 
     return (
-        <div className="bg-background border-t border-b border-border px-4 py-3 mt-0.5">
+        <div className="bg-background border-t border-b border-border px-4 py-3">
             <div
                 className={cn(
                     "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2"
@@ -36,10 +37,11 @@ export default function MangaFooter({
                         value={chapter.number.toString()}
                     />
                 </div>
-                <div className="flex flex-col w-full sm:w-64 md:w-auto md:flex-row gap-4">
+                <div className="flex flex-col w-full sm:w-72 md:w-auto md:flex-row gap-4">
                     <div className="flex items-center gap-4">
                         <Button
-                            className="inline-flex flex-grow items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background  hover:bg-accent text-accent-foreground h-9 w-28 px-4 py-2"
+                            variant="outline"
+                            className="flex-1"
                             onClick={toggleReaderMode}
                         >
                             Toggle Reader
@@ -48,46 +50,51 @@ export default function MangaFooter({
                     </div>
                     <div className="flex items-center gap-4">
                         {lastChapterExists ? (
-                            <Link
+                            <ButtonLink
                                 href={`./${chapter.lastChapter}`}
-                                className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background  hover:bg-accent hover:text-accent-foreground h-9 w-28 px-4 py-2"
+                                variant="outline"
+                                className="flex-1"
                                 aria-label="Previous Chapter"
                                 prefetch={false}
                             >
                                 <ChevronLeft className="mr-2 h-4 w-4" />
                                 Previous
-                            </Link>
+                            </ButtonLink>
                         ) : (
-                            <span
-                                className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background  h-9 w-28 px-4 py-2 opacity-50 cursor-not-allowed"
+                            <ButtonLink
+                                href=""
+                                disabled
+                                variant="outline"
+                                className="flex-1"
                                 aria-label="Previous Chapter"
-                                aria-disabled="true"
                                 tabIndex={-1}
                             >
                                 <ChevronLeft className="mr-2 h-4 w-4" />
                                 Previous
-                            </span>
+                            </ButtonLink>
                         )}
                         {nextChapterExists ? (
-                            <Link
+                            <ButtonLink
                                 href={`./${chapter.nextChapter}`}
-                                className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 w-28 px-4 py-2"
+                                className="flex-1"
                                 aria-label="Next Chapter"
                                 prefetch={false}
                             >
                                 Next
                                 <ChevronRight className="ml-2 h-4 w-4" />
-                            </Link>
+                            </ButtonLink>
                         ) : (
-                            <span
-                                className="flex-grow inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow h-9 w-28 px-4 py-2 opacity-50 cursor-not-allowed"
+                            <ButtonLink
+                                href=""
+                                disabled
+                                className="flex-1"
                                 aria-label="Next Chapter"
                                 aria-disabled="true"
                                 tabIndex={-1}
                             >
                                 Next
                                 <ChevronRight className="ml-2 h-4 w-4" />
-                            </span>
+                            </ButtonLink>
                         )}
                     </div>
                 </div>
