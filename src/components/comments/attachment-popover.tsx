@@ -115,15 +115,15 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
             <PopoverContent className="w-96 p-4" side="top">
                 <Tabs defaultValue="select" className="w-full">
                     <TabsList>
-                        <TabsTrigger value="select" index={0}>
+                        <TabsTrigger value="select">
                             Select
                         </TabsTrigger>
                         {user && (
-                            <TabsTrigger value="my-uploads" index={2}>
+                            <TabsTrigger value="my-uploads">
                                 My Uploads
                             </TabsTrigger>
                         )}
-                        <TabsTrigger value="upload" index={1}>
+                        <TabsTrigger value="upload">
                             Upload
                         </TabsTrigger>
                     </TabsList>

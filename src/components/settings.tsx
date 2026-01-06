@@ -186,7 +186,7 @@ export default function SettingsPage() {
     }, [settingsMaps, activeTab, activeSection]);
 
     return (
-        <div className="flex flex-col p-4">
+        <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 h-full">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Settings</h1>
                 <Button
@@ -210,8 +210,8 @@ export default function SettingsPage() {
             </div>
 
             <Tabs
-                defaultValue="General"
                 value={activeTab}
+                defaultValue="General"
                 onValueChange={(tab) => {
                     setActiveTab(tab);
                     setActiveSection(null);
@@ -220,15 +220,15 @@ export default function SettingsPage() {
             >
                 <TabsList
                     ref={stickyRef}
-                    className={`bg-background sticky top-0 z-40 py-4 ${
+                    className={`bg-background sticky top-0 z-40 p-0 ${
                         isSticky ? "settings-tabs-sticky border-b" : ""
                     }`}
                 >
-                    {Object.keys(settingsMaps).map((groupName, index) => (
+                    {Object.keys(settingsMaps).map((groupName) => (
                         <TabsTrigger
                             key={groupName}
-                            index={index}
                             value={groupName}
+                            className="border-b-0 rounded-b-none"
                         >
                             {groupName.charAt(0).toUpperCase() +
                                 groupName.slice(1)}
@@ -241,8 +241,8 @@ export default function SettingsPage() {
                     ([groupName, settingsMap]) => (
                         <TabsContent key={groupName} value={groupName}>
                             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr]">
-                                <Card className="gap-0 pt-0">
-                                    <CardHeader className="bg-card sticky top-16 z-30 flex flex-row items-center justify-between rounded-xl py-3">
+                                <Card className="gap-0 pt-0 rounded-tl-none">
+                                    <CardHeader className="bg-card sticky top-16 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
                                         <CardTitle className="w-full">
                                             <h2 className="w-full border-b pt-3 pb-2 text-2xl font-medium">
                                                 {groupName
