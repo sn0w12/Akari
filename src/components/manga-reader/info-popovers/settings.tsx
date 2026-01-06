@@ -26,7 +26,8 @@ export function SettingsPopover({
             <PopoverContent
                 side={orientation === "vertical" ? "left" : "bottom"}
                 align="end"
-                className="w-auto sm:w-128 max-h-96 overflow-y-auto"
+                className="w-screen sm:w-128 max-h-96 overflow-y-auto"
+                data-scrollbar-custom
             >
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
