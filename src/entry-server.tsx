@@ -1,12 +1,8 @@
-import { StartServer } from "@tanstack/start/server";
+import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
+import { getRouterManifest } from "@tanstack/react-start/router-manifest";
 import { createRouter } from "./router";
-import type { IncomingMessage, ServerResponse } from "http";
 
-export async function render(req: IncomingMessage, res: ServerResponse) {
-    const router = createRouter();
-
-    const html = await router.renderToHtml(req.url || "/");
-
-    res.setHeader("Content-Type", "text/html");
-    res.end(html);
-}
+export default createStartHandler({
+    createRouter,
+    getRouterManifest,
+})(defaultStreamHandler);

@@ -1,6 +1,6 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, ScrollRestoration } from "@tanstack/react-router";
+import { Body, Head, Html, Meta, Scripts } from "@tanstack/react-start";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
 import { inDevelopment } from "@/config";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -23,29 +23,6 @@ import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
 import "@/app/globals.css";
 
 export const Route = createRootRoute({
-    head: () => ({
-        meta: [
-            {
-                charSet: "utf-8",
-            },
-            {
-                name: "viewport",
-                content: "width=device-width, initial-scale=1, maximum-scale=1",
-            },
-            {
-                title: "Akari",
-            },
-        ],
-        links: [
-            {
-                rel: "preload",
-                href: "/fonts/GeistVF.woff",
-                as: "font",
-                type: "font/woff",
-                crossOrigin: "anonymous",
-            },
-        ],
-    }),
     component: RootComponent,
 });
 
@@ -59,8 +36,8 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
-            <head>
+        <Html lang="en" suppressHydrationWarning>
+            <Head>
                 <Meta />
                 <style
                     dangerouslySetInnerHTML={{
@@ -81,8 +58,8 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 {inDevelopment && (
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
-            </head>
-            <body
+            </Head>
+            <Body
                 className="min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden"
                 style={{ fontFamily: "var(--font-geist-sans)" }}
             >
@@ -120,9 +97,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                         </SidebarProvider>
                     </DeviceProvider>
                 </ThemeProvider>
+                <ScrollRestoration />
                 <Scripts />
                 {inDevelopment && <TanStackRouterDevtools position="bottom-right" />}
-            </body>
-        </html>
+            </Body>
+        </Html>
     );
 }
+
