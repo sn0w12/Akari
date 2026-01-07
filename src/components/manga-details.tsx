@@ -127,7 +127,7 @@ export async function MangaDetailsComponent({
                 </div>
 
                 {/* Card with flex layout to lock title and buttons */}
-                <Card className="p-6 flex flex-col justify-between flex-grow lg:max-h-[600px] bg-background gap-0">
+                <div className="flex flex-col justify-between flex-grow lg:max-h-[600px] bg-background gap-0">
                     {/* Title stays at the top */}
                     <div className="flex items-center mb-4 border-b pb-4 justify-between">
                         <Image
@@ -323,7 +323,7 @@ export async function MangaDetailsComponent({
                             </Card>
                         </div>
                     </div>
-                </Card>
+                </div>
             </div>
 
             <ViewManga manga={manga} />
