@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import MangaFooter from "../manga-footer";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { AttachmentPopover } from "./attachment-popover";
 import { X } from "lucide-react";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { generateSizes } from "@/lib/utils";
 
 interface CommentFormProps {

@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import Toast from "@/lib/toast-wrapper";
 import { Avatar } from "../ui/avatar";
 import { generateSizes } from "@/lib/utils";

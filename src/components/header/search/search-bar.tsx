@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import { getSearchResults } from "@/lib/api/search";

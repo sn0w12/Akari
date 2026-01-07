@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 
 interface PopularMangaProps {
     manga: components["schemas"]["MangaResponse"][];

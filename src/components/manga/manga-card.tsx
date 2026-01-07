@@ -2,10 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cn, generateSizes } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/components/ui/image";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRouter } from "next/navigation";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -61,7 +60,7 @@ export function MangaCard({
     }, [expandDirection]);
 
     const handleMouseEnter = () => {
-        router.prefetch(`/manga/${manga.id}`);
+        // TanStack Router handles prefetching automatically with defaultPreload="intent"
         if (isMobile) return;
 
         // Clear any pending collapse timeout
@@ -145,9 +144,10 @@ export function MangaCard({
                 }}
             >
                 <Link
-                    href={`/manga/${manga.id}`}
+                    to="/manga/$id"
+                    params={{ id: manga.id }}
                     className="relative block h-full w-full"
-                    prefetch={false}
+                    preload="intent"
                 >
                     <Image
                         src={manga.cover}

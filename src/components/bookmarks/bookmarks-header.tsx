@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import Toast from "@/lib/toast-wrapper";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";

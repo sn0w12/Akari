@@ -16,7 +16,7 @@ import { CommentForm } from "@/components/comments/comment-form";
 import { ReportCommentDialog } from "@/components/comments/report";
 import { CommentMenu } from "@/components/comments/comment-menu";
 import { useConfirm } from "@/contexts/confirm-context";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import Link from "next/link";
 
 export type CommentData =

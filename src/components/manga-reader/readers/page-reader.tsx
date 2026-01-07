@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import PageProgress from "../page-progress";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";

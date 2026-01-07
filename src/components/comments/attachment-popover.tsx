@@ -13,7 +13,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/contexts/user-context";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { generateSizes } from "@/lib/utils";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
