@@ -97,7 +97,7 @@ export function ServerPagination({
                             size="sm"
                             href={createPageUrl(page)}
                             className={cn("min-w-[2.5rem] h-9", {
-                                "hidden sm:inline-flex":
+                                "inline-flex":
                                     index === 1 ||
                                     index === visiblePages.length - 2,
                             })}
