@@ -1,5 +1,3 @@
-"use client";
-
 import React, {
     useState,
     useRef,
@@ -7,7 +5,8 @@ import React, {
     type JSX,
     useEffect,
 } from "react";
-import Image, { ImageProps } from "next/image";
+import Image from "@/components/ui/image";
+import type { ImgHTMLAttributes } from "react";
 import { useSetting } from "@/lib/settings";
 
 type HoverEffect =
@@ -23,7 +22,17 @@ type HoverEffect =
     | "neon"
     | "dynamic-tilt";
 
-interface EnhancedImageProps extends Omit<ImageProps, "className"> {
+interface EnhancedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "className" | "src"> {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+    quality?: number;
+    sizes?: string;
+    priority?: boolean;
+    loading?: "lazy" | "eager";
+    fetchPriority?: "high" | "low" | "auto";
+    preload?: boolean;
     hoverEffect: HoverEffect;
     className?: string;
 }
