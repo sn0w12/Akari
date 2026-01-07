@@ -11,7 +11,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { generateSizes } from "@/lib/utils";
+import { generateSizes, pluralize } from "@/lib/utils";
 import { ViewManga } from "./manga-reader/view-manga";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ListSelector } from "./list/list-selector";
@@ -201,9 +201,11 @@ export async function MangaDetailsComponent({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                                 <div>
                                     <div className="text-lg font-semibold">
-                                        {`Author${
-                                            manga.authors.length > 1 ? "s" : ""
-                                        }:`}
+                                        {pluralize(
+                                            "Author",
+                                            manga.authors.length
+                                        )}
+                                        :
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {manga.authors.map(
