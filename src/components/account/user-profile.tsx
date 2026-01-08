@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { LogOut } from "lucide-react";
 import { logOut } from "@/lib/auth/akari";
+import { useUser } from "@/contexts/user-context";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,9 +17,11 @@ export function UserProfile({
     user: components["schemas"]["UserResponse"];
 }) {
     const router = useRouter();
+    const { refreshUser } = useUser();
 
     const handleLogout = async () => {
         await logOut(SECONDARY_ACCOUNTS);
+        refreshUser();
         router.push("/");
     };
 
