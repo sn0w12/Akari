@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSetting } from "@/lib/settings";
+import { useWindowWidth } from "@/hooks/use-window-width";
 
 interface PageProgressProps {
     currentPage: number;
@@ -20,19 +21,10 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
-    const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+    const windowWidth = useWindowWidth();
     const isVisible = useSetting("showPageProgress");
     const gradient =
         "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();

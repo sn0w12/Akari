@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -12,25 +12,20 @@ import { getSearchResults } from "@/lib/api/search";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { cn, generateSizes } from "@/lib/utils";
+import { useDebouncedValue } from "@tanstack/react-pacer";
 
 export default function SearchBar() {
     const router = useRouter();
     const [searchText, setSearchText] = useState("");
-    const [debouncedSearchText, setDebouncedSearchText] = useState("");
+    const [debouncedSearchText] = useDebouncedValue(searchText, {
+        wait: 300,
+    });
     const [isFocused, setIsFocused] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState<number>(-1);
     const shouldCloseRef = useRef(true);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const hasSearchText = searchText.trim().length > 0;
-
-    // Debounce search text
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchText(searchText);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchText]);
 
     // Fetch search results using React Query
     const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { Filter } from "lucide-react";
 import { GRID_CLASS } from "./grid-page";
+import { useDebouncedValue } from "@tanstack/react-pacer";
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -33,18 +34,13 @@ export default function SearchPage() {
         : [];
 
     const [searchQuery, setSearchQuery] = useState(query);
+    const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
+        wait: 300,
+    });
     const [currentPage, setCurrentPage] = useState(page);
-    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(query);
     const [selectedGenres, setSelectedGenres] = useState<Genre[]>(
         selectedGenresFromUrl
     );
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchQuery(searchQuery);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
 
     useEffect(() => {
         const params = new URLSearchParams();

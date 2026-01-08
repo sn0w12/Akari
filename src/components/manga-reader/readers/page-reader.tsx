@@ -10,6 +10,7 @@ import { useShortcut } from "@/hooks/use-shortcut";
 import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
 import { ChapterInfo } from "../chapter-info";
+import { useWindowWidth } from "@/hooks/use-window-width";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -30,6 +31,7 @@ export default function PageReader({
     const searchParams = useSearchParams();
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
+    const windowWidth = useWindowWidth();
     const [currentPage, setCurrentPage] = useState(() => {
         const pageParam = searchParams.get("page");
         if (!chapter) return 0;
@@ -112,7 +114,7 @@ export default function PageReader({
 
     const handleClick = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
-            const screenWidth = window.innerWidth;
+            const screenWidth = windowWidth;
             const clickX = e.clientX;
             const clickY = e.clientY;
             const middleZoneStart = screenWidth * 0.4;
@@ -134,7 +136,7 @@ export default function PageReader({
                 }
             }
         },
-        [nextPage, prevPage, readingDir]
+        [nextPage, prevPage, readingDir, windowWidth]
     );
 
     return (

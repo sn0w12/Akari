@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
+import { useThrottledCallback } from "@tanstack/react-pacer";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -34,31 +35,35 @@ export function MangaCard({
     const isMobile = useIsMobile();
     const router = useRouter();
 
-    useEffect(() => {
-        const updateDirection = () => {
-            const rect = cardRef.current?.getBoundingClientRect();
-            if (rect) {
-                setCardWidth(rect.width);
-                setCardHeight(rect.height);
+    const updateDirectionCallback = () => {
+        const rect = cardRef.current?.getBoundingClientRect();
+        if (rect) {
+            setCardWidth(rect.width);
+            setCardHeight(rect.height);
 
-                if (expandDirection === "auto") {
-                    const spaceOnRight = window.innerWidth - rect.right;
-                    const expansionWidth = rect.width;
+            if (expandDirection === "auto") {
+                const spaceOnRight = window.innerWidth - rect.right;
+                const expansionWidth = rect.width;
 
-                    // If not enough space on right (with 20px padding), expand left
-                    setComputedDirection(
-                        spaceOnRight < expansionWidth + 20 ? "left" : "right"
-                    );
-                } else {
-                    setComputedDirection(expandDirection);
-                }
+                // If not enough space on right (with 20px padding), expand left
+                setComputedDirection(
+                    spaceOnRight < expansionWidth + 20 ? "left" : "right"
+                );
+            } else {
+                setComputedDirection(expandDirection);
             }
-        };
+        }
+    };
 
+    const updateDirection = useThrottledCallback(updateDirectionCallback, {
+        wait: 1000,
+    });
+
+    useEffect(() => {
         updateDirection();
         window.addEventListener("resize", updateDirection);
         return () => window.removeEventListener("resize", updateDirection);
-    }, [expandDirection]);
+    }, [updateDirection]);
 
     const handleMouseEnter = () => {
         router.prefetch(`/manga/${manga.id}`);
