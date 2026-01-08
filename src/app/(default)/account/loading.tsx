@@ -1,4 +1,4 @@
-import { AccountBody } from "@/components/account/account-body";
+import { AccountBodySkeleton } from "@/components/account/account-body";
 
 export default async function AccountPage() {
     return (
@@ -9,7 +9,7 @@ export default async function AccountPage() {
                 </h1>
             </div>
 
-            <AccountBody />
+            <AccountBodySkeleton />
         </div>
     );
 }
