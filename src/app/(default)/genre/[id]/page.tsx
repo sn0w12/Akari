@@ -11,7 +11,6 @@ interface PageProps {
     searchParams: Promise<{
         page: string;
         sort?: string;
-        [key: string]: string | string[] | undefined;
     }>;
 }
 
@@ -32,19 +31,22 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-async function getGenre(name: string, page: number) {
+async function getGenre(
+    name: string,
+    page: number,
+    sort: components["schemas"]["MangaListSortOrder"] = "latest"
+) {
     "use cache";
     cacheLife("minutes");
     cacheTag("genre", `genre-${name}`);
 
-    const { data, error } = await client.GET("/v2/genre/{name}", {
+    const { data, error } = await client.GET("/v2/manga/list", {
         params: {
-            path: {
-                name: name,
-            },
             query: {
+                genres: [name],
                 page: page,
                 pageSize: 24,
+                sortBy: sort,
             },
         },
         headers: serverHeaders,
@@ -63,7 +65,10 @@ export default async function GenrePage(props: PageProps) {
     const name = decodeURIComponent(params.id).replaceAll("-", " ");
 
     const page = parseInt(searchParams.page) || 1;
-    const { data, error } = await getGenre(name, page);
+    const sort =
+        (searchParams.sort as components["schemas"]["MangaListSortOrder"]) ||
+        "latest";
+    const { data, error } = await getGenre(name, page, sort);
 
     if (error) {
         return <ErrorPage error={error} />;
@@ -75,6 +80,14 @@ export default async function GenrePage(props: PageProps) {
             mangaList={data.data.items}
             currentPage={data.data.currentPage}
             totalPages={data.data.totalPages}
+            sorting={{
+                currentSort: { key: "sort", value: sort },
+                sortItems: [
+                    { key: "sort", value: "latest", label: "Latest" },
+                    { key: "sort", value: "popular", label: "Most Popular" },
+                ],
+                defaultSortValue: "latest",
+            }}
         />
     );
 }

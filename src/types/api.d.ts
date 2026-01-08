@@ -2128,7 +2128,7 @@ export interface paths {
             parameters: {
                 query?: {
                     /** @description The sort order: 'popular', 'latest', 'newest'. */
-                    sortBy?: string;
+                    sortBy?: components["schemas"]["MangaListSortOrder"];
                     /** @description Search query string. */
                     query?: string;
                     /** @description Filter by genres. */
@@ -3995,7 +3995,7 @@ export interface components {
         };
         ErrorData: {
             message: string | null;
-            details?: unknown;
+            details?: string | null;
         };
         ErrorResponse: {
             /** @enum {string} */
@@ -4274,6 +4274,8 @@ export interface components {
             status: number;
             data: components["schemas"]["MangaListResponse"];
         };
+        /** @enum {string} */
+        MangaListSortOrder: "latest" | "popular" | "newest";
         MangaResponse: {
             /** Format: uuid */
             id: string;
