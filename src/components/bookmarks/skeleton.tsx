@@ -1,5 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import React from "react";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Search, MoreVertical } from "lucide-react";
@@ -56,7 +55,7 @@ export default function BookmarksSkeleton() {
                             variant="outline"
                             size="lg"
                             className={
-                                "hidden md:flex w-auto md:h-auto items-center justify-center"
+                                "hidden md:flex w-auto md:h-auto items-center justify-center px-4"
                             }
                             disabled={true}
                         >
