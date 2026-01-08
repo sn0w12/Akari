@@ -1,10 +1,9 @@
 import createClient from "openapi-fetch";
 import type { paths } from "@/types/api";
-import { inDevelopment, inPreview } from "@/config";
+import { inPreview } from "@/config";
 import pkg from "../../../package.json";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5188/";
-const baseUrl = inDevelopment ? "http://localhost:5188/" : apiUrl;
 
 export function getAuthCookie() {
     if (typeof document === "undefined") {
@@ -33,7 +32,10 @@ export function getAuthCookie() {
                     if (!match) return null;
                     return { num: parseInt(match[1]), value };
                 })
-                .filter((item): item is { num: number; value: string } => item !== null)
+                .filter(
+                    (item): item is { num: number; value: string } =>
+                        item !== null
+                )
                 .sort((a, b) => a.num - b.num)
                 .map((p) => p.value);
             if (parts.length === 0) return null;
@@ -64,7 +66,7 @@ const authenticatedFetch = async (input: Request): Promise<Response> => {
 };
 
 export const client = createClient<paths>({
-    baseUrl,
+    baseUrl: apiUrl,
     credentials: "include",
     fetch: authenticatedFetch,
 });
