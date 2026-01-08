@@ -1,5 +1,5 @@
 import { client, serverHeaders } from "@/lib/api";
-import { createClient as createSupabaseClient } from "@/lib/auth/server";
+import { getAuthToken } from "@/lib/auth/server";
 import ErrorPage from "@/components/error-page";
 import {
     Tooltip,
@@ -52,7 +52,7 @@ async function getUserData(userId: string, accesToken: string | undefined) {
             },
         },
         headers: {
-            Authorization: `Bearer ${accesToken}`,
+            Authorization: accesToken ? `Bearer ${accesToken}` : undefined,
             ...serverHeaders,
         },
     });
@@ -70,12 +70,9 @@ export async function UserHeader({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const supabase = await createSupabaseClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+    const token = await getAuthToken();
 
-    const { data, error } = await getUserData(id, session?.access_token);
+    const { data, error } = await getUserData(id, token);
 
     if (error) {
         return <ErrorPage title="Failed to load user" error={error} />;
