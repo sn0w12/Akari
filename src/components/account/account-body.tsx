@@ -1,5 +1,5 @@
 import { client, serverHeaders } from "@/lib/api";
-import { createClient as createSupabaseClient } from "@/lib/auth/server";
+import { getAuthToken } from "@/lib/auth/server";
 import { ConnectedAccounts } from "./connected-accounts";
 import { UserMangaLists } from "./lists";
 import { UserProfile } from "./user-profile";
@@ -31,17 +31,12 @@ async function getAccountData(accessToken: string) {
 }
 
 export async function AccountBody() {
-    const supabase = await createSupabaseClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
-
-    const accessToken = session?.access_token;
-    if (!accessToken) {
+    const token = await getAuthToken();
+    if (!token) {
         redirect("/auth/login");
     }
 
-    const { userRes, listsRes } = await getAccountData(accessToken);
+    const { userRes, listsRes } = await getAccountData(token);
 
     if (userRes.error) {
         if (userRes.error.status === 401) {

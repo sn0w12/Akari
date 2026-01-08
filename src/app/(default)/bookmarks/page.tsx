@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { robots } from "@/lib/utils";
 import { client } from "@/lib/api";
-import { createClient as createSupabaseClient } from "@/lib/auth/server";
+import { getAuthToken } from "@/lib/auth/server";
 import ErrorPage from "@/components/error-page";
 import BookmarksBody from "@/components/bookmarks/bookmarks-body";
+import { redirect } from "next/navigation";
 
 interface BookmarksProps {
     searchParams: Promise<{
@@ -20,11 +21,10 @@ export const metadata: Metadata = {
 export default async function Bookmarks(props: BookmarksProps) {
     const searchParams = await props.searchParams;
     const page = Number(searchParams.page) || 1;
-
-    const supabase = await createSupabaseClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+    const token = await getAuthToken();
+    if (!token) {
+        redirect("/auth/login");
+    }
 
     const { data, error } = await client.GET("/v2/bookmarks", {
         params: {
@@ -33,7 +33,7 @@ export default async function Bookmarks(props: BookmarksProps) {
             },
         },
         headers: {
-            Authorization: `Bearer ${session?.access_token}`,
+            Authorization: `Bearer ${token}`,
         },
     });
 
