@@ -1,7 +1,6 @@
 import { SecondaryAccountBase } from "./general";
 import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
-import Cookies from "js-cookie";
 
 export class AniAccount extends SecondaryAccountBase {
     readonly id = "ani";
@@ -20,7 +19,10 @@ export class AniAccount extends SecondaryAccountBase {
     }
 
     async doLogOut(): Promise<boolean> {
-        Cookies.remove("ani_access_token");
+        const { error } = await client.POST("/v2/ani/logout");
+        if (error) {
+            return false;
+        }
 
         return true;
     }
@@ -59,7 +61,7 @@ export class AniAccount extends SecondaryAccountBase {
         return true;
     }
 
-    handleCallback(
+    async handleCallback(
         params: Record<string, string>,
         hash: string,
         origin: string
@@ -69,17 +71,22 @@ export class AniAccount extends SecondaryAccountBase {
         const expiresIn = hashParams.get("expires_in");
 
         if (!accessToken) {
-            return Promise.resolve(false);
+            return false;
         }
 
-        Cookies.set("ani_access_token", accessToken, {
-            path: "/",
-            sameSite: "None",
-            secure: true,
-            expires: new Date(
-                Date.now() + parseInt(expiresIn || "0", 10) * 1000
-            ),
+        const { error } = await client.GET("/v2/ani/me", {
+            params: {
+                query: {
+                    access_token: accessToken,
+                    expires_in: Number(expiresIn) || 0,
+                },
+            },
         });
-        return Promise.resolve(true);
+
+        if (error) {
+            return false;
+        }
+
+        return true;
     }
 }
