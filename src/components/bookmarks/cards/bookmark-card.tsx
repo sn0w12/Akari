@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 import Link from "next/link";
-import { cn, capitalize } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { formatRelativeDate } from "@/lib/utils";
 
 interface BookmarkCardProps {
@@ -75,7 +75,7 @@ export function BookmarkCard({
                             <SubTitle
                                 label="Released"
                                 value={formatRelativeDate(
-                                    latestChapter.createdAt,
+                                    latestChapter.createdAt
                                 )}
                             />
                         </div>
@@ -100,7 +100,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
     const latestChapter = bookmark.chapters[0];
     const lastReadChapter = bookmark.lastReadChapter;
     const chaptersBehind = Math.floor(
-        latestChapter.number - lastReadChapter.number,
+        latestChapter.number - lastReadChapter.number
     );
 
     // Check if user is caught up (read the latest chapter)
