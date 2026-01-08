@@ -18,7 +18,7 @@ export default function MangaDetailsSkeleton() {
                     />
                 </div>
 
-                <Card className="p-6 flex flex-col justify-between flex-grow lg:max-h-[600px] bg-background gap-0">
+                <div className="flex flex-col justify-between flex-grow lg:max-h-[600px] bg-background gap-0">
                     <div className="flex items-center mb-4 border-b pb-4 justify-between">
                         <Skeleton className="rounded-lg object-cover h-33 sm:h-41 md:h-57 w-24 sm:w-30 md:w-40 lg:hidden mr-4" />
                         <Skeleton className="h-8 w-1/2" />
@@ -67,7 +67,7 @@ export default function MangaDetailsSkeleton() {
                             </Card>
                         </div>
                     </div>
-                </Card>
+                </div>
             </div>
 
             <div className="mb-4 flex justify-between items-center">
