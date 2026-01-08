@@ -5,6 +5,7 @@ import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import { removeBookmark } from "@/lib/manga/bookmarks";
 import { syncAllServices } from "@/lib/manga/sync";
 import { client } from "@/lib/api";
+import Toast from "@/lib/toast-wrapper";
 
 export function ConfirmDialogs({
     bookmark,
@@ -22,11 +23,15 @@ export function ConfirmDialogs({
     async function handleRemoveBookmark(mangaId: string) {
         const data = await removeBookmark(mangaId);
 
-        if (data) {
-            setUpdatedBookmarks((prev) =>
-                prev.filter((bookmark) => bookmark.mangaId !== mangaId),
-            );
+        if (!data) {
+            new Toast("Failed to remove bookmark", "error");
+            return;
         }
+
+        new Toast("Bookmark removed successfully", "success");
+        setUpdatedBookmarks((prev) =>
+            prev.filter((bookmark) => bookmark.mangaId !== mangaId)
+        );
     }
 
     async function handleUpdateBookmark(id: string, subId: number | undefined) {
@@ -44,17 +49,24 @@ export function ConfirmDialogs({
         });
 
         if (error) {
+            new Toast("Failed to update bookmark", "error");
             return false;
         }
 
-        return await syncAllServices(data.data);
+        const success = await syncAllServices(data.data);
+        if (!success) {
+            new Toast("Failed to sync manga services", "error");
+            return false;
+        }
+
+        new Toast("Bookmark updated successfully", "success");
     }
 
     return (
         <div
             className={cn(
                 "flex flex-row items-center gap-2 self-start",
-                className,
+                className
             )}
         >
             <ButtonConfirmDialog
@@ -93,7 +105,7 @@ export function ConfirmDialogs({
                 onConfirm={() =>
                     handleUpdateBookmark(
                         bookmark.mangaId,
-                        bookmark.chapters[0]?.number,
+                        bookmark.chapters[0]?.number
                     )
                 }
             />
