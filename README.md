@@ -16,87 +16,80 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 ## Table of Contents
 
 -   [Features](#features)
--   [Settings](#settings)
--   [Technical Stack](#technical-stack)
 -   [Getting Started](#getting-started)
     -   [Online Usage](#online-usage)
     -   [Local Installation](#local-installation)
+-   [Screenshots](#screenshots)
 
-# Features
+## Features
 
-## Reader Experience
+### Reader Experience
 
 -   **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
--   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
+-   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa
 -   **Responsive Design:** Fully responsive interface that works on mobile and desktop
 
-## Manga Management
+### Manga Management
 
 -   **Genre Filtering:** Browse manga by specific genres
 -   **Popular Manga Section:** Discover trending and popular manga
 -   **Latest Updates:** Stay informed about newly added chapters
 
-## Bookmarks and Sync
+### Bookmarks and Sync
 
--   **MyAnimeList Integration:**
-    -   Sync with MyAnimeList (MAL) account
-    -   Enhanced manga information from MAL
--   **Bookmark Management:**
-    -   Save and organize your favorite manga titles
-    -   Quick bookmark removal from manga pages
-    -   Search through bookmarked manga
-    -   Up-to-date chapter tracking
-    -   Last read chapter tracking
+-   **External Service Integration:** Sync with MyAnimeList (MAL) and AniList accounts to import your saved manga
+-   **Bookmark Management:** Save, organize, and track your favorite manga titles with up-to-date chapter progress
 
-# Settings
+## Getting Started
 
-## General
-
-| Setting            | Default | Description                                           |
-| ------------------ | ------- | ----------------------------------------------------- |
-| Theme              | System  | Select the application theme.                         |
-| Fancy Animations   | Enabled | Such as manga detail pages cover image.               |
-| Navigation Restore | Enabled | Restore the last visited page when reopening the app. |
-| Show Toasts        | Enabled | Show toast notifications for various actions.         |
-| Login Toasts       | Enabled | Show warnings when you aren't logged in to a service. |
-
-## Manga
-
-| Setting            | Default | Description                                            |
-| ------------------ | ------- | ------------------------------------------------------ |
-| Show Page Progress | Enabled | Shows a progress bar at the side/ bottom when reading. |
-| Strip Reader Width | 144     | Width of the strip reader.                             |
-
-## Shortcuts
-
-| Setting               | Default      | Description                           |
-| --------------------- | ------------ | ------------------------------------- |
-| Show Shortcuts        | Enabled      | Enable or disable keyboard shortcuts. |
-| Search Manga          | Ctrl+K       | Shortcut to search manga.             |
-| Toggle Sidebar        | Ctrl+B       | Shortcut to toggle the sidebar.       |
-| Open Settings         | Ctrl+,       | Shortcut to open settings.            |
-| Open Account          | Ctrl+.       | Shortcut to open account page.        |
-| Navigate to Bookmarks | Ctrl+Shift+B | Shortcut to navigate to bookmarks.    |
-
-# Technical Stack
-
--   **Frontend**: Next.js 15, React 19, TailwindCSS
--   **Authentication**: MyAnimeList OAuth and user accounts
-
-# Getting Started
-
-## Online Usage
+### Online Usage
 
 Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga instantly.
 
-Create an account to sync your bookmarks and reading progress across devices.
+### Local Installation
 
-![Login](./images/LoginForm.webp)
+If you prefer to run Akari locally, follow these steps. Logging in is currently not supported when running locally, I am looking into solutions.
 
-After you've been logged in, you can use it as you normally would.
+#### Prerequisites
 
-<details>
-  <summary>Showcase of Pages</summary>
+-   [Node.js](https://nodejs.org/)
+-   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+#### Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/sn0w12/Akari
+    cd Akari
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    npm install
+    ```
+
+3. Start the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+    > **Note:** MyAnimeList authentication only works on specific localhost ports: 3000, 3016, 3456, 3789, and 4000. Modify the port in `package.json` scripts if needed.
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+#### Production Build
+
+To build for production:
+
+```bash
+npm run build
+npm run start
+```
+
+## Screenshots
 
 ### Front Page
 
@@ -112,7 +105,7 @@ After you've been logged in, you can use it as you normally would.
 
 ### Author
 
-![Author](./images/Author.png)
+![Author](./images/Author.webp)
 
 ### Genre
 
@@ -120,56 +113,6 @@ After you've been logged in, you can use it as you normally would.
 
 </details>
 
-## Local Installation
+## Disclaimer
 
-If you prefer to run Akari locally, follow these steps.
-
-### Prerequisites
-
-Before running Akari, make sure you have the following installed:
-
--   [Node.js](https://nodejs.org/)
--   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/sn0w12/Akari
-cd Akari
-```
-
-2. Install dependencies:
-
-If you are using yarn, replace npm with yarn.
-
-```bash
-npm install
-```
-
-### Running the Development Server
-
-To start the development server, run:
-
-```bash
-npm run dev
-```
-
-> **Note**: When running locally, MyAnimeList authentication only works on specific localhost ports. Currently supported ports are: 3000, 3016, 3456, 3789, and 4000. You can modify the port in your `package.json` scripts by adding a `-p` flag with `next dev / start`.
-
-Open http://localhost:3000 in your browser to see the application.
-
-### Production Build
-
-To build the app for production:
-
-```bash
-npm run build
-npm run start
-```
-
-# DMCA disclaimer
-
-The developers of this application do not have any affiliation with the content available in the app.
-It collects content from sources that are freely available through any web browser
+The developers of this application do not have any affiliation with the content available in the app. It collects content from sources that are freely available through any web browser.
