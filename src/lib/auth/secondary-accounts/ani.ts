@@ -19,11 +19,10 @@ export class AniAccount extends SecondaryAccountBase {
         return url.toString();
     }
 
-    logOut(): Promise<boolean> {
+    async doLogOut(): Promise<boolean> {
         Cookies.remove("ani_access_token");
-        this.userStorage.remove();
 
-        return Promise.resolve(true);
+        return true;
     }
 
     async validate(): Promise<boolean> {

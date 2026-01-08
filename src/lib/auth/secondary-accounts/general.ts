@@ -64,9 +64,22 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
 
     /**
      * Logs out the user from this secondary account.
+     * This method performs account-specific logout logic and then invalidates the cache.
      * @returns A promise that resolves to true if logout was successful, false otherwise.
      */
-    abstract logOut(): Promise<boolean>;
+    async logOut(): Promise<boolean> {
+        const result = await this.doLogOut();
+        this.invalidate();
+        this.userStorage.remove();
+        return result;
+    }
+
+    /**
+     * Abstract method for account-specific logout logic.
+     * Subclasses must implement this to handle provider-specific cleanup (e.g., removing cookies).
+     * @returns A promise that resolves to true if the logout logic succeeded, false otherwise.
+     */
+    protected abstract doLogOut(): Promise<boolean>;
 
     /**
      * Invalidates the cached data for this account.
