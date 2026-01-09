@@ -64,7 +64,9 @@ export default async function RootLayout({
                                                     <PWANavigationRestore />
                                                 </Suspense>
                                                 <BaseLayout gutter={true}>
-                                                    <AnalyticsWrapper />
+                                                    <Suspense fallback={null}>
+                                                        <AnalyticsWrapper />
+                                                    </Suspense>
                                                     <div className="flex-1">
                                                         {children}
                                                     </div>
