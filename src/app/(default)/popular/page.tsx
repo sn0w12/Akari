@@ -72,10 +72,13 @@ export default async function Popular(props: PageProps) {
                 defaultSortValue: "30",
                 sortItems: [
                     { key: "days", value: "1", label: "Last 24 Hours" },
+                    { key: "separator" },
                     { key: "days", value: "7", label: "Last 7 Days" },
                     { key: "days", value: "30", label: "Last 30 Days" },
+                    { key: "separator" },
                     { key: "days", value: "90", label: "Last 3 Months" },
                     { key: "days", value: "180", label: "Last 6 Months" },
+                    { key: "separator" },
                     { key: "days", value: "365", label: "Last Year" },
                 ],
             }}
