@@ -1,13 +1,56 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 import { useUser } from "@/contexts/user-context";
 import { useDevice } from "@/contexts/device-context";
 
+type PathPattern = {
+    regex: RegExp;
+    replacement: string;
+};
+
+const pathPatterns: PathPattern[] = [
+    {
+        regex: /^\/manga\/[a-f0-9-]{36}$/,
+        replacement: "/manga/{id}",
+    },
+    {
+        regex: /^\/manga\/[a-f0-9-]{36}\/[0-9]+$/,
+        replacement: "/manga/{id}/{chapter}",
+    },
+    {
+        regex: /^\/genre\/[^\/]+$/,
+        replacement: "/genre/{name}",
+    },
+    {
+        regex: /^\/author\/[^\/]+$/,
+        replacement: "/author/{name}",
+    },
+    {
+        regex: /^\/user\/[a-f0-9-]{36}$/,
+        replacement: "/user/{id}",
+    },
+    {
+        regex: /^\/lists\/[a-f0-9-]{36}$/,
+        replacement: "/lists/{id}",
+    },
+];
+
+export function generalizePathname(pathname: string): string {
+    for (const { regex, replacement } of pathPatterns) {
+        if (regex.test(pathname)) {
+            return replacement;
+        }
+    }
+    return pathname; // Return original if no match
+}
+
 export function AnalyticsWrapper() {
     const { consent } = useCookieConsent();
     const { user, isLoading } = useUser();
+    const pathname = usePathname();
     const device = useDevice();
     const domain = process.env.NEXT_PUBLIC_HOST;
     const endpoint = process.env.NEXT_PUBLIC_PLAUSIBLE_ENDPOINT;
@@ -37,12 +80,21 @@ export function AnalyticsWrapper() {
                 customProperties: {
                     logged_in: (!!user).toString(),
                     pwa: device.isPWA.toString(),
+                    general_path: generalizePathname(pathname),
                 },
             });
         };
 
         loadAndInit();
-    }, [domain, endpoint, consent.analytics, user, device, isLoading]);
+    }, [
+        domain,
+        endpoint,
+        consent.analytics,
+        user,
+        device,
+        isLoading,
+        pathname,
+    ]);
 
     return null;
 }
