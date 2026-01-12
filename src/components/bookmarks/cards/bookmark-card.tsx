@@ -22,8 +22,6 @@ export function BookmarkCard({
     bookmark,
     setUpdatedBookmarks,
 }: BookmarkCardProps) {
-    const latestChapter = bookmark.chapters[0];
-
     return (
         <Card className="overflow-hidden p-0 rounded-lg">
             <div className="flex flex-col gap-2 p-4">
@@ -70,12 +68,12 @@ export function BookmarkCard({
 
                             <SubTitle
                                 label="Latest"
-                                value={`Ch. ${latestChapter.number}`}
+                                value={`Ch. ${bookmark.latestChapter.number}`}
                             />
                             <SubTitle
                                 label="Released"
                                 value={formatRelativeDate(
-                                    latestChapter.createdAt
+                                    bookmark.latestChapter.createdAt
                                 )}
                             />
                         </div>
@@ -97,17 +95,11 @@ interface ActionButtonProps {
 }
 
 function ActionButton({ bookmark, className }: ActionButtonProps) {
-    const latestChapter = bookmark.chapters[0];
-    const lastReadChapter = bookmark.lastReadChapter;
-    const chaptersBehind = Math.floor(
-        latestChapter.number - lastReadChapter.number
-    );
-
     // Check if user is caught up (read the latest chapter)
-    const isCaughtUp = chaptersBehind === 0;
+    const isCaughtUp = bookmark.chaptersBehind === 0;
 
     // Check if user should just read the latest (read second-to-latest)
-    const shouldReadLatest = chaptersBehind === 1;
+    const shouldReadLatest = bookmark.chaptersBehind === 1;
 
     return (
         <div className={cn("flex items-center gap-2 w-full", className)}>
@@ -122,33 +114,33 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 </Button>
             ) : shouldReadLatest ? (
                 <ButtonLink
-                    href={`/manga/${bookmark.mangaId}/${latestChapter.number}`}
+                    href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.number}`}
                     size="sm"
                     className="flex-1"
                 >
                     <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
-                    {latestChapter.number}
+                    {bookmark.latestChapter.number}
                 </ButtonLink>
             ) : (
                 <ButtonLink
-                    href={`/manga/${bookmark.mangaId}/${lastReadChapter.number}`}
+                    href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.number}`}
                     variant="secondary"
                     size="sm"
                     className="flex-1 group"
                 >
                     <p className="hidden md:inline">Continue Reading • </p>
-                    Ch. {lastReadChapter.number}
+                    Ch. {bookmark.nextChapter.number}
                     <Badge
                         variant="default"
                         className="ml-1.5 text-xs group-hover:bg-primary/80"
                     >
-                        {chaptersBehind} new
+                        {bookmark.chaptersBehind} new
                     </Badge>
                 </ButtonLink>
             )}
             <ChaptersPopup
                 mangaId={bookmark.mangaId}
-                lastReadChapter={lastReadChapter}
+                lastReadChapter={bookmark.lastReadChapter}
             />
         </div>
     );

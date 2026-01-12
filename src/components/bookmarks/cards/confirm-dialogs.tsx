@@ -105,7 +105,7 @@ export function ConfirmDialogs({
                 onConfirm={() =>
                     handleUpdateBookmark(
                         bookmark.mangaId,
-                        bookmark.chapters[0]?.number
+                        bookmark.latestChapter.number
                     )
                 }
             />

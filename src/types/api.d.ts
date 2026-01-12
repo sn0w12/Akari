@@ -3935,7 +3935,10 @@ export interface components {
             /** Format: date-time */
             mangaUpdatedAt: string;
             lastReadChapter: components["schemas"]["BookmarkChapter"];
-            chapters: components["schemas"]["BookmarkChapter"][];
+            latestChapter: components["schemas"]["BookmarkChapter"];
+            nextChapter: components["schemas"]["BookmarkChapter"];
+            /** Format: int32 */
+            chaptersBehind: number;
         };
         ChapterOption: {
             label: string;

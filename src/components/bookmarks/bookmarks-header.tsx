@@ -186,7 +186,7 @@ export default function BookmarksHeader() {
                                             {result.title}
                                         </div>
                                         <Link
-                                            href={`/manga/${result.mangaId}/${result.lastReadChapter.number}`}
+                                            href={`/manga/${result.mangaId}/${result.nextChapter.number}`}
                                         >
                                             <Button
                                                 className="z-20"
