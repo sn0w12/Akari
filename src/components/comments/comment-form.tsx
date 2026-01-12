@@ -15,7 +15,7 @@ import { generateSizes } from "@/lib/utils";
 interface CommentFormProps {
     onSubmit: (
         content: string,
-        attachment?: components["schemas"]["UploadResponse"]
+        attachment?: components["schemas"]["UploadResponse"],
     ) => Promise<void>;
     placeholder?: string;
     submitLabel?: string;

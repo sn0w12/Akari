@@ -69,7 +69,7 @@ export function TreeItem({
                         ? "bg-accent text-accent-foreground font-semibold"
                         : "hover:bg-muted hover:text-foreground",
                     collapsible && "pl-0",
-                    "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+                    "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
                 )}
                 tabIndex={0}
                 onClick={onClick}
@@ -124,7 +124,7 @@ export function TreeChildren({
             role="group"
             className={cn(
                 "border-muted mt-0.5 ml-2 space-y-0.5 border-l pl-2",
-                className
+                className,
             )}
             {...props}
         >

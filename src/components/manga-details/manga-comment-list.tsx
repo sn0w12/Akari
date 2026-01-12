@@ -37,12 +37,12 @@ export function MangaCommentList({
                             id: mangaId,
                         },
                     },
-                }
+                },
             );
 
             if (error) {
                 throw new Error(
-                    error.data.message || "Error fetching search results"
+                    error.data.message || "Error fetching search results",
                 );
             }
 
@@ -51,13 +51,13 @@ export function MangaCommentList({
     });
     const [comments, setComments] =
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
-            initialComments
+            initialComments,
         );
     const { user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
 
     const handleSortChange = (
-        newSort: components["schemas"]["CommentSortOrder"]
+        newSort: components["schemas"]["CommentSortOrder"],
     ) => {
         setSortOrder(newSort);
         sortMutation.mutate(newSort);
@@ -129,7 +129,7 @@ export function MangaCommentList({
     const updateCommentContent = (
         comments: components["schemas"]["CommentWithRepliesResponse"][],
         commentId: string,
-        newContent: string
+        newContent: string,
     ): components["schemas"]["CommentWithRepliesResponse"][] => {
         return comments.map((comment) => {
             if (comment.id === commentId) {
@@ -143,7 +143,7 @@ export function MangaCommentList({
                     replies: updateCommentContent(
                         comment.replies,
                         commentId,
-                        newContent
+                        newContent,
                     ),
                 };
             }
@@ -160,7 +160,7 @@ export function MangaCommentList({
                         commentId: commentId,
                     },
                 },
-            }
+            },
         );
         if (error) {
             console.error("Failed to load replies:", error);
@@ -172,7 +172,7 @@ export function MangaCommentList({
             const updateReplies = (
                 comments: components["schemas"]["CommentWithRepliesResponse"][],
                 commentId: string,
-                replies: components["schemas"]["CommentWithRepliesResponse"][]
+                replies: components["schemas"]["CommentWithRepliesResponse"][],
             ): components["schemas"]["CommentWithRepliesResponse"][] => {
                 return comments.map((comment) => {
                     if (comment.id === commentId) {
@@ -186,7 +186,7 @@ export function MangaCommentList({
                             replies: updateReplies(
                                 comment.replies,
                                 commentId,
-                                replies
+                                replies,
                             ),
                         };
                     }
@@ -200,7 +200,7 @@ export function MangaCommentList({
 
     const handleVote = async (
         commentId: string,
-        voteType: VoteType
+        voteType: VoteType,
     ): Promise<void> => {
         const { error } = await client.POST("/v2/comments/{commentId}/vote", {
             params: {
@@ -222,7 +222,7 @@ export function MangaCommentList({
     const handleReply = async (
         parentId: string,
         content: string,
-        attachment?: components["schemas"]["UploadResponse"]
+        attachment?: components["schemas"]["UploadResponse"],
     ): Promise<CommentData> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
@@ -247,7 +247,7 @@ export function MangaCommentList({
         const insertReply = (
             comments: components["schemas"]["CommentWithRepliesResponse"][],
             parentId: string,
-            newReply: CommentData
+            newReply: CommentData,
         ): components["schemas"]["CommentWithRepliesResponse"][] => {
             return comments.map((comment) => {
                 if (comment.id === parentId) {
@@ -266,7 +266,7 @@ export function MangaCommentList({
                         replies: insertReply(
                             comment.replies,
                             parentId,
-                            newReply
+                            newReply,
                         ),
                     };
                 }
@@ -275,7 +275,7 @@ export function MangaCommentList({
         };
 
         setComments((prevComments) =>
-            insertReply(prevComments, parentId, data.data)
+            insertReply(prevComments, parentId, data.data),
         );
 
         new Toast("Reply posted successfully!", "success");
@@ -284,7 +284,7 @@ export function MangaCommentList({
 
     const handleNewComment = async (
         content: string,
-        attachment?: components["schemas"]["UploadResponse"]
+        attachment?: components["schemas"]["UploadResponse"],
     ): Promise<void> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
@@ -316,7 +316,7 @@ export function MangaCommentList({
 
     const handleEdit = async (
         commentId: string,
-        content: string
+        content: string,
     ): Promise<void> => {
         const { error } = await client.PUT("/v2/comments/{commentId}", {
             params: {
@@ -335,7 +335,7 @@ export function MangaCommentList({
         }
 
         setComments((prevComments) =>
-            updateCommentContent(prevComments, commentId, content)
+            updateCommentContent(prevComments, commentId, content),
         );
 
         new Toast("Comment edited successfully!", "success");
@@ -356,7 +356,7 @@ export function MangaCommentList({
         }
 
         setComments((prevComments) =>
-            updateCommentContent(prevComments, commentId, "[deleted]")
+            updateCommentContent(prevComments, commentId, "[deleted]"),
         );
 
         new Toast("Comment deleted successfully!", "success");

@@ -29,7 +29,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
 
     const onValueChange = (value: string) => {
         const item = sorting.sortItems.find(
-            (i) => !isSeparator(i) && i.value === value
+            (i) => !isSeparator(i) && i.value === value,
         );
         if (!item || isSeparator(item)) return;
 
@@ -53,7 +53,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
                         <SelectItem key={item.value} value={item.value}>
                             {item.label}
                         </SelectItem>
-                    )
+                    ),
                 )}
             </SelectContent>
         </Select>

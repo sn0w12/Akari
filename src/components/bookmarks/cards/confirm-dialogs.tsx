@@ -30,7 +30,7 @@ export function ConfirmDialogs({
 
         new Toast("Bookmark removed successfully", "success");
         setUpdatedBookmarks((prev) =>
-            prev.filter((bookmark) => bookmark.mangaId !== mangaId)
+            prev.filter((bookmark) => bookmark.mangaId !== mangaId),
         );
     }
 
@@ -66,7 +66,7 @@ export function ConfirmDialogs({
         <div
             className={cn(
                 "flex flex-row items-center gap-2 self-start",
-                className
+                className,
             )}
         >
             <ButtonConfirmDialog
@@ -105,7 +105,7 @@ export function ConfirmDialogs({
                 onConfirm={() =>
                     handleUpdateBookmark(
                         bookmark.mangaId,
-                        bookmark.latestChapter.number
+                        bookmark.latestChapter.number,
                     )
                 }
             />

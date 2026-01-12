@@ -24,7 +24,7 @@ export function ChaptersSection({
     const totalPages = Math.ceil(sortedChapters.length / 24);
     const currentChapters = sortedChapters.slice(
         (currentPage - 1) * 24,
-        currentPage * 24
+        currentPage * 24,
     );
 
     return (
@@ -77,7 +77,7 @@ export function ChaptersSection({
                                             chapter as unknown as {
                                                 createdAt: string;
                                             }
-                                        ).createdAt
+                                        ).createdAt,
                                     )}
                                 </p>
                             </CardContent>

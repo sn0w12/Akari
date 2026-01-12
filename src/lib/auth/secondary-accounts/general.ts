@@ -102,7 +102,7 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      * @returns A promise that resolves to true if sync was successful, false otherwise.
      */
     abstract sync(
-        manga: components["schemas"]["ChapterResponse"]
+        manga: components["schemas"]["ChapterResponse"],
     ): Promise<boolean>;
 
     /**
@@ -115,6 +115,6 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
     abstract handleCallback(
         params: Record<string, string>,
         hash: string,
-        origin: string
+        origin: string,
     ): Promise<boolean>;
 }

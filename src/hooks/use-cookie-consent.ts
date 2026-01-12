@@ -32,13 +32,13 @@ export const useCookieConsent = create<CookieStore>()(
                         [category]: value,
                     };
                     document.cookie = `cookie-consent=${JSON.stringify(
-                        newConsent
+                        newConsent,
                     )};path=/;max-age=31536000`;
                     return { consent: newConsent };
                 });
             },
             setInteracted: () => set({ hasInteracted: true }),
         }),
-        { name: "cookie-consent" }
-    )
+        { name: "cookie-consent" },
+    ),
 );

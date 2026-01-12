@@ -23,7 +23,7 @@ const CallbackPage = () => {
 
         const getToken = async (accountId: string) => {
             const account = getSecondaryAccountById(
-                accountId as SecondaryAccountId
+                accountId as SecondaryAccountId,
             );
             if (!account) {
                 throw new Error("Unknown provider");
@@ -37,7 +37,7 @@ const CallbackPage = () => {
         const processCallback = async () => {
             try {
                 const account = getSecondaryAccountById(
-                    provider as SecondaryAccountId
+                    provider as SecondaryAccountId,
                 );
                 if (!account) {
                     setError({
@@ -76,7 +76,7 @@ const CallbackPage = () => {
 
                 setSuccess(true);
                 const cacheStorage = StorageManager.get(
-                    "secondaryAccountCache"
+                    "secondaryAccountCache",
                 );
                 cacheStorage.set({ valid: true }, { accountId: provider });
                 router.push("/account");

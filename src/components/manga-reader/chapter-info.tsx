@@ -22,7 +22,7 @@ export function ChapterInfo({
                     : "horizontal";
             }
             return "horizontal";
-        }
+        },
     );
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export function ChapterInfo({
                 {
                     "opacity-0 pointer-events-none": hidden,
                     "opacity-100": !hidden,
-                }
+                },
             )}
             onClick={(e) => e.stopPropagation()}
         >

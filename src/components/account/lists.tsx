@@ -120,7 +120,11 @@ export function UserMangaLists({ initialLists }: UserMangaListsProps) {
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {lists.map((list) => (
-                        <ListItem key={list.id} list={list} onDelete={handleDelete} />
+                        <ListItem
+                            key={list.id}
+                            list={list}
+                            onDelete={handleDelete}
+                        />
                     ))}
                 </div>
             )}

@@ -100,7 +100,7 @@ export const defaultSettings = getDefaultSettings();
 export function dispatchSettingsChange<T extends SettingValue>(
     key: keyof SettingsInterface,
     value: T,
-    previousValue: T
+    previousValue: T,
 ) {
     if (typeof window !== "undefined") {
         const event = new CustomEvent<SettingsChangeEvent>(
@@ -111,7 +111,7 @@ export function dispatchSettingsChange<T extends SettingValue>(
                     value,
                     previousValue,
                 },
-            }
+            },
         );
         window.dispatchEvent(event);
     }
@@ -138,7 +138,7 @@ export function dispatchSettingsChange<T extends SettingValue>(
  */
 export function useSettingsChange(
     callback: (event: CustomEvent<SettingsChangeEvent>) => void,
-    watchKey?: keyof SettingsInterface
+    watchKey?: keyof SettingsInterface,
 ) {
     React.useEffect(() => {
         const handler = (event: Event) => {
@@ -165,10 +165,10 @@ export function useSettingsChange(
  * ```
  */
 export function useSetting<K extends SettingKeys>(
-    key: K
+    key: K,
 ): SettingsInterface[K] {
     const [value, setValue] = React.useState<SettingsInterface[K]>(
-        () => getSetting(key) ?? defaultSettings[key]
+        () => getSetting(key) ?? defaultSettings[key],
     );
 
     useSettingsChange((event) => {
@@ -187,7 +187,7 @@ export function useSetting<K extends SettingKeys>(
  * @returns The value of the specified setting key if found in localStorage, the default value if the key exists in defaultSettings, or null if neither exists or if running server-side
  */
 export function getSetting<K extends SettingKeys>(
-    key: K
+    key: K,
 ): SettingsInterface[K] | null {
     if (typeof window === "undefined") return null;
 
@@ -210,7 +210,7 @@ export function getSetting<K extends SettingKeys>(
 export function useShortcutSetting(
     key: ShortcutSettingKeys,
     callback: () => void,
-    options: ShortcutOptions = {}
+    options: ShortcutOptions = {},
 ) {
     const shortcut = useSetting(key);
     useShortcut(shortcut, callback, options);
@@ -227,7 +227,7 @@ export function useShortcutSetting(
 export const createSettingsMap = (
     categoryKey: keyof typeof APP_SETTINGS,
     currentSettings: SettingsInterface,
-    setSettings: (newSettings: SettingsInterface) => void
+    setSettings: (newSettings: SettingsInterface) => void,
 ): Record<string, Setting> => {
     const categorySettings = APP_SETTINGS[categoryKey]?.settings || {};
     const returnSettings: Record<string, Setting> = {};
@@ -261,7 +261,7 @@ export const createSettingsMap = (
  */
 export const createAllSettingsMaps = (
     currentSettings: SettingsInterface,
-    setSettings: (newSettings: SettingsInterface) => void
+    setSettings: (newSettings: SettingsInterface) => void,
 ) => {
     const settingsMap: Record<string, Record<string, Setting>> = {};
 
@@ -269,7 +269,7 @@ export const createAllSettingsMaps = (
         settingsMap[category.label] = createSettingsMap(
             key as keyof typeof APP_SETTINGS,
             currentSettings,
-            setSettings
+            setSettings,
         );
     });
 
@@ -286,7 +286,7 @@ export function resetAllSettingsToDefault() {
             key as keyof SettingsInterface,
             defaultSettings[key as keyof SettingsInterface],
             getSetting(key as SettingKeys) ??
-                defaultSettings[key as keyof SettingsInterface]
+                defaultSettings[key as keyof SettingsInterface],
         );
     });
     localStorage.setItem("settings", JSON.stringify(defaultSettings));
@@ -320,7 +320,7 @@ export type SettingVisibility = "desktop" | "mobile" | "pwa";
 export function shouldShowSetting(
     visibility: SettingVisibility[] | undefined,
     deviceType: DeviceType,
-    isPWA: boolean
+    isPWA: boolean,
 ): boolean {
     if (!visibility || visibility.length === 0) {
         return true;

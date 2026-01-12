@@ -60,6 +60,6 @@ sw.addEventListener("notificationclick", (event) => {
             }
             // Not found -> open a new window/tab
             await sw.clients.openWindow(urlToOpen);
-        })()
+        })(),
     );
 });

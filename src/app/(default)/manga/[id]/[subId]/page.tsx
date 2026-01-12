@@ -53,7 +53,7 @@ export async function generateStaticParams() {
         chapterIds.map((chapterId) => ({
             id: mangaId,
             subId: chapterId.toString(),
-        }))
+        })),
     );
 }
 
@@ -63,7 +63,7 @@ export async function generateMetadata({
     const mangaParams = await params;
     const { data, error } = await getChapter(
         mangaParams.id,
-        Number(mangaParams.subId)
+        Number(mangaParams.subId),
     );
 
     if (error) {
@@ -89,7 +89,7 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
     const mangaParams = await params;
     const { data, error } = await getChapter(
         mangaParams.id,
-        Number(mangaParams.subId)
+        Number(mangaParams.subId),
     );
 
     if (error) {

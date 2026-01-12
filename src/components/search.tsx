@@ -39,7 +39,7 @@ export default function SearchPage() {
     });
     const [currentPage, setCurrentPage] = useState(page);
     const [selectedGenres, setSelectedGenres] = useState<Genre[]>(
-        selectedGenresFromUrl
+        selectedGenresFromUrl,
     );
 
     useEffect(() => {
@@ -68,7 +68,7 @@ export default function SearchPage() {
 
             if (error) {
                 throw new Error(
-                    error.data.message || "Error fetching search results"
+                    error.data.message || "Error fetching search results",
                 );
             }
 

@@ -12,7 +12,7 @@ export async function getSearchResults(query: string, n: number = 5) {
 
     if (error || !data.data) {
         throw new Error(
-            error?.data.message || "Failed to fetch search results"
+            error?.data.message || "Failed to fetch search results",
         );
     }
 

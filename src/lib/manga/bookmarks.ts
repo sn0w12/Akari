@@ -71,7 +71,7 @@ export async function bookmarkManga(mangaId: string, chapter?: number) {
 }
 
 export async function updateBookmark(
-    data: components["schemas"]["ChapterResponse"]
+    data: components["schemas"]["ChapterResponse"],
 ) {
     return await bookmarkManga(data.mangaId, data.number);
 }

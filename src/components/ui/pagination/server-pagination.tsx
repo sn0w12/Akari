@@ -48,7 +48,7 @@ export function ServerPagination({
         <nav
             className={cn(
                 "flex items-center justify-between w-full max-w-md mx-auto",
-                className
+                className,
             )}
             aria-label="Pagination"
         >
@@ -59,7 +59,7 @@ export function ServerPagination({
                 href={createPageUrl(currentPage - 1)}
                 onMouseOver={() => {
                     router.prefetch(
-                        `${createPageUrl(currentPage - 1)}&_prefetch=1`
+                        `${createPageUrl(currentPage - 1)}&_prefetch=1`,
                     );
                 }}
                 disabled={currentPage <= 1}
@@ -116,7 +116,7 @@ export function ServerPagination({
                 href={createPageUrl(currentPage + 1)}
                 onMouseOver={() => {
                     router.prefetch(
-                        `${createPageUrl(currentPage + 1)}&_prefetch=1`
+                        `${createPageUrl(currentPage + 1)}&_prefetch=1`,
                     );
                 }}
                 disabled={currentPage >= totalPages}

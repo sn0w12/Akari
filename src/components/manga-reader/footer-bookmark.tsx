@@ -63,8 +63,8 @@ export function FooterBookmarkButton({
             {bookmarkMutation.isPending
                 ? "Loading..."
                 : isBookmarked
-                ? "Bookmarked"
-                : "Bookmark"}
+                  ? "Bookmarked"
+                  : "Bookmark"}
         </Button>
     );
 }

@@ -83,7 +83,7 @@ export default function SyncMalPage() {
             setMalData(
                 allData.filter((item) => {
                     return ALLOWED_MEDIA_TYPES.includes(item.node.mediaType);
-                })
+                }),
             );
             setMalLoading(false);
         }
@@ -150,7 +150,7 @@ export default function SyncMalPage() {
 
         const malDataToSync = malData.filter(
             (item) =>
-                !bookmarks.some((bookmark) => bookmark.malId === item.node.id)
+                !bookmarks.some((bookmark) => bookmark.malId === item.node.id),
         );
 
         if (malDataToSync.length === 0) return;
@@ -177,7 +177,7 @@ export default function SyncMalPage() {
 
             for (const manga of data.data) {
                 const malItem = malDataToSync.find(
-                    (item) => item.node.id === manga.malId
+                    (item) => item.node.id === manga.malId,
                 );
                 if (malItem) {
                     updateItems.push({
@@ -222,7 +222,7 @@ export default function SyncMalPage() {
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.malId === item.node.id
+                    (bookmark) => bookmark.malId === item.node.id,
                 ) ? (
                     <Check className="h-4 w-4 text-green-600" />
                 ) : (

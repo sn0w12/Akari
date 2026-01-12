@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 export function ConnectedAccounts() {
     const [validAccounts, setValidAccounts] = useState<SmallSecondaryAccount[]>(
-        []
+        [],
     );
 
     useEffect(() => {
@@ -33,8 +33,8 @@ export function ConnectedAccounts() {
         if (success) {
             setValidAccounts((accounts) =>
                 accounts.map((acc) =>
-                    acc.id === account.id ? { ...acc, valid: false } : acc
-                )
+                    acc.id === account.id ? { ...acc, valid: false } : acc,
+                ),
             );
         }
     };
@@ -54,7 +54,7 @@ export function ConnectedAccounts() {
             <div>
                 {SECONDARY_ACCOUNTS.map((account, index) => {
                     const validAccount = validAccounts.find(
-                        (validAccount) => validAccount.id === account.id
+                        (validAccount) => validAccount.id === account.id,
                     );
                     const isValid = validAccount?.valid;
                     const accountName = account.userStorage.get()?.name ?? null;
@@ -71,7 +71,7 @@ export function ConnectedAccounts() {
                                     "rounded-t-lg": isFirst,
                                     "rounded-b-lg": isLast,
                                     "border-b-0": !isLast,
-                                }
+                                },
                             )}
                             style={
                                 {

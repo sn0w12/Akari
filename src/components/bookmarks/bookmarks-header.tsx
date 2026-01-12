@@ -33,7 +33,7 @@ export default function BookmarksHeader() {
     }, [debouncedSearchQuery]);
 
     const getBookmarkSearchResults = async (
-        query: string
+        query: string,
     ): Promise<components["schemas"]["BookmarkListResponse"]["items"]> => {
         const { data, error } = await client.GET("/v2/bookmarks/search", {
             params: {
@@ -86,7 +86,7 @@ export default function BookmarksHeader() {
 
         const bookmarksBlob = new Blob(
             [JSON.stringify(allBookmarks, null, 2)],
-            { type: "application/json" }
+            { type: "application/json" },
         );
         const url = URL.createObjectURL(bookmarksBlob);
         const a = Object.assign(document.createElement("a"), {
@@ -107,7 +107,7 @@ export default function BookmarksHeader() {
         if (e.key === "ArrowDown") {
             e.preventDefault();
             setSelectedIndex((prev) =>
-                Math.min(prev + 1, searchResults.length - 1)
+                Math.min(prev + 1, searchResults.length - 1),
             );
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -167,8 +167,8 @@ export default function BookmarksHeader() {
                                         index === selectedIndex
                                             ? "bg-accent"
                                             : isHoveringSearchButton
-                                            ? ""
-                                            : "hover:bg-accent"
+                                              ? ""
+                                              : "hover:bg-accent"
                                     } flex items-center rounded-lg`}
                                 >
                                     <div className="flex items-center justify-between w-full">
@@ -192,12 +192,12 @@ export default function BookmarksHeader() {
                                                 className="z-20"
                                                 onMouseEnter={() => {
                                                     setIsHoveringSearchButton(
-                                                        true
+                                                        true,
                                                     );
                                                 }}
                                                 onMouseLeave={() => {
                                                     setIsHoveringSearchButton(
-                                                        false
+                                                        false,
                                                     );
                                                 }}
                                             >

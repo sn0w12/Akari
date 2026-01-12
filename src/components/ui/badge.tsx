@@ -24,11 +24,12 @@ const badgeVariants = cva(
         defaultVariants: {
             variant: "default",
         },
-    }
+    },
 );
 
 export interface BadgeProps
-    extends React.HTMLAttributes<HTMLDivElement>,
+    extends
+        React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof badgeVariants> {
     withShadow?: boolean;
     shadowClassName?: string;
@@ -48,7 +49,7 @@ function Badge({
                     className={cn(
                         badgeVariants({ variant }),
                         "relative z-10 hover:bg-primary",
-                        className
+                        className,
                     )}
                     {...props}
                 />
@@ -58,7 +59,7 @@ function Badge({
                         "bg-accent-positive text-transparent absolute top-0 left-0 z-0 scale-90",
                         "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:scale-100",
                         "transition-all duration-200 pointer-events-none",
-                        shadowClassName ?? className
+                        shadowClassName ?? className,
                     )}
                     {...props}
                 />

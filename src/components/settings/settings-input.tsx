@@ -44,7 +44,7 @@ interface SettingsInputProps {
 }
 
 function findDuplicateShortcuts(
-    settingsMap: Record<string, Setting>
+    settingsMap: Record<string, Setting>,
 ): Set<string> {
     const shortcuts = new Map<string, string[]>();
     const duplicates = new Set<string>();
@@ -79,8 +79,8 @@ function findDuplicateShortcuts(
                 return otherKeys.some(
                     (otherKey) =>
                         !currentSetting.allowOverlap!.includes(
-                            otherKey as ShortcutSettingKeys
-                        )
+                            otherKey as ShortcutSettingKeys,
+                        ),
                 );
             });
 
@@ -133,13 +133,13 @@ export function SettingsInput({
                                 <Switch
                                     id={`${settingKey}-${option.value}`}
                                     checked={selectedValues.includes(
-                                        option.value
+                                        option.value,
                                     )}
                                     onCheckedChange={(checked) => {
                                         const newSelectedValues = checked
                                             ? [...selectedValues, option.value]
                                             : selectedValues.filter(
-                                                  (v) => v !== option.value
+                                                  (v) => v !== option.value,
                                               );
                                         setting.onChange?.(newSelectedValues);
                                     }}
@@ -213,7 +213,7 @@ export function SettingsInput({
                                 <ContextMenuItem
                                     onClick={() =>
                                         setting.onChange?.(
-                                            getDefaultSettingsValue(setting)
+                                            getDefaultSettingsValue(setting),
                                         )
                                     }
                                     className="flex gap-2"
@@ -240,7 +240,7 @@ export function SettingsInput({
                                                             {item.label}
                                                         </span>
                                                     </ContextMenuItem>
-                                                )
+                                                ),
                                             )}
                                         </>
                                     )}
@@ -288,7 +288,7 @@ export function SettingsInput({
             case "shortcut": {
                 const duplicates = findDuplicateShortcuts(settingsMap);
                 const isDuplicate = duplicates.has(
-                    getSettingValue(setting) as string
+                    getSettingValue(setting) as string,
                 );
 
                 return (
@@ -332,7 +332,7 @@ export function SettingsInput({
                 const value = parseInt(getSettingValue(setting) as string);
                 const maxLen = Math.max(
                     sliderSetting.min.toString().length,
-                    sliderSetting.max.toString().length
+                    sliderSetting.max.toString().length,
                 );
 
                 return (
@@ -348,7 +348,7 @@ export function SettingsInput({
                             </span>
                             <input
                                 className={cn(
-                                    "w-12 border-0 text-center font-medium"
+                                    "w-12 border-0 text-center font-medium",
                                 )}
                                 type="number"
                                 max={sliderSetting.max}
@@ -361,8 +361,8 @@ export function SettingsInput({
                                         setting.onChange?.(
                                             Math.min(
                                                 newValue,
-                                                sliderSetting.max
-                                            ).toString()
+                                                sliderSetting.max,
+                                            ).toString(),
                                         );
                                     }
                                 }}

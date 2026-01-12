@@ -38,7 +38,7 @@ export function Reader({ chapter }: ReaderProps) {
     useEffect(() => {
         if (bookmarkState !== null) {
             flashColor(
-                bookmarkState ? "border-accent-positive" : "border-destructive"
+                bookmarkState ? "border-accent-positive" : "border-destructive",
             );
         }
     }, [bookmarkState, flashColor]);
@@ -55,7 +55,7 @@ export function Reader({ chapter }: ReaderProps) {
         setIsStripMode(isStrip);
         readerModeStorage.set(
             { isStripMode: isStrip },
-            { mangaId: chapter.mangaId, chapterId: chapter.id }
+            { mangaId: chapter.mangaId, chapterId: chapter.id },
         );
     }
 
@@ -133,12 +133,12 @@ export function Reader({ chapter }: ReaderProps) {
         },
         {
             wait: 100,
-        }
+        },
     );
 
     useEffect(() => {
         const mainElement = document.getElementById(
-            "scroll-element"
+            "scroll-element",
         ) as HTMLElement;
         if (!mainElement) return;
         const controller = new AbortController();
@@ -146,7 +146,7 @@ export function Reader({ chapter }: ReaderProps) {
         mainElement.addEventListener(
             "scroll",
             () => handleScroll(mainElement),
-            { passive: true, signal: controller.signal }
+            { passive: true, signal: controller.signal },
         );
         window.addEventListener("scroll", () => handleScroll(mainElement), {
             passive: true,

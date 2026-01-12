@@ -13,7 +13,7 @@ export function useWindowWidth() {
             () => setWindowWidth(window.innerWidth),
             {
                 signal: controller.signal,
-            }
+            },
         );
 
         return () => controller.abort();

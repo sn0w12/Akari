@@ -63,7 +63,7 @@ export function AnalyticsWrapper() {
             }
             if (!endpoint) {
                 console.warn(
-                    "Plausible endpoint not set in environment variables."
+                    "Plausible endpoint not set in environment variables.",
                 );
                 return;
             }

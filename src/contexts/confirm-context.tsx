@@ -16,7 +16,7 @@ interface ConfirmContextType {
 }
 
 const ConfirmContext = React.createContext<ConfirmContextType | undefined>(
-    undefined
+    undefined,
 );
 
 export function useConfirm() {

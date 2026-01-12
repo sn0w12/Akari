@@ -30,7 +30,7 @@ export function UserLists({ userId }: UserListsProps) {
                             pageSize: 12,
                         },
                     },
-                }
+                },
             );
             if (error) {
                 throw new Error("Failed to fetch user lists");

@@ -75,7 +75,7 @@ export function BaseLayout({
         () => {
             router.push("/bookmarks");
         },
-        { preventDefault: true }
+        { preventDefault: true },
     );
 
     return (
@@ -149,7 +149,7 @@ export function BaseLayout({
                                         onNavigate={() => {}}
                                         isItemActive={() => false}
                                     />
-                                )
+                                ),
                             )}
                         </SidebarMenu>
                     </SidebarContent>
@@ -182,7 +182,7 @@ export function BaseLayout({
                 <main
                     className={cn(
                         `bg-background flex flex-col flex-1 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full`,
-                        borderClass
+                        borderClass,
                     )}
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                     id="scroll-element"

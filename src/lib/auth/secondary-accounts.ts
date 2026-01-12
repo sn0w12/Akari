@@ -3,7 +3,7 @@ import { MalAccount } from "./secondary-accounts/mal";
 import { StorageManager } from "@/lib/storage";
 
 export type SyncHandler = (
-    data: components["schemas"]["ChapterResponse"]
+    data: components["schemas"]["ChapterResponse"],
 ) => Promise<boolean>;
 export interface SecondaryAccount {
     id: string;
@@ -19,7 +19,7 @@ export interface SecondaryAccount {
     handleCallback: (
         params: Record<string, string>,
         hash: string,
-        origin: string
+        origin: string,
     ) => Promise<boolean>;
 }
 export const SECONDARY_ACCOUNTS = [
@@ -58,14 +58,14 @@ export async function validateSecondaryAccounts(): Promise<
                 name: account.name,
                 valid: await isAccountValid(account.id),
             };
-        })
+        }),
     );
 
     return validAccounts;
 }
 
 export function getSecondaryAccountById(
-    accountId: SecondaryAccountId
+    accountId: SecondaryAccountId,
 ): SecondaryAccount | undefined {
     return SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
 }

@@ -66,7 +66,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                     >
                         {value
                             ? chapters.find(
-                                  (chapter) => chapter.value === value
+                                  (chapter) => chapter.value === value,
                               )?.label
                             : "Select chapter..."}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -98,7 +98,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                                                 "mr-2 h-4 w-4",
                                                 value === chapter.value
                                                     ? "opacity-100"
-                                                    : "opacity-0"
+                                                    : "opacity-0",
                                             )}
                                         />
                                         {chapter.label}

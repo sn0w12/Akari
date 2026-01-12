@@ -28,7 +28,7 @@ export default function ClientPagination({
         <nav
             className={cn(
                 "flex items-center justify-between w-full max-w-md mx-auto",
-                className
+                className,
             )}
             aria-label="Pagination"
         >

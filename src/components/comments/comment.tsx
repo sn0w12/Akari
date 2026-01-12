@@ -31,7 +31,7 @@ interface CommentProps {
     onReply?: (
         parentId: string,
         content: string,
-        attachment?: components["schemas"]["UploadResponse"]
+        attachment?: components["schemas"]["UploadResponse"],
     ) => Promise<CommentData>;
     onEdit?: (commentId: string, content: string) => Promise<void>;
     onDelete?: (commentId: string) => Promise<void>;
@@ -68,7 +68,7 @@ export function Comment({
 
     useEffect(() => {
         setUserVote(
-            initialVote ? (initialVote.value === 1 ? "up" : "down") : null
+            initialVote ? (initialVote.value === 1 ? "up" : "down") : null,
         );
     }, [initialVote]);
 
@@ -83,10 +83,10 @@ export function Comment({
 
     const replyCount =
         "replyCount" in comment
-            ? comment.replyCount ?? 0
+            ? (comment.replyCount ?? 0)
             : Array.isArray(comment.replies)
-            ? comment.replies.length
-            : 0;
+              ? comment.replies.length
+              : 0;
 
     const handleShowReplies = async () => {
         if (
@@ -154,7 +154,7 @@ export function Comment({
 
     const handleReplySubmit = async (
         content: string,
-        attachment?: components["schemas"]["UploadResponse"]
+        attachment?: components["schemas"]["UploadResponse"],
     ) => {
         if (!onReply) return;
         try {
@@ -173,7 +173,7 @@ export function Comment({
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor(
-            (now.getTime() - date.getTime()) / 1000
+            (now.getTime() - date.getTime()) / 1000,
         );
 
         if (diffInSeconds < 60) return "just now";
@@ -195,7 +195,7 @@ export function Comment({
         <div
             className={cn(
                 "flex gap-2 sm:gap-3",
-                depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4"
+                depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4",
             )}
         >
             <Avatar name={comment.userProfile.username} />
@@ -293,7 +293,7 @@ export function Comment({
                             className={cn(
                                 "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
                                 userVote === "up" &&
-                                    "bg-primary/10 text-primary hover:bg-primary/20"
+                                    "bg-primary/10 text-primary hover:bg-primary/20",
                             )}
                             onClick={() => handleVote("up")}
                             disabled={comment.deleted || isBanned}
@@ -309,7 +309,7 @@ export function Comment({
                             className={cn(
                                 "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
                                 userVote === "down" &&
-                                    "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                                    "bg-destructive/10 text-destructive hover:bg-destructive/20",
                             )}
                             onClick={() => handleVote("down")}
                             disabled={comment.deleted || isBanned}
@@ -329,7 +329,7 @@ export function Comment({
                                     } catch (error) {
                                         console.error(
                                             "Failed to edit comment:",
-                                            error
+                                            error,
                                         );
                                     }
                                 }}
@@ -365,12 +365,12 @@ export function Comment({
                                             {isLoadingReplies
                                                 ? "Loading..."
                                                 : showReplies
-                                                ? "Hide replies"
-                                                : `Show ${replyCount} ${
-                                                      replyCount === 1
-                                                          ? "reply"
-                                                          : "replies"
-                                                  }`}
+                                                  ? "Hide replies"
+                                                  : `Show ${replyCount} ${
+                                                        replyCount === 1
+                                                            ? "reply"
+                                                            : "replies"
+                                                    }`}
                                         </span>
                                     </Button>
                                     <ButtonGroupSeparator />
@@ -382,7 +382,7 @@ export function Comment({
                                 className={cn(
                                     "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
                                     showReplyForm &&
-                                        "bg-primary/10 text-primary hover:bg-primary/20"
+                                        "bg-primary/10 text-primary hover:bg-primary/20",
                                 )}
                                 onClick={() => setShowReplyForm(!showReplyForm)}
                                 disabled={comment.deleted || isBanned}

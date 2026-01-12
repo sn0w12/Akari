@@ -54,7 +54,7 @@ export default async function Popular(props: PageProps) {
     const { page, days } = await props.searchParams;
     const { data, error } = await getPopularData(
         Number(page) || 1,
-        Number(days) || 30
+        Number(days) || 30,
     );
 
     if (error || !data) {

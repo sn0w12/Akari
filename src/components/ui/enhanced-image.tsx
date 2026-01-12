@@ -34,7 +34,7 @@ interface EffectConfig {
     dynamicStyles?: (
         isHovered: boolean,
         event: React.MouseEvent<HTMLDivElement> | null,
-        tiltValues?: { tiltX: number; tiltY: number }
+        tiltValues?: { tiltX: number; tiltY: number },
     ) => CSSProperties;
 }
 

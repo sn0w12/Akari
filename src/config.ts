@@ -88,7 +88,7 @@ export const APP_SETTINGS = {
                     const mangaReaderRegex =
                         /^\/manga\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/\d+$/;
                     const isMangaReaderPage = mangaReaderRegex.test(
-                        window.location.pathname
+                        window.location.pathname,
                     );
                     if (isMangaReaderPage) {
                         window.location.reload();

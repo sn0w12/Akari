@@ -20,7 +20,7 @@ export const useSettings = () => {
         (
             newSettings:
                 | SettingsInterface
-                | ((prev: SettingsInterface) => SettingsInterface)
+                | ((prev: SettingsInterface) => SettingsInterface),
         ) => {
             setSettingsState((prevSettings) => {
                 const nextSettings =
@@ -39,7 +39,7 @@ export const useSettings = () => {
                             dispatchSettingsChange(
                                 typedKey,
                                 newValue,
-                                oldValue
+                                oldValue,
                             );
                         }
                     });
@@ -48,7 +48,7 @@ export const useSettings = () => {
                 return nextSettings;
             });
         },
-        []
+        [],
     );
 
     useEffect(() => {

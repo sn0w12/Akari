@@ -20,7 +20,7 @@ export const setCookie = (
     name: string,
     value: string,
     category: CookieCategory,
-    maxAge = 31536000
+    maxAge = 31536000,
 ) => {
     const { consent } = useCookieConsent.getState();
 

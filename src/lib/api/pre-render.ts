@@ -10,7 +10,7 @@ export async function getAllPaginated<T>(
     pageSize: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transform: (item: any) => T,
-    maxPages?: number
+    maxPages?: number,
 ): Promise<T[]> {
     try {
         const allItems: T[] = [];
@@ -31,7 +31,7 @@ export async function getAllPaginated<T>(
             if (error || !data) {
                 console.error(
                     `Failed to fetch page ${page} for ${path}:`,
-                    error
+                    error,
                 );
                 break;
             }
@@ -55,7 +55,7 @@ export async function getAllPaginated<T>(
             } else {
                 console.error(
                     `Unexpected response format for page ${page} on ${path}:`,
-                    data.data
+                    data.data,
                 );
                 break;
             }
@@ -78,13 +78,13 @@ interface ChapterIdsResponse {
 }
 
 export async function getAllChapterIds(
-    maxPages?: number
+    maxPages?: number,
 ): Promise<ChapterIdsResponse[]> {
     return getAllPaginated(
         "/v2/manga/chapter/ids",
         500,
         (item: ChapterIdsResponse) => item,
-        maxPages
+        maxPages,
     );
 }
 
@@ -94,6 +94,6 @@ export async function getAllAuthors(maxPages?: number): Promise<string[]> {
         500,
         (author: components["schemas"]["AuthorResponse"]) =>
             author.name.replaceAll(" ", "-"),
-        maxPages
+        maxPages,
     );
 }

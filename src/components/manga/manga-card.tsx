@@ -47,7 +47,7 @@ export function MangaCard({
 
                 // If not enough space on right (with 20px padding), expand left
                 setComputedDirection(
-                    spaceOnRight < expansionWidth + 20 ? "left" : "right"
+                    spaceOnRight < expansionWidth + 20 ? "left" : "right",
                 );
             } else {
                 setComputedDirection(expandDirection);
@@ -84,7 +84,7 @@ export function MangaCard({
                 const spaceOnRight = window.innerWidth - rect.right;
                 const expansionWidth = rect.width;
                 setComputedDirection(
-                    spaceOnRight < expansionWidth + 20 ? "left" : "right"
+                    spaceOnRight < expansionWidth + 20 ? "left" : "right",
                 );
             }
         }
@@ -132,7 +132,7 @@ export function MangaCard({
             ref={cardRef}
             className={cn(
                 "group relative transition-all duration-300 ease-snappy",
-                className
+                className,
             )}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -185,7 +185,7 @@ export function MangaCard({
                         "rounded-r-lg border-l-0": direction === "right",
                         "rounded-l-lg border-r-0": direction === "left",
                         "opacity-100": shouldExpand,
-                    }
+                    },
                 )}
                 style={
                     {
@@ -196,8 +196,8 @@ export function MangaCard({
                         transform: shouldExpand
                             ? "translateX(0)"
                             : direction === "left"
-                            ? "translateX(20px)"
-                            : "translateX(-20px)",
+                              ? "translateX(20px)"
+                              : "translateX(-20px)",
                     } as React.CSSProperties
                 }
             >

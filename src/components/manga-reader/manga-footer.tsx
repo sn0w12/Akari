@@ -20,7 +20,7 @@ export default function MangaFooter({
         <div className="bg-background border-t border-b border-border px-4 py-3">
             <div
                 className={cn(
-                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2"
+                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2",
                 )}
             >
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left md:ml-10">

@@ -15,7 +15,7 @@ export default function GenrePicker({
 }: GenrePickerProps) {
     const handleGenreChange = (
         genre: Genre,
-        checked: boolean | "indeterminate"
+        checked: boolean | "indeterminate",
     ) => {
         if (checked === true) {
             onChange([...selectedGenres, genre]);

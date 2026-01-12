@@ -54,7 +54,7 @@ export default function StripReader({
             return;
         const { useDocumentScroll, mainTop, clientHeight } = scrollMetrics;
         const firstImage = readerRef.current.querySelector(
-            "img"
+            "img",
         ) as HTMLImageElement;
         if (!firstImage) return;
         const firstImageTop = useDocumentScroll
@@ -68,7 +68,7 @@ export default function StripReader({
         const currentPosition = scrollMetrics.pixels - firstImageTop;
         const newProgress = Math.max(
             0,
-            Math.min(1, currentPosition / totalHeight)
+            Math.min(1, currentPosition / totalHeight),
         );
 
         queueMicrotask(() => {
@@ -133,7 +133,7 @@ export default function StripReader({
                                     "rounded-t": index === 0,
                                     "rounded-b":
                                         index === chapter.images.length - 1,
-                                }
+                                },
                             )}
                             style={{
                                 width: `calc(var(--spacing) * ${stripWidth})`,

@@ -3975,7 +3975,12 @@ export interface components {
             data: components["schemas"]["ChapterResponse"];
         };
         /** @enum {string} */
-        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
+        CommentReportReason:
+            | "spam"
+            | "harassment"
+            | "inappropriate"
+            | "hate_speech"
+            | "other";
         CommentResponse: {
             /** Format: uuid */
             id: string;

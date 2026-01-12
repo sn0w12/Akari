@@ -45,7 +45,7 @@ export function Providers() {
             if (error) throw error;
         } catch (error: unknown) {
             setError(
-                error instanceof Error ? error.message : "An error occurred"
+                error instanceof Error ? error.message : "An error occurred",
             );
             setIsLoading(false);
         }

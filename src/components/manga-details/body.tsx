@@ -83,7 +83,7 @@ export function MangaDetailsBody({
             return;
         }
         const chapterIndex = getSortedChapters().findIndex(
-            (chapter) => chapter.id === lastRead
+            (chapter) => chapter.id === lastRead,
         );
 
         if (chapterIndex === -1 || chapterIndex === undefined) {

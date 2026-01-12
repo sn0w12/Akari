@@ -23,14 +23,14 @@ export async function POST(req: NextRequest) {
             (page) =>
                 typeof page === "string" &&
                 page.trim() !== "" &&
-                page.startsWith("/")
+                page.startsWith("/"),
         );
     const invalidTags = !tags || !Array.isArray(tags) || tags.length === 0;
 
     if (invalidPages || invalidTags) {
         return NextResponse.json(
             { message: "Missing or invalid pages or tags parameter" },
-            { status: 400 }
+            { status: 400 },
         );
     }
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     } catch {
         return NextResponse.json(
             { message: "Error revalidating" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

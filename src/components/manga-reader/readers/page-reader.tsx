@@ -63,7 +63,7 @@ export default function PageReader({
         if (chapter.nextChapter && !hasPrefetchedRef.current) {
             const threshold = Math.min(
                 Math.floor(chapter.images.length * 0.75),
-                chapter.images.length - 3
+                chapter.images.length - 3,
             );
 
             if (currentPage >= threshold) {
@@ -78,7 +78,7 @@ export default function PageReader({
             setCurrentPage(newPage);
             router.replace(`?page=${newPage + 1}`, { scroll: false });
         },
-        [router]
+        [router],
     );
 
     const nextPage = useCallback(() => {
@@ -136,7 +136,7 @@ export default function PageReader({
                 }
             }
         },
-        [nextPage, prevPage, readingDir, windowWidth]
+        [nextPage, prevPage, readingDir, windowWidth],
     );
 
     return (
@@ -150,8 +150,8 @@ export default function PageReader({
                     currentPage === chapter.images.length
                         ? ""
                         : isInactive
-                        ? "cursor-none"
-                        : "cursor-pointer"
+                          ? "cursor-none"
+                          : "cursor-pointer"
                 }`}
                 style={{ height: "calc(100dvh - var(--reader-offset))" }}
                 onClick={handleClick}
@@ -212,7 +212,7 @@ export default function PageReader({
                 <PageProgress
                     currentPage={Math.max(
                         0,
-                        Math.min(currentPage, chapter.images.length - 1)
+                        Math.min(currentPage, chapter.images.length - 1),
                     )}
                     totalPages={chapter.images.length}
                     setCurrentPage={(page) => {

@@ -16,8 +16,9 @@ const AVATAR_SIZE_CLASSES: Record<AvatarSize, string> = {
     96: "size-24",
 };
 
-interface AvatarProps
-    extends React.ComponentProps<typeof AvatarPrimitive.Root> {
+interface AvatarProps extends React.ComponentProps<
+    typeof AvatarPrimitive.Root
+> {
     name: string;
     size?: AvatarSize;
 }
@@ -29,7 +30,7 @@ function Avatar({ className, name, size = 32, ...props }: AvatarProps) {
             className={cn(
                 "relative flex shrink-0 overflow-hidden rounded-full",
                 AVATAR_SIZE_CLASSES[size],
-                className
+                className,
             )}
             {...props}
         >
@@ -70,7 +71,7 @@ function AvatarFallback({
             data-slot="avatar-fallback"
             className={cn(
                 "bg-muted flex size-full items-center justify-center rounded-full",
-                className
+                className,
             )}
             {...props}
         />

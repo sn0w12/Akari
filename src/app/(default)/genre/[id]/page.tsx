@@ -34,7 +34,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 async function getGenre(
     name: string,
     page: number,
-    sort: components["schemas"]["MangaListSortOrder"] = "latest"
+    sort: components["schemas"]["MangaListSortOrder"] = "latest",
 ) {
     "use cache";
     cacheLife("minutes");

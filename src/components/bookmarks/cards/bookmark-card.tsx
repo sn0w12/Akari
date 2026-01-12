@@ -73,7 +73,7 @@ export function BookmarkCard({
                             <SubTitle
                                 label="Released"
                                 value={formatRelativeDate(
-                                    bookmark.latestChapter.createdAt
+                                    bookmark.latestChapter.createdAt,
                                 )}
                             />
                         </div>

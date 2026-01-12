@@ -21,7 +21,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 }) => {
     const [hovered, setHovered] = useState(false);
     const [isStateBookmarked, setIsStateBookmarked] = useState<boolean | null>(
-        isBookmarked
+        isBookmarked,
     );
     const [isLoading, setIsLoading] = useState(false);
     const fancyAnimationsEnabled = useSetting("fancyAnimations");

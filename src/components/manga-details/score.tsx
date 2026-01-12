@@ -84,7 +84,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
 
     const handleMouseMove = (
         index: number,
-        event: React.MouseEvent<Element>
+        event: React.MouseEvent<Element>,
     ) => {
         const rect = starRefs.current[index]?.getBoundingClientRect();
         if (rect) {
@@ -96,7 +96,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
 
     const handleMouseEnter = (
         index: number,
-        event: React.MouseEvent<Element>
+        event: React.MouseEvent<Element>,
     ) => {
         setHoveredIndex(index);
         // Calculate initial fill based on mouse position
@@ -196,7 +196,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                     className={cn(
                                         "absolute inset-0 z-10",
                                         starClasses,
-                                        "text-primary/20"
+                                        "text-primary/20",
                                     )}
                                 />
                                 {/* Default score overlay */}
@@ -205,7 +205,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                         "absolute inset-0 z-20 transition-opacity duration-200",
                                         isAnyHovered
                                             ? "opacity-0"
-                                            : "opacity-100"
+                                            : "opacity-100",
                                     )}
                                 >
                                     <Star
@@ -214,14 +214,14 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                             "absolute inset-0",
                                             index < fullStars
                                                 ? "text-primary"
-                                                : "text-transparent"
+                                                : "text-transparent",
                                         )}
                                     />
                                     {index === fullStars && hasHalfStar && (
                                         <StarHalf
                                             className={cn(
                                                 starClasses,
-                                                "absolute inset-0 text-primary"
+                                                "absolute inset-0 text-primary",
                                             )}
                                         />
                                     )}
@@ -234,7 +234,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                             "absolute inset-0 text-accent-positive transition-opacity duration-200",
                                             isHovered && !isCurrentHovered
                                                 ? "opacity-100"
-                                                : "opacity-0"
+                                                : "opacity-0",
                                         )}
                                     />
                                     <Star
@@ -243,7 +243,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                             "absolute inset-0 text-accent-positive transition-opacity duration-200",
                                             showFull
                                                 ? "opacity-100"
-                                                : "opacity-0"
+                                                : "opacity-0",
                                         )}
                                     />
                                     <StarHalf
@@ -252,7 +252,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                             "absolute inset-0 text-accent-positive transition-opacity duration-200",
                                             showHalf
                                                 ? "opacity-100"
-                                                : "opacity-0"
+                                                : "opacity-0",
                                         )}
                                     />
                                 </div>
@@ -290,7 +290,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                 {RATINGS.filter(
                                     (rating) =>
                                         rating.value !== -1 ||
-                                        userScore !== null
+                                        userScore !== null,
                                 ).map((rating) => (
                                     <SelectItem
                                         key={rating.value}

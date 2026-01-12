@@ -23,7 +23,7 @@ const ColorPicker = forwardRef<
 >(
     (
         { disabled, value, onChange, onBlur, name, className, ...props },
-        forwardedRef
+        forwardedRef,
     ) => {
         const [open, setOpen] = useState(false);
 
@@ -68,7 +68,7 @@ const ColorPicker = forwardRef<
                 </PopoverContent>
             </Popover>
         );
-    }
+    },
 );
 ColorPicker.displayName = "ColorPicker";
 

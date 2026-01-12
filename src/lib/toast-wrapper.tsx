@@ -55,7 +55,7 @@ class Toast {
                     description={description}
                 />
             ),
-            toastOptions
+            toastOptions,
         );
     }
 
@@ -96,7 +96,7 @@ function ToastComponent({ message, type, description }: ToastProps) {
                     "bg-info/70 border-info text-white": type === "info",
                     "bg-warning/70 border-warning text-white":
                         type === "warning",
-                }
+                },
             )}
         >
             <div className="flex items-center gap-1.5">

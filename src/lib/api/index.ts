@@ -34,7 +34,7 @@ export function getAuthCookie() {
                 })
                 .filter(
                     (item): item is { num: number; value: string } =>
-                        item !== null
+                        item !== null,
                 )
                 .sort((a, b) => a.num - b.num)
                 .map((p) => p.value);

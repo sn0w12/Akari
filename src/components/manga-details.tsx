@@ -159,7 +159,7 @@ export async function MangaDetailsComponent({
                                                 {manga.alternativeTitles.map(
                                                     (
                                                         mangaName: string,
-                                                        index: number
+                                                        index: number,
                                                     ) => (
                                                         <p
                                                             className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
@@ -167,7 +167,7 @@ export async function MangaDetailsComponent({
                                                         >
                                                             {mangaName}
                                                         </p>
-                                                    )
+                                                    ),
                                                 )}
                                             </div>
                                         </TooltipContent>
@@ -203,7 +203,7 @@ export async function MangaDetailsComponent({
                                     <div className="text-lg font-semibold">
                                         {pluralize(
                                             "Author",
-                                            manga.authors.length
+                                            manga.authors.length,
                                         )}
                                         :
                                     </div>
@@ -214,8 +214,8 @@ export async function MangaDetailsComponent({
                                                     href={`/author/${encodeURIComponent(
                                                         author.replaceAll(
                                                             " ",
-                                                            "-"
-                                                        )
+                                                            "-",
+                                                        ),
                                                     )}`}
                                                     key={index}
                                                     prefetch={false}
@@ -228,7 +228,7 @@ export async function MangaDetailsComponent({
                                                         {author}
                                                     </Badge>
                                                 </Link>
-                                            )
+                                            ),
                                         )}
                                     </div>
                                 </div>
@@ -238,7 +238,7 @@ export async function MangaDetailsComponent({
                                     </div>
                                     <Badge
                                         className={`${getStatusColor(
-                                            manga.status
+                                            manga.status,
                                         )} text-white`}
                                     >
                                         {manga.status.charAt(0).toUpperCase() +
@@ -276,7 +276,7 @@ export async function MangaDetailsComponent({
                                             <Link
                                                 key={genre}
                                                 href={`/genre/${encodeURIComponent(
-                                                    genre.replaceAll(" ", "-")
+                                                    genre.replaceAll(" ", "-"),
                                                 )}`}
                                                 prefetch={false}
                                             >

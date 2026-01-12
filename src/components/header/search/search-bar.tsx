@@ -62,7 +62,7 @@ export default function SearchBar() {
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
             setFocusedIndex((prev) =>
-                prev < searchResults.length - 1 ? prev + 1 : prev
+                prev < searchResults.length - 1 ? prev + 1 : prev,
             );
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
@@ -164,7 +164,7 @@ export default function SearchBar() {
                                 "block text-center text-primary hover:text-primary/80",
                                 {
                                     "border-t pt-4 mt-2": hasSearchText,
-                                }
+                                },
                             )}
                             onMouseDown={() => {
                                 shouldCloseRef.current = false;

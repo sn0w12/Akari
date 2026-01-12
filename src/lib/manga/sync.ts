@@ -5,7 +5,7 @@ import { SyncHandler } from "../auth/secondary-accounts";
 const services = ["Akari", ...SECONDARY_ACCOUNTS.map((acc) => acc.name)];
 
 export async function syncAllServices(
-    data: components["schemas"]["ChapterResponse"]
+    data: components["schemas"]["ChapterResponse"],
 ) {
     const syncHandlers: SyncHandler[] = [
         updateBookmark,
@@ -24,7 +24,7 @@ export async function syncAllServices(
     }
 
     const results = await Promise.allSettled(
-        syncHandlers.map((handler) => handler(data))
+        syncHandlers.map((handler) => handler(data)),
     );
 
     const authorizedServices: string[] = [];

@@ -60,7 +60,7 @@ const staticPages: SitemapEntry[] = [
 ];
 
 function mangaToSitemapEntry(
-    manga: components["schemas"]["MangaResponse"]
+    manga: components["schemas"]["MangaResponse"],
 ): SitemapEntry {
     return {
         url: `https://${NEXT_PUBLIC_HOST}/manga/${manga.id}`,
@@ -89,13 +89,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                     },
                 },
                 headers: serverHeaders,
-            }
+            },
         );
 
         if (firstError || !firstPageData) {
             console.error(
                 "Failed to fetch first page for sitemap:",
-                firstError
+                firstError,
             );
             return [];
         }
@@ -104,8 +104,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         allUrls.push(
             ...firstPageData.data.items.map((manga) =>
-                mangaToSitemapEntry(manga)
-            )
+                mangaToSitemapEntry(manga),
+            ),
         );
 
         for (let page = 2; page <= totalPages; page++) {
@@ -122,13 +122,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             if (error || !data) {
                 console.error(
                     `Failed to fetch page ${page} for sitemap:`,
-                    error
+                    error,
                 );
                 continue;
             }
 
             allUrls.push(
-                ...data.data.items.map((manga) => mangaToSitemapEntry(manga))
+                ...data.data.items.map((manga) => mangaToSitemapEntry(manga)),
             );
         }
 

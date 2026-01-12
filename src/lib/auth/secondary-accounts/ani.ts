@@ -41,7 +41,7 @@ export class AniAccount extends SecondaryAccountBase {
     }
 
     async sync(
-        manga: components["schemas"]["ChapterResponse"]
+        manga: components["schemas"]["ChapterResponse"],
     ): Promise<boolean> {
         if (!manga.aniId) {
             return false;
@@ -64,7 +64,7 @@ export class AniAccount extends SecondaryAccountBase {
     async handleCallback(
         params: Record<string, string>,
         hash: string,
-        origin: string
+        origin: string,
     ): Promise<boolean> {
         const hashParams = new URLSearchParams(hash);
         const accessToken = hashParams.get("access_token");

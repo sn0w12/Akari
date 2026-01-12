@@ -21,7 +21,7 @@ export function InstallPrompt() {
 
     const installPromptStorage = useStorage("installPromptDismissed");
     const [isVisible, setIsVisible] = useState<boolean>(
-        () => !installPromptStorage.get()?.dismissed
+        () => !installPromptStorage.get()?.dismissed,
     );
 
     const handleClose = () => {

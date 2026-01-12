@@ -31,6 +31,6 @@ export type DataFromSchema<T extends SchemaDefinition> = {
     [K in keyof T]: T[K]["type"] extends "string"
         ? string
         : T[K]["type"] extends "number"
-        ? number
-        : boolean;
+          ? number
+          : boolean;
 };

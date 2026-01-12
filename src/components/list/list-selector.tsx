@@ -59,7 +59,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                             mangaId: mangaId,
                         },
                     },
-                }
+                },
             );
             if (error) {
                 return null;

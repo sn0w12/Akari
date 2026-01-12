@@ -25,7 +25,7 @@ export class MalAccount extends SecondaryAccountBase {
         url.searchParams.append("code_challenge_method", "plain");
         url.searchParams.append(
             "redirect_uri",
-            `${getBaseUrl()}/auth/callback`
+            `${getBaseUrl()}/auth/callback`,
         );
 
         return url.toString();
@@ -54,7 +54,7 @@ export class MalAccount extends SecondaryAccountBase {
     }
 
     async sync(
-        manga: components["schemas"]["ChapterResponse"]
+        manga: components["schemas"]["ChapterResponse"],
     ): Promise<boolean> {
         if (!manga.malId) {
             return false;
@@ -81,7 +81,7 @@ export class MalAccount extends SecondaryAccountBase {
     async handleCallback(
         params: Record<string, string>,
         hash: string,
-        origin: string
+        origin: string,
     ): Promise<boolean> {
         const code = params.code;
         const codeVerifier = Cookies.get("pkce_code_verifier");
@@ -114,7 +114,7 @@ function generateCodeVerifier(length = 128): string {
     let codeVerifier = "";
     for (let i = 0; i < length; i++) {
         codeVerifier += characters.charAt(
-            Math.floor(Math.random() * characters.length)
+            Math.floor(Math.random() * characters.length),
         );
     }
     return codeVerifier;

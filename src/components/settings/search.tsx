@@ -38,7 +38,7 @@ export function SettingsSearch() {
                       (setting.label &&
                           setting.label.toLowerCase().includes(q)) ||
                       (setting.description &&
-                          setting.description.toLowerCase().includes(q))
+                          setting.description.toLowerCase().includes(q)),
               )
             : [];
 
@@ -125,7 +125,7 @@ export function SettingsSearch() {
                                         ))}
                                     </div>
                                 </div>
-                            )
+                            ),
                         )}
                     </div>
                 );

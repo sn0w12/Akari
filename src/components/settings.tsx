@@ -45,7 +45,7 @@ export default function SettingsPage() {
                 const categoryKey = Object.keys(APP_SETTINGS).find(
                     (key) =>
                         APP_SETTINGS[key as keyof typeof APP_SETTINGS].label ===
-                        categoryLabel
+                        categoryLabel,
                 );
 
                 if (categoryKey) {
@@ -59,7 +59,7 @@ export default function SettingsPage() {
                         !shouldShowSetting(
                             categoryVisibility,
                             deviceType,
-                            isPWA
+                            isPWA,
                         )
                     ) {
                         return; // Skip this entire category
@@ -80,7 +80,7 @@ export default function SettingsPage() {
                 if (Object.keys(filteredSettings).length > 0) {
                     filtered[categoryLabel] = filteredSettings;
                 }
-            }
+            },
         );
 
         return filtered;
@@ -90,7 +90,7 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = React.useState(firstTab);
     const [stickyRef, isSticky] = useSticky(-16);
     const [activeSection, setActiveSection] = React.useState<string | null>(
-        null
+        null,
     );
 
     const customRenderers: Record<CustomRenderSettingKeys, React.ReactNode> = {
@@ -142,7 +142,7 @@ export default function SettingsPage() {
                     defaultCollapsed={false}
                     onClick={() => {
                         const el = document.getElementById(
-                            `settings-section-${groupName}`
+                            `settings-section-${groupName}`,
                         );
                         if (el) {
                             el.scrollIntoView({
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                                 label={subgroupPath}
                                 onClick={() => {
                                     const el = document.getElementById(
-                                        `settings-subsection-${groupName}__${subgroupPath}`
+                                        `settings-subsection-${groupName}__${subgroupPath}`,
                                     );
                                     if (el) {
                                         el.scrollIntoView({
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                                             block: "start",
                                         });
                                         setActiveSection(
-                                            `${groupName}__${subgroupPath}`
+                                            `${groupName}__${subgroupPath}`,
                                         );
                                     }
                                 }}
@@ -178,10 +178,10 @@ export default function SettingsPage() {
                                     `${groupName}__${subgroupPath}`
                                 }
                             />
-                        )
+                        ),
                     )}
                 </TreeItem>
-            )
+            ),
         );
     }, [settingsMaps, activeTab, activeSection]);
 
@@ -284,12 +284,12 @@ export default function SettingsPage() {
                                                     .filter(
                                                         ([, setting]) =>
                                                             setting.type ===
-                                                            "custom-render"
+                                                            "custom-render",
                                                     )
                                                     .map(([key]) => key);
                                             const totalSettingKeys =
                                                 Object.keys(settingsMap).filter(
-                                                    (k) => k !== "label"
+                                                    (k) => k !== "label",
                                                 );
                                             const onlySingleCustom =
                                                 customSettingKeys.length ===
@@ -347,7 +347,7 @@ export default function SettingsPage() {
 
                                                             // Separate settings with and without groups
                                                             Object.entries(
-                                                                settingsMap
+                                                                settingsMap,
                                                             ).forEach(
                                                                 ([
                                                                     key,
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                                                                         ] =
                                                                             setting as Setting;
                                                                     }
-                                                                }
+                                                                },
                                                             );
 
                                                             // Create hierarchical structure
@@ -387,7 +387,7 @@ export default function SettingsPage() {
 
                                                             // Process settings with groups
                                                             Object.entries(
-                                                                settingsWithGroups
+                                                                settingsWithGroups,
                                                             ).forEach(
                                                                 ([
                                                                     key,
@@ -468,7 +468,7 @@ export default function SettingsPage() {
                                                                                 setting;
                                                                         }
                                                                     }
-                                                                }
+                                                                },
                                                             );
 
                                                             // Function to render a group of settings
@@ -477,12 +477,12 @@ export default function SettingsPage() {
                                                                     groupSettings: Record<
                                                                         string,
                                                                         Setting
-                                                                    >
+                                                                    >,
                                                                 ) => {
                                                                     return (
                                                                         <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4">
                                                                             {Object.entries(
-                                                                                groupSettings
+                                                                                groupSettings,
                                                                             ).map(
                                                                                 ([
                                                                                     key,
@@ -549,7 +549,7 @@ export default function SettingsPage() {
                                                                                             </div>
                                                                                         </div>
                                                                                     );
-                                                                                }
+                                                                                },
                                                                             )}
                                                                         </div>
                                                                     );
@@ -559,19 +559,19 @@ export default function SettingsPage() {
                                                                 <div className="space-y-8">
                                                                     {/* Render ungrouped settings first if they exist */}
                                                                     {Object.keys(
-                                                                        settingsWithoutGroups
+                                                                        settingsWithoutGroups,
                                                                     ).length >
                                                                         0 && (
                                                                         <div className="space-y-4">
                                                                             {renderSettingsGroup(
-                                                                                settingsWithoutGroups
+                                                                                settingsWithoutGroups,
                                                                             )}
                                                                         </div>
                                                                     )}
 
                                                                     {/* Render hierarchical groups */}
                                                                     {Object.entries(
-                                                                        hierarchicalGroups
+                                                                        hierarchicalGroups,
                                                                     ).map(
                                                                         ([
                                                                             groupName,
@@ -597,17 +597,17 @@ export default function SettingsPage() {
 
                                                                                 {/* Main group settings */}
                                                                                 {Object.keys(
-                                                                                    groupData.settings
+                                                                                    groupData.settings,
                                                                                 )
                                                                                     .length >
                                                                                     0 &&
                                                                                     renderSettingsGroup(
-                                                                                        groupData.settings
+                                                                                        groupData.settings,
                                                                                     )}
 
                                                                                 {/* Subgroups */}
                                                                                 {Object.entries(
-                                                                                    groupData.subgroups
+                                                                                    groupData.subgroups,
                                                                                 ).map(
                                                                                     ([
                                                                                         subgroupPath,
@@ -633,13 +633,13 @@ export default function SettingsPage() {
 
                                                                                             {/* Subgroup settings */}
                                                                                             {renderSettingsGroup(
-                                                                                                subgroupSettings
+                                                                                                subgroupSettings,
                                                                                             )}
                                                                                         </div>
-                                                                                    )
+                                                                                    ),
                                                                                 )}
                                                                             </div>
-                                                                        )
+                                                                        ),
                                                                     )}
                                                                 </div>
                                                             );
@@ -652,7 +652,7 @@ export default function SettingsPage() {
                                 </Card>
                             </div>
                         </TabsContent>
-                    )
+                    ),
                 )}
             </Tabs>
         </div>

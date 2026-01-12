@@ -40,7 +40,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = useMemo(
         () => sidebarState === "collapsed",
-        [sidebarState]
+        [sidebarState],
     );
     const { setTheme } = useTheme();
     const validNotifs = useSetting("groupLoginToasts") as string[];
@@ -51,7 +51,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
 
     const isUUID = (str: string) =>
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-            str
+            str,
         );
 
     useEffect(() => {
@@ -61,14 +61,14 @@ export function HeaderComponent({ notification }: HeaderProps) {
         }
 
         const hasUnresolvedUUID = pathSegments.some(
-            (segment) => isUUID(segment) && !overrides[segment]
+            (segment) => isUUID(segment) && !overrides[segment],
         );
         if (hasUnresolvedUUID) {
             return;
         }
 
         const modifiedSegments = pathSegments.map(
-            (segment) => overrides[segment] || segment
+            (segment) => overrides[segment] || segment,
         );
         queueMicrotask(() => {
             setOriginalSegments(pathSegments);
@@ -97,7 +97,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
         segment: string,
         index: number,
         segments: string[],
-        maxLength: number = 35
+        maxLength: number = 35,
     ) => {
         segment = segment.replace(/-s-/g, "'s ");
         segment = segment.replace(/-/g, " ");
@@ -114,7 +114,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
         <header
             className={cn(
                 `top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
-                borderClass
+                borderClass,
             )}
         >
             <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
@@ -126,7 +126,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
                             "hidden md:block text-xs font-bold px-2 h-5",
                             {
                                 "ml-1": isSidebarCollapsed,
-                            }
+                            },
                         )}
                     >
                         {notification}
@@ -166,14 +166,14 @@ export function HeaderComponent({ notification }: HeaderProps) {
                                                     segment,
                                                     index,
                                                     segments,
-                                                    9999
+                                                    9999,
                                                 )}
                                                 tabIndex={-1}
                                             >
                                                 {getSegmentDisplayName(
                                                     segment,
                                                     index,
-                                                    segments
+                                                    segments,
                                                 )}
                                             </BreadcrumbLink>
                                         ) : (
@@ -181,7 +181,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
                                                 {getSegmentDisplayName(
                                                     segment,
                                                     index,
-                                                    segments
+                                                    segments,
                                                 )}
                                             </span>
                                         )}

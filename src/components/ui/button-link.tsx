@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "./button";
 
 export interface ButtonLinkProps
-    extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    extends
+        React.AnchorHTMLAttributes<HTMLAnchorElement>,
         VariantProps<typeof buttonVariants> {
     href: string;
     prefetch?: boolean;
@@ -38,7 +39,7 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
                 {...props}
             />
         );
-    }
+    },
 );
 ButtonLink.displayName = "ButtonLink";
 

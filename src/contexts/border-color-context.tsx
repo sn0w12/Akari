@@ -10,7 +10,7 @@ interface BorderColorContextType {
 }
 
 const BorderColorContext = createContext<BorderColorContextType | undefined>(
-    undefined
+    undefined,
 );
 
 export function BorderColorProvider({
@@ -45,7 +45,7 @@ export function useBorderColor() {
     const context = useContext(BorderColorContext);
     if (!context) {
         throw new Error(
-            "useBorderColor must be used within a BorderColorProvider"
+            "useBorderColor must be used within a BorderColorProvider",
         );
     }
     return context;

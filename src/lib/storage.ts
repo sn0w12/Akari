@@ -68,7 +68,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
             if (data[key] !== undefined) {
                 const value = String(data[key]).replace(
                     new RegExp(`\\${this.separator}`, "g"),
-                    `\\${this.separator}`
+                    `\\${this.separator}`,
                 );
                 values.push(value);
             } else {
@@ -132,7 +132,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
     // Public methods
     set(
         data: Partial<DataFromSchema<T>>,
-        params?: Record<string, string>
+        params?: Record<string, string>,
     ): void {
         const fullData: Record<string, StorageValue> = {
             ...this.getDefaults(),
@@ -158,7 +158,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
         } catch (error) {
             console.error(
                 `Failed to decode storage item with key "${key}":`,
-                error
+                error,
             );
             return null;
         }
@@ -174,7 +174,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
 
     update(
         updates: Partial<DataFromSchema<T>>,
-        params?: Record<string, string>
+        params?: Record<string, string>,
     ): void {
         const current = this.get(params) || this.getDefaults();
         const updated = { ...current, ...updates };
@@ -201,10 +201,10 @@ export class StorageWrapper<T extends SchemaDefinition> {
             pattern instanceof RegExp
                 ? pattern
                 : typeof pattern === "string"
-                ? new RegExp(pattern)
-                : typeof this.key === "function"
-                ? new RegExp(this.key({}).replace(/\{[^}]+\}/g, ".*"))
-                : null;
+                  ? new RegExp(pattern)
+                  : typeof this.key === "function"
+                    ? new RegExp(this.key({}).replace(/\{[^}]+\}/g, ".*"))
+                    : null;
 
         if (!regex) return;
 
@@ -228,7 +228,7 @@ export class StorageManager {
 
     // Get a wrapper for a specific schema
     static get<T extends SchemaKey>(
-        schemaKey: T
+        schemaKey: T,
     ): StorageWrapper<(typeof STORAGE_SCHEMAS)[T]["schema"]> {
         if (!this.instances.has(schemaKey)) {
             const config = STORAGE_SCHEMAS[
@@ -254,7 +254,7 @@ export class StorageManager {
 
 export const createDynamicKey = (
     basePattern: string,
-    paramNames: string[]
+    paramNames: string[],
 ): ((params: Record<string, string>) => string) => {
     return (params: Record<string, string>) => {
         let key = basePattern;
@@ -276,8 +276,8 @@ export const createKeyPattern = (basePattern: string): RegExp => {
 
 export const createField = <T extends FieldType>(
     type: T,
-    defaultValue: StorageValue
-) => ({ type, default: defaultValue } as const);
+    defaultValue: StorageValue,
+) => ({ type, default: defaultValue }) as const;
 
 export function useStorage<T extends SchemaKey>(schemaKey: T) {
     return StorageManager.get(schemaKey);

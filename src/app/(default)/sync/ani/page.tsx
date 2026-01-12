@@ -11,7 +11,7 @@ import { StorageManager } from "@/lib/storage";
 
 export default function SyncAniPage() {
     const [aniData, setAniData] = useState<components["schemas"]["AniEntry"][]>(
-        []
+        [],
     );
     const [bookmarks, setBookmarks] = useState<
         components["schemas"]["BookmarkListResponse"]["items"]
@@ -127,7 +127,7 @@ export default function SyncAniPage() {
 
         const aniDataToSync = aniData.filter(
             (item) =>
-                !bookmarks.some((bookmark) => bookmark.aniId === item.media.id)
+                !bookmarks.some((bookmark) => bookmark.aniId === item.media.id),
         );
 
         if (aniDataToSync.length === 0) return;
@@ -154,7 +154,7 @@ export default function SyncAniPage() {
 
             for (const manga of data.data) {
                 const aniItem = aniDataToSync.find(
-                    (item) => item.media.id === manga.aniId
+                    (item) => item.media.id === manga.aniId,
                 );
                 if (aniItem) {
                     updateItems.push({
@@ -197,7 +197,7 @@ export default function SyncAniPage() {
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.aniId === item.media.id
+                    (bookmark) => bookmark.aniId === item.media.id,
                 ) ? (
                     <Check className="h-4 w-4 text-green-600" />
                 ) : (

@@ -93,8 +93,8 @@ export default function PageProgress({
                                 index === currentPage
                                     ? "bg-accent-positive hover:bg-accent-positive/70"
                                     : index < currentPage
-                                    ? "bg-primary hover:bg-primary/80"
-                                    : "bg-primary/30 hover:bg-primary/50"
+                                      ? "bg-primary hover:bg-primary/80"
+                                      : "bg-primary/30 hover:bg-primary/50"
                             }`}
                             aria-label={`Go to page ${index + 1}`}
                         />

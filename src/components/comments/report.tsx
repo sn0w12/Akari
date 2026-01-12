@@ -51,7 +51,7 @@ export function ReportCommentDialog({
                         reason,
                         description: details || undefined,
                     },
-                }
+                },
             );
 
             if (error) {
@@ -88,7 +88,7 @@ export function ReportCommentDialog({
                                 setReason(
                                     value === ""
                                         ? null
-                                        : (value as components["schemas"]["CommentReportReason"])
+                                        : (value as components["schemas"]["CommentReportReason"]),
                                 )
                             }
                         >
