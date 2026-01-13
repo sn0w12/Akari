@@ -18,12 +18,8 @@ export default function MangaFooter({
 
     return (
         <div className="bg-background border-t border-b border-border px-4 py-3">
-            <div
-                className={cn(
-                    "container mx-auto flex flex-col sm:flex-row items-center justify-between gap-2",
-                )}
-            >
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left md:ml-10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
                         <a
                             href={`/manga/${chapter.mangaId}`}
@@ -57,7 +53,7 @@ export default function MangaFooter({
                                 aria-label="Previous Chapter"
                                 prefetch={false}
                             >
-                                <ChevronLeft className="mr-2 h-4 w-4" />
+                                <ChevronLeft className="h-4 w-4" />
                                 Previous
                             </ButtonLink>
                         ) : (
@@ -69,7 +65,7 @@ export default function MangaFooter({
                                 aria-label="Previous Chapter"
                                 tabIndex={-1}
                             >
-                                <ChevronLeft className="mr-2 h-4 w-4" />
+                                <ChevronLeft className="h-4 w-4" />
                                 Previous
                             </ButtonLink>
                         )}
@@ -81,7 +77,7 @@ export default function MangaFooter({
                                 prefetch={false}
                             >
                                 Next
-                                <ChevronRight className="ml-2 h-4 w-4" />
+                                <ChevronRight className="h-4 w-4" />
                             </ButtonLink>
                         ) : (
                             <ButtonLink
@@ -93,7 +89,7 @@ export default function MangaFooter({
                                 tabIndex={-1}
                             >
                                 Next
-                                <ChevronRight className="ml-2 h-4 w-4" />
+                                <ChevronRight className="h-4 w-4" />
                             </ButtonLink>
                         )}
                     </div>
