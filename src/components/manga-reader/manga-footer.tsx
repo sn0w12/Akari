@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { ChapterSelector } from "./chapter-selector";
 import { FooterBookmarkButton } from "./footer-bookmark";
-import { cn } from "@/lib/utils";
 import { ButtonLink } from "../ui/button-link";
 
 export default function MangaFooter({
