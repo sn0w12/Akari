@@ -4,7 +4,7 @@ import { GRID_CLASS } from "../grid-page";
 
 export default function SearchPageSkeleton() {
     return (
-        <div className="container mx-auto px-4 pt-4">
+        <div className="px-4 pt-4">
             <Input
                 type="search"
                 placeholder="Search manga..."
