@@ -1,10 +1,17 @@
 "use client";
 
-import React from "react";
-import { Label } from "@/components/ui/label";
+import { SettingsInput } from "@/components/settings/settings-input";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tree, TreeItem } from "@/components/ui/tree";
+import { APP_SETTINGS } from "@/config";
+import { useConfirm } from "@/contexts/confirm-context";
+import { useDevice } from "@/contexts/device-context";
 import { useSettings } from "@/hooks/use-settings";
+import { useSticky } from "@/hooks/use-sticky";
 import {
     createAllSettingsMaps,
     CustomRenderSettingKeys,
@@ -13,16 +20,9 @@ import {
     Setting,
     shouldShowSetting,
 } from "@/lib/settings";
-import { SettingsInput } from "@/components/settings/settings-input";
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/contexts/confirm-context";
-import { useDevice } from "@/contexts/device-context";
-import { Tree, TreeItem } from "@/components/ui/tree";
-import { useSticky } from "@/hooks/use-sticky";
-import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { TableOfContents } from "lucide-react";
-import { APP_SETTINGS } from "@/config";
+import React from "react";
 
 import { SettingsSearch } from "@/components/settings/search";
 
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                         <TabsTrigger
                             key={groupName}
                             value={groupName}
-                            className="border-b-0 rounded-b-none"
+                            className="border-b-0 rounded-b-none data-[state=active]:border-border"
                         >
                             {groupName.charAt(0).toUpperCase() +
                                 groupName.slice(1)}
