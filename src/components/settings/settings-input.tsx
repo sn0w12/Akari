@@ -1,21 +1,18 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ColorPicker } from "@/components/ui/color-picker";
+import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import {
-    type Setting,
-    type SettingValue,
-    type CheckboxGroupSetting,
-    type SliderSetting,
-    type ButtonSetting,
-    type ShortcutSettingKeys,
-    type ShortcutSetting,
-    getSettingValue,
-    getDefaultSettingsValue,
-} from "@/lib/settings";
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Input, NumberInput } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
     Select,
     SelectContent,
@@ -23,19 +20,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ButtonConfirmDialog } from "@/components/ui/confirm";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { ColorPicker } from "@/components/ui/color-picker";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-    ContextMenuSeparator,
-} from "@/components/ui/context-menu";
+    type ButtonSetting,
+    type CheckboxGroupSetting,
+    type Setting,
+    type SettingValue,
+    type ShortcutSetting,
+    type ShortcutSettingKeys,
+    type SliderSetting,
+    getDefaultSettingsValue,
+    getSettingValue,
+} from "@/lib/settings";
+import { cn } from "@/lib/utils";
+import { RotateCcw } from "lucide-react";
 
 interface SettingsInputProps {
     settingKey: string;
@@ -119,7 +119,7 @@ export function SettingsInput({
                 const selectedValues = getSettingValue(setting) as string[];
 
                 return (
-                    <div className="flex flex-col space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                         {checkboxGroupSetting.options.map((option) => (
                             <div
                                 key={option.value}
