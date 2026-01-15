@@ -18,6 +18,7 @@ import { GRID_CLASS } from "./grid-page";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { MangaGrid } from "./manga/manga-grid";
 import { Filters, SearchFilters } from "./search/filters";
+import { Badge } from "./ui/badge";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
@@ -124,10 +125,10 @@ export default function SearchPage() {
                             Filter
                             {(filters.genres.length > 0 ||
                                 filters.types.length > 0) && (
-                                <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
+                                <Badge className="px-1">
                                     {filters.genres.length +
                                         filters.types.length}
-                                </span>
+                                </Badge>
                             )}
                         </Button>
                     </PopoverTrigger>
