@@ -1,8 +1,8 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { GENRE_CATEGORIES, Genre, MANGA_TYPES } from "@/lib/api/search";
+import { cn } from "@/lib/utils";
 import {
     Select,
     SelectContent,
@@ -13,7 +13,9 @@ import {
 
 export interface SearchFilters {
     genres: Genre[];
+    excludedGenres: Genre[];
     types: (typeof MANGA_TYPES)[number][];
+    excludedTypes: (typeof MANGA_TYPES)[number][];
     sort: "search" | "popular" | "latest";
 }
 
@@ -22,30 +24,41 @@ interface FiltersProps {
     onChange: (filters: SearchFilters) => void;
 }
 
+type FilterState = "neutral" | "include" | "exclude";
+
+function getNextState(state: FilterState): FilterState {
+    if (state === "neutral") return "include";
+    if (state === "include") return "exclude";
+    return "neutral";
+}
+
 function Filter({
     label,
-    checked,
-    onCheckedChange,
+    state,
+    onStateChange,
 }: {
     label: string;
-    checked: boolean;
-    onCheckedChange: (checked: boolean) => void;
+    state: FilterState;
+    onStateChange: (state: FilterState) => void;
 }) {
+    const nextState = getNextState(state);
     return (
-        <div className="flex items-center space-x-1">
-            <Checkbox
-                id={label}
-                checked={checked}
-                onCheckedChange={onCheckedChange}
-                className="size-5 md:size-4"
-            />
-            <Label
-                htmlFor={label}
-                className="text-sm md:text-xs cursor-pointer leading-none"
-            >
-                {label}
-            </Label>
-        </div>
+        <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onStateChange(nextState)}
+            className={cn(
+                "w-full justify-between gap-2 px-2",
+                state === "include" &&
+                    "bg-accent-positive/15 border-accent-positive/40 text-accent-positive hover:bg-accent-positive/20 hover:border-accent-positive/50 dark:bg-accent-positive/15 dark:border-accent-positive/40 dark:text-accent-positive dark:hover:bg-accent-positive/20 dark:hover:border-accent-positive/50",
+                state === "exclude" &&
+                    "bg-destructive/15 border-destructive/40 text-destructive hover:bg-destructive/20 hover:border-destructive/50 dark:bg-destructive/15 dark:border-destructive/40 dark:text-destructive dark:hover:bg-destructive/20 dark:hover:border-destructive/50",
+            )}
+            aria-pressed={state !== "neutral"}
+        >
+            <span className="truncate text-sm md:text-xs">{label}</span>
+        </Button>
     );
 }
 
@@ -57,32 +70,64 @@ export function Filters({ filters, onChange }: FiltersProps) {
         onChange({ ...filters, [key]: value });
     };
 
-    const handleGenreToggle = (
-        genre: Genre,
-        checked: boolean | "indeterminate",
-    ) => {
-        if (checked === true) {
-            updateFilters("genres", [...filters.genres, genre]);
-        } else {
-            updateFilters(
-                "genres",
-                filters.genres.filter((g) => g !== genre),
-            );
+    const addUnique = <T,>(items: T[], item: T) =>
+        items.includes(item) ? items : [...items, item];
+
+    const handleGenreStateChange = (genre: Genre, state: FilterState) => {
+        if (state === "include") {
+            onChange({
+                ...filters,
+                genres: addUnique(filters.genres, genre),
+                excludedGenres: filters.excludedGenres.filter(
+                    (g) => g !== genre,
+                ),
+            });
+            return;
         }
+
+        if (state === "exclude") {
+            onChange({
+                ...filters,
+                genres: filters.genres.filter((g) => g !== genre),
+                excludedGenres: addUnique(filters.excludedGenres, genre),
+            });
+            return;
+        }
+
+        onChange({
+            ...filters,
+            genres: filters.genres.filter((g) => g !== genre),
+            excludedGenres: filters.excludedGenres.filter((g) => g !== genre),
+        });
     };
 
-    const handleTypeToggle = (
+    const handleTypeStateChange = (
         type: (typeof MANGA_TYPES)[number],
-        checked: boolean | "indeterminate",
+        state: FilterState,
     ) => {
-        if (checked === true) {
-            updateFilters("types", [...filters.types, type]);
-        } else {
-            updateFilters(
-                "types",
-                filters.types.filter((t) => t !== type),
-            );
+        if (state === "include") {
+            onChange({
+                ...filters,
+                types: addUnique(filters.types, type),
+                excludedTypes: filters.excludedTypes.filter((t) => t !== type),
+            });
+            return;
         }
+
+        if (state === "exclude") {
+            onChange({
+                ...filters,
+                types: filters.types.filter((t) => t !== type),
+                excludedTypes: addUnique(filters.excludedTypes, type),
+            });
+            return;
+        }
+
+        onChange({
+            ...filters,
+            types: filters.types.filter((t) => t !== type),
+            excludedTypes: filters.excludedTypes.filter((t) => t !== type),
+        });
     };
 
     return (
@@ -110,9 +155,15 @@ export function Filters({ filters, onChange }: FiltersProps) {
                     <Filter
                         key={type}
                         label={type}
-                        checked={filters.types.includes(type)}
-                        onCheckedChange={(checked) =>
-                            handleTypeToggle(type, checked)
+                        state={
+                            filters.types.includes(type)
+                                ? "include"
+                                : filters.excludedTypes.includes(type)
+                                  ? "exclude"
+                                  : "neutral"
+                        }
+                        onStateChange={(state) =>
+                            handleTypeStateChange(type, state)
                         }
                     />
                 ))}
@@ -129,9 +180,15 @@ export function Filters({ filters, onChange }: FiltersProps) {
                             <Filter
                                 key={genre}
                                 label={genre}
-                                checked={filters.genres.includes(genre)}
-                                onCheckedChange={(checked) =>
-                                    handleGenreToggle(genre, checked)
+                                state={
+                                    filters.genres.includes(genre)
+                                        ? "include"
+                                        : filters.excludedGenres.includes(genre)
+                                          ? "exclude"
+                                          : "neutral"
+                                }
+                                onStateChange={(state) =>
+                                    handleGenreStateChange(genre, state)
                                 }
                             />
                         ))}

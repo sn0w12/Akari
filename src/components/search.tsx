@@ -31,6 +31,8 @@ export default function SearchPage() {
     // Parse filters from URL
     const genresParam = searchParams.get("genres") || "";
     const typesParam = searchParams.get("types") || "";
+    const excludedGenresParam = searchParams.get("excludedGenres") || "";
+    const excludedTypesParam = searchParams.get("excludedTypes") || "";
     const sortParam = searchParams.get("sort") || "search";
 
     const selectedGenresFromUrl = genresParam
@@ -47,6 +49,20 @@ export default function SearchPage() {
               ) as (typeof MANGA_TYPES)[number][])
         : [];
 
+    const excludedGenresFromUrl = excludedGenresParam
+        ? (excludedGenresParam
+              .split(",")
+              .filter((g) => genres.includes(g as Genre)) as Genre[])
+        : [];
+
+    const excludedTypesFromUrl = excludedTypesParam
+        ? (excludedTypesParam
+              .split(",")
+              .filter((t) =>
+                  MANGA_TYPES.includes(t as (typeof MANGA_TYPES)[number]),
+              ) as (typeof MANGA_TYPES)[number][])
+        : [];
+
     const [searchQuery, setSearchQuery] = useState(query);
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
         wait: 300,
@@ -54,7 +70,9 @@ export default function SearchPage() {
     const [currentPage, setCurrentPage] = useState(page);
     const [filters, setFilters] = useState<SearchFilters>({
         genres: selectedGenresFromUrl,
+        excludedGenres: excludedGenresFromUrl,
         types: selectedTypesFromUrl,
+        excludedTypes: excludedTypesFromUrl,
         sort: sortParam as SearchFilters["sort"],
     });
 
@@ -66,6 +84,10 @@ export default function SearchPage() {
             params.set("genres", filters.genres.join(","));
         if (filters.types.length > 0)
             params.set("types", filters.types.join(","));
+        if (filters.excludedGenres.length > 0)
+            params.set("excludedGenres", filters.excludedGenres.join(","));
+        if (filters.excludedTypes.length > 0)
+            params.set("excludedTypes", filters.excludedTypes.join(","));
         if (filters.sort !== "search") params.set("sort", filters.sort);
 
         router.replace(`/search?${params.toString()}`);
@@ -82,6 +104,8 @@ export default function SearchPage() {
                         pageSize: 24,
                         genres: filters.genres,
                         types: filters.types,
+                        excludedGenres: filters.excludedGenres,
+                        excludedTypes: filters.excludedTypes,
                         sortBy: filters.sort,
                     },
                 },
@@ -98,7 +122,9 @@ export default function SearchPage() {
         enabled:
             debouncedSearchQuery.trim().length > 0 ||
             filters.genres.length > 0 ||
-            filters.types.length > 0,
+            filters.types.length > 0 ||
+            filters.excludedGenres.length > 0 ||
+            filters.excludedTypes.length > 0,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -124,10 +150,14 @@ export default function SearchPage() {
                             <Filter className="w-4 h-4 mr-2" />
                             Filter
                             {(filters.genres.length > 0 ||
-                                filters.types.length > 0) && (
+                                filters.types.length > 0 ||
+                                filters.excludedGenres.length > 0 ||
+                                filters.excludedTypes.length > 0) && (
                                 <Badge className="px-1">
                                     {filters.genres.length +
-                                        filters.types.length}
+                                        filters.types.length +
+                                        filters.excludedGenres.length +
+                                        filters.excludedTypes.length}
                                 </Badge>
                             )}
                         </Button>

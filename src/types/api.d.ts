@@ -2212,6 +2212,12 @@ export interface paths {
                     authors?: string[];
                     /** @description Filter by manga types. */
                     types?: string[];
+                    /** @description Exclude by genres. */
+                    excludedGenres?: string[];
+                    /** @description Exclude by authors. */
+                    excludedAuthors?: string[];
+                    /** @description Exclude by manga types. */
+                    excludedTypes?: string[];
                     /** @description The page number. */
                     page?: number;
                     /** @description The number of items per page. */
@@ -4421,7 +4427,7 @@ export interface components {
             data: components["schemas"]["MangaSearchResponse"][];
         };
         /** @enum {string} */
-        MangaType: "Manga" | "Manwha" | "Manhua" | "OEL";
+        MangaType: "Manga" | "Manhwa" | "Manhua" | "OEL";
         NotificationPayload: {
             title: string;
             body: string;
