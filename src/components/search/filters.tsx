@@ -1,15 +1,23 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GENRE_CATEGORIES, Genre, MANGA_TYPES } from "@/lib/api/search";
-import { cn } from "@/lib/utils";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { GENRE_CATEGORIES, Genre, MANGA_TYPES } from "@/lib/api/search";
+import { cn } from "@/lib/utils";
+import { FilterIcon } from "lucide-react";
 
 export interface SearchFilters {
     genres: Genre[];
@@ -62,7 +70,7 @@ function Filter({
     );
 }
 
-export function Filters({ filters, onChange }: FiltersProps) {
+export function FiltersContent({ filters, onChange }: FiltersProps) {
     const updateFilters = <K extends keyof SearchFilters>(
         key: K,
         value: SearchFilters[K],
@@ -196,5 +204,65 @@ export function Filters({ filters, onChange }: FiltersProps) {
                 </div>
             ))}
         </div>
+    );
+}
+
+export function Filters({ filters, onChange }: FiltersProps) {
+    return (
+        <>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="hidden md:flex">
+                        <FilterIcon className="w-4 h-4" />
+                        Filter
+                        {(filters.genres.length > 0 ||
+                            filters.types.length > 0 ||
+                            filters.excludedGenres.length > 0 ||
+                            filters.excludedTypes.length > 0) && (
+                            <Badge className="px-1">
+                                {filters.genres.length +
+                                    filters.types.length +
+                                    filters.excludedGenres.length +
+                                    filters.excludedTypes.length}
+                            </Badge>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                    side="bottom"
+                    align="end"
+                    className="w-80 md:w-128"
+                >
+                    <FiltersContent filters={filters} onChange={onChange} />
+                </PopoverContent>
+            </Popover>
+            <Drawer>
+                <DrawerTrigger asChild>
+                    <Button variant="outline" className="flex md:hidden">
+                        <FilterIcon className="w-4 h-4" />
+                        Filter
+                        {(filters.genres.length > 0 ||
+                            filters.types.length > 0 ||
+                            filters.excludedGenres.length > 0 ||
+                            filters.excludedTypes.length > 0) && (
+                            <Badge className="px-1">
+                                {filters.genres.length +
+                                    filters.types.length +
+                                    filters.excludedGenres.length +
+                                    filters.excludedTypes.length}
+                            </Badge>
+                        )}
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <div
+                        className="overflow-y-auto p-2 pt-0 mt-4"
+                        style={{ maxHeight: "calc(100vh - 10rem)" }}
+                    >
+                        <FiltersContent filters={filters} onChange={onChange} />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        </>
     );
 }

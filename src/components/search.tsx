@@ -1,24 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { client } from "@/lib/api";
 import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
-import { Filter } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GRID_CLASS } from "./grid-page";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { MangaGrid } from "./manga/manga-grid";
 import { Filters, SearchFilters } from "./search/filters";
-import { Badge } from "./ui/badge";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
@@ -144,28 +136,7 @@ export default function SearchPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 p-2"
                 />
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline">
-                            <Filter className="w-4 h-4 mr-2" />
-                            Filter
-                            {(filters.genres.length > 0 ||
-                                filters.types.length > 0 ||
-                                filters.excludedGenres.length > 0 ||
-                                filters.excludedTypes.length > 0) && (
-                                <Badge className="px-1">
-                                    {filters.genres.length +
-                                        filters.types.length +
-                                        filters.excludedGenres.length +
-                                        filters.excludedTypes.length}
-                                </Badge>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80 md:w-128">
-                        <Filters filters={filters} onChange={setFilters} />
-                    </PopoverContent>
-                </Popover>
+                <Filters filters={filters} onChange={setFilters} />
             </div>
 
             {isLoading ? (
