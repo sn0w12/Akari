@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
-import { ChaptersSection } from "./chapters";
-import { MangaGrid } from "../manga/manga-grid";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { useUser } from "@/contexts/user-context";
+import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import Toast from "@/lib/toast-wrapper";
 import { useQuery } from "@tanstack/react-query";
-import { getLatestReadChapter } from "@/lib/manga/bookmarks";
-import { useUser } from "@/contexts/user-context";
+import { ArrowUpDown } from "lucide-react";
+import { useCallback, useState } from "react";
+import { MangaGrid } from "../manga/manga-grid";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { ChaptersSection } from "./chapters";
 
 interface ChaptersControlsProps {
     onFindLatestRead: () => void;
@@ -113,13 +113,13 @@ export function MangaDetailsBody({
             <div className="flex flex-col md:flex-row justify-between md:items-center">
                 <TabsList className="bg-background p-0 gap-2">
                     <TabsTrigger
-                        className="text-xl md:text-2xl font-bold px-0 border-0 data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                        className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
                         value="chapters"
                     >
                         Chapters
                     </TabsTrigger>
                     <TabsTrigger
-                        className="text-xl md:text-2xl font-bold px-0 border-0 data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                        className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
                         value="recommendations"
                     >
                         Recommendations
