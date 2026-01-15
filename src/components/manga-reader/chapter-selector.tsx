@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Combo } from "@/components/ui/combo";
 import {
     Command,
     CommandEmpty,
@@ -18,7 +18,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Combo } from "@/components/ui/combo";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 interface ChapterSelectorProps {
@@ -53,7 +53,7 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                     onChange(e.target.value);
                 }}
                 aria-label="Select chapter"
-                className="mt-2 mb-2 w-auto w-full sm:max-w-64 md:hidden"
+                className="mt-2 mb-2 h-9 w-auto w-full md:hidden"
             />
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -62,19 +62,15 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                         role="combobox"
                         aria-expanded={open}
                         aria-label="Select chapter"
-                        className="w-full justify-between hidden md:flex"
+                        className="w-52 justify-between hidden md:flex"
                     >
-                        {value
-                            ? chapters.find(
-                                  (chapter) => chapter.value === value,
-                              )?.label
-                            : "Select chapter..."}
+                        Select chapter...
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent
                     id="chapter-selector"
-                    className="w-[200px] p-0 relative z-[2000]"
+                    className="w-52 p-0 relative z-[2000]"
                 >
                     <Command>
                         <CommandInput placeholder="Search chapter..." />
