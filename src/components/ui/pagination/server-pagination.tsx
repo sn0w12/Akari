@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ButtonLink } from "../button-link";
 import { cn } from "@/lib/utils";
-import { JumpToPagePopover } from "./pagination-popover";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ButtonLink } from "../button-link";
+import { JumpToPagePopover } from "./pagination-popover";
 import { getVisiblePages } from "./util";
 
 interface PaginationElementProps {
@@ -63,7 +63,7 @@ export function ServerPagination({
                     );
                 }}
                 disabled={currentPage <= 1}
-                className="min-w-[2.5rem] h-9 flex-shrink-0"
+                className="min-w-9 h-9 flex-shrink-0"
                 aria-label="Go to previous page"
             >
                 <ChevronLeft className="h-4 w-4" />
@@ -96,7 +96,7 @@ export function ServerPagination({
                             variant="outline"
                             size="sm"
                             href={createPageUrl(page)}
-                            className={cn("min-w-[2.5rem] h-9", {
+                            className={cn("min-w-9 h-9", {
                                 "inline-flex":
                                     index === 1 ||
                                     index === visiblePages.length - 2,
@@ -120,7 +120,7 @@ export function ServerPagination({
                     );
                 }}
                 disabled={currentPage >= totalPages}
-                className="min-w-[2.5rem] h-9 flex-shrink-0"
+                className="min-w-9 h-9 flex-shrink-0"
                 aria-label="Go to next page"
             >
                 <span className="hidden sm:inline mr-1">Next</span>

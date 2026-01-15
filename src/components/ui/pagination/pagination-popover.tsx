@@ -3,12 +3,12 @@
 import type React from "react";
 
 import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { NumberInput } from "@/components/ui/input";
 
 interface JumpToPagePopoverProps {
     currentPage: number;
@@ -50,7 +50,7 @@ export function JumpToPagePopover({
                 <Button
                     variant="default"
                     size="sm"
-                    className="min-w-[2.5rem] h-9"
+                    className="min-w-9 h-9"
                     aria-label={`Current page ${currentPage}, click to jump to page`}
                     aria-current="page"
                 >

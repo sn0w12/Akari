@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { JumpToPagePopover } from "./pagination-popover";
 import { getVisiblePages } from "./util";
 
@@ -38,7 +38,7 @@ export default function ClientPagination({
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="min-w-[2.5rem] h-9 flex-shrink-0"
+                className="min-w-9 h-9 flex-shrink-0"
                 aria-label="Go to previous page"
             >
                 <ChevronLeft className="h-4 w-4" />
@@ -71,7 +71,7 @@ export default function ClientPagination({
                             variant="outline"
                             size="sm"
                             onClick={() => handlePageChange(page)}
-                            className={cn("min-w-[2.5rem] h-9", {
+                            className={cn("min-w-9 h-9", {
                                 "inline-flex":
                                     index === 1 ||
                                     index === visiblePages.length - 2,
@@ -90,7 +90,7 @@ export default function ClientPagination({
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="min-w-[2.5rem] h-9 flex-shrink-0"
+                className="min-w-9 h-9 flex-shrink-0"
                 aria-label="Go to next page"
             >
                 <span className="hidden sm:inline mr-1">Next</span>
