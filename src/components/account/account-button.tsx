@@ -1,10 +1,10 @@
 import { useUser } from "@/contexts/user-context";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
-import { SidebarMenuLink } from "../ui/sidebar";
-import { KeyboardShortcut } from "../ui/keyboard-shortcut";
-import { Avatar } from "../ui/avatar";
 import { User } from "lucide-react";
 import router from "next/router";
+import { Avatar } from "../ui/avatar";
+import { KeyboardShortcut } from "../ui/keyboard-shortcut";
+import { SidebarMenuLink } from "../ui/sidebar";
 
 export function AccountButton({
     sidebarCollapsed,
@@ -25,7 +25,7 @@ export function AccountButton({
                     <span>Account</span>
                     <KeyboardShortcut
                         keys={openAccount}
-                        className={`gap-1 transition-opacity transition-duration-200 ${
+                        className={`transition-opacity ease-snappy ${
                             sidebarCollapsed ? "opacity-0" : "opacity-100"
                         }`}
                     />
@@ -36,7 +36,7 @@ export function AccountButton({
                     <span>Login</span>
                     <KeyboardShortcut
                         keys={openAccount}
-                        className={`gap-1 transition-opacity transition-duration-200 ${
+                        className={`transition-opacity ease-snappy ${
                             sidebarCollapsed ? "opacity-0" : "opacity-100"
                         }`}
                     />

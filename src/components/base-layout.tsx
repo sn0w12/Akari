@@ -110,10 +110,10 @@ export function BaseLayout({
                                     <span>Bookmarks</span>
                                     <KeyboardShortcut
                                         keys={useSetting("navigateBookmarks")}
-                                        className={`gap-1 ${
+                                        className={`transition-opacity ease-snappy ${
                                             isSidebarCollapsed
                                                 ? "opacity-0"
-                                                : "transition-opacity transition-duration-200 opacity-100"
+                                                : "opacity-100"
                                         }`}
                                     />
                                 </SidebarMenuLink>
@@ -174,7 +174,7 @@ export function BaseLayout({
                                 <span>Settings</span>
                                 <KeyboardShortcut
                                     keys={useSetting("openSettings")}
-                                    className={`gap-1 transition-opacity transition-duration-200 ${
+                                    className={`transition-opacity ease-snappy ${
                                         isSidebarCollapsed
                                             ? "opacity-0"
                                             : "opacity-100"
