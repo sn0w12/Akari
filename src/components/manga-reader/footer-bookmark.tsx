@@ -1,9 +1,10 @@
 "use client";
 
-import { checkIfBookmarked, bookmarkManga } from "@/lib/manga/bookmarks";
-import { Button } from "../ui/button";
+import { bookmarkManga, checkIfBookmarked } from "@/lib/manga/bookmarks";
 import Toast from "@/lib/toast-wrapper";
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "../ui/button";
 import Spinner from "../ui/puff-loader";
 
 export function FooterBookmarkButton({
@@ -52,11 +53,14 @@ export function FooterBookmarkButton({
 
     return (
         <Button
-            className={`flex-1 ${
-                isBookmarked
-                    ? "bg-accent-positive hover:positive/70 text-white"
-                    : "bg-background hover:bg-accent text-accent-foreground"
-            }`}
+            className={cn(
+                "flex-1 border-1 border-accent-positive disabled:opacity-100",
+                {
+                    "bg-accent-positive/80 text-white": isBookmarked,
+                    "bg-background hover:bg-accent text-accent-foreground":
+                        !isBookmarked,
+                },
+            )}
             onClick={handleBookmark}
             disabled={isBookmarked || bookmarkMutation.isPending}
         >
