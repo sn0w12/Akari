@@ -97,3 +97,5 @@ export const GENRE_CATEGORIES: Record<string, readonly Genre[]> = {
     ],
     Mature: ["Adult", "Hentai", "Mature", "Shoujo Ai", "Shounen Ai", "Smut"],
 };
+
+export const MANGA_TYPES = ["Manga", "Manhwa", "Manhua"] as const;

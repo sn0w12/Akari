@@ -1,24 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import ClientPagination from "./ui/pagination/client-pagination";
-import MangaCardSkeleton from "./manga/manga-card-skeleton";
-import { useSearchParams, useRouter } from "next/navigation";
-import { MangaGrid } from "./manga/manga-grid";
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/api";
-import GenrePicker from "./search/genre-picker";
-import { Genre, genres } from "@/lib/api/search";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Filter } from "lucide-react";
-import { GRID_CLASS } from "./grid-page";
+import { client } from "@/lib/api";
+import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
 import { useDebouncedValue } from "@tanstack/react-pacer";
+import { useQuery } from "@tanstack/react-query";
+import { Filter } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { GRID_CLASS } from "./grid-page";
+import MangaCardSkeleton from "./manga/manga-card-skeleton";
+import { MangaGrid } from "./manga/manga-grid";
+import { Filters, SearchFilters } from "./search/filters";
+import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -26,11 +26,24 @@ export default function SearchPage() {
 
     const query = searchParams.get("q") || "";
     const page = Number(searchParams.get("p")) || 1;
+
+    // Parse filters from URL
     const genresParam = searchParams.get("genres") || "";
+    const typesParam = searchParams.get("types") || "";
+    const sortParam = searchParams.get("sort") || "search";
+
     const selectedGenresFromUrl = genresParam
         ? (genresParam
               .split(",")
               .filter((g) => genres.includes(g as Genre)) as Genre[])
+        : [];
+
+    const selectedTypesFromUrl = typesParam
+        ? (typesParam
+              .split(",")
+              .filter((t) =>
+                  MANGA_TYPES.includes(t as (typeof MANGA_TYPES)[number]),
+              ) as (typeof MANGA_TYPES)[number][])
         : [];
 
     const [searchQuery, setSearchQuery] = useState(query);
@@ -38,22 +51,27 @@ export default function SearchPage() {
         wait: 300,
     });
     const [currentPage, setCurrentPage] = useState(page);
-    const [selectedGenres, setSelectedGenres] = useState<Genre[]>(
-        selectedGenresFromUrl,
-    );
+    const [filters, setFilters] = useState<SearchFilters>({
+        genres: selectedGenresFromUrl,
+        types: selectedTypesFromUrl,
+        sort: sortParam as SearchFilters["sort"],
+    });
 
     useEffect(() => {
         const params = new URLSearchParams();
         if (searchQuery) params.set("q", searchQuery);
         if (currentPage > 1) params.set("p", currentPage.toString());
-        if (selectedGenres.length > 0)
-            params.set("genres", selectedGenres.join(","));
+        if (filters.genres.length > 0)
+            params.set("genres", filters.genres.join(","));
+        if (filters.types.length > 0)
+            params.set("types", filters.types.join(","));
+        if (filters.sort !== "search") params.set("sort", filters.sort);
 
         router.replace(`/search?${params.toString()}`);
-    }, [searchQuery, currentPage, selectedGenres, router]);
+    }, [searchQuery, currentPage, filters, router]);
 
     const { data: searchData, isLoading } = useQuery({
-        queryKey: ["search", debouncedSearchQuery, currentPage, selectedGenres],
+        queryKey: ["search", debouncedSearchQuery, currentPage, filters],
         queryFn: async () => {
             const { data, error } = await client.GET("/v2/manga/list", {
                 params: {
@@ -61,7 +79,9 @@ export default function SearchPage() {
                         query: debouncedSearchQuery,
                         page: currentPage,
                         pageSize: 24,
-                        genres: selectedGenres,
+                        genres: filters.genres,
+                        types: filters.types,
+                        sortBy: filters.sort,
                     },
                 },
             });
@@ -75,7 +95,9 @@ export default function SearchPage() {
             return data.data;
         },
         enabled:
-            debouncedSearchQuery.trim().length > 0 || selectedGenres.length > 0,
+            debouncedSearchQuery.trim().length > 0 ||
+            filters.genres.length > 0 ||
+            filters.types.length > 0,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -83,13 +105,7 @@ export default function SearchPage() {
         queueMicrotask(() => {
             setCurrentPage(1);
         });
-    }, [searchQuery]);
-
-    useEffect(() => {
-        queueMicrotask(() => {
-            setCurrentPage(1);
-        });
-    }, [selectedGenres]);
+    }, [searchQuery, filters]);
 
     return (
         <div className="px-4 pt-4">
@@ -106,18 +122,17 @@ export default function SearchPage() {
                         <Button variant="outline">
                             <Filter className="w-4 h-4 mr-2" />
                             Filter
-                            {selectedGenres.length > 0 && (
+                            {(filters.genres.length > 0 ||
+                                filters.types.length > 0) && (
                                 <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
-                                    {selectedGenres.length}
+                                    {filters.genres.length +
+                                        filters.types.length}
                                 </span>
                             )}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 md:w-128">
-                        <GenrePicker
-                            selectedGenres={selectedGenres}
-                            onChange={setSelectedGenres}
-                        />
+                        <Filters filters={filters} onChange={setFilters} />
                     </PopoverContent>
                 </Popover>
             </div>

@@ -2210,6 +2210,8 @@ export interface paths {
                     genres?: string[];
                     /** @description Filter by authors. */
                     authors?: string[];
+                    /** @description Filter by manga types. */
+                    types?: string[];
                     /** @description The page number. */
                     page?: number;
                     /** @description The number of items per page. */
@@ -3975,12 +3977,7 @@ export interface components {
             data: components["schemas"]["ChapterResponse"];
         };
         /** @enum {string} */
-        CommentReportReason:
-            | "spam"
-            | "harassment"
-            | "inappropriate"
-            | "hate_speech"
-            | "other";
+        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
         CommentResponse: {
             /** Format: uuid */
             id: string;
@@ -4358,7 +4355,7 @@ export interface components {
             data: components["schemas"]["MangaListResponse"];
         };
         /** @enum {string} */
-        MangaListSortOrder: "latest" | "popular" | "newest";
+        MangaListSortOrder: "latest" | "popular" | "newest" | "search";
         MangaResponse: {
             /** Format: uuid */
             id: string;
