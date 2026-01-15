@@ -1,13 +1,12 @@
 "use client";
 
+import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../ui/button";
 import { ButtonLink } from "../../ui/button-link";
-import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { ChapterSelector } from "../chapter-selector";
 import { FooterBookmarkButton } from "../footer-bookmark";
-import { Info } from "lucide-react";
 
 export function InfoPopover({
     chapter,
@@ -48,6 +47,7 @@ export function InfoPopover({
                             <ChapterSelector
                                 chapters={chapter.chapters}
                                 value={chapter.number.toString()}
+                                className="w-full"
                             />
                         </div>
                         <div className="flex flex-col gap-2 pt-2 border-t">

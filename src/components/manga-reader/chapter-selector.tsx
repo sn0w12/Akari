@@ -24,9 +24,14 @@ import { useRouter } from "next/navigation";
 interface ChapterSelectorProps {
     chapters: { value: string; label: string }[];
     value: string;
+    className?: string;
 }
 
-export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
+export function ChapterSelector({
+    chapters,
+    value,
+    className,
+}: ChapterSelectorProps) {
     const [open, setOpen] = React.useState(false);
     const router = useRouter();
     const selectedItemRef = React.useRef<HTMLDivElement>(null);
@@ -53,7 +58,10 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                     onChange(e.target.value);
                 }}
                 aria-label="Select chapter"
-                className="mt-2 mb-2 h-9 w-auto w-full md:hidden"
+                className={cn(
+                    "mt-2 mb-2 h-9 w-auto w-full md:hidden",
+                    className,
+                )}
             />
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -62,7 +70,10 @@ export function ChapterSelector({ chapters, value }: ChapterSelectorProps) {
                         role="combobox"
                         aria-expanded={open}
                         aria-label="Select chapter"
-                        className="w-52 justify-between hidden md:flex"
+                        className={cn(
+                            "w-52 justify-between hidden md:flex",
+                            className,
+                        )}
                     >
                         Select chapter...
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
