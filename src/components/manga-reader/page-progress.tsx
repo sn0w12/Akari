@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { useSetting } from "@/lib/settings";
 import { useWindowWidth } from "@/hooks/use-window-width";
+import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
 
 interface PageProgressProps {
     currentPage: number;
@@ -69,9 +70,13 @@ export default function PageProgress({
 
     return (
         <div
-            className={`${
-                isVisible && !hidden ? "opacity-100" : "opacity-0"
-            } flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto`}
+            className={cn(
+                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto",
+                {
+                    "opacity-100": isVisible && !hidden,
+                    "opacity-0 pointer-events-none": !isVisible || hidden,
+                },
+            )}
             style={windowWidth <= cutoff ? { bottom: "1rem" } : {}}
         >
             <div
@@ -81,21 +86,31 @@ export default function PageProgress({
                 onClick={(e) => e.stopPropagation()}
             >
                 <div
-                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-[height,width] rounded-sm ${gradient}`}
+                    className={cn(
+                        "absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-[height,width] rounded-l-md md:rounded-[3px]",
+                        gradient,
+                        {
+                            "rounded-r-md": currentPage === totalPages - 1,
+                        },
+                    )}
                     style={backgroundStyle}
                 />
-                <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
+                <div className="relative flex flex-row lg:flex-col h-full w-full gap-0 md:gap-1 p-0.5">
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 transition-colors rounded-[3px] ${
-                                index === currentPage
-                                    ? "bg-accent-positive hover:bg-accent-positive/70"
-                                    : index < currentPage
-                                      ? "bg-primary hover:bg-primary/80"
-                                      : "bg-primary/30 hover:bg-primary/50"
-                            }`}
+                            className={cn(
+                                "flex-1 transition-colors first:rounded-l-sm last:rounded-r-sm md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]",
+                                {
+                                    "bg-accent-positive hover:bg-accent-positive/70":
+                                        index === currentPage,
+                                    "bg-primary hover:bg-primary/80":
+                                        index < currentPage,
+                                    "bg-primary/30 hover:bg-primary/50":
+                                        index > currentPage,
+                                },
+                            )}
                             aria-label={`Go to page ${index + 1}`}
                         />
                     ))}
