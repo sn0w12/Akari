@@ -1,6 +1,22 @@
 "use client";
 
-import { Suspense } from "react";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuLink,
+    SidebarSection,
+    useSidebar,
+} from "@/components/ui/sidebar";
+import { useBorderColor } from "@/contexts/border-color-context";
+import { useUser } from "@/contexts/user-context";
+import { GENRE_CATEGORIES } from "@/lib/api/search";
+import { fetchNotification } from "@/lib/manga/bookmarks";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import {
     BadgeAlert,
     Bookmark,
@@ -8,33 +24,18 @@ import {
     FolderIcon,
     HomeIcon,
     Mountain,
+    Search,
     SettingsIcon,
     Theater,
     TrendingUp,
     Users,
 } from "lucide-react";
-import { HeaderComponent } from "./header";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarMenu,
-    SidebarMenuLink,
-    SidebarMenuItem,
-    SidebarSection,
-    SidebarFooter,
-    useSidebar,
-} from "@/components/ui/sidebar";
-import { Separator } from "./ui/separator";
-import { GENRE_CATEGORIES } from "@/lib/api/search";
-import { fetchNotification } from "@/lib/manga/bookmarks";
-import { useShortcutSetting, useSetting } from "@/lib/settings";
 import { useRouter } from "next/navigation";
-import { KeyboardShortcut } from "./ui/keyboard-shortcut";
-import { useUser } from "@/contexts/user-context";
-import { useQuery } from "@tanstack/react-query";
+import { Suspense } from "react";
 import { AccountButton } from "./account/account-button";
-import { cn } from "@/lib/utils";
-import { useBorderColor } from "@/contexts/border-color-context";
+import { HeaderComponent } from "./header";
+import { KeyboardShortcut } from "./ui/keyboard-shortcut";
+import { Separator } from "./ui/separator";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -88,7 +89,7 @@ export function BaseLayout({
             <div className="bg-sidebar flex flex-1">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent data-scrollbar-custom="true">
-                        <SidebarMenu className="p-2 pt-3">
+                        <SidebarMenu className="p-2 pt-3 gap-0.5">
                             <Separator className="hidden md:block" />
 
                             <SidebarMenuItem>
@@ -124,6 +125,15 @@ export function BaseLayout({
                                 >
                                     <TrendingUp />
                                     <span>Popular</span>
+                                </SidebarMenuLink>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem className="hidden md:block">
+                                <SidebarMenuLink
+                                    tooltip="Search"
+                                    href="/search"
+                                >
+                                    <Search />
+                                    <span>Search</span>
                                 </SidebarMenuLink>
                             </SidebarMenuItem>
 
