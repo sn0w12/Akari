@@ -1,8 +1,8 @@
-import { ServerPagination } from "./ui/pagination/server-pagination";
-import { MangaGrid } from "./manga/manga-grid";
-import { Skeleton } from "./ui/skeleton";
-import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { GridSortSelect, Sorting } from "./grid/grid-sort";
+import MangaCardSkeleton from "./manga/manga-card-skeleton";
+import { MangaGrid } from "./manga/manga-grid";
+import { ServerPagination } from "./ui/pagination/server-pagination";
+import { Skeleton } from "./ui/skeleton";
 
 interface PageProps {
     title: string;
@@ -23,19 +23,17 @@ export default async function GridPage({
     sorting,
 }: PageProps) {
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto px-4 pt-2 pb-4">
-                <div className="flex gap-4">
-                    <h2 className="text-3xl font-bold mb-2">{title}</h2>
-                    {sorting && (
-                        <div className="ml-auto">
-                            <GridSortSelect sorting={sorting} />
-                        </div>
-                    )}
-                </div>
-
-                <MangaGrid mangaList={mangaList} />
+        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">{title}</h2>
+                {sorting && (
+                    <div className="ml-auto">
+                        <GridSortSelect sorting={sorting} />
+                    </div>
+                )}
             </div>
+
+            <MangaGrid mangaList={mangaList} />
 
             <ServerPagination
                 currentPage={currentPage}
@@ -46,7 +44,7 @@ export default async function GridPage({
                         value: sorting?.currentSort.value || "",
                     },
                 ]}
-                className="mb-4"
+                className="mt-4"
             />
         </div>
     );
