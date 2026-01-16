@@ -105,6 +105,7 @@ export function BaseLayout({
                                     } ${notification}`}
                                     href="/bookmarks"
                                     aria-label={`${notification} Unread Bookmarks`}
+                                    prefetch={undefined}
                                 >
                                     <Bookmark />
                                     <span>Bookmarks</span>

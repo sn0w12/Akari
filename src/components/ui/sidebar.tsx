@@ -694,6 +694,7 @@ function SidebarMenuLink({
     children,
     href,
     labelClassName,
+    prefetch,
     ...props
 }: React.ComponentProps<"a"> & {
     asChild?: boolean;
@@ -701,6 +702,7 @@ function SidebarMenuLink({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href: string;
     labelClassName?: string;
+    prefetch?: boolean;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : Link;
     const {
@@ -742,7 +744,7 @@ function SidebarMenuLink({
             }}
             onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
             onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
-            prefetch={true}
+            prefetch={prefetch || true}
             {...props}
         >
             {wrappedChildren}
