@@ -66,6 +66,14 @@ export const APP_SETTINGS = {
                 default: ["mal", "ani"],
                 groups: ["UI", "Notifications"],
             },
+            allowAnalytics: {
+                label: "Allow Analytics",
+                description:
+                    "Allow the collection of anonymous analytics data.",
+                type: "checkbox",
+                default: true,
+                groups: ["Privacy"],
+            },
         },
     },
     manga: {

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { useCookieConsent } from "@/hooks/use-cookie-consent";
-import { useUser } from "@/contexts/user-context";
 import { useDevice } from "@/contexts/device-context";
+import { useUser } from "@/contexts/user-context";
+import { useSetting } from "@/lib/settings";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 type PathPattern = {
     regex: RegExp;
@@ -48,8 +48,8 @@ export function generalizePathname(pathname: string): string {
 }
 
 export function AnalyticsWrapper() {
-    const { consent } = useCookieConsent();
     const { user, isLoading } = useUser();
+    const allowAnalytics = useSetting("allowAnalytics");
     const pathname = usePathname();
     const device = useDevice();
     const domain = process.env.NEXT_PUBLIC_HOST;
@@ -68,7 +68,7 @@ export function AnalyticsWrapper() {
                 return;
             }
 
-            if (!consent.analytics) return;
+            if (!allowAnalytics) return;
             if (isLoading) return;
 
             const { init } = await import("@plausible-analytics/tracker");
@@ -86,15 +86,7 @@ export function AnalyticsWrapper() {
         };
 
         loadAndInit();
-    }, [
-        domain,
-        endpoint,
-        consent.analytics,
-        user,
-        device,
-        isLoading,
-        pathname,
-    ]);
+    }, [domain, endpoint, allowAnalytics, user, device, isLoading, pathname]);
 
     return null;
 }

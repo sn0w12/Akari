@@ -1,24 +1,22 @@
 import "@/app/globals.css";
-import localFont from "next/font/local";
-import { inDevelopment } from "@/config";
 import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
-import { ThemeProvider } from "@/components/theme-provider";
 import { BaseLayout } from "@/components/base-layout";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { UserProvider } from "@/contexts/user-context";
-import { CookieConsent } from "@/components/cookie-consent";
 import Footer from "@/components/footer";
-import { QueryProvider } from "@/components/query-provider";
-import { ConfirmProvider } from "@/contexts/confirm-context";
-import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
-import { DeviceProvider } from "@/contexts/device-context";
-import { Toaster } from "@/components/ui/sonner";
 import { PWANavigationRestore } from "@/components/pwa-navigation-restore";
+import { QueryProvider } from "@/components/query-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
+import { inDevelopment } from "@/config";
 import { BorderColorProvider } from "@/contexts/border-color-context";
+import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
+import { ConfirmProvider } from "@/contexts/confirm-context";
+import { DeviceProvider } from "@/contexts/device-context";
+import { UserProvider } from "@/contexts/user-context";
+import localFont from "next/font/local";
 import { Suspense } from "react";
 
-import type { Metadata } from "next";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 
 const geistSans = localFont({
     src: "../../../public/fonts/GeistVF.woff",
@@ -70,7 +68,6 @@ export default async function RootLayout({
                                                     <div className="flex-1">
                                                         {children}
                                                     </div>
-                                                    <CookieConsent />
                                                     <Toaster
                                                         position="top-right"
                                                         visibleToasts={5}

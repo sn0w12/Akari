@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CookieConsentFooter } from "./cookie-consent";
 import pkg from "../../package.json";
 import { Separator } from "./ui/separator";
 
@@ -57,7 +56,6 @@ export default async function Footer() {
                         </div>
                         <Separator className="hidden md:block" />
                         <div className="flex flex-row w-full justify-between gap-6">
-                            <CookieConsentFooter />
                             <Link
                                 href="https://github.com/sn0w12/akari"
                                 target="_blank"

@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { CookieCategory, useCookieConsent } from "@/hooks/use-cookie-consent";
 import { inDevelopment, inPreview } from "@/config";
 import { Metadata } from "next";
 
@@ -16,18 +15,20 @@ export function pluralize(word: string, count: number) {
     return count === 1 ? word : `${word}s`;
 }
 
+export type CookieConsent = {
+    necessary: boolean;
+    functional: boolean;
+    analytics: boolean;
+};
+
+export type CookieCategory = keyof CookieConsent;
+
 export const setCookie = (
     name: string,
     value: string,
     category: CookieCategory,
     maxAge = 31536000,
 ) => {
-    const { consent } = useCookieConsent.getState();
-
-    if (!consent[category]) {
-        return false;
-    }
-
     document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
     return true;
 };
