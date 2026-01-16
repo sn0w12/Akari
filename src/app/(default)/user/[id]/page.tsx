@@ -1,9 +1,14 @@
-import { Metadata } from "next";
-import { createMetadata } from "@/lib/utils";
-import { client, serverHeaders } from "@/lib/api";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    UserListsServer,
+    UserListsSkeleton,
+} from "@/components/user/use-lists-server";
 import { UserHeader } from "@/components/user/users-header";
-import { UserListsServer } from "@/components/user/use-lists-server";
+import { client, serverHeaders } from "@/lib/api";
+import { createMetadata } from "@/lib/utils";
+import { Metadata } from "next";
+import { Suspense } from "react";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -40,9 +45,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 export default async function UserPage(props: PageProps) {
     return (
         <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 h-full">
-            <UserHeader params={props.params} />
+            <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                <UserHeader params={props.params} />
+            </Suspense>
             <Separator className="my-2" />
-            <UserListsServer params={props.params} />
+            <Suspense fallback={<UserListsSkeleton />}>
+                <UserListsServer params={props.params} />
+            </Suspense>
         </div>
     );
 }

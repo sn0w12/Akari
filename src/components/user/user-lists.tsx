@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { ListItem } from "../account/list-item";
 import ClientPagination from "../ui/pagination/client-pagination";
 import { UserListsSkeleton } from "./use-lists-server";
 
+type UserListsResponse =
+    components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
+
 interface UserListsProps {
     userId: string;
+    initialData: UserListsResponse;
 }
 
-export function UserLists({ userId }: UserListsProps) {
+export function UserLists({ userId, initialData }: UserListsProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const queryClient = useQueryClient();
     const { data, isLoading } = useQuery({
-        queryKey: ["user-lists"],
+        queryKey: ["user-lists", currentPage],
+        initialData: currentPage === 1 ? initialData : undefined,
         refetchOnMount: false,
         queryFn: async () => {
             const { data, error } = await client.GET(

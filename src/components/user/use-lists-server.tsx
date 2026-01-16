@@ -1,3 +1,4 @@
+import { client } from "@/lib/api";
 import { Skeleton } from "../ui/skeleton";
 import { UserLists } from "./user-lists";
 
@@ -18,5 +19,21 @@ export async function UserListsServer({
 }) {
     const { id } = await params;
 
-    return <UserLists userId={id} />;
+    const { data, error } = await client.GET("/v2/lists/user/{userId}", {
+        params: {
+            path: {
+                userId: id,
+            },
+            query: {
+                page: 1,
+                pageSize: 12,
+            },
+        },
+    });
+
+    if (error || !data) {
+        throw new Error("Failed to fetch user lists");
+    }
+
+    return <UserLists userId={id} initialData={data} />;
 }
