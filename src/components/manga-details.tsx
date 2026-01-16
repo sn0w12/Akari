@@ -1,26 +1,26 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import ScoreDisplay from "./manga-details/score";
-import Buttons from "./manga-details/buttons";
-import EnhancedImage from "./ui/enhanced-image";
+import { Card } from "@/components/ui/card";
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { InfoIcon } from "lucide-react";
 import { generateSizes, pluralize } from "@/lib/utils";
-import { ViewManga } from "./manga-reader/view-manga";
+import { InfoIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ListSelector } from "./list/list-selector";
-import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { MangaDetailsBody } from "./manga-details/body";
+import Buttons from "./manga-details/buttons";
 import { MangaComments } from "./manga-details/manga-comments";
+import ScoreDisplay from "./manga-details/score";
+import { MangaUpdatedAt } from "./manga-details/updated-at";
+import { ViewManga } from "./manga-reader/view-manga";
+import EnhancedImage from "./ui/enhanced-image";
 
-import MalImage from "@/public/img/icons/MAL-logo.webp";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
+import MalImage from "@/public/img/icons/MAL-logo.webp";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -106,7 +106,7 @@ export async function MangaDetailsComponent({
     return (
         <div className="mx-auto p-4">
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
-            <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
+            <div className="flex flex-col justify-center gap-4 lg:flex-row mb-2 items-stretch h-auto">
                 {/* Image and Details Section */}
                 <div className="flex flex-shrink-0 justify-center hidden lg:block">
                     <EnhancedImage
