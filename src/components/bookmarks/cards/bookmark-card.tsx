@@ -1,27 +1,18 @@
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
+import { Card } from "@/components/ui/card";
+import { cn, formatRelativeDate } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { formatRelativeDate } from "@/lib/utils";
 
 interface BookmarkCardProps {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
-    setUpdatedBookmarks: React.Dispatch<
-        React.SetStateAction<
-            components["schemas"]["BookmarkListResponse"]["items"]
-        >
-    >;
 }
 
-export function BookmarkCard({
-    bookmark,
-    setUpdatedBookmarks,
-}: BookmarkCardProps) {
+export function BookmarkCard({ bookmark }: BookmarkCardProps) {
     return (
         <Card className="overflow-hidden p-0 rounded-lg">
             <div className="flex flex-col gap-2 p-4">
@@ -60,10 +51,7 @@ export function BookmarkCard({
                                         {bookmark.title}
                                     </h3>
                                 </Link>
-                                <ConfirmDialogs
-                                    bookmark={bookmark}
-                                    setUpdatedBookmarks={setUpdatedBookmarks}
-                                />
+                                <ConfirmDialogs bookmark={bookmark} />
                             </div>
 
                             <SubTitle

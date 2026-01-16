@@ -1,23 +1,19 @@
-import { cn } from "@/lib/utils";
-import { Check, X } from "lucide-react";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ButtonConfirmDialog } from "@/components/ui/confirm";
+import { client } from "@/lib/api";
 import { removeBookmark } from "@/lib/manga/bookmarks";
 import { syncAllServices } from "@/lib/manga/sync";
-import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { cn } from "@/lib/utils";
+import { Check, X } from "lucide-react";
 
 export function ConfirmDialogs({
     bookmark,
-    setUpdatedBookmarks,
     className,
 }: {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
-    setUpdatedBookmarks: React.Dispatch<
-        React.SetStateAction<
-            components["schemas"]["BookmarkListResponse"]["items"][number][]
-        >
-    >;
     className?: string;
 }) {
     async function handleRemoveBookmark(mangaId: string) {
@@ -29,9 +25,6 @@ export function ConfirmDialogs({
         }
 
         new Toast("Bookmark removed successfully", "success");
-        setUpdatedBookmarks((prev) =>
-            prev.filter((bookmark) => bookmark.mangaId !== mangaId),
-        );
     }
 
     async function handleUpdateBookmark(id: string, subId: number | undefined) {
