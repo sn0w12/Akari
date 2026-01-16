@@ -1,16 +1,16 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import PageProgress from "../page-progress";
+import { useShortcut } from "@/hooks/use-shortcut";
+import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";
-import { useShortcut } from "@/hooks/use-shortcut";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChapterInfo } from "../chapter-info";
 import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
-import { ChapterInfo } from "../chapter-info";
-import { useWindowWidth } from "@/hooks/use-window-width";
+import PageProgress from "../page-progress";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -73,13 +73,11 @@ export default function PageReader({
         }
     }, [chapter, currentPage, router, setBookmarkState]);
 
-    const setPageWithUrlUpdate = useCallback(
-        (newPage: number) => {
-            setCurrentPage(newPage);
-            router.replace(`?page=${newPage + 1}`, { scroll: false });
-        },
-        [router],
-    );
+    const setPageWithUrlUpdate = useCallback((newPage: number) => {
+        setCurrentPage(newPage);
+        // Use history.replaceState to update URL without triggering Next.js re-renders
+        window.history.replaceState(null, "", `?page=${newPage + 1}`);
+    }, []);
 
     const nextPage = useCallback(() => {
         if (
