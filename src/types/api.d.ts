@@ -4508,7 +4508,7 @@ export interface components {
         };
         UpdateBookmarkRequest: {
             /** Format: double */
-            chapterNumber: number;
+            chapterNumber?: number | null;
         };
         UpdateCommentRequest: {
             content: string;

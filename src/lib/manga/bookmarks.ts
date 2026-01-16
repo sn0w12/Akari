@@ -59,7 +59,7 @@ export async function bookmarkManga(mangaId: string, chapter?: number) {
             },
         },
         body: {
-            chapterNumber: chapter || undefined,
+            chapterNumber: chapter,
         },
     });
 
