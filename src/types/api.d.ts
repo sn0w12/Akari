@@ -3338,7 +3338,7 @@ export interface paths {
                     "multipart/form-data": {
                         /** Format: binary */
                         File?: string;
-                        Tags?: string[];
+                        Tags: string[];
                     };
                 };
             };
@@ -3810,7 +3810,7 @@ export interface components {
             data: components["schemas"]["AniMediaListCollection"];
         };
         AniTitle: {
-            english: string | null;
+            english?: string | null;
         };
         AniUpdateMangaListRequest: {
             /** Format: int32 */
@@ -4080,7 +4080,7 @@ export interface components {
             isPublic?: boolean;
         };
         ErrorData: {
-            message: string | null;
+            message: string;
             details?: string | null;
         };
         ErrorResponse: {
@@ -4156,15 +4156,15 @@ export interface components {
             updatedAt: string;
         };
         MalMainPicture: {
-            medium: string | null;
-            large: string | null;
+            medium: string;
+            large: string;
         };
         MalMangaListItem: {
             node: components["schemas"]["MalMangaNode"];
             listStatus: components["schemas"]["MalListStatus"];
         };
         MalMangaListResponse: {
-            data: components["schemas"]["MalMangaListItem"][] | null;
+            data: components["schemas"]["MalMangaListItem"][];
             paging: components["schemas"]["MalPaging"];
         };
         MalMangaListResponseSuccessResponse: {
@@ -4175,23 +4175,23 @@ export interface components {
             data: components["schemas"]["MalMangaListResponse"];
         };
         MalMangaListStatus: {
-            status?: string | null;
-            isRereading?: boolean;
+            status: string;
+            isRereading: boolean;
             /** Format: int32 */
-            numVolumesRead?: number;
+            numVolumesRead: number;
             /** Format: int32 */
-            numChaptersRead?: number;
+            numChaptersRead: number;
             /** Format: int32 */
-            score?: number;
-            updatedAt?: string | null;
+            score: number;
+            updatedAt: string;
             /** Format: int32 */
-            priority?: number;
+            priority: number;
             /** Format: int32 */
-            numTimesReread?: number;
+            numTimesReread: number;
             /** Format: int32 */
-            rereadValue?: number;
-            tags?: string[] | null;
-            comments?: string | null;
+            rereadValue: number;
+            tags: string[];
+            comments: string;
         };
         MalMangaListStatusSuccessResponse: {
             /** @enum {string} */
@@ -4204,23 +4204,23 @@ export interface components {
             /** Format: int32 */
             id: number;
             title: string;
-            mainPicture: components["schemas"]["MalMainPicture"];
+            mainPicture?: components["schemas"]["MalMainPicture"];
             mediaType: string;
         };
         MalPaging: {
             next?: string | null;
         };
         MalTokenRequest: {
-            code: string | null;
-            codeVerifier: string | null;
-            redirectUri: string | null;
+            code: string;
+            codeVerifier: string;
+            redirectUri: string;
         };
         MalTokenResponse: {
-            access_token?: string | null;
-            refresh_token?: string | null;
+            access_token: string;
+            refresh_token: string;
             /** Format: int32 */
-            expires_in?: number;
-            token_type?: string | null;
+            expires_in: number;
+            token_type: string;
         };
         MalTokenResponseSuccessResponse: {
             /** @enum {string} */
@@ -4417,7 +4417,7 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** Format: double */
-            rank?: number;
+            rank: number;
         };
         MangaSearchResponseListSuccessResponse: {
             /** @enum {string} */
@@ -4508,7 +4508,7 @@ export interface components {
         };
         UpdateBookmarkRequest: {
             /** Format: double */
-            chapterNumber?: number;
+            chapterNumber: number;
         };
         UpdateCommentRequest: {
             content: string;
