@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ButtonLink } from "../button-link";
 import { JumpToPagePopover } from "./pagination-popover";
@@ -11,7 +11,6 @@ import { getVisiblePages } from "./util";
 interface PaginationElementProps {
     currentPage: number;
     totalPages: number;
-    searchParams?: { key: string; value: string }[];
     className?: string;
     href?: string;
 }
@@ -19,11 +18,11 @@ interface PaginationElementProps {
 export function ServerPagination({
     currentPage,
     totalPages,
-    searchParams = [],
     className,
     href,
 }: PaginationElementProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [jumpToPage, setJumpToPage] = useState(currentPage.toString());
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const visiblePages = getVisiblePages(currentPage, totalPages);
@@ -31,13 +30,20 @@ export function ServerPagination({
     const createPageUrl = (page: number) => {
         const base = href || "";
         const separator = base.includes("?") ? "&" : "?";
-        const params =
-            `page=${page}` +
-            searchParams
-                .filter((param) => param.value)
-                .map((param) => `&${param.key}=${param.value}`)
-                .join("");
-        return base + separator + params;
+
+        // Get all current search params except 'page'
+        const params = new URLSearchParams();
+        searchParams.forEach((value, key) => {
+            if (key !== "page" && value) {
+                params.append(key, value);
+            }
+        });
+
+        // Add the new page param
+        params.set("page", page.toString());
+
+        const paramsString = params.toString();
+        return base + separator + paramsString;
     };
 
     const handlePageChange = (page: number) => {
