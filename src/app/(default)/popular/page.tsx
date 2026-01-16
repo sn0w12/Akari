@@ -1,9 +1,16 @@
-import { Metadata } from "next";
-import { createMetadata } from "@/lib/utils";
-import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
-import GridPage from "@/components/grid-page";
+import { GridBodySkeleton } from "@/components/grid-page";
+import {
+    GridSortSelect,
+    GridSortSelectFallback,
+} from "@/components/grid/grid-sort";
+import { MangaGrid } from "@/components/manga/manga-grid";
+import { ServerPagination } from "@/components/ui/pagination/server-pagination";
+import { client, serverHeaders } from "@/lib/api";
+import { createMetadata } from "@/lib/utils";
+import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
 interface PageProps {
     searchParams: Promise<{
@@ -51,6 +58,46 @@ const getPopularData = async (page: number, days: number = 30) => {
 };
 
 export default async function Popular(props: PageProps) {
+    return (
+        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">Popular</h2>
+                <div className="ml-auto">
+                    <Suspense fallback={<GridSortSelectFallback />}>
+                        <PopularSorting {...props} />
+                    </Suspense>
+                </div>
+            </div>
+
+            <Suspense fallback={<GridBodySkeleton />}>
+                <PopularBody {...props} />
+            </Suspense>
+        </div>
+    );
+}
+
+async function PopularSorting(props: PageProps) {
+    const { days } = await props.searchParams;
+    const sorting = {
+        currentSort: { key: "days", value: days || "30" },
+        defaultSortValue: "30",
+        sortItems: [
+            { key: "days", value: "1", label: "Last 24 Hours" },
+            { key: "separator" } as const,
+            { key: "days", value: "7", label: "Last 7 Days" },
+            { key: "days", value: "30", label: "Last 30 Days" },
+            { key: "separator" } as const,
+            { key: "days", value: "90", label: "Last 3 Months" },
+            { key: "days", value: "180", label: "Last 6 Months" },
+            { key: "separator" } as const,
+            { key: "days", value: "365", label: "Last Year" },
+        ],
+    };
+
+    return <GridSortSelect sorting={sorting} />;
+}
+
+async function PopularBody(props: PageProps) {
     const { page, days } = await props.searchParams;
     const { data, error } = await getPopularData(
         Number(page) || 1,
@@ -62,26 +109,13 @@ export default async function Popular(props: PageProps) {
     }
 
     return (
-        <GridPage
-            title={"Popular"}
-            mangaList={data.data.items}
-            currentPage={data.data.currentPage}
-            totalPages={data.data.totalPages}
-            sorting={{
-                currentSort: { key: "days", value: days || "30" },
-                defaultSortValue: "30",
-                sortItems: [
-                    { key: "days", value: "1", label: "Last 24 Hours" },
-                    { key: "separator" },
-                    { key: "days", value: "7", label: "Last 7 Days" },
-                    { key: "days", value: "30", label: "Last 30 Days" },
-                    { key: "separator" },
-                    { key: "days", value: "90", label: "Last 3 Months" },
-                    { key: "days", value: "180", label: "Last 6 Months" },
-                    { key: "separator" },
-                    { key: "days", value: "365", label: "Last Year" },
-                ],
-            }}
-        />
+        <>
+            <MangaGrid mangaList={data.data.items} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+            />
+        </>
     );
 }

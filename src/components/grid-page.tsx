@@ -38,12 +38,6 @@ export default async function GridPage({
             <ServerPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                searchParams={[
-                    {
-                        key: sorting?.currentSort.key || "",
-                        value: sorting?.currentSort.value || "",
-                    },
-                ]}
                 className="mt-4"
             />
         </div>
@@ -65,6 +59,20 @@ export async function GridPageSkeleton({
                     ))}
                 </div>
             </div>
+        </div>
+    );
+}
+
+export async function GridBodySkeleton({
+    pageSize = 24,
+}: {
+    pageSize?: number;
+}) {
+    return (
+        <div className={GRID_CLASS}>
+            {[...Array(pageSize)].map((_, index) => (
+                <MangaCardSkeleton key={index} />
+            ))}
         </div>
     );
 }

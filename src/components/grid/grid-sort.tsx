@@ -1,14 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
     Select,
-    SelectTrigger,
     SelectContent,
     SelectItem,
-    SelectValue,
     SelectSeparator,
+    SelectTrigger,
+    SelectValue,
 } from "../ui/select";
-import { useRouter } from "next/navigation";
 
 type CurrentSort = { key: string; value: string };
 type SortSeparator = { key: "separator" };
@@ -56,6 +56,16 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
                     ),
                 )}
             </SelectContent>
+        </Select>
+    );
+}
+
+export function GridSortSelectFallback() {
+    return (
+        <Select disabled>
+            <SelectTrigger className="w-[180px]" disabled>
+                <SelectValue placeholder="Sort By" />
+            </SelectTrigger>
         </Select>
     );
 }

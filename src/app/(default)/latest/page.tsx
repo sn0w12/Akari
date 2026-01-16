@@ -1,12 +1,14 @@
-import { client } from "@/lib/api";
+import ErrorPage from "@/components/error-page";
+import { GridBodySkeleton } from "@/components/grid-page";
+import { MangaGrid } from "@/components/manga/manga-grid";
+import { ServerPagination } from "@/components/ui/pagination/server-pagination";
+import { client, serverHeaders } from "@/lib/api";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
-import { serverHeaders } from "@/lib/api";
-import ErrorPage from "@/components/error-page";
-import GridPage from "@/components/grid-page";
 import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
-interface HomeProps {
+interface PageProps {
     searchParams: Promise<{
         page: string;
     }>;
@@ -37,20 +39,36 @@ const getLatestData = async (currentPage: number) => {
     return { data, error };
 };
 
-export default async function Home(props: HomeProps) {
-    const currentPage = Number((await props.searchParams).page) || 1;
-    const { data, error } = await getLatestData(currentPage);
+export default async function Latest(props: PageProps) {
+    return (
+        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+            </div>
+
+            <Suspense fallback={<GridBodySkeleton />}>
+                <LatestBody {...props} />
+            </Suspense>
+        </div>
+    );
+}
+
+async function LatestBody(props: PageProps) {
+    const { page } = await props.searchParams;
+    const { data, error } = await getLatestData(Number(page) || 1);
 
     if (error || !data) {
-        return <ErrorPage title="Failed to load manga list" error={error} />;
+        return <ErrorPage error={error} />;
     }
 
     return (
-        <GridPage
-            title="Latest Releases"
-            mangaList={data.data.items}
-            currentPage={currentPage}
-            totalPages={data.data.totalPages}
-        />
+        <>
+            <MangaGrid mangaList={data.data.items} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+            />
+        </>
     );
 }

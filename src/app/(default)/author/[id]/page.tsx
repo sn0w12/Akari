@@ -1,13 +1,17 @@
-import { Metadata } from "next";
-import { createMetadata, createOgImage } from "@/lib/utils";
-import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
-import GridPage from "@/components/grid-page";
-import { cacheLife, cacheTag } from "next/cache";
+import { GridBodySkeleton } from "@/components/grid-page";
+import { MangaGrid } from "@/components/manga/manga-grid";
+import { ServerPagination } from "@/components/ui/pagination/server-pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { client, serverHeaders } from "@/lib/api";
 import {
     getAllAuthors,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
+import { createMetadata, createOgImage } from "@/lib/utils";
+import { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -69,23 +73,54 @@ async function getAuthor(name: string, page: number) {
 }
 
 export default async function AuthorPage(props: PageProps) {
-    const searchParams = await props.searchParams;
+    return (
+        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <Suspense fallback={<AuthorHeaderFallback />}>
+                    <AuthorHeader {...props} />
+                </Suspense>
+            </div>
+
+            <Suspense fallback={<GridBodySkeleton pageSize={6} />}>
+                <AuthorBody {...props} />
+            </Suspense>
+        </div>
+    );
+}
+
+async function AuthorHeader(props: PageProps) {
     const params = await props.params;
     const title = decodeURIComponent(params.id).replaceAll("-", " ");
 
-    const page = parseInt(searchParams.page) || 1;
-    const { data, error } = await getAuthor(title, page);
+    return <h2 className="text-3xl font-bold mb-2">{title}</h2>;
+}
 
-    if (error) {
+async function AuthorHeaderFallback() {
+    return <Skeleton className="h-[36px] mb-2 w-96" />;
+}
+
+async function AuthorBody(props: PageProps) {
+    const params = await props.params;
+    const searchParams = await props.searchParams;
+    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    const { data, error } = await getAuthor(
+        title,
+        Number(searchParams.page) || 1,
+    );
+
+    if (error || !data) {
         return <ErrorPage error={error} />;
     }
 
     return (
-        <GridPage
-            title={title}
-            mangaList={data.data.items}
-            currentPage={data.data.currentPage}
-            totalPages={data.data.totalPages}
-        />
+        <>
+            <MangaGrid mangaList={data.data.items} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+            />
+        </>
     );
 }
