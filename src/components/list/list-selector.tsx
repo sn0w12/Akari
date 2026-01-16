@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { CheckSquare, ChevronsUpDown, Square } from "lucide-react";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,11 +17,11 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Badge } from "../ui/badge";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Badge } from "../ui/badge";
 
 export function ListSelector({ mangaId }: { mangaId: string }) {
     const [open, setOpen] = React.useState(false);
@@ -98,7 +98,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                     role="combobox"
                     aria-expanded={open}
                     aria-label="Select list"
-                    className="w-full justify-between flex h-10"
+                    className="flex-1 justify-between flex h-10"
                     disabled={!user}
                 >
                     <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />

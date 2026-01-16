@@ -1,14 +1,14 @@
 "use client";
 
-import BookmarkButton from "./bookmark-button";
-import ReadingButton from "./reading-button";
-import { useQuery } from "@tanstack/react-query";
-import { checkIfBookmarked } from "@/lib/manga/bookmarks";
-import { Skeleton } from "../ui/skeleton";
 import { useUser } from "@/contexts/user-context";
+import { checkIfBookmarked } from "@/lib/manga/bookmarks";
+import { useQuery } from "@tanstack/react-query";
+import { ListSelector } from "../list/list-selector";
+import { Skeleton } from "../ui/skeleton";
+import BookmarkButton from "./bookmark-button";
 
 interface ButtonsProps {
-    manga: components["schemas"]["MangaDetailResponse"];
+    manga: components["schemas"]["MangaResponse"];
 }
 
 export default function Buttons({ manga }: ButtonsProps) {
@@ -34,7 +34,7 @@ export default function Buttons({ manga }: ButtonsProps) {
                 manga={manga}
                 isBookmarked={isBookmarked ?? false}
             />
-            <ReadingButton manga={manga} />
+            <ListSelector mangaId={manga.id} />
         </div>
     );
 }

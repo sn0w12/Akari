@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUpDown } from "lucide-react";
 import { ButtonsSkeleton } from "./buttons";
-import { ChaptersSkeleton } from "./chapters";
 
 const details = ["Authors", "Status", "Updated", "Views"];
 
@@ -80,10 +79,6 @@ export default function MangaDetailsSkeleton() {
                         Sort Ascending
                     </Button>
                 </div>
-            </div>
-            <ChaptersSkeleton />
-            <div className="flex justify-center">
-                <Skeleton className="h-10 w-64" />
             </div>
         </>
     );

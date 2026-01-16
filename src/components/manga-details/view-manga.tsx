@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { client } from "@/lib/api";
 import { useUser } from "@/contexts/user-context";
+import { client } from "@/lib/api";
+import { useEffect } from "react";
 
 export function ViewManga({
     manga,
 }: {
-    manga: components["schemas"]["MangaDetailResponse"];
+    manga: components["schemas"]["MangaResponse"];
 }) {
     const { user } = useUser();
 

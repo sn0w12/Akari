@@ -1,76 +1,22 @@
-import { MangaDetailsComponent } from "@/components/manga-details";
+import { getManga, MangaDetailsComponent } from "@/components/manga-details";
+import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import MangaDetailsSkeleton from "@/components/manga-details/skeleton";
-import { client, serverHeaders } from "@/lib/api";
 import {
     getAllMangaIds,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
 import { createMetadata, createOgImage } from "@/lib/utils";
 import { Metadata } from "next";
-import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 
-interface PageProps {
+export interface MangaPageProps {
     params: Promise<{ id: string }>;
 }
 
 function truncate(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength - 1).trimEnd() + "…";
-}
-
-export async function getManga(id: string) {
-    "use cache";
-    cacheLife("quarterHour");
-    cacheTag("manga", `manga-${id}`);
-
-    const [
-        { data: mangaData, error: mangaError },
-        { data: recData, error: recError },
-    ] = await Promise.all([
-        client.GET("/v2/manga/{id}", {
-            params: {
-                path: {
-                    id,
-                },
-            },
-            headers: serverHeaders,
-        }),
-        client.GET("/v2/manga/{id}/recommendations", {
-            params: {
-                path: {
-                    id,
-                },
-                query: {
-                    limit: 12,
-                },
-            },
-            headers: serverHeaders,
-        }),
-    ]);
-
-    if (mangaError) {
-        return {
-            mangaData: null,
-            recData: null,
-            error: mangaError,
-        };
-    }
-
-    if (recError) {
-        return {
-            mangaData: null,
-            recData: null,
-            error: recError,
-        };
-    }
-
-    return {
-        mangaData: mangaData.data,
-        recData: recData.data,
-        error: null,
-    };
 }
 
 export async function generateStaticParams() {
@@ -87,18 +33,20 @@ export async function generateStaticParams() {
     return mangaIds.map((id) => ({ id }));
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
+export async function generateMetadata(
+    props: MangaPageProps,
+): Promise<Metadata> {
     const params = await props.params;
-    const { mangaData, error } = await getManga(params.id);
+    const { data, error } = await getManga(params.id);
 
-    if (error) {
+    if (error || !data) {
         return {
             title: "Manga Not Found",
             description: "The requested manga could not be found.",
         };
     }
 
-    const manga = mangaData;
+    const manga = data.data;
     const description = truncate(manga.description, 300);
 
     return createMetadata({
@@ -109,12 +57,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-export default async function MangaPage(props: PageProps) {
+export default async function MangaPage(props: MangaPageProps) {
     return (
         <div className="mx-auto p-4">
             <Suspense fallback={<MangaDetailsSkeleton />}>
                 <MangaDetailsComponent params={props.params} />
             </Suspense>
+
+            <MangaDetailsBody params={props.params} />
+
             <Suspense fallback={null}>
                 <MangaComments params={props.params} />
             </Suspense>

@@ -1,152 +1,42 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { useUser } from "@/contexts/user-context";
-import { getLatestReadChapter } from "@/lib/manga/bookmarks";
-import Toast from "@/lib/toast-wrapper";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowUpDown } from "lucide-react";
-import { useCallback, useState } from "react";
-import { MangaGrid } from "../manga/manga-grid";
+import { Suspense } from "react";
+import { GridBodySkeleton } from "../grid-page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { ChaptersSection } from "./chapters";
-
-interface ChaptersControlsProps {
-    onFindLatestRead: () => void;
-    sortOrder: "asc" | "desc";
-    onSortChange: (order: "asc" | "desc") => void;
-    isLoading: boolean;
-}
-
-function ChaptersControls({
-    onFindLatestRead,
-    sortOrder,
-    onSortChange,
-    isLoading,
-}: ChaptersControlsProps) {
-    return (
-        <div className="flex gap-2">
-            <Button
-                onClick={onFindLatestRead}
-                className="flex-grow"
-                disabled={isLoading}
-            >
-                Find Latest Read
-            </Button>
-            <Button
-                onClick={() =>
-                    onSortChange(sortOrder === "asc" ? "desc" : "asc")
-                }
-                className="flex-grow"
-            >
-                <ArrowUpDown className="h-4 w-4" />
-                Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
-            </Button>
-        </div>
-    );
-}
+import { ChaptersSectionServer } from "./chapters";
+import { MangaRecommendations } from "./recommended";
+import { ChaptersSkeleton } from "./skeleton/chapters";
 
 export function MangaDetailsBody({
-    manga,
-    rec,
+    params,
 }: {
-    manga: components["schemas"]["MangaDetailResponse"];
-    rec: components["schemas"]["MangaResponse"][];
+    params: Promise<{ id: string }>;
 }) {
-    const { user } = useUser();
-    const [tabValue, setTabValue] = useState("chapters");
-    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { data, isLoading } = useQuery({
-        queryKey: ["last-read", manga.id],
-        queryFn: () => getLatestReadChapter(manga.id),
-        enabled: !!manga.id && !!user,
-    });
-
-    const lastRead = data?.id;
-
-    const getSortedChapters = useCallback(() => {
-        return [...(manga.chapters || [])].sort((a, b) => {
-            if (a.number === undefined || b.number === undefined) {
-                return 0;
-            }
-            return sortOrder === "asc"
-                ? a.number - b.number
-                : b.number - a.number;
-        });
-    }, [manga.chapters, sortOrder]);
-
-    const navigateToLastRead = () => {
-        if (!lastRead || !manga) {
-            new Toast("No previous reading history found", "error");
-            return;
-        }
-        const chapterIndex = getSortedChapters().findIndex(
-            (chapter) => chapter.id === lastRead,
-        );
-
-        if (chapterIndex === -1 || chapterIndex === undefined) {
-            new Toast("Last read chapter not found", "error");
-            return;
-        }
-
-        const pageNumber = Math.floor(chapterIndex / 24) + 1;
-        setCurrentPage(pageNumber);
-
-        setTimeout(() => {
-            const chapterElement = document.getElementById(lastRead);
-            chapterElement?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-            });
-        }, 100);
-    };
-
     return (
-        <Tabs
-            value={tabValue}
-            onValueChange={setTabValue}
-            defaultValue="chapters"
-            className="w-full"
-        >
-            <div className="flex flex-col md:flex-row justify-between md:items-center">
-                <TabsList className="bg-background p-0 gap-2">
-                    <TabsTrigger
-                        className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
-                        value="chapters"
-                    >
-                        Chapters
-                    </TabsTrigger>
-                    <TabsTrigger
-                        className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
-                        value="recommendations"
-                    >
-                        Recommendations
-                    </TabsTrigger>
-                </TabsList>
-                {tabValue === "chapters" && (
-                    <ChaptersControls
-                        onFindLatestRead={navigateToLastRead}
-                        sortOrder={sortOrder}
-                        onSortChange={setSortOrder}
-                        isLoading={isLoading}
-                    />
-                )}
-            </div>
+        <Tabs defaultValue="chapters" className="w-full">
+            <TabsList className="bg-background p-0 gap-2">
+                <TabsTrigger
+                    className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                    value="chapters"
+                >
+                    Chapters
+                </TabsTrigger>
+                <TabsTrigger
+                    className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                    value="recommendations"
+                >
+                    Recommendations
+                </TabsTrigger>
+            </TabsList>
 
             <TabsContent value="chapters">
-                <ChaptersSection
-                    manga={manga}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    lastRead={lastRead}
-                    getSortedChapters={getSortedChapters}
-                />
+                <Suspense fallback={<ChaptersSkeleton />}>
+                    <ChaptersSectionServer params={params} />
+                </Suspense>
             </TabsContent>
 
             <TabsContent value="recommendations">
-                <MangaGrid mangaList={rec} />
+                <Suspense fallback={<GridBodySkeleton />}>
+                    <MangaRecommendations params={params} />
+                </Suspense>
             </TabsContent>
         </Tabs>
     );

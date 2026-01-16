@@ -11,7 +11,7 @@ import { useSetting } from "@/lib/settings";
 import { bookmarkManga, removeBookmark } from "@/lib/manga/bookmarks";
 
 interface BookmarkButtonProps {
-    manga: components["schemas"]["MangaDetailResponse"];
+    manga: components["schemas"]["MangaResponse"];
     isBookmarked: boolean | null;
 }
 

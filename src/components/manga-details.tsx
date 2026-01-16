@@ -10,17 +10,17 @@ import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
-import { ListSelector } from "./list/list-selector";
-import { MangaDetailsBody } from "./manga-details/body";
 import Buttons from "./manga-details/buttons";
 import ScoreDisplay from "./manga-details/score";
 import { MangaUpdatedAt } from "./manga-details/updated-at";
-import { ViewManga } from "./manga-reader/view-manga";
+import { ViewManga } from "./manga-details/view-manga";
 import EnhancedImage from "./ui/enhanced-image";
 
-import { getManga } from "@/app/(default)/manga/[id]/page";
+import { MangaPageProps } from "@/app/(default)/manga/[id]/page";
+import { client, serverHeaders } from "@/lib/api";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
+import { cacheLife, cacheTag } from "next/cache";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -54,7 +54,7 @@ const getViewsColor = (views: number) => {
 function ExternalLinks({
     manga,
 }: {
-    manga: components["schemas"]["MangaDetailResponse"];
+    manga: components["schemas"]["MangaResponse"];
 }) {
     return (
         <>
@@ -96,15 +96,28 @@ function ExternalLinks({
     );
 }
 
-interface MangaDetailsProps {
-    params: Promise<{ id: string }>;
+export async function getManga(id: string) {
+    "use cache";
+    cacheLife("days");
+    cacheTag("manga", `manga-${id}`);
+
+    const { data, error } = await client.GET("/v2/manga/{id}", {
+        params: {
+            path: {
+                id,
+            },
+        },
+        headers: serverHeaders,
+    });
+
+    return { data, error };
 }
 
-export async function MangaDetailsComponent({ params }: MangaDetailsProps) {
+export async function MangaDetailsComponent({ params }: MangaPageProps) {
     const id = (await params).id;
-    const { mangaData: manga, recData: rec, error } = await getManga(id);
+    const { data, error } = await getManga(id);
 
-    if (error) {
+    if (error || !data) {
         return (
             <div className="mx-auto p-4">
                 <p className="text-center text-muted-foreground">
@@ -114,6 +127,7 @@ export async function MangaDetailsComponent({ params }: MangaDetailsProps) {
         );
     }
 
+    const manga = data.data;
     return (
         <>
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
@@ -313,7 +327,6 @@ export async function MangaDetailsComponent({ params }: MangaDetailsProps) {
 
                             <div className="flex flex-col gap-2 mt-auto">
                                 <Buttons manga={manga} />
-                                <ListSelector mangaId={manga.id} />
                             </div>
                         </div>
                         {/* Right section for the description */}
@@ -338,7 +351,6 @@ export async function MangaDetailsComponent({ params }: MangaDetailsProps) {
             </div>
 
             <ViewManga manga={manga} />
-            <MangaDetailsBody manga={manga} rec={rec} />
         </>
     );
 }
