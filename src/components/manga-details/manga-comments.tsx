@@ -1,8 +1,8 @@
 "use server";
 
 import { client, serverHeaders } from "@/lib/api";
-import { MangaCommentList } from "./manga-comment-list";
 import { cacheLife, cacheTag } from "next/cache";
+import { MangaCommentList } from "./manga-comment-list";
 
 const getMangaComments = async (id: string) => {
     "use cache";
@@ -30,8 +30,14 @@ const getMangaComments = async (id: string) => {
     return { data: data.data, error: null };
 };
 
-export async function MangaComments({ id }: { id: string }) {
+interface MangaCommentsProps {
+    params: Promise<{ id: string }>;
+}
+
+export async function MangaComments({ params }: MangaCommentsProps) {
+    const id = (await params).id;
     const { data, error } = await getMangaComments(id);
+
     if (error) {
         return (
             <div>

@@ -1,14 +1,16 @@
-import { Metadata } from "next";
-import { Reader } from "@/components/manga-reader";
-import { createMetadata, createOgImage } from "@/lib/utils";
-import { client, serverHeaders } from "@/lib/api";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
-import { cacheLife, cacheTag } from "next/cache";
+import { Reader } from "@/components/manga-reader";
+import MangaReaderSkeleton from "@/components/manga-reader/skeleton";
+import { client, serverHeaders } from "@/lib/api";
 import {
     getAllChapterIds,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
+import { createMetadata, createOgImage } from "@/lib/utils";
+import { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
 const getChapter = async (id: string, subId: number) => {
     "use cache";
@@ -86,6 +88,21 @@ export async function generateMetadata({
 }
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
+    return (
+        <div className="bg-background text-foreground">
+            <Suspense fallback={<MangaReaderSkeleton />}>
+                <MangaReaderBody params={params} />
+            </Suspense>
+            <div className="p-4">
+                <Suspense fallback={null}>
+                    <MangaComments params={params} />
+                </Suspense>
+            </div>
+        </div>
+    );
+}
+
+async function MangaReaderBody({ params }: MangaReaderProps) {
     const mangaParams = await params;
     const { data, error } = await getChapter(
         mangaParams.id,
@@ -96,12 +113,5 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
         return <ErrorPage error={error} />;
     }
 
-    return (
-        <div className="bg-background text-foreground">
-            <Reader chapter={data} />
-            <div className="p-4">
-                <MangaComments id={data.id} />
-            </div>
-        </div>
-    );
+    return <Reader chapter={data} />;
 }

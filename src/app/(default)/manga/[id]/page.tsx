@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import { MangaDetailsComponent } from "@/components/manga-details";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import { MangaComments } from "@/components/manga-details/manga-comments";
+import MangaDetailsSkeleton from "@/components/manga-details/skeleton";
 import { client, serverHeaders } from "@/lib/api";
-import ErrorPage from "@/components/error-page";
-import { cacheLife, cacheTag } from "next/cache";
 import {
     getAllMangaIds,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
+import { createMetadata, createOgImage } from "@/lib/utils";
+import { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -18,7 +20,7 @@ function truncate(text: string, maxLength: number): string {
     return text.slice(0, maxLength - 1).trimEnd() + "…";
 }
 
-async function getManga(id: string) {
+export async function getManga(id: string) {
     "use cache";
     cacheLife("quarterHour");
     cacheTag("manga", `manga-${id}`);
@@ -108,12 +110,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 }
 
 export default async function MangaPage(props: PageProps) {
-    const params = await props.params;
-    const { mangaData, recData, error } = await getManga(params.id);
-
-    if (error) {
-        return <ErrorPage title="Failed to load manga" error={error} />;
-    }
-
-    return <MangaDetailsComponent manga={mangaData} rec={recData} />;
+    return (
+        <div className="mx-auto p-4">
+            <Suspense fallback={<MangaDetailsSkeleton />}>
+                <MangaDetailsComponent params={props.params} />
+            </Suspense>
+            <Suspense fallback={null}>
+                <MangaComments params={props.params} />
+            </Suspense>
+        </div>
+    );
 }

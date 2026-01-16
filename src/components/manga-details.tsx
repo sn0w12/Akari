@@ -13,12 +13,12 @@ import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ListSelector } from "./list/list-selector";
 import { MangaDetailsBody } from "./manga-details/body";
 import Buttons from "./manga-details/buttons";
-import { MangaComments } from "./manga-details/manga-comments";
 import ScoreDisplay from "./manga-details/score";
 import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-reader/view-manga";
 import EnhancedImage from "./ui/enhanced-image";
 
+import { getManga } from "@/app/(default)/manga/[id]/page";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 
@@ -96,15 +96,26 @@ function ExternalLinks({
     );
 }
 
-export async function MangaDetailsComponent({
-    manga,
-    rec,
-}: {
-    manga: components["schemas"]["MangaDetailResponse"];
-    rec: components["schemas"]["MangaResponse"][];
-}) {
+interface MangaDetailsProps {
+    params: Promise<{ id: string }>;
+}
+
+export async function MangaDetailsComponent({ params }: MangaDetailsProps) {
+    const id = (await params).id;
+    const { mangaData: manga, recData: rec, error } = await getManga(id);
+
+    if (error) {
+        return (
+            <div className="mx-auto p-4">
+                <p className="text-center text-muted-foreground">
+                    Failed to load manga details. Please try again later.
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="mx-auto p-4">
+        <>
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-2 items-stretch h-auto">
                 {/* Image and Details Section */}
@@ -328,7 +339,6 @@ export async function MangaDetailsComponent({
 
             <ViewManga manga={manga} />
             <MangaDetailsBody manga={manga} rec={rec} />
-            <MangaComments id={manga.id} />
-        </div>
+        </>
     );
 }

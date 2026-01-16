@@ -9,7 +9,7 @@ const details = ["Authors", "Status", "Updated", "Views"];
 
 export default function MangaDetailsSkeleton() {
     return (
-        <div className="mx-auto p-4 pb-0">
+        <>
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-2 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center hidden lg:block">
                     <Skeleton
@@ -69,7 +69,6 @@ export default function MangaDetailsSkeleton() {
                     </div>
                 </div>
             </div>
-
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Chapters</h2>
                 <div className="flex gap-2">
@@ -82,12 +81,10 @@ export default function MangaDetailsSkeleton() {
                     </Button>
                 </div>
             </div>
-
             <ChaptersSkeleton />
-
             <div className="flex justify-center">
                 <Skeleton className="h-10 w-64" />
             </div>
-        </div>
+        </>
     );
 }
