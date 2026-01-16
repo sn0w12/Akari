@@ -1,16 +1,16 @@
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { ChaptersSkeleton } from "./chapters";
 import { ButtonsSkeleton } from "./buttons";
+import { ChaptersSkeleton } from "./chapters";
 
 const details = ["Authors", "Status", "Updated", "Views"];
 
 export default function MangaDetailsSkeleton() {
     return (
         <div className="mx-auto p-4 pb-0">
-            <div className="flex flex-col justify-center gap-4 lg:flex-row mb-4 items-stretch h-auto">
+            <div className="flex flex-col justify-center gap-4 lg:flex-row mb-2 items-stretch h-auto">
                 <div className="flex flex-shrink-0 justify-center hidden lg:block">
                     <Skeleton
                         className="rounded-lg  object-cover h-auto xl:h-full max-w-lg lg:min-w-full"
