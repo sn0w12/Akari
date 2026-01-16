@@ -1,18 +1,19 @@
 "use client";
 
+import { cn, generateSizes } from "@/lib/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { generateSizes } from "@/lib/utils";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import {
-    useCarousel,
     Carousel,
     CarouselContent,
     CarouselItem,
+    useCarousel,
 } from "../ui/carousel";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import { Skeleton } from "../ui/skeleton";
 
 interface PopularMangaProps {
     manga: components["schemas"]["MangaResponse"][];
@@ -165,5 +166,35 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 </div>
             </div>
         </Link>
+    );
+}
+
+export function PopularMangaSkeleton() {
+    return (
+        <div className="w-full grid grid-cols-1 2xl:grid-cols-2 gap-4">
+            <PopularMangaSkeletonCard />
+            <PopularMangaSkeletonCard className="hidden 2xl:block" />
+        </div>
+    );
+}
+
+function PopularMangaSkeletonCard({ className }: { className?: string }) {
+    return (
+        <div className={cn("w-full", className)}>
+            <div className="overflow-hidden">
+                <div className="flex">
+                    <div className="min-w-0 flex-shrink-0 flex-grow-0 pr-[1px] basis-full">
+                        <div className="flex flex-row h-full w-full rounded-lg border bg-card">
+                            <Skeleton className="aspect-[2/3] sm:h-[384px] w-full sm:w-64 rounded-l-lg rounded-r-lg sm:rounded-r-none" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2 pt-2 w-full justify-between sm:p-0 sm:w-auto sm:absolute sm:bottom-2 sm:right-2">
+                <Skeleton className="order-2 sm:order-1 h-5 w-12" />
+                <Skeleton className="order-1 sm:order-2 h-10 w-10" />
+                <Skeleton className="order-3 h-10 w-10" />
+            </div>
+        </div>
     );
 }

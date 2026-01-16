@@ -38,7 +38,7 @@ const CACHE_TIMES: Record<
     "365": { stale: 14400, revalidate: 86400, expire: 604800 }, // 4 hours stale, 1 day revalidate, 1 week expire
 };
 
-const getPopularData = async (page: number, days: number = 30) => {
+export const getPopularData = async (page: number, days: number = 30) => {
     "use cache";
     cacheLife(CACHE_TIMES[days.toString()]);
     cacheTag("popular");

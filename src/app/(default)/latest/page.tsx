@@ -21,7 +21,7 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/latest",
 });
 
-const getLatestData = async (currentPage: number) => {
+export const getLatestData = async (currentPage: number) => {
     "use cache";
     cacheLife("minutes");
     cacheTag("latest");
