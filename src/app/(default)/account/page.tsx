@@ -1,4 +1,5 @@
-import { AccountBody } from "@/components/account/account-body";
+import { AccountBody, AccountBodySkeleton } from "@/components/account/account-body";
+import { Suspense } from "react";
 
 export default async function AccountPage() {
     return (
@@ -9,7 +10,9 @@ export default async function AccountPage() {
                 </h1>
             </div>
 
-            <AccountBody />
+            <Suspense fallback={<AccountBodySkeleton />}>
+                <AccountBody />
+            </Suspense>
         </div>
     );
 }
