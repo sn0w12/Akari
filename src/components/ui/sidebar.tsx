@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import {
@@ -10,10 +9,16 @@ import {
     PanelLeftClose,
     PanelLeftOpen,
 } from "lucide-react";
+import * as React from "react";
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -30,18 +35,13 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuSeparator,
-    ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcut } from "@/hooks/use-shortcut";
 import { useSetting } from "@/lib/settings";
-import { ScrollArea } from "./scroll-area";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { ContextMenuLabel } from "@radix-ui/react-context-menu";
+import Link from "next/link";
+import { ScrollArea } from "./scroll-area";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -742,7 +742,7 @@ function SidebarMenuLink({
             }}
             onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
             onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
-            prefetch={false}
+            prefetch={true}
             {...props}
         >
             {wrappedChildren}
@@ -1303,16 +1303,16 @@ export {
     SidebarMenuAction,
     SidebarMenuBadge,
     SidebarMenuButton,
-    SidebarMenuLink,
     SidebarMenuItem,
+    SidebarMenuLink,
     SidebarMenuSkeleton,
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarProvider,
     SidebarRail,
+    SidebarSection,
     SidebarSeparator,
     SidebarTrigger,
-    SidebarSection,
     useSidebar,
 };
