@@ -75,6 +75,8 @@ export default function PageReader({
 
     const setPageWithUrlUpdate = useCallback((newPage: number) => {
         setCurrentPage(newPage);
+
+        if (typeof window === "undefined") return;
         // Use history.replaceState to update URL without triggering Next.js re-renders
         window.history.replaceState(null, "", `?page=${newPage + 1}`);
     }, []);
