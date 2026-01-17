@@ -9,8 +9,10 @@ import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
+import { getAuthToken } from "@/lib/auth/server";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import { Suspense } from "react";
 import { getLatestData } from "./latest/page";
 import { getPopularData } from "./popular/page";
@@ -88,17 +90,36 @@ async function HomeLatest() {
         </>
     );
 }
+async function getViewedManga(token: string) {
+    "use cache";
+    cacheLife("minutes");
 
-async function HomeRecent() {
     const { data, error } = await client.GET("/v2/manga/viewed", {
         params: {
             query: {
                 limit: 12,
             },
         },
-        headers: serverHeaders,
+        headers: {
+            ...serverHeaders,
+            Authorization: `Bearer ${token}`,
+        },
     });
 
+    if (error) {
+        return { data: null, error };
+    }
+
+    return { data, error: null };
+}
+
+async function HomeRecent() {
+    const token = await getAuthToken();
+    if (!token) {
+        return null;
+    }
+
+    const { data, error } = await getViewedManga(token);
     if (error) {
         return null;
     }
