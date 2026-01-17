@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const imgSize = "w-full h-auto aspect-[8.5/12] xl:h-[260px] 2xl:h-[340px]";
+const imgSize = "w-full h-auto aspect-[2/3]";
 export default function MangaCardSkeleton() {
     return (
         <Card className="group relative overflow-hidden p-0">
