@@ -12,6 +12,9 @@ async function getRecommendedManga(id: string) {
             path: {
                 id,
             },
+            query: {
+                limit: 12,
+            },
         },
     });
 

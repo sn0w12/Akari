@@ -34,7 +34,7 @@ export function MangaDetailsBody({
             </TabsContent>
 
             <TabsContent value="recommendations">
-                <Suspense fallback={<GridBodySkeleton />}>
+                <Suspense fallback={<GridBodySkeleton pageSize={12} />}>
                     <MangaRecommendations params={params} />
                 </Suspense>
             </TabsContent>
