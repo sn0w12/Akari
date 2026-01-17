@@ -1,23 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+import { CommentForm } from "@/components/comments/comment-form";
+import { CommentMenu } from "@/components/comments/comment-menu";
+import { ReportCommentDialog } from "@/components/comments/report";
 import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useConfirm } from "@/contexts/confirm-context";
+import { cn, generateSizes } from "@/lib/utils";
 import {
-    ChevronUp,
     ChevronDown,
+    ChevronUp,
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import { cn, generateSizes } from "@/lib/utils";
-import { CommentForm } from "@/components/comments/comment-form";
-import { ReportCommentDialog } from "@/components/comments/report";
-import { CommentMenu } from "@/components/comments/comment-menu";
-import { useConfirm } from "@/contexts/confirm-context";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 
 export type CommentData =
     | components["schemas"]["CommentWithRepliesResponse"]
@@ -373,25 +373,29 @@ export function Comment({
                                                     }`}
                                         </span>
                                     </Button>
-                                    <ButtonGroupSeparator />
+                                    {currentUser && <ButtonGroupSeparator />}
                                 </>
                             )}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                    "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
-                                    showReplyForm &&
-                                        "bg-primary/10 text-primary hover:bg-primary/20",
-                                )}
-                                onClick={() => setShowReplyForm(!showReplyForm)}
-                                disabled={comment.deleted || isBanned}
-                            >
-                                <MessageSquareReply className="h-3 w-3" />
-                                <span className="sr-only sm:not-sr-only">
-                                    Reply
-                                </span>
-                            </Button>
+                            {currentUser && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={cn(
+                                        "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
+                                        showReplyForm &&
+                                            "bg-primary/10 text-primary hover:bg-primary/20",
+                                    )}
+                                    onClick={() =>
+                                        setShowReplyForm(!showReplyForm)
+                                    }
+                                    disabled={comment.deleted || isBanned}
+                                >
+                                    <MessageSquareReply className="h-3 w-3" />
+                                    <span className="sr-only sm:not-sr-only">
+                                        Reply
+                                    </span>
+                                </Button>
+                            )}
                         </ButtonGroup>
                     )}
                 </div>

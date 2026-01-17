@@ -6,15 +6,15 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { client } from "@/lib/api";
-import type { components } from "@/types/api";
-import { ImageIcon } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/contexts/user-context";
-import Image from "next/image";
+import { client } from "@/lib/api";
 import { generateSizes } from "@/lib/utils";
+import type { components } from "@/types/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
 
@@ -108,7 +108,12 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    disabled={!user}
+                >
                     <ImageIcon className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>

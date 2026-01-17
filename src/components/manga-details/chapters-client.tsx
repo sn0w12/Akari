@@ -30,12 +30,14 @@ function ChaptersControls({
     onSortChange,
     isLoading,
 }: ChaptersControlsProps) {
+    const { user } = useUser();
+
     return (
         <div className="flex gap-2 w-full md:w-auto pointer-events-auto">
             <Button
                 onClick={onFindLatestRead}
                 className="flex-1"
-                disabled={isLoading}
+                disabled={isLoading || !user}
             >
                 Find Latest Read
             </Button>

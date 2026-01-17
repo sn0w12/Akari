@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Star, StarHalf } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -16,11 +14,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
-import { useUser } from "@/contexts/user-context";
+import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Star, StarHalf } from "lucide-react";
+import { useRef, useState } from "react";
 
 const RATINGS = [
     { label: "Remove Rating", value: -1 },
@@ -183,6 +183,8 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                 onMouseEnter={(e) => handleMouseEnter(index, e)}
                                 onMouseMove={(e) => handleMouseMove(index, e)}
                                 onClick={() => {
+                                    if (!user) return;
+
                                     const rating =
                                         hoveredIndex !== null
                                             ? hoveredIndex + hoveredFill

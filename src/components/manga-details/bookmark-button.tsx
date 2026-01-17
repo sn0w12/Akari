@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Bookmark } from "lucide-react";
-import Spinner from "../ui/puff-loader";
-import { ButtonConfirmDialog } from "../ui/confirm";
-import { useState } from "react";
-import React from "react";
-import Toast from "@/lib/toast-wrapper";
-import { useSetting } from "@/lib/settings";
+import { useUser } from "@/contexts/user-context";
 import { bookmarkManga, removeBookmark } from "@/lib/manga/bookmarks";
+import { useSetting } from "@/lib/settings";
+import Toast from "@/lib/toast-wrapper";
+import { Bookmark } from "lucide-react";
+import React, { useState } from "react";
+import { ButtonConfirmDialog } from "../ui/confirm";
+import Spinner from "../ui/puff-loader";
 
 interface BookmarkButtonProps {
     manga: components["schemas"]["MangaResponse"];
@@ -25,6 +25,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     );
     const [isLoading, setIsLoading] = useState(false);
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
+    const { user } = useUser();
 
     const handleBookmarkClick = async () => {
         if (!manga.id || isStateBookmarked === null || isStateBookmarked)
@@ -116,7 +117,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             variant={"default"}
             size="lg"
             className={buttonClass}
-            disabled={isStateBookmarked === undefined}
+            disabled={!user || isStateBookmarked === undefined}
             onClick={handleBookmarkClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
