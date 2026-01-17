@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpDown } from "lucide-react";
 import { ButtonsSkeleton } from "./buttons";
 
 const details = ["Authors", "Status", "Updated", "Views"];
@@ -66,18 +64,6 @@ export default function MangaDetailsSkeleton() {
                             </Card>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Chapters</h2>
-                <div className="flex gap-2">
-                    <Button variant="outline" disabled={true}>
-                        Find Latest Read
-                    </Button>
-                    <Button variant="outline" disabled={true}>
-                        <ArrowUpDown className="mr-2 h-4 w-4" />
-                        Sort Ascending
-                    </Button>
                 </div>
             </div>
         </>
