@@ -1,5 +1,5 @@
-import { Metadata } from "next";
 import { robots } from "@/lib/utils";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Privacy Policy",
@@ -14,7 +14,7 @@ export default function PrivacyPage() {
                 <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
                 <div className="prose dark:prose-invert">
                     <p>
-                        <strong>Last Updated: 2024-10-07</strong>
+                        <strong>Last Updated: 2026-01-17</strong>
                     </p>
 
                     <p>
@@ -24,14 +24,21 @@ export default function PrivacyPage() {
                         application.
                     </p>
 
-                    <h2>1. Local Usage</h2>
+                    <h2>1. Self Hosting</h2>
                     <p>
-                        If you are running Akari locally on your device, no data
-                        is sent to any of our servers. All interactions,
-                        including the use of cookies and account data, remain
-                        entirely on your local device. Vercel Web Analytics and
-                        any other external services will not be invoked in the
-                        local environment.
+                        If you are self hosting Akari, the application will
+                        request manga content from our API to provide you with
+                        access to manga sources. No analytics data is collected
+                        if self hosting. See the{" "}
+                        <a
+                            href="https://github.com/sn0w12/Akari"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                        >
+                            Github
+                        </a>{" "}
+                        for more details about how to self host.
                     </p>
 
                     <h2>2. Information We Collect</h2>
@@ -41,26 +48,35 @@ export default function PrivacyPage() {
                     </p>
                     <ul>
                         <li>
-                            <strong>Website Analytics:</strong> We use Vercel
-                            Web Analytics to gather anonymized data on website
+                            <strong>Website Analytics:</strong> We use Plausible
+                            Analytics to gather anonymized data on website
                             usage. No personal data is collected or stored
-                            through this feature.
+                            through this feature. Learn more about{" "}
+                            <a
+                                href="https://plausible.io/privacy-focused-web-analytics"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                Plausible&apos;s privacy-focused approach
+                            </a>
+                            .
                         </li>
                         <li>
-                            <strong>Account Data:</strong> All account-related
-                            data, such as your MAL account token, are stored
-                            locally on your device in cookies. These cookies are
-                            sent to our API to enable features like bookmark
-                            syncing, but we do not store or persist this data on
-                            our servers.
+                            <strong>Secondary Account Data:</strong> All
+                            secondary account-related data, such as your MAL
+                            account token, are stored locally on your device.
+                            These may be sent to our API to enable features like
+                            bookmark syncing, but we do not store or persist
+                            this data on our servers.
                         </li>
                     </ul>
 
-                    <h2>3. Vercel Web Analytics</h2>
+                    <h2>3. Plausible Analytics</h2>
                     <p>
-                        We leverage Vercel&apos;s Web Analytics to understand
-                        how users interact with our website. The analytics
-                        service provides detailed insights, including:
+                        We use Plausible Analytics to understand how users
+                        interact with our website. The analytics service
+                        provides detailed insights, including:
                     </p>
                     <ul>
                         <li>
@@ -77,22 +93,48 @@ export default function PrivacyPage() {
                         </li>
                     </ul>
 
-                    <h2>4. Privacy Features of Vercel Web Analytics</h2>
+                    <h2>4. Privacy Features of Plausible Analytics</h2>
                     <p>
-                        Vercel&apos;s Web Analytics is designed with privacy in
-                        mind:
+                        Plausible Analytics is designed with privacy as a core
+                        principle:
                     </p>
                     <ul>
                         <li>
-                            <strong>Anonymized Data:</strong> The data collected
-                            is anonymized and does not include personal
-                            identifiers like IP addresses or names.
+                            <strong>GDPR, CCPA and PECR Compliant:</strong>{" "}
+                            Plausible is fully compliant with privacy
+                            regulations. Visit the{" "}
+                            <a
+                                href="https://plausible.io/data-policy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                Plausible Data Policy
+                            </a>{" "}
+                            for more information.
                         </li>
                         <li>
-                            <strong>No Cookies Used by Analytics:</strong> The
-                            analytics feature does not use cookies, ensuring
-                            that no tracking occurs outside of anonymized
-                            metrics.
+                            <strong>No Cookies:</strong> Plausible does not use
+                            cookies, ensuring no tracking occurs outside of
+                            anonymized metrics.
+                        </li>
+                        <li>
+                            <strong>No Personal Data Collection:</strong> All
+                            data collected is anonymized and does not include
+                            personal identifiers like IP addresses or names.
+                        </li>
+                        <li>
+                            <strong>Open Source:</strong> Plausible is{" "}
+                            <a
+                                href="https://github.com/plausible/analytics"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                open source
+                            </a>
+                            , allowing full transparency in how your data is
+                            handled.
                         </li>
                     </ul>
 
@@ -100,9 +142,10 @@ export default function PrivacyPage() {
                     <p>As a user, you can control how your data is managed:</p>
                     <ul>
                         <li>
-                            <strong>Cookie Management:</strong> You can manage
-                            or delete cookies directly through your browser
-                            settings at any time.
+                            <strong>Analytics Control:</strong> You can disable
+                            sending analytics data at any time through the
+                            settings. Navigate to Settings to toggle analytics
+                            on or off according to your preferences.
                         </li>
                     </ul>
 
