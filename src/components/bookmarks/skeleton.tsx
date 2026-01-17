@@ -26,7 +26,7 @@ function BookmarkCardSkeleton() {
                                 </div>
                             </div>
 
-                            <span className="flex items-center gap-1.5 text-muted-foreground text-sm leading-4">
+                            <span className="flex items-center gap-1.5 text-muted-foreground text-sm leading-4 mb-0.5">
                                 <Skeleton className="h-4 w-28" />
                             </span>
                             <span className="flex items-center gap-1.5 text-muted-foreground text-sm leading-4">
