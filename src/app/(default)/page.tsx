@@ -8,6 +8,7 @@ import {
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
+import { client, serverHeaders } from "@/lib/api";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { Suspense } from "react";
@@ -31,9 +32,23 @@ export default async function Home() {
                         <HomePopular />
                     </Suspense>
                 </div>
+
                 <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
                 <Suspense fallback={<GridBodySkeleton />}>
                     <HomeLatest />
+                </Suspense>
+
+                <Suspense
+                    fallback={
+                        <>
+                            <h2 className="text-3xl font-bold mb-2">
+                                Recently Viewed
+                            </h2>
+                            <GridBodySkeleton pageSize={12} />
+                        </>
+                    }
+                >
+                    <HomeRecent />
                 </Suspense>
             </div>
             <PromptStack>
@@ -70,6 +85,28 @@ async function HomeLatest() {
                 totalPages={data.data.totalPages}
                 className="my-4"
             />
+        </>
+    );
+}
+
+async function HomeRecent() {
+    const { data, error } = await client.GET("/v2/manga/viewed", {
+        params: {
+            query: {
+                limit: 12,
+            },
+        },
+        headers: serverHeaders,
+    });
+
+    if (error) {
+        return null;
+    }
+
+    return (
+        <>
+            <h2 className="text-3xl font-bold mb-2">Recently Viewed</h2>
+            <MangaGrid mangaList={data.data} />
         </>
     );
 }
