@@ -35,22 +35,25 @@ export default async function Home() {
                     </Suspense>
                 </div>
 
-                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-                <Suspense fallback={<GridBodySkeleton />}>
-                    <HomeLatest />
-                </Suspense>
-
                 <Suspense
                     fallback={
                         <>
                             <h2 className="text-3xl font-bold mb-2">
                                 Recently Viewed
                             </h2>
-                            <GridBodySkeleton pageSize={12} />
+                            <GridBodySkeleton
+                                pageSize={6}
+                                className="lg:grid-cols-6"
+                            />
                         </>
                     }
                 >
                     <HomeRecent />
+                </Suspense>
+
+                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                <Suspense fallback={<GridBodySkeleton />}>
+                    <HomeLatest />
                 </Suspense>
             </div>
             <PromptStack>
@@ -97,7 +100,7 @@ async function getViewedManga(token: string) {
     const { data, error } = await client.GET("/v2/manga/viewed", {
         params: {
             query: {
-                limit: 12,
+                limit: 6,
             },
         },
         headers: {
@@ -127,7 +130,7 @@ async function HomeRecent() {
     return (
         <>
             <h2 className="text-3xl font-bold mb-2">Recently Viewed</h2>
-            <MangaGrid mangaList={data.data} />
+            <MangaGrid mangaList={data.data} className="lg:grid-cols-6" />
         </>
     );
 }
