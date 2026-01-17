@@ -182,7 +182,7 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     handlePageChange={setCurrentPage}
-                    className="mb-4 md:mb-0"
+                    className="mb-4 md:mb-0 pointer-events-auto"
                 />
             )}
         </div>
