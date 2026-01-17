@@ -2560,7 +2560,12 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Optional request body for view tracking preferences. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ViewMangaRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -4815,6 +4820,9 @@ export interface components {
             /** Format: int32 */
             status: number;
             data: components["schemas"]["UserResponse"];
+        };
+        ViewMangaRequest: {
+            saveUserId?: boolean;
         };
         VoteCommentRequest: {
             /** Format: int32 */

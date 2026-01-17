@@ -1,13 +1,14 @@
 "use client";
 
+import { useBorderColor } from "@/contexts/border-color-context";
+import { getSetting } from "@/lib/settings";
+import { useStorage } from "@/lib/storage";
+import { useThrottledCallback } from "@tanstack/react-pacer";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BreadcrumbSetter } from "./breadcrumb-setter";
+import { ViewManga } from "./manga-details/view-manga";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
-import { BreadcrumbSetter } from "./breadcrumb-setter";
-import { useStorage } from "@/lib/storage";
-import { getSetting } from "@/lib/settings";
-import { useBorderColor } from "@/contexts/border-color-context";
-import { useThrottledCallback } from "@tanstack/react-pacer";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -164,6 +165,7 @@ export function Reader({ chapter }: ReaderProps) {
                 orig={chapter.mangaId}
                 title={chapter.mangaTitle}
             />
+            <ViewManga mangaId={chapter.mangaId} />
             <div>
                 {isStripMode ? (
                     <StripReader

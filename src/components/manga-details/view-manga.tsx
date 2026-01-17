@@ -1,24 +1,22 @@
 "use client";
 
-import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
+import { useSetting } from "@/lib/settings";
 import { useEffect } from "react";
 
-export function ViewManga({
-    manga,
-}: {
-    manga: components["schemas"]["MangaResponse"];
-}) {
-    const { user } = useUser();
+export function ViewManga({ mangaId }: { mangaId: string }) {
+    const allowAnalytics = useSetting("allowAnalytics");
 
     useEffect(() => {
         async function recordMangaView() {
-            if (!user) return;
             const { error } = await client.POST("/v2/manga/{id}/view", {
                 params: {
                     path: {
-                        id: manga.id,
+                        id: mangaId,
                     },
+                },
+                body: {
+                    saveUserId: allowAnalytics,
                 },
             });
             if (error) {
@@ -27,7 +25,7 @@ export function ViewManga({
         }
 
         recordMangaView();
-    }, [manga, user]);
+    }, [mangaId, allowAnalytics]);
 
     return null;
 }

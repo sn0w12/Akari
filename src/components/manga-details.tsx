@@ -350,7 +350,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                 </div>
             </div>
 
-            <ViewManga manga={manga} />
+            <ViewManga mangaId={manga.id} />
         </>
     );
 }
