@@ -4202,15 +4202,15 @@ export interface components {
             data: components["schemas"]["LastReadResponse"];
         };
         MalListStatus: {
-            status: string;
-            isRereading: boolean;
+            status?: string | null;
+            isRereading?: boolean;
             /** Format: int32 */
-            numVolumesRead: number;
+            numVolumesRead?: number;
             /** Format: int32 */
-            numChaptersRead: number;
+            numChaptersRead?: number;
             /** Format: int32 */
-            score: number;
-            updatedAt: string;
+            score?: number;
+            updatedAt?: string | null;
         };
         MalMainPicture: {
             medium: string;

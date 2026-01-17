@@ -1,13 +1,14 @@
 "use client";
 
-import { client } from "@/lib/api";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Check, X } from "lucide-react";
-import { useConfirm } from "@/contexts/confirm-context";
 import { SyncBody } from "@/components/sync/sync-body";
+import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { useConfirm } from "@/contexts/confirm-context";
+import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
+import Toast from "@/lib/toast-wrapper";
+import { Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function SyncAniPage() {
     const [aniData, setAniData] = useState<components["schemas"]["AniEntry"][]>(
@@ -115,11 +116,15 @@ export default function SyncAniPage() {
     }, []);
 
     async function syncAniToBookmarks() {
-        if (aniData.length === 0) return;
+        if (aniData.length === 0) {
+            new Toast("No AniList data to sync", "warning");
+            return;
+        }
+
         const confirmed = await confirm({
-            title: "Confirm MAL Sync",
+            title: "Confirm AniList Sync",
             description:
-                "Are you sure you want to sync your MAL data to bookmarks?",
+                "Are you sure you want to sync your AniList data to bookmarks?",
             confirmText: "Yes, Sync",
             cancelText: "Cancel",
         });
@@ -130,11 +135,25 @@ export default function SyncAniPage() {
                 !bookmarks.some((bookmark) => bookmark.aniId === item.media.id),
         );
 
-        if (aniDataToSync.length === 0) return;
+        if (aniDataToSync.length === 0) {
+            new Toast("All manga already synced", "info", {
+                description: "No new manga to sync from your AniList",
+            });
+            return;
+        }
+
+        const alreadySynced = aniData.length - aniDataToSync.length;
+        new Toast(`Starting sync of ${aniDataToSync.length} manga`, "info", {
+            description:
+                alreadySynced > 0
+                    ? `Skipping ${alreadySynced} already synced manga`
+                    : undefined,
+        });
 
         const batchSize = 50;
         const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
             [];
+        let errorCount = 0;
 
         for (let i = 0; i < aniDataToSync.length; i += batchSize) {
             const batch = aniDataToSync
@@ -149,6 +168,7 @@ export default function SyncAniPage() {
 
             if (error || !data) {
                 console.error("Error fetching manga batch:", error);
+                errorCount++;
                 continue;
             }
 
@@ -165,7 +185,16 @@ export default function SyncAniPage() {
             }
         }
 
+        if (updateItems.length === 0) {
+            new Toast("Sync failed", "error", {
+                description: "Could not find matching manga in database",
+            });
+            return;
+        }
+
         const bookmarkBatchSize = 100;
+        let bookmarkErrorCount = 0;
+
         for (let i = 0; i < updateItems.length; i += bookmarkBatchSize) {
             const batch = updateItems.slice(i, i + bookmarkBatchSize);
 
@@ -177,7 +206,18 @@ export default function SyncAniPage() {
 
             if (error) {
                 console.error("Error batch updating bookmarks:", error);
+                bookmarkErrorCount++;
             }
+        }
+
+        if (bookmarkErrorCount > 0 || errorCount > 0) {
+            new Toast("Sync completed with errors", "warning", {
+                description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred`,
+            });
+        } else {
+            new Toast("Sync completed successfully", "success", {
+                description: `Successfully synced ${updateItems.length} manga to bookmarks`,
+            });
         }
     }
 

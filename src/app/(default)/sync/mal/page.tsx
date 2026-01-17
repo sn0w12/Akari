@@ -1,12 +1,14 @@
 "use client";
 
-import { client } from "@/lib/api";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Check, X } from "lucide-react";
-import { useConfirm } from "@/contexts/confirm-context";
 import { SyncBody } from "@/components/sync/sync-body";
+import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { useConfirm } from "@/contexts/confirm-context";
+import { client } from "@/lib/api";
+import Toast from "@/lib/toast-wrapper";
+import { Check, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
 
@@ -138,7 +140,11 @@ export default function SyncMalPage() {
     }, []);
 
     async function syncMalToBookmarks() {
-        if (malData.length === 0) return;
+        if (malData.length === 0) {
+            new Toast("No MAL data to sync", "warning");
+            return;
+        }
+
         const confirmed = await confirm({
             title: "Confirm MAL Sync",
             description:
@@ -153,11 +159,25 @@ export default function SyncMalPage() {
                 !bookmarks.some((bookmark) => bookmark.malId === item.node.id),
         );
 
-        if (malDataToSync.length === 0) return;
+        if (malDataToSync.length === 0) {
+            new Toast("All manga already synced", "info", {
+                description: "No new manga to sync from your MAL list",
+            });
+            return;
+        }
+
+        const alreadySynced = malData.length - malDataToSync.length;
+        new Toast(`Starting sync of ${malDataToSync.length} manga`, "info", {
+            description:
+                alreadySynced > 0
+                    ? `Skipping ${alreadySynced} already synced manga`
+                    : undefined,
+        });
 
         const batchSize = 50;
         const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
             [];
+        let errorCount = 0;
 
         for (let i = 0; i < malDataToSync.length; i += batchSize) {
             const batch = malDataToSync
@@ -172,6 +192,7 @@ export default function SyncMalPage() {
 
             if (error || !data) {
                 console.error("Error fetching manga batch:", error);
+                errorCount++;
                 continue;
             }
 
@@ -188,7 +209,16 @@ export default function SyncMalPage() {
             }
         }
 
+        if (updateItems.length === 0) {
+            new Toast("Sync failed", "error", {
+                description: "Could not find matching manga in database",
+            });
+            return;
+        }
+
         const bookmarkBatchSize = 100;
+        let bookmarkErrorCount = 0;
+
         for (let i = 0; i < updateItems.length; i += bookmarkBatchSize) {
             const batch = updateItems.slice(i, i + bookmarkBatchSize);
 
@@ -200,7 +230,18 @@ export default function SyncMalPage() {
 
             if (error) {
                 console.error("Error batch updating bookmarks:", error);
+                bookmarkErrorCount++;
             }
+        }
+
+        if (bookmarkErrorCount > 0 || errorCount > 0) {
+            new Toast("Sync completed with errors", "warning", {
+                description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred`,
+            });
+        } else {
+            new Toast("Sync completed successfully", "success", {
+                description: `Successfully synced ${updateItems.length} manga to bookmarks`,
+            });
         }
     }
 
@@ -210,7 +251,13 @@ export default function SyncMalPage() {
     const renderRow = (item: components["schemas"]["MalMangaListItem"]) => (
         <TableRow key={item.node.id}>
             <TableCell className="font-medium max-w-xs truncate">
-                {item.node.title || "Unknown Title"}
+                <Link
+                    className="hover:underline"
+                    href={`/mal/${item.node.id}`}
+                    prefetch={false}
+                >
+                    {item.node.title || "Unknown Title"}
+                </Link>
             </TableCell>
             <TableCell>{item.listStatus?.numChaptersRead}</TableCell>
             <TableCell className="min-w-[100px]">
