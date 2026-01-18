@@ -170,7 +170,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             })}
                         />
                         <div className="flex items-center gap-2">
-                            <h1 className="text-2xl md:text-3xl font-bold">
+                            <h1 className="text-2xl md:text-3xl font-bold max-h-27 overflow-y-auto">
                                 {manga.title}
                             </h1>
                             {manga.alternativeTitles &&
@@ -317,7 +317,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="my-2 flex-grow block lg:hidden xl:block">
+                                <div className="my-2 flex-grow">
                                     <ScoreDisplay
                                         mangaId={manga.id}
                                         score={manga.score / 2}
@@ -331,12 +331,6 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                         </div>
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full flex flex-col">
-                            <div className="my-2 flex-grow hidden lg:block xl:hidden">
-                                <ScoreDisplay
-                                    mangaId={manga.id}
-                                    score={manga.score / 2}
-                                />
-                            </div>
                             <Card
                                 className="w-full h-full max-h-60 md:max-h-96 lg:max-h-none p-4 overflow-y-auto"
                                 aria-label="Description"
