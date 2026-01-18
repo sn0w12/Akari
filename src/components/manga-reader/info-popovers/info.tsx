@@ -19,7 +19,7 @@ export function InfoContent({
     return (
         <div className="space-y-4">
             <div className="space-y-2">
-                <h2 className="text-lg font-bold leading-tight">
+                <h2 className="text-lg font-bold leading-tight text-center md:text-left">
                     <Link
                         href={`/manga/${chapter.mangaId}`}
                         className="text-foreground hover:text-primary transition-colors"
@@ -27,17 +27,12 @@ export function InfoContent({
                         {chapter.mangaTitle}
                     </Link>
                 </h2>
-                <div className="hidden md:block">
-                    <label className="text-sm font-medium text-muted-foreground">
-                        Chapter
-                    </label>
-                    <ChapterSelector
-                        chapters={chapter.chapters}
-                        value={chapter.number.toString()}
-                        className="w-full"
-                    />
-                </div>
-                <div className="flex flex-col gap-2 pt-2 border-t">
+                <ChapterSelector
+                    chapters={chapter.chapters}
+                    value={chapter.number.toString()}
+                    className="w-full"
+                />
+                <div className="flex flex-col gap-2 md:pt-2 md:border-t">
                     <div className="flex items-center gap-2">
                         <FooterBookmarkButton chapter={chapter} />
                     </div>
