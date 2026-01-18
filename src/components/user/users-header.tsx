@@ -1,22 +1,22 @@
-import { client, serverHeaders } from "@/lib/api";
-import { getAuthToken } from "@/lib/auth/server";
 import ErrorPage from "@/components/error-page";
+import { Avatar } from "@/components/ui/avatar";
 import {
     Tooltip,
-    TooltipProvider,
     TooltipContent,
+    TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { client, serverHeaders } from "@/lib/api";
+import { getAuthToken } from "@/lib/auth/server";
 import {
-    MessageCircle,
-    TrendingUp,
-    TrendingDown,
-    ImageIcon,
     Bookmark,
+    ImageIcon,
+    MessageCircle,
+    TrendingDown,
+    TrendingUp,
 } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "../ui/badge";
 import { cacheLife, cacheTag } from "next/cache";
+import { Badge } from "../ui/badge";
 
 interface UserStatProps {
     icon: React.ReactElement;
@@ -81,17 +81,26 @@ export async function UserHeader({
     const userScore = data.data.totalUpvotes - data.data.totalDownvotes;
     return (
         <div className="flex flex-row justify-between items-center">
-            <div className="flex flex-row gap-2 items-baseline">
-                <Avatar name={data.data.username} />
-                <h2 className="text-4xl font-bold">
-                    {data.data.displayName || data.data.username}
-                </h2>
-                <p className="text-muted-foreground">@{data.data.username}</p>
-                {data.data.banned ? (
-                    <Badge className="self-center mt-2" variant="destructive">
-                        Banned
-                    </Badge>
-                ) : null}
+            <div className="flex flex-col md:flex-row items-baseline md:gap-2">
+                <div className="flex flex-row gap-2 items-baseline">
+                    <Avatar name={data.data.username} />
+                    <h2 className="text-4xl font-bold">
+                        {data.data.displayName || data.data.username}
+                    </h2>
+                </div>
+                <div className="flex flex-row gap-2 items-baseline">
+                    <p className="text-muted-foreground leading-right">
+                        @{data.data.username}
+                    </p>
+                    {data.data.banned ? (
+                        <Badge
+                            className="self-center md:mt-2"
+                            variant="destructive"
+                        >
+                            Banned
+                        </Badge>
+                    ) : null}
+                </div>
             </div>
             <div className="flex flex-row divide-x font-medium">
                 <TooltipProvider>

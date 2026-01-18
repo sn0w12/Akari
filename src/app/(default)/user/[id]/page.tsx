@@ -45,7 +45,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 export default async function UserPage(props: PageProps) {
     return (
         <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 h-full">
-            <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+            <Suspense fallback={<Skeleton className="h-16 md:h-10 w-full" />}>
                 <UserHeader params={props.params} />
             </Suspense>
             <Separator className="my-2" />
