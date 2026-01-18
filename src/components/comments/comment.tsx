@@ -7,17 +7,17 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useConfirm } from "@/contexts/confirm-context";
-import { cn, generateSizes } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {
     ChevronDown,
     ChevronUp,
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+import { CommentAttachment } from "./attachment";
 
 export type CommentData =
     | components["schemas"]["CommentWithRepliesResponse"]
@@ -271,18 +271,7 @@ export function Comment({
                 )}
 
                 {comment.attachment && (
-                    <div className="mt-2 mb-2">
-                        <Image
-                            src={comment.attachment.url}
-                            alt="Comment attachment"
-                            className="max-w-64 h-auto rounded-md border"
-                            height={160}
-                            width={160}
-                            sizes={generateSizes({
-                                default: "256px",
-                            })}
-                        />
-                    </div>
+                    <CommentAttachment attachment={comment.attachment} />
                 )}
 
                 <div className="flex items-center gap-1 sm:gap-2">
