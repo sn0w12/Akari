@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ListItem } from "../account/list-item";
 import ClientPagination from "../ui/pagination/client-pagination";
-import { UserListsSkeleton } from "./use-lists-server";
+import { UserListsSkeleton } from "./user-lists-skeleton";
 
 type UserListsResponse =
     components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];

@@ -7,7 +7,6 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { client, serverHeaders } from "@/lib/api";
-import { getAuthToken } from "@/lib/auth/server";
 import {
     Bookmark,
     ImageIcon,
@@ -40,7 +39,7 @@ function UserStat({ icon, label, value }: UserStatProps) {
     );
 }
 
-async function getUserData(userId: string, accesToken: string | undefined) {
+async function getUserData(userId: string) {
     "use cache";
     cacheLife("default");
     cacheTag("user-profiles", `user-${userId}`);
@@ -51,10 +50,7 @@ async function getUserData(userId: string, accesToken: string | undefined) {
                 userId,
             },
         },
-        headers: {
-            Authorization: accesToken ? `Bearer ${accesToken}` : undefined,
-            ...serverHeaders,
-        },
+        headers: serverHeaders,
     });
 
     if (error) {
@@ -70,9 +66,7 @@ export async function UserHeader({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const token = await getAuthToken();
-
-    const { data, error } = await getUserData(id, token);
+    const { data, error } = await getUserData(id);
 
     if (error) {
         return <ErrorPage title="Failed to load user" error={error} />;

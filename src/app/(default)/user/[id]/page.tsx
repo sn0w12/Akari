@@ -1,9 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-    UserListsServer,
-    UserListsSkeleton,
-} from "@/components/user/use-lists-server";
+import { UserListsServer } from "@/components/user/use-lists-server";
+import { UserListsSkeleton } from "@/components/user/user-lists-skeleton";
 import { UserHeader } from "@/components/user/users-header";
 import { client, serverHeaders } from "@/lib/api";
 import { createMetadata } from "@/lib/utils";
