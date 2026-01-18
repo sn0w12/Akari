@@ -242,7 +242,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to post reply. Please try again.", "error");
+            new Toast("Failed to post reply. Please try again.", "error", {
+                description: error.data.message,
+            });
             throw error; // Re-throw so the caller can handle it
         }
 
@@ -303,7 +305,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to post comment. Please try again.", "error");
+            new Toast("Failed to post comment. Please try again.", "error", {
+                description: error.data.message,
+            });
             return;
         }
 
@@ -333,7 +337,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to edit comment. Please try again.", "error");
+            new Toast("Failed to edit comment. Please try again.", "error", {
+                description: error.data.message,
+            });
             return;
         }
 
