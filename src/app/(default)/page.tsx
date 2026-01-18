@@ -123,7 +123,7 @@ async function HomeRecent() {
     }
 
     const { data, error } = await getViewedManga(token);
-    if (error) {
+    if (error || !data || data.data.length === 0) {
         return null;
     }
 
