@@ -30,7 +30,7 @@ export function Reader({ chapter }: ReaderProps) {
         if (readerType === "page") return false;
         if (readerType === "strip") return true;
 
-        return ["Manwha", "Manhua"].includes(chapter.type);
+        return ["Manhwa", "Manhua"].includes(chapter.type);
     });
     const [isInactive, setIsInactive] = useState(false);
     const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
