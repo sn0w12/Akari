@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ButtonGroup } from "../ui/button-group";
-import { InfoPopover } from "./info-popovers/info";
-import { SettingsPopover } from "./info-popovers/settings";
-import { CommentsButton } from "./info-popovers/comments";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { ButtonGroup } from "../ui/button-group";
+import { CommentsButton } from "./info-popovers/comments";
+import { InfoPopover } from "./info-popovers/info";
+import { InfoDrawer } from "./info-popovers/info-drawer";
+import { SettingsPopover } from "./info-popovers/settings";
 
 export function ChapterInfo({
     chapter,
@@ -48,8 +49,17 @@ export function ChapterInfo({
             onClick={(e) => e.stopPropagation()}
         >
             <ButtonGroup orientation={orientation}>
-                <InfoPopover chapter={chapter} orientation={orientation} />
-                <SettingsPopover orientation={orientation} />
+                {orientation === "vertical" ? (
+                    <>
+                        <InfoPopover
+                            chapter={chapter}
+                            orientation={orientation}
+                        />
+                        <SettingsPopover orientation={orientation} />
+                    </>
+                ) : (
+                    <InfoDrawer chapter={chapter} />
+                )}
                 <CommentsButton />
             </ButtonGroup>
         </div>

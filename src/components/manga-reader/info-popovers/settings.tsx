@@ -2,20 +2,53 @@
 
 import { useSettings } from "@/hooks/use-settings";
 import { createSettingsMap } from "@/lib/settings";
-import { Button } from "../../ui/button";
-import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
 import { Settings } from "lucide-react";
 import { SettingsInput } from "../../settings/settings-input";
+import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+
+export function SettingsContent() {
+    const { settings, setSettings } = useSettings();
+    const settingsMap = createSettingsMap("manga", settings, setSettings);
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {Object.entries(settingsMap).map(([key, setting]) => (
+                    <div key={key} className="space-y-2">
+                        <div className="flex flex-col space-y-1">
+                            <Label
+                                htmlFor={key}
+                                className="text-sm font-medium"
+                            >
+                                {setting.label}
+                            </Label>
+                            {setting.description && (
+                                <p className="text-xs text-muted-foreground">
+                                    {setting.description}
+                                </p>
+                            )}
+                        </div>
+                        <div className="ml-0">
+                            <SettingsInput
+                                settingKey={key}
+                                setting={setting}
+                                settingsMap={settingsMap}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 export function SettingsPopover({
     orientation,
 }: {
     orientation: "vertical" | "horizontal";
 }) {
-    const { settings, setSettings } = useSettings();
-    const settingsMap = createSettingsMap("manga", settings, setSettings);
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -29,34 +62,7 @@ export function SettingsPopover({
                 className="w-screen sm:w-128 max-h-96 overflow-y-auto"
                 data-scrollbar-custom
             >
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        {Object.entries(settingsMap).map(([key, setting]) => (
-                            <div key={key} className="space-y-2">
-                                <div className="flex flex-col space-y-1">
-                                    <Label
-                                        htmlFor={key}
-                                        className="text-sm font-medium"
-                                    >
-                                        {setting.label}
-                                    </Label>
-                                    {setting.description && (
-                                        <p className="text-xs text-muted-foreground">
-                                            {setting.description}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="ml-0">
-                                    <SettingsInput
-                                        settingKey={key}
-                                        setting={setting}
-                                        settingsMap={settingsMap}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <SettingsContent />
             </PopoverContent>
         </Popover>
     );
