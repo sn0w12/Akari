@@ -170,7 +170,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             })}
                         />
                         <div className="flex items-center gap-2">
-                            <h1 className="text-2xl md:text-3xl font-bold max-h-27 overflow-y-auto">
+                            <h1 className="text-2xl md:text-3xl font-bold lg:max-h-27 overflow-y-auto">
                                 {manga.title}
                             </h1>
                             {manga.alternativeTitles &&
