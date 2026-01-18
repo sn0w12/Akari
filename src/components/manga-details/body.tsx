@@ -33,7 +33,7 @@ export function MangaDetailsBody({
                 </Suspense>
             </TabsContent>
 
-            <TabsContent value="recommendations">
+            <TabsContent value="recommendations" className="mb-2">
                 <Suspense fallback={<GridBodySkeleton pageSize={12} />}>
                     <MangaRecommendations params={params} />
                 </Suspense>
