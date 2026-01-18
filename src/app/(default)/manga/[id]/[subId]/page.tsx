@@ -95,7 +95,7 @@ export default async function MangaReaderPage({ params }: MangaReaderProps) {
             </Suspense>
             <div className="p-4">
                 <Suspense fallback={null}>
-                    <MangaComments params={params} />
+                    <MangaComments params={params} target="chapter" />
                 </Suspense>
             </div>
         </div>

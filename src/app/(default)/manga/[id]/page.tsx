@@ -67,7 +67,7 @@ export default async function MangaPage(props: MangaPageProps) {
             <MangaDetailsBody params={props.params} />
 
             <Suspense fallback={null}>
-                <MangaComments params={props.params} />
+                <MangaComments params={props.params} target="manga" />
             </Suspense>
         </div>
     );

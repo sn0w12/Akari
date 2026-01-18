@@ -1,25 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { CommentList } from "@/components/comments/comment-list";
-import Toast from "@/lib/toast-wrapper";
 import type { CommentData, VoteType } from "@/components/comments/comment";
+import { CommentList } from "@/components/comments/comment-list";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Button } from "../ui/button";
+import Toast from "@/lib/toast-wrapper";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { CommentSorting } from "../comments/sorting";
+import { Button } from "../ui/button";
+import { CommentTarget } from "./manga-comments";
 
 interface MangaCommentListProps {
     initialComments: components["schemas"]["CommentWithRepliesResponse"][];
     mangaId: string;
     totalPages: number;
+    target: CommentTarget;
 }
 
 export function MangaCommentList({
     initialComments,
     mangaId,
     totalPages,
+    target,
 }: MangaCommentListProps) {
     const [sortOrder, setSortOrder] =
         useState<components["schemas"]["CommentSortOrder"]>("Upvoted");
@@ -293,7 +296,7 @@ export function MangaCommentList({
                 },
             },
             body: {
-                targetType: "manga",
+                targetType: target,
                 content: content,
                 attachmentId: attachment?.id,
             },

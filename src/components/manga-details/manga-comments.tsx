@@ -30,11 +30,14 @@ const getMangaComments = async (id: string) => {
     return { data: data.data, error: null };
 };
 
+export type CommentTarget = "manga" | "chapter";
+
 interface MangaCommentsProps {
     params: Promise<{ id: string }>;
+    target: CommentTarget;
 }
 
-export async function MangaComments({ params }: MangaCommentsProps) {
+export async function MangaComments({ params, target }: MangaCommentsProps) {
     const id = (await params).id;
     const { data, error } = await getMangaComments(id);
 
@@ -65,6 +68,7 @@ export async function MangaComments({ params }: MangaCommentsProps) {
             initialComments={commentsWithReplies}
             mangaId={id}
             totalPages={data.totalPages}
+            target={target}
         />
     );
 }
