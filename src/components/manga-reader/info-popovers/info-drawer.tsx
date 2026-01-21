@@ -22,12 +22,10 @@ export function InfoDrawer({
             </DrawerTrigger>
             <DrawerContent>
                 <div
-                    className="overflow-y-auto p-2 pt-0 mt-4"
+                    className="overflow-y-auto p-2 pt-0 mt-4 mb-2"
                     style={{ maxHeight: "calc(100vh - 10rem)" }}
                 >
                     <InfoContent chapter={chapter} />
-                    <Separator className="my-4" />
-                    <SettingsContent />
                 </div>
             </DrawerContent>
         </Drawer>
