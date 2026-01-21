@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tree, TreeItem } from "@/components/ui/tree";
-import { APP_SETTINGS } from "@/config";
+import { APP_SETTINGS, inDevelopment } from "@/config";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useDevice } from "@/contexts/device-context";
 import { useSettings } from "@/hooks/use-settings";
@@ -25,6 +25,7 @@ import { TableOfContents } from "lucide-react";
 import React from "react";
 
 import { SettingsSearch } from "@/components/settings/search";
+import { capitalize, cn } from "@/lib/utils";
 
 interface HierarchicalGroup {
     settings: Record<string, Setting>;
@@ -66,6 +67,11 @@ export default function SettingsPage() {
                     }
                 }
 
+                // Skip Test Settings in production
+                if (categoryLabel === "Test Settings" && !inDevelopment) {
+                    return;
+                }
+
                 // Filter individual settings within the category
                 const filteredSettings: Record<string, Setting> = {};
                 Object.entries(settingsMap).forEach(([key, setting]) => {
@@ -88,7 +94,7 @@ export default function SettingsPage() {
 
     const firstTab = Object.keys(settingsMaps)[0];
     const [activeTab, setActiveTab] = React.useState(firstTab);
-    const [stickyRef, isSticky] = useSticky(-16);
+    const [stickyRef, isSticky] = useSticky(-8);
     const [activeSection, setActiveSection] = React.useState<string | null>(
         null,
     );
@@ -218,31 +224,35 @@ export default function SettingsPage() {
                 }}
                 className="w-full gap-0"
             >
-                <TabsList
+                <div
                     ref={stickyRef}
-                    className={`bg-background sticky top-0 z-40 p-0 ${
-                        isSticky ? "settings-tabs-sticky border-b" : ""
-                    }`}
+                    className={cn(
+                        "bg-background sticky top-0 z-40 border-border overflow-x-auto",
+                        {
+                            "border-b": isSticky,
+                        },
+                    )}
                 >
-                    {Object.keys(settingsMaps).map((groupName) => (
-                        <TabsTrigger
-                            key={groupName}
-                            value={groupName}
-                            className="border-b-0 rounded-b-none data-[state=active]:border-border"
-                        >
-                            {groupName.charAt(0).toUpperCase() +
-                                groupName.slice(1)}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                    <TabsList className={`bg-background rounded-b-none p-0`}>
+                        {Object.keys(settingsMaps).map((groupName) => (
+                            <TabsTrigger
+                                key={groupName}
+                                value={groupName}
+                                className="border-b-0 rounded-b-none data-[state=active]:border-border"
+                            >
+                                {capitalize(groupName)}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </div>
 
                 {/* Render all settings tabs from settings maps */}
                 {Object.entries(settingsMaps).map(
                     ([groupName, settingsMap]) => (
                         <TabsContent key={groupName} value={groupName}>
                             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr]">
-                                <Card className="gap-0 pt-0 rounded-tl-none">
-                                    <CardHeader className="bg-card sticky top-16 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
+                                <Card className="gap-0 pt-0 rounded-t-none md:rounded-tr-xl">
+                                    <CardHeader className="bg-card sticky top-11 md:top-8 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
                                         <CardTitle className="w-full">
                                             <h2 className="w-full border-b pt-3 pb-2 text-2xl font-medium">
                                                 {groupName
@@ -589,7 +599,7 @@ export default function SettingsPage() {
                                                                                 }} // adjust for sticky header
                                                                             >
                                                                                 {/* Sticky main group header */}
-                                                                                <h3 className="bg-card sticky top-34 z-20 border-b pb-2 text-lg font-medium">
+                                                                                <h3 className="bg-card sticky top-29 md:top-26 z-20 border-b pb-2 text-lg font-medium">
                                                                                     {
                                                                                         groupName
                                                                                     }
@@ -625,7 +635,7 @@ export default function SettingsPage() {
                                                                                             }}
                                                                                         >
                                                                                             {/* Sticky subgroup header */}
-                                                                                            <h4 className="text-md bg-card sticky top-43 z-10 flex items-center pt-1 font-medium">
+                                                                                            <h4 className="text-md bg-card sticky top-38 md:top-35 z-10 flex items-center pt-1 font-medium">
                                                                                                 {
                                                                                                     subgroupPath
                                                                                                 }
