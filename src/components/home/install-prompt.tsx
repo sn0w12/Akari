@@ -1,24 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { X, Share, Plus, MoreHorizontal } from "lucide-react";
 import { useDevice } from "@/contexts/device-context";
 import { useStorage } from "@/lib/storage";
+import { MoreHorizontal, Plus, Share, X } from "lucide-react";
+import { useState } from "react";
 
 export function InstallPrompt() {
-    const { deviceType } = useDevice();
-    const isIOS =
-        typeof window !== "undefined" &&
-        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as Window & { MSStream?: unknown }).MSStream;
-
-    const isAndroid =
-        typeof window !== "undefined" && /Android/.test(navigator.userAgent);
-
-    const isStandalone =
-        typeof window !== "undefined" &&
-        window.matchMedia("(display-mode: standalone)").matches;
-
+    const { deviceType, os, isPWA } = useDevice();
     const installPromptStorage = useStorage("installPromptDismissed");
     const [isVisible, setIsVisible] = useState<boolean>(
         () => !installPromptStorage.get()?.dismissed,
@@ -29,7 +17,7 @@ export function InstallPrompt() {
         setIsVisible(false);
     };
 
-    if (isStandalone || !isVisible || deviceType !== "mobile") {
+    if (isPWA || !isVisible || deviceType !== "mobile") {
         return null;
     }
 
@@ -45,13 +33,13 @@ export function InstallPrompt() {
                     <X size={20} />
                 </button>
             </div>
-            {isIOS ? (
+            {os === "iOS" ? (
                 <p className="text-sm text-muted-foreground">
                     To install this app on your iOS device, tap the share button{" "}
                     <Share size={16} className="inline" /> and then &quot;Add to
                     Home Screen&quot; <Plus size={16} className="inline" />.
                 </p>
-            ) : isAndroid ? (
+            ) : os === "Android" ? (
                 <p className="text-sm text-muted-foreground">
                     To install this app on your Android device, tap the menu
                     button <MoreHorizontal size={16} className="inline" /> and
