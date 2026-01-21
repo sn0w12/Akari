@@ -27,7 +27,7 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
     /**
      * Storage wrapper for user data associated with this secondary account.
      */
-    protected get userStorage() {
+    get userStorage() {
         return StorageManager.get("secondaryAccountUser", {
             accountId: this.id,
         });
