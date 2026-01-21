@@ -4,6 +4,7 @@ import { useShortcut } from "@/hooks/use-shortcut";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -116,11 +117,8 @@ export default function PageReader({
         (e: React.MouseEvent<HTMLDivElement>) => {
             const screenWidth = windowWidth;
             const clickX = e.clientX;
-            const clickY = e.clientY;
             const middleZoneStart = screenWidth * 0.4;
             const middleZoneEnd = screenWidth * 0.6;
-
-            if (clickY < 100 || clickY > window.innerHeight - 100) return;
 
             if (readingDir === "rtl") {
                 if (clickX > middleZoneEnd) {
@@ -146,22 +144,22 @@ export default function PageReader({
                 hidden={scrollMetrics.pixels >= 50}
             />
             <div
-                className={`w-full h-full flex flex-col relative transition-colors duration-500 ${
-                    currentPage === chapter.images.length
-                        ? ""
-                        : isInactive
-                          ? "cursor-none"
-                          : "cursor-pointer"
-                }`}
+                className="w-full h-full flex flex-col relative"
                 style={{ height: "calc(100dvh - var(--reader-offset))" }}
-                onClick={handleClick}
             >
                 <div className="my-auto">
                     {chapter.images[currentPage] && (
                         <Image
                             src={chapter.images[currentPage]}
                             alt={`Page ${currentPage + 1}`}
-                            className="w-full h-auto object-contain"
+                            className={cn("w-full h-auto object-contain", {
+                                "cursor-none":
+                                    isInactive &&
+                                    currentPage !== chapter.images.length,
+                                "cursor-pointer":
+                                    !isInactive &&
+                                    currentPage !== chapter.images.length,
+                            })}
                             style={{
                                 maxHeight:
                                     "calc(100dvh - var(--reader-offset))",
@@ -172,6 +170,7 @@ export default function PageReader({
                             unoptimized={true}
                             preload={true}
                             fetchPriority="high"
+                            onClick={handleClick}
                         />
                     )}
                     <EndOfManga

@@ -77,12 +77,15 @@ export default function PageProgress({
                     "opacity-0 pointer-events-none": !isVisible || hidden,
                 },
             )}
-            style={windowWidth <= cutoff ? { bottom: "1rem" } : {}}
+            style={
+                windowWidth <= cutoff
+                    ? { bottom: "1rem", width: "calc(100% - 118px)" }
+                    : {}
+            }
         >
             <div
                 ref={containerRef}
-                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 lg:w-9 lg:hover:w-18 lg:h-[75vh]"
-                style={windowWidth < 768 ? { width: "calc(100% - 118px)" } : {}}
+                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:hover:w-18 lg:h-[75vh]"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div

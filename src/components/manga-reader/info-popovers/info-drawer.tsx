@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Info } from "lucide-react";
 
-import { Separator } from "@/components/ui/separator";
 import { InfoContent } from "./info";
-import { SettingsContent } from "./settings";
 
 export function InfoDrawer({
     chapter,
