@@ -63,7 +63,7 @@ export const APP_SETTINGS = {
                     { label: "MAL", value: "mal" },
                     { label: "AniList", value: "ani" },
                 ],
-                default: ["mal", "ani"],
+                default: [],
                 groups: ["UI", "Notifications"],
             },
             allowAnalytics: {
@@ -254,6 +254,14 @@ export const STORAGE_SCHEMAS = {
             valid: createField("boolean", false),
         },
         storageBackend: "session",
+    },
+    secondaryAccountSettingActivated: {
+        key: createDynamicKey("account-activated-before-{accountId}", [
+            "accountId",
+        ]),
+        schema: {
+            activated: createField("boolean", false),
+        },
     },
     malUser: {
         key: "mal-user",

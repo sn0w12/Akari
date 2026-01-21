@@ -1,6 +1,7 @@
+import { getSetting, setSetting } from "@/lib/settings";
+import { StorageManager, StorageWrapper } from "@/lib/storage";
 import { StorageValue } from "@/types/storage";
 import type { SecondaryAccount } from "../secondary-accounts";
-import { StorageManager, StorageWrapper } from "@/lib/storage";
 
 /**
  * Abstract base class for secondary account implementations.
@@ -24,6 +25,9 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      */
     abstract readonly color: string;
 
+    /**
+     * Storage wrapper for user data associated with this secondary account.
+     */
     abstract readonly userStorage: StorageWrapper<{
         id: {
             readonly type: "number";
@@ -34,6 +38,13 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
             readonly default: StorageValue;
         };
     }>;
+
+    /**
+     * Storage for if this account has been activated before.
+     */
+    readonly activatedStorage = StorageManager.get(
+        "secondaryAccountSettingActivated",
+    );
 
     /**
      * Calculates and returns the appropriate text color (#000000 or #FFFFFF)
@@ -117,4 +128,24 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
         hash: string,
         origin: string,
     ): Promise<boolean>;
+
+    /**
+     * Updates the login toast setting for the current account.
+     *
+     * If the account has not previously activated the login toast, this method marks it as activated
+     * in persistent storage and adds the account ID to the "groupLoginToasts" setting.
+     * If the account has already been activated, the method returns early and makes no changes.
+     */
+    updateLoginToastSetting(): void {
+        const hasActivatedBefore = this.activatedStorage.get({
+            accountId: this.id,
+        })?.activated;
+        if (hasActivatedBefore) return;
+
+        this.activatedStorage.set({ activated: true }, { accountId: this.id });
+        setSetting("groupLoginToasts", [
+            ...((getSetting("groupLoginToasts") as unknown as string[]) || []),
+            this.id,
+        ]);
+    }
 }

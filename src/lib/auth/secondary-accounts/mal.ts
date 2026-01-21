@@ -1,9 +1,9 @@
 import { client } from "@/lib/api";
-import { setCookie } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { StorageManager } from "@/lib/storage";
-import { SecondaryAccountBase } from "./general";
+import { setCookie } from "@/lib/utils";
 import Cookies from "js-cookie";
+import { SecondaryAccountBase } from "./general";
 
 export class MalAccount extends SecondaryAccountBase {
     readonly id = "mal";
@@ -104,6 +104,7 @@ export class MalAccount extends SecondaryAccountBase {
         }
 
         Cookies.remove("pkce_code_verifier");
+        this.updateLoginToastSetting();
         return true;
     }
 }

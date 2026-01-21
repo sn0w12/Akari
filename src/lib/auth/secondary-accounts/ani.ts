@@ -1,6 +1,6 @@
-import { SecondaryAccountBase } from "./general";
 import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
+import { SecondaryAccountBase } from "./general";
 
 export class AniAccount extends SecondaryAccountBase {
     readonly id = "ani";
@@ -87,6 +87,7 @@ export class AniAccount extends SecondaryAccountBase {
             return false;
         }
 
+        this.updateLoginToastSetting();
         return true;
     }
 }

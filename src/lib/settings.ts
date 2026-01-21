@@ -202,6 +202,38 @@ export function getSetting<K extends SettingKeys>(
 }
 
 /**
+ * Sets a specific setting value in localStorage and dispatches a change event.
+ * This function only works in browser environments.
+ *
+ * @param key - The setting key to update
+ * @param value - The new value for the setting
+ *
+ * @example
+ * ```ts
+ * setSetting('darkMode', true);
+ * ```
+ */
+export function setSetting<K extends SettingKeys>(
+    key: K,
+    value: SettingValue,
+): void {
+    if (typeof window === "undefined") return;
+
+    // Get the current settings object (from localStorage or defaults)
+    const storedSettings = localStorage.getItem("settings");
+    const currentSettings: SettingsInterface = storedSettings
+        ? JSON.parse(storedSettings)
+        : { ...defaultSettings };
+
+    // Get the previous value for the event
+    const previousValue = currentSettings[key];
+    currentSettings[key] = value as SettingsInterface[K];
+
+    localStorage.setItem("settings", JSON.stringify(currentSettings));
+    dispatchSettingsChange(key, value, previousValue);
+}
+
+/**
  * React hook to bind a callback to a shortcut defined in settings.
  * @param key - The key of the shortcut setting (type-safe)
  * @param callback - The function to call when the shortcut is triggered
