@@ -163,24 +163,22 @@ export function Reader({ chapter }: ReaderProps) {
                 title={chapter.mangaTitle}
             />
             <ViewManga mangaId={chapter.mangaId} />
-            <div>
-                {isStripMode ? (
-                    <StripReader
-                        chapter={chapter}
-                        scrollMetrics={scrollMetrics}
-                        toggleReaderMode={toggleReaderMode}
-                        setBookmarkState={setBookmarkState}
-                    />
-                ) : (
-                    <PageReader
-                        chapter={chapter}
-                        scrollMetrics={scrollMetrics}
-                        toggleReaderMode={toggleReaderMode}
-                        isInactive={isInactive}
-                        setBookmarkState={setBookmarkState}
-                    />
-                )}
-            </div>
+            {isStripMode ? (
+                <StripReader
+                    chapter={chapter}
+                    scrollMetrics={scrollMetrics}
+                    toggleReaderMode={toggleReaderMode}
+                    setBookmarkState={setBookmarkState}
+                />
+            ) : (
+                <PageReader
+                    chapter={chapter}
+                    scrollMetrics={scrollMetrics}
+                    toggleReaderMode={toggleReaderMode}
+                    isInactive={isInactive}
+                    setBookmarkState={setBookmarkState}
+                />
+            )}
         </>
     );
 }
