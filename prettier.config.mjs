@@ -1,6 +1,4 @@
-import { type Config } from "prettier";
-
-const config: Config = {
+const config = {
     tabWidth: 4,
     useTabs: false,
     endOfLine: "auto",
