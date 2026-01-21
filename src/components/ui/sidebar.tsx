@@ -2,23 +2,10 @@
 
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
-import {
-    ChevronDown,
-    Circle,
-    Menu,
-    PanelLeftClose,
-    PanelLeftOpen,
-} from "lucide-react";
+import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuSeparator,
-    ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -39,9 +26,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcut } from "@/hooks/use-shortcut";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import { ContextMenuLabel } from "@radix-ui/react-context-menu";
 import Link from "next/link";
-import { ScrollArea } from "./scroll-area";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -920,79 +905,15 @@ function SidebarMenuSubButton({
     );
 }
 
-type SectionItem = { id: string; name: string; pinned?: boolean };
-
-interface ContextMenuItemDef {
-    label: string;
-    onClick: (id: string) => void;
-    icon?: React.ReactNode;
-    variant?: "default" | "destructive";
-    position?: "before-pin" | "after-pin";
-}
+type SectionItem = { id: string; name: string };
 
 interface SidebarSectionProps {
     title: string;
     icon: React.ReactNode;
     items: SectionItem[];
     isActive: boolean;
-    isSidebarCollapsed: boolean;
     basePath: string;
-    onNavigate: (path: string) => void;
     isItemActive: (itemId: string) => boolean;
-    contextMenuItems?: ContextMenuItemDef[];
-    onPinItem?: (itemId: string, pinned: boolean) => void;
-    maxHeight?: number;
-}
-
-function usePinnedItems(sectionTitle: string) {
-    const storageKey = `pinned_items_${sectionTitle
-        .toLowerCase()
-        .replace(/\s+/g, "_")}`;
-    const [pinnedIds, setPinnedIds] = React.useState<string[]>([]);
-    React.useEffect(() => {
-        try {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                setPinnedIds(JSON.parse(saved));
-            }
-        } catch (error) {
-            console.error(
-                "Failed to load pinned items from localStorage",
-                error,
-            );
-        }
-    }, [storageKey]);
-
-    const togglePin = React.useCallback(
-        (id: string, pinned: boolean) => {
-            setPinnedIds((prev) => {
-                const newPinnedIds = pinned
-                    ? [...prev, id]
-                    : prev.filter((pinnedId) => pinnedId !== id);
-
-                try {
-                    localStorage.setItem(
-                        storageKey,
-                        JSON.stringify(newPinnedIds),
-                    );
-                } catch (error) {
-                    console.error(
-                        "Failed to save pinned items to localStorage",
-                        error,
-                    );
-                }
-
-                return newPinnedIds;
-            });
-        },
-        [storageKey],
-    );
-
-    return {
-        pinnedIds,
-        isPinned: (id: string) => pinnedIds.includes(id),
-        togglePin,
-    };
 }
 
 function SidebarSection({
@@ -1000,148 +921,21 @@ function SidebarSection({
     icon,
     items,
     isActive,
-    isSidebarCollapsed,
     basePath,
     isItemActive,
-    maxHeight = 320,
-}: SidebarSectionProps) {
-    const { isPinned } = usePinnedItems(title);
+}: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
-    const { setOpen } = useSidebar();
-    const [isExpanded, setIsExpanded] = React.useState(isActive);
-    const hoverIndexRef = React.useRef<number | null>(null);
-    const isHoveringRef = React.useRef<boolean>(false);
-    const indicatorRef = React.useRef<HTMLDivElement>(null);
-    const [isHovering, setIsHovering] = React.useState(false);
-    const [contentHeight, setContentHeight] = React.useState<number | null>(
-        null,
-    );
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const itemsContainerRef = React.useRef<HTMLDivElement>(null);
-    const itemRefs = React.useRef<(HTMLElement | null)[]>([]);
+    const { setOpen, state } = useSidebar();
+    const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
 
-    React.useLayoutEffect(() => {
-        if (contentRef.current) {
-            setContentHeight(
-                Math.min(contentRef.current.scrollHeight, maxHeight),
-            );
-        }
-    }, [items, isExpanded, maxHeight]);
-
-    const getItemRef = (index: number) => (el: HTMLElement | null) => {
-        itemRefs.current[index] = el;
-    };
-
-    const handleItemHover = (index: number) => {
-        hoverIndexRef.current = index;
-        requestAnimationFrame(() => {
-            if (index === null || !indicatorRef.current) {
-                if (indicatorRef.current) {
-                    indicatorRef.current.style.opacity = "0";
-                }
-                return;
-            }
-
-            const item = itemRefs.current[index];
-            if (!item || !itemsContainerRef.current) return;
-
-            const itemRect = item.getBoundingClientRect();
-            const containerRect =
-                itemsContainerRef.current.getBoundingClientRect();
-            const top = itemRect.top - containerRect.top;
-
-            if (indicatorRef.current) {
-                indicatorRef.current.style.height = `${itemRect.height}px`;
-                indicatorRef.current.style.top = `${top}px`;
-                indicatorRef.current.style.opacity = isHoveringRef.current
-                    ? "1"
-                    : "0";
-            }
-        });
-    };
-
-    const handleMouseEnter = () => {
-        isHoveringRef.current = true;
-        if (hoverIndexRef.current !== null) {
-            const index = hoverIndexRef.current;
-            if (index === null || !indicatorRef.current) {
-                if (indicatorRef.current) {
-                    indicatorRef.current.style.opacity = "0";
-                }
-                return;
-            }
-
-            const item = itemRefs.current[index];
-            if (!item || !itemsContainerRef.current) return;
-
-            const itemRect = item.getBoundingClientRect();
-            const containerRect =
-                itemsContainerRef.current.getBoundingClientRect();
-            const top = itemRect.top - containerRect.top;
-
-            if (indicatorRef.current) {
-                indicatorRef.current.style.height = `${itemRect.height}px`;
-                indicatorRef.current.style.top = `${top}px`;
-                indicatorRef.current.style.opacity = isHoveringRef.current
-                    ? "1"
-                    : "0";
-            }
-        }
-
-        setTimeout(() => {
-            setIsHovering(true);
-        }, 50);
-    };
-
-    const handleMouseLeave = () => {
-        isHoveringRef.current = false;
-        const index = null;
-        if (index === null || !indicatorRef.current) {
-            if (indicatorRef.current) {
-                indicatorRef.current.style.opacity = "0";
-            }
-            return;
-        }
-
-        const item = itemRefs.current[index];
-        if (!item || !itemsContainerRef.current) return;
-
-        const itemRect = item.getBoundingClientRect();
-        const containerRect = itemsContainerRef.current.getBoundingClientRect();
-        const top = itemRect.top - containerRect.top;
-
-        if (indicatorRef.current) {
-            indicatorRef.current.style.height = `${itemRect.height}px`;
-            indicatorRef.current.style.top = `${top}px`;
-            indicatorRef.current.style.opacity = isHoveringRef.current
-                ? "1"
-                : "0";
-        }
-
-        setTimeout(() => {
-            setIsHovering(false);
-        }, 50);
-    };
-
-    const handleSectionToggle = (e: React.MouseEvent) => {
+    const handleSectionToggle = (e: React.MouseEvent): void => {
         e.stopPropagation();
         e.preventDefault();
-        setIsExpanded(!isExpanded);
+        setIsExpanded((prev) => !prev);
         setOpen(true);
     };
 
-    const sortedItems = React.useMemo(() => {
-        return [...items].sort((a, b) => {
-            const aPinned = a.pinned !== undefined ? a.pinned : isPinned(a.id);
-            const bPinned = b.pinned !== undefined ? b.pinned : isPinned(b.id);
-
-            if (aPinned && !bPinned) return -1;
-            if (!aPinned && bPinned) return 1;
-            return 0;
-        });
-    }, [items, isPinned]);
-
-    const handleLinkClick = () => {
+    const handleLinkClick = (): void => {
         const escEvent = new KeyboardEvent("keydown", {
             key: "Escape",
             code: "Escape",
@@ -1152,138 +946,49 @@ function SidebarSection({
 
     return (
         <SidebarMenuItem>
-            <ContextMenu>
-                <ContextMenuTrigger asChild>
-                    <SidebarMenuButton
-                        onClick={handleSectionToggle}
-                        isActive={isActive}
-                        tooltip={title}
-                        labelClassName={
-                            isSidebarCollapsed ? "" : "w-full justify-between"
-                        }
-                        aria-label={title}
-                    >
-                        <div className="flex max-w-[85%] items-center gap-2">
-                            <div className="min-w-6">{icon}</div>
-                            <span className="truncate">{title}</span>
-                        </div>
-                        {(!isSidebarCollapsed || isMobile) && (
-                            <ChevronDown
-                                className={cn(
-                                    "ease-snappy h-4 w-4 transition-transform duration-200",
-                                    isExpanded ? "rotate-0" : "-rotate-90",
-                                )}
-                            />
+            <SidebarMenuButton
+                onClick={handleSectionToggle}
+                isActive={isActive}
+                tooltip={title}
+                labelClassName={
+                    state === "collapsed" ? "" : "w-full justify-between"
+                }
+                aria-label={title}
+            >
+                <div className="flex max-w-[85%] items-center gap-2">
+                    <div className="min-w-6">{icon}</div>
+                    <span className="truncate">{title}</span>
+                </div>
+                {(state !== "collapsed" || isMobile) && (
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4",
+                            isExpanded ? "rotate-0" : "-rotate-90",
                         )}
-                    </SidebarMenuButton>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-48">
-                    <ContextMenuLabel>
-                        <span className="text-sm p-2 font-medium">{title}</span>
-                    </ContextMenuLabel>
-                    <ContextMenuSeparator />
-                    <ScrollArea
-                        className="w-full"
-                        style={{
-                            height:
-                                sortedItems.length > 0
-                                    ? Math.min(sortedItems.length * 32, 384) +
-                                      "px"
-                                    : "40px",
-                        }}
-                    >
-                        {sortedItems.length > 0 ? (
-                            <>
-                                {sortedItems.map((item) => (
-                                    <ContextMenuItem key={item.id}>
-                                        <Link
-                                            key={"link" + item.id}
-                                            href={`${basePath}/${item.id}`}
-                                            className="flex items-center w-full"
-                                            onClick={handleLinkClick}
-                                        >
-                                            {item.name}
-                                        </Link>
-                                    </ContextMenuItem>
-                                ))}
-                            </>
-                        ) : (
-                            <ContextMenuItem disabled>
-                                No items available
-                            </ContextMenuItem>
-                        )}
-                    </ScrollArea>
-                </ContextMenuContent>
-            </ContextMenu>
+                    />
+                )}
+            </SidebarMenuButton>
 
-            {(!isSidebarCollapsed || isMobile) && (
+            {(state !== "collapsed" || isMobile) && isExpanded && (
                 <div
-                    ref={contentRef}
-                    className={cn(
-                        "ease-snappy overflow-auto transition-all duration-200",
-                        !isExpanded && "h-0",
-                    )}
-                    style={{
-                        height: isExpanded
-                            ? contentHeight
-                                ? `${contentHeight}px`
-                                : "auto"
-                            : "0px",
-                    }}
+                    className="border-muted mt-0.5 ml-6 border-l-2 pt-0 pl-2 max-h-84 overflow-y-auto"
                     data-scrollbar-custom="true"
                 >
-                    <div
-                        ref={itemsContainerRef}
-                        className="border-muted relative mt-1 ml-6 border-l-2 pt-0 pl-2"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                    >
-                        <div
-                            ref={indicatorRef}
-                            className="bg-sidebar-accent pointer-events-none absolute right-0 left-0 ml-2 rounded-md will-change-transform"
-                            style={{
-                                height: "0px",
-                                top: "0px",
-                                opacity: 0,
-                                transition: isHovering
-                                    ? "all 200ms cubic-bezier(0.16, 1, 0.3, 1)"
-                                    : "opacity 200ms cubic-bezier(0.16, 1, 0.3, 1)",
-                                transform: "translateZ(0)",
-                            }}
-                        />
-
-                        {sortedItems.map((item, index) => {
-                            const itemPinned =
-                                item.pinned !== undefined
-                                    ? item.pinned
-                                    : isPinned(item.id);
-
-                            return (
-                                <SidebarMenuLink
-                                    ref={getItemRef(index)}
-                                    key={item.id}
-                                    href={`${basePath}/${item.id}`}
-                                    isActive={isItemActive(item.id)}
-                                    tooltip={item.name}
-                                    size="sm"
-                                    className={cn(
-                                        "relative z-10 mt-1 px-3 py-1 text-sm hover:bg-transparent",
-                                        itemPinned && "font-medium",
-                                    )}
-                                    onMouseEnter={() => handleItemHover(index)}
-                                >
-                                    <div className="flex max-w-[150px] items-center gap-1.5">
-                                        {itemPinned && (
-                                            <Circle className="text-accent-positive h-2 w-2 fill-current" />
-                                        )}
-                                        <span className={`truncate`}>
-                                            {item.name}
-                                        </span>
-                                    </div>
-                                </SidebarMenuLink>
-                            );
-                        })}
-                    </div>
+                    {items.map((item) => (
+                        <SidebarMenuLink
+                            key={item.id}
+                            href={`${basePath}/${item.id}`}
+                            isActive={isItemActive(item.id)}
+                            tooltip={item.name}
+                            size="sm"
+                            className="relative z-10 px-3 text-sm hover:bg-accent"
+                            onClick={handleLinkClick}
+                        >
+                            <div className="flex max-w-[150px] items-center gap-1.5">
+                                <span className="truncate">{item.name}</span>
+                            </div>
+                        </SidebarMenuLink>
+                    ))}
                 </div>
             )}
         </SidebarMenuItem>
