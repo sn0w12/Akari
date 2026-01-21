@@ -1,6 +1,6 @@
+import { StorageManager } from "@/lib/storage";
 import { AniAccount } from "./secondary-accounts/ani";
 import { MalAccount } from "./secondary-accounts/mal";
-import { StorageManager } from "@/lib/storage";
 
 export type SyncHandler = (
     data: components["schemas"]["ChapterResponse"],
@@ -38,13 +38,15 @@ export async function isAccountValid(accountId: SecondaryAccountId) {
     const account = SECONDARY_ACCOUNTS.find((acc) => acc.id === accountId);
     if (!account) throw new Error(`Unknown account ID: ${accountId}`);
 
-    const cacheStorage = StorageManager.get("secondaryAccountCache");
-    const cache = cacheStorage.get({ accountId });
+    const cacheStorage = StorageManager.get("secondaryAccountCache", {
+        accountId,
+    });
+    const cache = cacheStorage.get();
 
     if (cache?.valid) return true;
 
     const valid = await account.validate();
-    cacheStorage.set({ valid }, { accountId });
+    cacheStorage.set({ valid });
     return valid;
 }
 

@@ -1,6 +1,5 @@
 import { getSetting, setSetting } from "@/lib/settings";
-import { StorageManager, StorageWrapper } from "@/lib/storage";
-import { StorageValue } from "@/types/storage";
+import { StorageManager } from "@/lib/storage";
 import type { SecondaryAccount } from "../secondary-accounts";
 
 /**
@@ -28,23 +27,20 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
     /**
      * Storage wrapper for user data associated with this secondary account.
      */
-    abstract readonly userStorage: StorageWrapper<{
-        id: {
-            readonly type: "number";
-            readonly default: StorageValue;
-        };
-        name: {
-            readonly type: "string";
-            readonly default: StorageValue;
-        };
-    }>;
+    protected get userStorage() {
+        return StorageManager.get("secondaryAccountUser", {
+            accountId: this.id,
+        });
+    }
 
     /**
      * Storage for if this account has been activated before.
      */
-    readonly activatedStorage = StorageManager.get(
-        "secondaryAccountSettingActivated",
-    );
+    protected get activatedStorage() {
+        return StorageManager.get("secondaryAccountSettingActivated", {
+            accountId: this.id,
+        });
+    }
 
     /**
      * Calculates and returns the appropriate text color (#000000 or #FFFFFF)
@@ -97,8 +93,10 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      * This removes any stored authentication or sync data from the cache.
      */
     public invalidate(): void {
-        const cacheStorage = StorageManager.get("secondaryAccountCache");
-        cacheStorage.set({ valid: false }, { accountId: this.id });
+        const cacheStorage = StorageManager.get("secondaryAccountCache", {
+            accountId: this.id,
+        });
+        cacheStorage.set({ valid: false });
     }
 
     /**
@@ -137,12 +135,10 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
      * If the account has already been activated, the method returns early and makes no changes.
      */
     updateLoginToastSetting(): void {
-        const hasActivatedBefore = this.activatedStorage.get({
-            accountId: this.id,
-        })?.activated;
+        const hasActivatedBefore = this.activatedStorage.get()?.activated;
         if (hasActivatedBefore) return;
 
-        this.activatedStorage.set({ activated: true }, { accountId: this.id });
+        this.activatedStorage.set({ activated: true });
         setSetting("groupLoginToasts", [
             ...((getSetting("groupLoginToasts") as unknown as string[]) || []),
             this.id,

@@ -263,6 +263,13 @@ export const STORAGE_SCHEMAS = {
             activated: createField("boolean", false),
         },
     },
+    secondaryAccountUser: {
+        key: createDynamicKey("{accountId}-user", ["accountId"]),
+        schema: {
+            id: createField("number", 0),
+            name: createField("string", ""),
+        },
+    },
     malUser: {
         key: "mal-user",
         schema: {

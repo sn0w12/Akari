@@ -1,6 +1,5 @@
 import { client } from "@/lib/api";
 import { getBaseUrl } from "@/lib/api/base-url";
-import { StorageManager } from "@/lib/storage";
 import { setCookie } from "@/lib/utils";
 import Cookies from "js-cookie";
 import { SecondaryAccountBase } from "./general";
@@ -9,7 +8,6 @@ export class MalAccount extends SecondaryAccountBase {
     readonly id = "mal";
     readonly name = "MyAnimeList";
     readonly color = "#2b4c95";
-    readonly userStorage = StorageManager.get("malUser");
 
     getAuthUrl(): string {
         const codeVerifier = generateCodeVerifier();

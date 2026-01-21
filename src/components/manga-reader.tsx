@@ -15,13 +15,13 @@ interface ReaderProps {
 }
 
 export function Reader({ chapter }: ReaderProps) {
-    const readerModeStorage = useStorage("readerMode");
+    const readerModeStorage = useStorage("readerMode", {
+        mangaId: chapter.mangaId,
+        chapterId: chapter.id,
+    });
     const { flashColor } = useBorderColor();
     const [isStripMode, setIsStripMode] = useState<boolean>(() => {
-        const stored = readerModeStorage.get({
-            mangaId: chapter.mangaId,
-            chapterId: chapter.id,
-        });
+        const stored = readerModeStorage.get();
         if (stored && typeof stored.isStripMode === "boolean") {
             return stored.isStripMode;
         }
@@ -54,10 +54,7 @@ export function Reader({ chapter }: ReaderProps) {
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
-        readerModeStorage.set(
-            { isStripMode: isStrip },
-            { mangaId: chapter.mangaId, chapterId: chapter.id },
-        );
+        readerModeStorage.set({ isStripMode: isStrip });
     }
 
     function toggleReaderMode(override: boolean = true) {

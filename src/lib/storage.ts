@@ -1,15 +1,20 @@
 import { STORAGE_SCHEMAS } from "@/config";
 import type {
-    StorageValue,
-    SchemaDefinition,
-    KeyConfig,
-    FieldType,
-    StorageBackend,
     DataFromSchema,
+    FieldType,
+    KeyConfig,
+    SchemaDefinition,
+    StorageBackend,
+    StorageValue,
 } from "../types/storage";
 
 // Helper to get a specific schema configuration
 export type SchemaKey = keyof typeof STORAGE_SCHEMAS;
+
+// Type-safe storage wrapper for a specific schema key
+export type StorageType<K extends SchemaKey> = StorageWrapper<
+    (typeof STORAGE_SCHEMAS)[K]["schema"]
+>;
 
 // Type-safe wrapper for a specific schema
 export class StorageWrapper<T extends SchemaDefinition> {
@@ -18,12 +23,14 @@ export class StorageWrapper<T extends SchemaDefinition> {
     private separator: string;
     private storageBackend: StorageBackend;
     private description?: string;
+    private params?: Record<string, string>;
 
-    constructor(config: KeyConfig<T>) {
+    constructor(config: KeyConfig<T>, params?: Record<string, string>) {
         this.key = config.key;
         this.schema = config.schema;
         this.separator = config.separator || ",";
         this.storageBackend = config.storageBackend || "local";
+        this.params = params;
     }
 
     private get storage(): Storage {
@@ -43,12 +50,12 @@ export class StorageWrapper<T extends SchemaDefinition> {
         return this.storageBackend === "local" ? localStorage : sessionStorage;
     }
 
-    private getKeyString(params?: Record<string, string>): string {
+    private getKeyString(): string {
         if (typeof this.key === "function") {
-            if (!params) {
+            if (!this.params) {
                 throw new Error("Parameters required for dynamic key");
             }
-            return this.key(params);
+            return this.key(this.params);
         }
         return this.key;
     }
@@ -130,10 +137,7 @@ export class StorageWrapper<T extends SchemaDefinition> {
     }
 
     // Public methods
-    set(
-        data: Partial<DataFromSchema<T>>,
-        params?: Record<string, string>,
-    ): void {
+    set(data: Partial<DataFromSchema<T>>): void {
         const fullData: Record<string, StorageValue> = {
             ...this.getDefaults(),
         };
@@ -142,13 +146,13 @@ export class StorageWrapper<T extends SchemaDefinition> {
                 fullData[key] = data[key];
             }
         }
-        const key = this.getKeyString(params);
+        const key = this.getKeyString();
         const encoded = this.encode(fullData);
         this.storage.setItem(key, encoded);
     }
 
-    get(params?: Record<string, string>): DataFromSchema<T> | null {
-        const key = this.getKeyString(params);
+    get(): DataFromSchema<T> | null {
+        const key = this.getKeyString();
         const encoded = this.storage.getItem(key);
 
         if (!encoded) return null;
@@ -164,49 +168,37 @@ export class StorageWrapper<T extends SchemaDefinition> {
         }
     }
 
-    getWithDefaults(params?: Record<string, string>): DataFromSchema<T> {
-        const stored = this.get(params);
+    getWithDefaults(): DataFromSchema<T> {
+        const stored = this.get();
         if (stored) return stored;
 
         // Return schema defaults
         return this.getDefaults() as DataFromSchema<T>;
     }
 
-    update(
-        updates: Partial<DataFromSchema<T>>,
-        params?: Record<string, string>,
-    ): void {
-        const current = this.get(params) || this.getDefaults();
+    update(updates: Partial<DataFromSchema<T>>): void {
+        const current = this.get() || this.getDefaults();
         const updated = { ...current, ...updates };
-        this.set(updated as Partial<DataFromSchema<T>>, params);
+        this.set(updated as Partial<DataFromSchema<T>>);
     }
 
-    remove(params?: Record<string, string>): void {
-        const key = this.getKeyString(params);
+    remove(): void {
+        const key = this.getKeyString();
         this.storage.removeItem(key);
     }
 
-    has(params?: Record<string, string>): boolean {
-        const key = this.getKeyString(params);
+    has(): boolean {
+        const key = this.getKeyString();
         return this.storage.getItem(key) !== null;
     }
 
     clearAll(pattern?: string | RegExp): void {
-        if (!pattern && typeof this.key === "string") {
-            this.storage.removeItem(this.key);
+        if (!pattern) {
+            this.storage.removeItem(this.getKeyString());
             return;
         }
 
-        const regex =
-            pattern instanceof RegExp
-                ? pattern
-                : typeof pattern === "string"
-                  ? new RegExp(pattern)
-                  : typeof this.key === "function"
-                    ? new RegExp(this.key({}).replace(/\{[^}]+\}/g, ".*"))
-                    : null;
-
-        if (!regex) return;
+        const regex = pattern instanceof RegExp ? pattern : new RegExp(pattern);
 
         for (let i = this.storage.length - 1; i >= 0; i--) {
             const key = this.storage.key(i);
@@ -224,20 +216,37 @@ export class StorageWrapper<T extends SchemaDefinition> {
 // Centralized storage manager
 export class StorageManager {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private static instances = new Map<SchemaKey, StorageWrapper<any>>();
+    private static instances = new Map<string, StorageWrapper<any>>();
+
+    private static getInstanceKey(
+        schemaKey: SchemaKey,
+        params?: Record<string, string>,
+    ): string {
+        if (!params) return schemaKey;
+        const normalized = Object.keys(params)
+            .sort()
+            .map((key) => `${key}:${params[key]}`)
+            .join("|");
+        return `${schemaKey}:${normalized}`;
+    }
 
     // Get a wrapper for a specific schema
     static get<T extends SchemaKey>(
         schemaKey: T,
+        params?: Record<string, string>,
     ): StorageWrapper<(typeof STORAGE_SCHEMAS)[T]["schema"]> {
-        if (!this.instances.has(schemaKey)) {
+        const instanceKey = this.getInstanceKey(schemaKey, params);
+        if (!this.instances.has(instanceKey)) {
             const config = STORAGE_SCHEMAS[
                 schemaKey
             ] as KeyConfig<SchemaDefinition>;
-            const instance = new StorageWrapper(config);
-            this.instances.set(schemaKey, instance);
+            if (typeof config.key === "function" && !params) {
+                throw new Error("Parameters required for dynamic key");
+            }
+            const instance = new StorageWrapper(config, params);
+            this.instances.set(instanceKey, instance);
         }
-        return this.instances.get(schemaKey)! as StorageWrapper<
+        return this.instances.get(instanceKey)! as StorageWrapper<
             (typeof STORAGE_SCHEMAS)[T]["schema"]
         >;
     }
@@ -279,6 +288,9 @@ export const createField = <T extends FieldType>(
     defaultValue: StorageValue,
 ) => ({ type, default: defaultValue }) as const;
 
-export function useStorage<T extends SchemaKey>(schemaKey: T) {
-    return StorageManager.get(schemaKey);
+export function useStorage<T extends SchemaKey>(
+    schemaKey: T,
+    params?: Record<string, string>,
+) {
+    return StorageManager.get(schemaKey, params);
 }

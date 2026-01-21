@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
-import ErrorComponent from "./error-page";
 import {
     getSecondaryAccountById,
     SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
 import { StorageManager } from "@/lib/storage";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import ErrorComponent from "./error-page";
 
 const CallbackPage = () => {
     const router = useRouter();
@@ -77,8 +77,9 @@ const CallbackPage = () => {
                 setSuccess(true);
                 const cacheStorage = StorageManager.get(
                     "secondaryAccountCache",
+                    { accountId: provider },
                 );
-                cacheStorage.set({ valid: true }, { accountId: provider });
+                cacheStorage.set({ valid: true });
                 router.push("/account");
             } catch (error) {
                 setError({

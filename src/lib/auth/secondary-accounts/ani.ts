@@ -1,12 +1,10 @@
 import { client } from "@/lib/api";
-import { StorageManager } from "@/lib/storage";
 import { SecondaryAccountBase } from "./general";
 
 export class AniAccount extends SecondaryAccountBase {
     readonly id = "ani";
     readonly name = "AniList";
     readonly color = "#1f232c";
-    readonly userStorage = StorageManager.get("aniListUser");
 
     getAuthUrl(): string {
         const clientId = process.env.NEXT_PUBLIC_ANI_CLIENT_ID!;
