@@ -389,30 +389,27 @@ export function SettingsInput({
                     </div>
                 );
             }
-            case "button":
-                if (!setting.confirmation) {
+            case "button": {
+                const buttonSetting = setting as ButtonSetting;
+                if (!buttonSetting.confirmation) {
                     return (
-                        <Button
-                            onClick={() =>
-                                (setting as ButtonSetting).onClick?.()
-                            }
-                        >
-                            {setting.label}
+                        <Button onClick={() => buttonSetting.onClick?.()}>
+                            {buttonSetting.label}
                         </Button>
                     );
                 }
 
+                const variant = buttonSetting.confirmVariant ?? "default";
                 return (
                     <ButtonConfirmDialog
-                        triggerButton={<Button>{setting.label}</Button>}
+                        triggerButton={<Button>{buttonSetting.label}</Button>}
                         title={"Confirm"}
-                        description={
-                            (setting as ButtonSetting).confirmation ?? ""
-                        }
-                        onConfirm={() => (setting as ButtonSetting).onClick?.()}
-                        variant={setting.confirmVariant ?? "default"}
+                        description={buttonSetting.confirmation ?? ""}
+                        onConfirm={() => buttonSetting.onClick?.()}
+                        variant={variant}
                     />
                 );
+            }
             case "color":
                 return (
                     <ColorPicker
