@@ -38,15 +38,6 @@ export const APP_SETTINGS = {
                 default: true,
                 groups: ["UI"],
             },
-            pwaRestorePath: {
-                label: "Navigation Restore",
-                description:
-                    "Restore the last visited page when reopening the app.",
-                type: "checkbox",
-                default: true,
-                groups: ["UI"],
-                visibility: ["pwa"],
-            },
             useToast: {
                 label: "Show Toasts",
                 description: "Show toast notifications for various actions.",
@@ -473,12 +464,6 @@ export const STORAGE_SCHEMAS = {
             declined: createField("boolean", false),
             enabled: createField("boolean", false),
             pending: createField("boolean", false),
-        },
-    },
-    pwaLastPage: {
-        key: "pwa-last-page",
-        schema: {
-            path: createField("string", ""),
         },
     },
     installPromptDismissed: {

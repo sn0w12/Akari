@@ -2,7 +2,6 @@ import "@/app/globals.css";
 import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
 import { BaseLayout } from "@/components/base-layout";
 import Footer from "@/components/footer";
-import { PWANavigationRestore } from "@/components/pwa-navigation-restore";
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -58,9 +57,6 @@ export default async function RootLayout({
                                     <UserProvider>
                                         <BreadcrumbProvider>
                                             <BorderColorProvider baseColor="border-border">
-                                                <Suspense fallback={null}>
-                                                    <PWANavigationRestore />
-                                                </Suspense>
                                                 <BaseLayout gutter={true}>
                                                     <Suspense fallback={null}>
                                                         <AnalyticsWrapper />
