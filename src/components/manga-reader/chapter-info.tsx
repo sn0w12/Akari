@@ -46,7 +46,6 @@ export function ChapterInfo({
                     "opacity-100": !hidden,
                 },
             )}
-            onClick={(e) => e.stopPropagation()}
         >
             <ButtonGroup orientation={orientation}>
                 {orientation === "vertical" ? (
