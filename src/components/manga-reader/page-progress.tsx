@@ -24,8 +24,11 @@ export default function PageProgress({
     const [backgroundStyle, setBackgroundStyle] = useState({});
     const windowWidth = useWindowWidth();
     const isVisible = useSetting("showPageProgress");
+    const readingDir = useSetting("readingDirection");
     const gradient =
-        "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
+        readingDir === "rtl"
+            ? "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-l lg:bg-gradient-to-b"
+            : "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
 
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -52,11 +55,24 @@ export default function PageProgress({
                             width: "calc(100% - 8px)",
                         });
                     } else {
-                        const left = buttonRect.left - containerRect.left;
-                        setBackgroundStyle({
-                            width: `${left + buttonRect.width - offset}px`,
-                            height: "calc(100% - 8px)",
-                        });
+                        if (readingDir === "rtl") {
+                            const right =
+                                containerRect.right - buttonRect.right;
+                            setBackgroundStyle({
+                                width: `${right + buttonRect.width - offset}px`,
+                                height: "calc(100% - 8px)",
+                                left: "auto",
+                                right: "4px",
+                            });
+                        } else {
+                            const left = buttonRect.left - containerRect.left;
+                            setBackgroundStyle({
+                                width: `${left + buttonRect.width - offset}px`,
+                                height: "calc(100% - 8px)",
+                                left: "4px",
+                                right: "auto",
+                            });
+                        }
                     }
                 }
             }
@@ -90,21 +106,32 @@ export default function PageProgress({
             >
                 <div
                     className={cn(
-                        "absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-[height,width] rounded-l-md md:rounded-[3px]",
+                        "absolute top-1 lg:top-1 transition-[height,width] md:rounded-[3px]",
+                        readingDir === "rtl"
+                            ? "right-1 lg:right-1 rounded-r-md"
+                            : "left-1 rounded-l-md",
                         gradient,
                         {
-                            "rounded-r-md": currentPage === totalPages - 1,
+                            [readingDir === "rtl"
+                                ? "rounded-l-md"
+                                : "rounded-r-md"]:
+                                currentPage === totalPages - 1,
                         },
                     )}
                     style={backgroundStyle}
                 />
-                <div className="relative flex flex-row lg:flex-col h-full w-full gap-0 md:gap-1 p-0.5">
+                <div
+                    className={cn(
+                        "relative flex lg:flex-col h-full w-full gap-0 md:gap-1 p-0.5",
+                        readingDir === "rtl" ? "flex-row-reverse" : "flex-row",
+                    )}
+                >
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
                             className={cn(
-                                "flex-1 transition-colors first:rounded-l-sm last:rounded-r-sm md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]",
+                                "flex-1 transition-colors md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]",
                                 {
                                     "bg-accent-positive hover:bg-accent-positive/70":
                                         index === currentPage,
@@ -112,6 +139,10 @@ export default function PageProgress({
                                         index < currentPage,
                                     "bg-primary/30 hover:bg-primary/50":
                                         index > currentPage,
+                                    "first:rounded-l-sm last:rounded-r-sm":
+                                        readingDir === "ltr",
+                                    "first:rounded-r-sm last:rounded-l-sm":
+                                        readingDir === "rtl",
                                 },
                             )}
                             aria-label={`Go to page ${index + 1}`}
