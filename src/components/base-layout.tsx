@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useUser } from "@/contexts/user-context";
-import { Genre, GENRE_CATEGORIES } from "@/lib/api/search";
+import { GENRE_CATEGORIES } from "@/lib/api/search";
 import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ import {
     TrendingUp,
     Users,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { AccountButton } from "./account/account-button";
 import { HeaderComponent } from "./header";
@@ -53,14 +53,10 @@ export function BaseLayout({
     gutter?: boolean;
 }) {
     const router = useRouter();
-    const pathname = usePathname();
     const { user } = useUser();
     const { state: sidebarState } = useSidebar();
     const { borderClass } = useBorderColor();
     const isSidebarCollapsed = sidebarState === "collapsed";
-    const currentGenre = pathname?.startsWith("/genre/")
-        ? (pathname.split("/")[2] ?? null)
-        : null;
 
     const { data: notification = "" } = useQuery({
         queryKey: ["notification"],
@@ -159,15 +155,10 @@ export function BaseLayout({
                                             id: genre,
                                         }))}
                                         basePath="/genre"
-                                        isActive={
-                                            !!currentGenre &&
-                                            genres.includes(
-                                                currentGenre as Genre,
-                                            )
-                                        }
+                                        isActive={false}
                                         isItemActive={(
                                             itemId: string,
-                                        ): boolean => currentGenre === itemId}
+                                        ): boolean => false}
                                     />
                                 ),
                             )}
