@@ -1,62 +1,84 @@
 "use client";
 
-import React from "react";
-import { ShortcutOptions, useShortcut } from "@/hooks/use-shortcut";
 import { APP_SETTINGS } from "@/config";
 import { DeviceType } from "@/contexts/device-context";
+import { ShortcutOptions, useShortcut } from "@/hooks/use-shortcut";
+import React from "react";
 
 type AppSettingsCategories = typeof APP_SETTINGS;
 type CategoryKeys = keyof AppSettingsCategories;
 type SettingsByCategory<T extends CategoryKeys> =
     AppSettingsCategories[T]["settings"];
-type AllSettings = {
-    [C in CategoryKeys]: SettingsByCategory<C>;
+
+// Extract all settings from all categories
+type AllSettingsUnion = {
+    [C in CategoryKeys]: {
+        [K in keyof SettingsByCategory<C>]: SettingsByCategory<C>[K] & {
+            _key: K;
+        };
+    }[keyof SettingsByCategory<C>];
 }[CategoryKeys];
-type SettingKeys = {
-    [C in CategoryKeys]: keyof SettingsByCategory<C>;
-}[CategoryKeys];
-type SettingDefaultType<T extends SettingKeys> = T extends keyof AllSettings
-    ? AllSettings[T] extends { default: infer D }
-        ? D
-        : never
-    : never;
+
+// Get all setting keys
+type SettingKeys = AllSettingsUnion["_key"];
+
+// Helper to get setting definition by key
+type GetSettingByKey<K extends SettingKeys> = Extract<
+    AllSettingsUnion,
+    { _key: K }
+>;
+
+// Type to extract the value type from a setting definition
+type SettingValueType<S> = S extends { type: "checkbox" }
+    ? boolean
+    : S extends { type: "checkbox-group" }
+      ? string[]
+      : S extends { type: "select"; options: readonly { value: infer V }[] }
+        ? V
+        : S extends { type: "radio"; options: readonly { value: infer V }[] }
+          ? V
+          : S extends {
+                  type:
+                      | "text"
+                      | "password"
+                      | "email"
+                      | "number"
+                      | "textarea"
+                      | "shortcut"
+                      | "slider"
+                      | "color";
+              }
+            ? string
+            : S extends { type: "button" }
+              ? string
+              : S extends { type: "custom-render" }
+                ? never
+                : never;
+
+// Map setting keys to their value types
 export type SettingsInterface = {
-    [K in SettingKeys]: SettingDefaultType<K>;
+    [K in SettingKeys]: SettingValueType<GetSettingByKey<K>>;
 };
 
-type AllSettingsFlat = {
-    [C in keyof typeof APP_SETTINGS]: (typeof APP_SETTINGS)[C]["settings"];
-}[keyof typeof APP_SETTINGS];
-type UnionToIntersection<U> = (
-    U extends unknown ? (k: U) => void : never
-) extends (k: infer I) => void
-    ? I
-    : never;
-type AllSettingsMerged = UnionToIntersection<AllSettingsFlat>;
-type KeysOfType<T, U> = {
-    [K in keyof T]: T[K] extends { type: U } ? K : never;
-}[keyof T];
+// Helper type to get setting keys by type
+type SettingKeysByType<T extends SettingType> = {
+    [K in SettingKeys]: GetSettingByKey<K> extends { type: T } ? K : never;
+}[SettingKeys];
 
-export type CheckboxSettingKeys = KeysOfType<AllSettingsMerged, "checkbox">;
-export type CheckboxGroupSettingKeys = KeysOfType<
-    AllSettingsMerged,
-    "checkbox-group"
->;
-export type TextSettingKeys = KeysOfType<AllSettingsMerged, "text">;
-export type PasswordSettingKeys = KeysOfType<AllSettingsMerged, "password">;
-export type EmailSettingKeys = KeysOfType<AllSettingsMerged, "email">;
-export type NumberSettingKeys = KeysOfType<AllSettingsMerged, "number">;
-export type TextareaSettingKeys = KeysOfType<AllSettingsMerged, "textarea">;
-export type SelectSettingKeys = KeysOfType<AllSettingsMerged, "select">;
-export type RadioSettingKeys = KeysOfType<AllSettingsMerged, "radio">;
-export type ShortcutSettingKeys = KeysOfType<AllSettingsMerged, "shortcut">;
-export type ButtonSettingKeys = KeysOfType<AllSettingsMerged, "button">;
-export type SliderSettingKeys = KeysOfType<AllSettingsMerged, "slider">;
-export type ColorSettingKeys = KeysOfType<AllSettingsMerged, "color">;
-export type CustomRenderSettingKeys = KeysOfType<
-    AllSettingsMerged,
-    "custom-render"
->;
+export type CheckboxSettingKeys = SettingKeysByType<"checkbox">;
+export type CheckboxGroupSettingKeys = SettingKeysByType<"checkbox-group">;
+export type TextSettingKeys = SettingKeysByType<"text">;
+export type PasswordSettingKeys = SettingKeysByType<"password">;
+export type EmailSettingKeys = SettingKeysByType<"email">;
+export type NumberSettingKeys = SettingKeysByType<"number">;
+export type TextareaSettingKeys = SettingKeysByType<"textarea">;
+export type SelectSettingKeys = SettingKeysByType<"select">;
+export type RadioSettingKeys = SettingKeysByType<"radio">;
+export type ShortcutSettingKeys = SettingKeysByType<"shortcut">;
+export type ButtonSettingKeys = SettingKeysByType<"button">;
+export type SliderSettingKeys = SettingKeysByType<"slider">;
+export type ColorSettingKeys = SettingKeysByType<"color">;
+export type CustomRenderSettingKeys = SettingKeysByType<"custom-render">;
 
 export const SETTINGS_CHANGE_EVENT = "settingsChange";
 export interface SettingsChangeEvent {
@@ -399,26 +421,26 @@ interface BaseSetting {
 
 export interface CheckboxSetting extends BaseSetting {
     type: "checkbox";
-    value?: boolean;
+    value?: SettingValue;
     default: boolean | (() => boolean);
 }
 
 export interface CheckboxGroupSetting extends BaseSetting {
     type: "checkbox-group";
     options: { label: string; value: string }[];
-    value?: string[];
+    value?: SettingValue;
     default: string[] | (() => string[]);
 }
 
 export interface TextSetting extends BaseSetting {
     type: "text" | "password" | "email" | "number";
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
 }
 
 export interface TextareaSetting extends BaseSetting {
     type: "textarea";
-    value?: string;
+    value?: SettingValue;
     options?: { resize?: boolean };
     default: string | (() => string);
 }
@@ -426,20 +448,20 @@ export interface TextareaSetting extends BaseSetting {
 export interface SelectSetting extends BaseSetting {
     type: "select";
     options: { label: string; value: string }[];
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
 }
 
 export interface RadioSetting extends BaseSetting {
     type: "radio";
     options: { label: string; value: string }[];
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
 }
 
 export interface ShortcutSetting extends BaseSetting {
     type: "shortcut";
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
     allowOverlap?: string[];
 }
@@ -449,7 +471,7 @@ export interface SliderSetting extends BaseSetting {
     min: number;
     max: number;
     step: number;
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
 }
 
@@ -463,7 +485,7 @@ export interface ButtonSetting extends BaseSetting {
 
 export interface ColorSetting extends BaseSetting {
     type: "color";
-    value?: string;
+    value?: SettingValue;
     default: string | (() => string);
 }
 
