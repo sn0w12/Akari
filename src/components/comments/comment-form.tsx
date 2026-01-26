@@ -2,15 +2,15 @@
 
 import type React from "react";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "../ui/button-group";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
-import { AttachmentPopover } from "./attachment-popover";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { generateSizes } from "@/lib/utils";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { generateSizes } from "@/lib/utils";
+import { useState } from "react";
+import { ButtonGroup } from "../ui/button-group";
+import { AttachmentPopover } from "./attachment-popover";
 
 interface CommentFormProps {
     onSubmit: (
@@ -102,8 +102,9 @@ export function CommentForm({
                         {onCancel && (
                             <Button
                                 type="button"
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
+                                className="w-18"
                                 onClick={onCancel}
                                 disabled={isSubmitting}
                             >
@@ -113,6 +114,7 @@ export function CommentForm({
                         <Button
                             type="submit"
                             size="sm"
+                            className="w-18"
                             disabled={
                                 !content.trim() ||
                                 isSubmitting ||

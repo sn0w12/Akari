@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+import { ButtonGroup } from "../ui/button-group";
 import { CommentAttachment } from "./attachment";
 
 export type CommentData =
@@ -273,7 +273,7 @@ export function Comment({
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                             placeholder="Edit your comment..."
-                            className="min-h-[80px] text-sm sm:text-base mb-1"
+                            className="min-h-[80px] resize-none text-sm sm:text-base mb-1"
                         />
                     ) : (
                         <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">
@@ -321,6 +321,17 @@ export function Comment({
                         {isEditing ? (
                             <ButtonGroup orientation="horizontal">
                                 <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setIsEditing(false);
+                                        setEditContent(comment.content);
+                                    }}
+                                    size="sm"
+                                    className="h-8 w-15 sm:h-7 px-2 text-xs"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
                                     onClick={async () => {
                                         if (!onEdit) return;
                                         try {
@@ -337,20 +348,9 @@ export function Comment({
                                         }
                                     }}
                                     size="sm"
-                                    className="h-8 sm:h-7 px-2 text-xs"
+                                    className="h-8 w-15 sm:h-7 px-2 text-xs"
                                 >
                                     Save
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setIsEditing(false);
-                                        setEditContent(comment.content);
-                                    }}
-                                    size="sm"
-                                    className="h-8 sm:h-7 px-2 text-xs"
-                                >
-                                    Cancel
                                 </Button>
                             </ButtonGroup>
                         ) : (
@@ -359,7 +359,7 @@ export function Comment({
                                     <>
                                         <Button
                                             onClick={handleShowReplies}
-                                            variant="ghost"
+                                            variant="outline"
                                             size="sm"
                                             className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                                         >
@@ -376,14 +376,11 @@ export function Comment({
                                                         }`}
                                             </span>
                                         </Button>
-                                        {currentUser && (
-                                            <ButtonGroupSeparator />
-                                        )}
                                     </>
                                 )}
                                 {currentUser && (
                                     <Button
-                                        variant="ghost"
+                                        variant="outline"
                                         size="sm"
                                         className={cn(
                                             "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
