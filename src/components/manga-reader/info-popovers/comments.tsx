@@ -17,10 +17,14 @@ export function CommentsButton() {
 
     useEffect(() => {
         if (windowWidth < 768) {
-            setScrollElement(window);
+            queueMicrotask(() => {
+                setScrollElement(window);
+            });
         } else {
             const el = document.getElementById("scroll-element") as HTMLElement;
-            setScrollElement(el || window);
+            queueMicrotask(() => {
+                setScrollElement(el || window);
+            });
         }
     }, [windowWidth]);
 

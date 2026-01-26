@@ -82,7 +82,7 @@ export default function PageProgress({
         window.addEventListener("resize", updateBackgroundStyle);
         return () =>
             window.removeEventListener("resize", updateBackgroundStyle);
-    }, [currentPage, totalPages, windowWidth]);
+    }, [currentPage, readingDir, totalPages, windowWidth]);
 
     return (
         <div

@@ -156,9 +156,7 @@ export function BaseLayout({
                                         }))}
                                         basePath="/genre"
                                         isActive={false}
-                                        isItemActive={(
-                                            itemId: string,
-                                        ): boolean => false}
+                                        isItemActive={(): boolean => false}
                                     />
                                 ),
                             )}

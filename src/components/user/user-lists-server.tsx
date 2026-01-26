@@ -1,9 +1,6 @@
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
-import { Skeleton } from "../ui/skeleton";
 import { UserLists } from "./user-lists";
-
-
 
 export async function UserListsServer({
     params,

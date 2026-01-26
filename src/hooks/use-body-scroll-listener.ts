@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 
-interface ScrollListenerOptions extends AddEventListenerOptions {}
-
 export function useBodyScrollListener(
     callback: (element: HTMLElement) => void,
-    options: ScrollListenerOptions = { passive: true },
+    options: AddEventListenerOptions = { passive: true },
 ) {
     useEffect(() => {
         const mainElement = document.getElementById(
