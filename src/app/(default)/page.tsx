@@ -12,9 +12,11 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
+import { parseUserAgent } from "@/lib/ua";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { getLatestData } from "./latest/page";
 import { getPopularData } from "./popular/page";
@@ -76,12 +78,19 @@ export default async function Home() {
 
 async function HomePopular() {
     const { data, error } = await getPopularData(1, 7);
+    const userAgent = (await headers()).get("user-agent");
+    const deviceInfo = parseUserAgent(userAgent || "");
 
     if (error || !data) {
         return null;
     }
 
-    return <PopularManga manga={data.data.items} />;
+    return (
+        <PopularManga
+            manga={data.data.items}
+            deviceType={deviceInfo.deviceType}
+        />
+    );
 }
 
 async function HomeLatest() {
