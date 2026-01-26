@@ -46,9 +46,9 @@ export default async function Home() {
                                 Recently Viewed
                             </h2>
                             <div className={GRID_CLASS}>
-                                {[...Array(8)].map((index) => (
+                                {[...Array(8)].map((_, index) => (
                                     <MangaCardSkeleton
-                                        key={index}
+                                        key={`recent-skeleton-${index}`}
                                         className={
                                             index > 5
                                                 ? "block sm:hidden lg:block 2xl:hidden"
