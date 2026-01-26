@@ -237,7 +237,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     <ImageIcon className="h-4 w-4" />
                 </Button>
             </PopoverDrawerTrigger>
-            <PopoverDrawerContent popoverSide="top">
+            <PopoverDrawerContent popoverSide="top" popoverClassName="w-96">
                 <Tabs defaultValue="select" className="w-full">
                     <TabsList className="w-full">
                         <TabsTrigger value="select">Select</TabsTrigger>
