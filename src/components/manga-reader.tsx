@@ -1,6 +1,7 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
+import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
 import { useThrottledCallback } from "@tanstack/react-pacer";
@@ -133,28 +134,7 @@ export function Reader({ chapter }: ReaderProps) {
             wait: 100,
         },
     );
-
-    useEffect(() => {
-        const mainElement = document.getElementById(
-            "scroll-element",
-        ) as HTMLElement;
-        if (!mainElement) return;
-        const controller = new AbortController();
-
-        mainElement.addEventListener(
-            "scroll",
-            () => handleScroll(mainElement),
-            { passive: true, signal: controller.signal },
-        );
-        window.addEventListener("scroll", () => handleScroll(mainElement), {
-            passive: true,
-            signal: controller.signal,
-        });
-        handleScroll(mainElement);
-        return () => {
-            controller.abort();
-        };
-    }, [handleScroll]);
+    useBodyScrollListener(handleScroll);
 
     return (
         <>
