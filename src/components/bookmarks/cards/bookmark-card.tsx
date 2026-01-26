@@ -33,6 +33,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                 height={180}
                                 width={120}
                                 className="w-full h-auto object-cover rounded-sm"
+                                quality={40}
                                 sizes="120px"
                             />
                         </Link>

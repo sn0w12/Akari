@@ -67,6 +67,7 @@ function Entry({
                     className="w-12 h-18 object-cover rounded"
                     width={48}
                     height={72}
+                    quality={40}
                     sizes={generateSizes({
                         default: "48px",
                     })}

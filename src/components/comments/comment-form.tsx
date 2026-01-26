@@ -77,6 +77,7 @@ export function CommentForm({
                             className="h-10 w-10 object-cover rounded"
                             height={40}
                             width={40}
+                            quality={60}
                             sizes={generateSizes({
                                 default: "48px",
                             })}

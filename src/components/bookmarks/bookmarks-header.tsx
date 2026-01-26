@@ -179,6 +179,7 @@ export default function BookmarksHeader() {
                                                 width={48}
                                                 height={72}
                                                 className="w-12 h-18 rounded mr-2"
+                                                quality={40}
                                                 sizes={generateSizes({
                                                     default: "48px",
                                                 })}

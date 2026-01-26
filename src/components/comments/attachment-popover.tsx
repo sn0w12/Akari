@@ -77,6 +77,7 @@ function ImageGrid({
                                     className="w-full h-full object-contain"
                                     height={96}
                                     width={96}
+                                    quality={60}
                                     sizes={generateSizes({
                                         default: "128px",
                                     })}

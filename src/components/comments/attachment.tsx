@@ -76,6 +76,7 @@ export function CommentAttachment({
                         className="max-w-64 h-auto rounded-md border transition-transform group-hover:scale-[1.01]"
                         height={160}
                         width={160}
+                        quality={60}
                         sizes={generateSizes({
                             default: "240px",
                         })}
