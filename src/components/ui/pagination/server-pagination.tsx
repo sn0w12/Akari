@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { BasePagination } from "./base-pagination";
 
 interface PaginationElementProps {
@@ -17,14 +17,18 @@ export function ServerPagination({
     href,
 }: PaginationElementProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
 
     const createPageUrl = (page: number) => {
+        if (typeof window === "undefined") {
+            return href || `?page=${page}`;
+        }
+
         const base = href || "";
         const separator = base.includes("?") ? "&" : "?";
 
         // Get all current search params except 'page'
         const params = new URLSearchParams();
+        const searchParams = new URL(window.location.href).searchParams;
         searchParams.forEach((value, key) => {
             if (key !== "page" && value) {
                 params.append(key, value);

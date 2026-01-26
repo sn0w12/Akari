@@ -3,7 +3,6 @@ import { GridBodySkeleton } from "../grid-page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ChaptersSectionServer } from "./chapters";
 import { MangaRecommendations } from "./recommended";
-import { ChaptersSkeleton } from "./skeleton/chapters";
 
 export function MangaDetailsBody({
     params,
@@ -28,9 +27,7 @@ export function MangaDetailsBody({
             </TabsList>
 
             <TabsContent value="chapters">
-                <Suspense fallback={<ChaptersSkeleton />}>
-                    <ChaptersSectionServer params={params} />
-                </Suspense>
+                <ChaptersSectionServer params={params} />
             </TabsContent>
 
             <TabsContent value="recommendations" className="mb-2">

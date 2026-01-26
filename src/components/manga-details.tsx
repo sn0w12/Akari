@@ -12,7 +12,10 @@ import Link from "next/link";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import Buttons from "./manga-details/buttons";
 import ScoreDisplay from "./manga-details/score";
-import { MangaUpdatedAt } from "./manga-details/updated-at";
+import {
+    MangaUpdatedAt,
+    MangaUpdatedAtFallback,
+} from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
 import EnhancedImage from "./ui/enhanced-image";
 
@@ -21,6 +24,7 @@ import { client, serverHeaders } from "@/lib/api";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -272,9 +276,13 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                     <div className="text-lg font-semibold">
                                         Updated:
                                     </div>
-                                    <MangaUpdatedAt
-                                        updatedAt={manga.updatedAt}
-                                    />
+                                    <Suspense
+                                        fallback={<MangaUpdatedAtFallback />}
+                                    >
+                                        <MangaUpdatedAt
+                                            updatedAt={manga.updatedAt}
+                                        />
+                                    </Suspense>
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">

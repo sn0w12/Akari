@@ -1,7 +1,6 @@
 import { getManga, MangaDetailsComponent } from "@/components/manga-details";
 import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
-import MangaDetailsSkeleton from "@/components/manga-details/skeleton";
 import {
     getAllMangaIds,
     STATIC_GENERATION_DISABLED,
@@ -60,10 +59,7 @@ export async function generateMetadata(
 export default async function MangaPage(props: MangaPageProps) {
     return (
         <div className="mx-auto p-4">
-            <Suspense fallback={<MangaDetailsSkeleton />}>
-                <MangaDetailsComponent params={props.params} />
-            </Suspense>
-
+            <MangaDetailsComponent params={props.params} />
             <MangaDetailsBody params={props.params} />
 
             <Suspense fallback={null}>

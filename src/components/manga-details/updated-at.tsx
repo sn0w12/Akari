@@ -10,3 +10,7 @@ export function MangaUpdatedAt({ updatedAt }: { updatedAt: string }) {
         </Badge>
     );
 }
+
+export function MangaUpdatedAtFallback() {
+    return <Badge className="hover:bg-primary" />;
+}

@@ -2,7 +2,6 @@ import ErrorPage from "@/components/error-page";
 import { GridBodySkeleton } from "@/components/grid-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
-import { Skeleton } from "@/components/ui/skeleton";
 import { client, serverHeaders } from "@/lib/api";
 import {
     getAllAuthors,
@@ -76,9 +75,7 @@ export default async function AuthorPage(props: PageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
             <div className="flex gap-4">
-                <Suspense fallback={<AuthorHeaderFallback />}>
-                    <AuthorHeader {...props} />
-                </Suspense>
+                <AuthorHeader {...props} />
             </div>
 
             <Suspense fallback={<GridBodySkeleton pageSize={6} />}>
@@ -93,10 +90,6 @@ async function AuthorHeader(props: PageProps) {
     const title = decodeURIComponent(params.id).replaceAll("-", " ");
 
     return <h2 className="text-3xl font-bold mb-2">{title}</h2>;
-}
-
-async function AuthorHeaderFallback() {
-    return <Skeleton className="h-[36px] mb-2 w-96" />;
 }
 
 async function AuthorBody(props: PageProps) {

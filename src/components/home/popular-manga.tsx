@@ -1,6 +1,5 @@
 "use client";
 
-import { DeviceType } from "@/contexts/device-context";
 import { cn, generateSizes } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -18,12 +17,9 @@ import { Skeleton } from "../ui/skeleton";
 
 interface PopularMangaProps {
     manga: components["schemas"]["MangaResponse"][];
-    deviceType: DeviceType;
 }
 
-export function PopularManga({ manga, deviceType }: PopularMangaProps) {
-    const totalPriorityItems = deviceType === "mobile" ? 1 : 2;
-
+export function PopularManga({ manga }: PopularMangaProps) {
     return (
         <Carousel
             opts={{
@@ -40,7 +36,7 @@ export function PopularManga({ manga, deviceType }: PopularMangaProps) {
                     >
                         <PopularMangaCard
                             manga={mangaItem}
-                            priority={index < totalPriorityItems}
+                            priority={index < 1}
                         />
                     </CarouselItem>
                 ))}

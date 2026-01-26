@@ -5,11 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/contexts/user-context";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import Toast from "@/lib/toast-wrapper";
-import { formatRelativeDate } from "@/lib/utils";
+import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import ClientPagination from "../ui/pagination/client-pagination";
 
 interface ChaptersSectionProps {
@@ -140,39 +140,33 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                         >
                             <CardContent className="p-4">
                                 <h3
-                                    className={`font-semibold mb-2 line-clamp-2 ${
-                                        chapter.id === lastRead
-                                            ? "text-background"
-                                            : ""
-                                    }`}
+                                    className={cn(
+                                        "font-semibold mb-2 line-clamp-2",
+                                        {
+                                            "text-background":
+                                                chapter.id === lastRead,
+                                        },
+                                    )}
                                 >
                                     {chapter.title}
                                 </h3>
                                 <p
-                                    className={`text-sm ${
-                                        chapter.id === lastRead
-                                            ? "text-background"
-                                            : "text-muted-foreground"
-                                    }`}
+                                    className={cn(
+                                        "text-sm text-muted-foreground",
+                                        {
+                                            "text-background":
+                                                chapter.id === lastRead,
+                                        },
+                                    )}
                                 >
                                     Pages: {chapter.pages}
                                 </p>
-                                <p
-                                    className={`text-sm ${
-                                        chapter.id === lastRead
-                                            ? "text-background"
-                                            : "text-muted-foreground"
-                                    }`}
-                                >
-                                    Released:{" "}
-                                    {formatRelativeDate(
-                                        (
-                                            chapter as unknown as {
-                                                createdAt: string;
-                                            }
-                                        ).createdAt,
-                                    )}
-                                </p>
+                                <Suspense fallback={null}>
+                                    <Released
+                                        chapter={chapter}
+                                        lastRead={lastRead}
+                                    />
+                                </Suspense>
                             </CardContent>
                         </Card>
                     </Link>
@@ -188,5 +182,23 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                 />
             )}
         </div>
+    );
+}
+
+function Released({
+    chapter,
+    lastRead,
+}: {
+    chapter: components["schemas"]["MangaChapter"];
+    lastRead: string | undefined;
+}) {
+    return (
+        <p
+            className={cn("text-sm text-muted-foreground", {
+                "text-background": chapter.id === lastRead,
+            })}
+        >
+            Released: {formatRelativeDate(chapter.createdAt)}
+        </p>
     );
 }
