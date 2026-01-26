@@ -137,7 +137,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 decoding="async"
                 sizes={generateSizes({
                     sm: "400px",
-                    md: "256px",
+                    md: "240px",
                 })}
             />
             <div className="space-y-2 py-2 px-4 w-full hidden sm:block">

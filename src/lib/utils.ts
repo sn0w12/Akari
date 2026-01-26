@@ -1,7 +1,7 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { inDevelopment, inPreview } from "@/config";
+import { clsx, type ClassValue } from "clsx";
 import { Metadata } from "next";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -66,13 +66,16 @@ export function formatRelativeDate(dateString: string): string {
     }
 }
 
+const imageSizes = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
+export type SizesValue = `${number}vw` | `${(typeof imageSizes)[number]}px`;
+
 export function generateSizes(options: {
-    default?: string;
-    sm?: string;
-    md?: string;
-    lg?: string;
-    xl?: string;
-    "2xl"?: string;
+    default?: SizesValue;
+    sm?: SizesValue;
+    md?: SizesValue;
+    lg?: SizesValue;
+    xl?: SizesValue;
+    "2xl"?: SizesValue;
 }): string {
     const breakpoints = [
         { key: "sm", min: 640 },

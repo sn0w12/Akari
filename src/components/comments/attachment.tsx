@@ -23,7 +23,9 @@ export function CommentAttachment({
     useEffect(() => {
         const storage = StorageManager.get("favoriteAttachments");
         const data = storage.getWithDefaults();
-        setIsFavorite((data.ids as string[]).includes(attachment.id));
+        queueMicrotask(() => {
+            setIsFavorite((data.ids as string[]).includes(attachment.id));
+        });
     }, [attachment.id]);
 
     const toggleFavorite = (e: React.MouseEvent) => {
@@ -75,7 +77,7 @@ export function CommentAttachment({
                         height={160}
                         width={160}
                         sizes={generateSizes({
-                            default: "256px",
+                            default: "240px",
                         })}
                     />
                     <button
