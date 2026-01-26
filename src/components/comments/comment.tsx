@@ -209,8 +209,8 @@ export function Comment({
                         />
                     )}
                 </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
+                <div className="flex-1 min-w-0 mb-2">
+                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
                         <Link
                             href={`/user/${comment.userProfile.id}`}
                             className="font-medium text-foreground hover:underline"

@@ -17,26 +17,24 @@ export function CommentAttachment({
 }) {
     return (
         <Dialog>
-            <div className="mt-2 mb-2">
-                <DialogTrigger asChild>
-                    <button
-                        type="button"
-                        className="group rounded-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                        aria-label="Open attachment"
-                    >
-                        <Image
-                            src={attachment.url}
-                            alt="Comment attachment"
-                            className="max-w-64 h-auto rounded-md border transition-transform group-hover:scale-[1.01]"
-                            height={160}
-                            width={160}
-                            sizes={generateSizes({
-                                default: "256px",
-                            })}
-                        />
-                    </button>
-                </DialogTrigger>
-            </div>
+            <DialogTrigger asChild>
+                <button
+                    type="button"
+                    className="group rounded-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    aria-label="Open attachment"
+                >
+                    <Image
+                        src={attachment.url}
+                        alt="Comment attachment"
+                        className="max-w-64 h-auto rounded-md border transition-transform group-hover:scale-[1.01]"
+                        height={160}
+                        width={160}
+                        sizes={generateSizes({
+                            default: "256px",
+                        })}
+                    />
+                </button>
+            </DialogTrigger>
             <DialogContent
                 className="flex max-h-[90vh] max-w-[90vw] sm:max-w-[90vw] w-auto items-center justify-center p-2"
                 showCloseButton
