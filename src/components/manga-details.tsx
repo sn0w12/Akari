@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
     Tooltip,
@@ -22,16 +22,16 @@ import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import { cacheLife, cacheTag } from "next/cache";
 
-const getStatusColor = (status: string) => {
+const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
         case "ongoing":
-            return "bg-accent-positive hover:bg-accent-positive";
+            return "positive";
         case "completed":
-            return "bg-info hover:bg-info";
+            return "info";
         case "hiatus":
-            return "bg-warning hover:bg-warning";
+            return "warning";
         default:
-            return "bg-primary hover:bg-primary";
+            return "default";
     }
 };
 
@@ -176,8 +176,8 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             {manga.alternativeTitles &&
                                 manga.alternativeTitles.length > 0 && (
                                     <Tooltip>
-                                        <TooltipTrigger>
-                                            <InfoIcon className="w-5 h-5 hidden lg:block" />
+                                        <TooltipTrigger className="hidden lg:block">
+                                            <InfoIcon className="w-5 h-5" />
                                         </TooltipTrigger>
                                         <TooltipContent side="bottom">
                                             <div className="flex flex-col gap-1 max-w-96 w-auto">
@@ -262,9 +262,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         Status:
                                     </div>
                                     <Badge
-                                        className={`${getStatusColor(
-                                            manga.status,
-                                        )} text-white`}
+                                        variant={getStatusVariant(manga.status)}
                                     >
                                         {manga.status.charAt(0).toUpperCase() +
                                             manga.status.slice(1)}

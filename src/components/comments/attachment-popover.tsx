@@ -308,6 +308,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     size="sm"
                     className="h-8 w-8 p-0"
                     disabled={!user}
+                    aria-label="Manage Attachments"
                 >
                     <ImageIcon className="h-4 w-4" />
                 </Button>

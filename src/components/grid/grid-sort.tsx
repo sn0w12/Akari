@@ -42,7 +42,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
             defaultValue={sorting.defaultSortValue}
             onValueChange={onValueChange}
         >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Sort By">
                 <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent align="center">
@@ -63,7 +63,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
 export function GridSortSelectFallback() {
     return (
         <Select disabled>
-            <SelectTrigger className="w-[180px]" disabled>
+            <SelectTrigger className="w-[180px]" disabled aria-label="Sort By">
                 <SelectValue placeholder="Sort By" />
             </SelectTrigger>
         </Select>

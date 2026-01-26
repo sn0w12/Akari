@@ -39,6 +39,7 @@ export function CommentMenu({
                     size="sm"
                     className="size-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                     disabled={commentDeleted || showReplyForm || isEditing}
+                    aria-label="Comment Menu"
                 >
                     <MoreVertical className="h-3 w-3" />
                 </Button>

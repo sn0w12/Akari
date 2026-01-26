@@ -14,7 +14,7 @@ export function CommentSorting({
                 onSortChange(value as components["schemas"]["CommentSortOrder"])
             }
         >
-            <SelectTrigger className="min-w-36">
+            <SelectTrigger className="min-w-36" aria-label="Sort Comments">
                 {sort === "Latest" ? "Latest" : "Most Upvoted"}
             </SelectTrigger>
             <SelectContent align="center">

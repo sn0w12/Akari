@@ -297,6 +297,7 @@ export function Comment({
                                 )}
                                 onClick={() => handleVote("up")}
                                 disabled={comment.deleted || isBanned}
+                                aria-label="Upvote Comment"
                             >
                                 <ChevronUp className="h-4 w-4" />
                             </Button>
@@ -313,6 +314,7 @@ export function Comment({
                                 )}
                                 onClick={() => handleVote("down")}
                                 disabled={comment.deleted || isBanned}
+                                aria-label="Downvote Comment"
                             >
                                 <ChevronDown className="h-4 w-4" />
                             </Button>

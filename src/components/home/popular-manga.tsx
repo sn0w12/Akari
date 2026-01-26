@@ -78,22 +78,22 @@ function CarouselControls() {
                 {currentPage} / {totalPages}
             </span>
             <Button
+                aria-label="Previous slide"
                 size="icon"
                 className="order-1 sm:order-2"
                 disabled={!canScrollPrev}
                 onClick={scrollPrev}
             >
                 <ArrowLeft />
-                <span className="sr-only">Previous slide</span>
             </Button>
             <Button
+                aria-label="Next slide"
                 size="icon"
                 className="order-3"
                 disabled={!canScrollNext}
                 onClick={scrollNext}
             >
                 <ArrowRight />
-                <span className="sr-only">Next slide</span>
             </Button>
         </div>
     );

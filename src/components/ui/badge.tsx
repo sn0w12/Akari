@@ -28,10 +28,10 @@ const badgeVariants = cva(
     },
 );
 
+export type BadgeVariantProps = VariantProps<typeof badgeVariants>;
+
 export interface BadgeProps
-    extends
-        React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof badgeVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>, BadgeVariantProps {
     withShadow?: boolean;
     shadowClassName?: string;
 }

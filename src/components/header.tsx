@@ -196,6 +196,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
                     <div className="flex gap-2">
                         <SearchButton />
                         <ButtonLink
+                            aria-label="Home"
                             href="/"
                             variant="ghost"
                             size="icon"

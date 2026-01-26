@@ -60,7 +60,7 @@ export function BasePagination({
                     onMouseOver={() => onPrefetch?.(url)}
                     disabled={disabled}
                     className={className}
-                    aria-label={ariaLabel}
+                    aria-label={disabled ? undefined : ariaLabel}
                 >
                     {content}
                 </ButtonLink>
@@ -75,6 +75,7 @@ export function BasePagination({
                 disabled={disabled}
                 className={className}
                 aria-label={ariaLabel}
+                aria-disabled={disabled}
             >
                 {content}
             </Button>

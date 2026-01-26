@@ -203,7 +203,7 @@ export function SettingsInput({
                     >
                         <ContextMenu>
                             <ContextMenuTrigger asChild>
-                                <SelectTrigger className="w-48">
+                                <SelectTrigger id={settingKey} className="w-48">
                                     <SelectValue
                                         placeholder={"Select an option"}
                                     />
@@ -413,10 +413,12 @@ export function SettingsInput({
             case "color":
                 return (
                     <ColorPicker
+                        id={settingKey}
                         value={getSettingValue(setting) as string}
                         onChange={(value: SettingValue) => {
                             setting.onChange?.(value);
                         }}
+                        aria-label={setting.label || "Color picker"}
                     />
                 );
             default:
