@@ -1,10 +1,11 @@
-import { GridBodySkeleton } from "@/components/grid-page";
+import { GRID_CLASS, GridBodySkeleton } from "@/components/grid-page";
 import { InstallPrompt } from "@/components/home/install-prompt";
 import { NotificationPrompt } from "@/components/home/notification-prompt";
 import {
     PopularManga,
     PopularMangaSkeleton,
 } from "@/components/home/popular-manga";
+import { MangaCard } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
@@ -100,7 +101,7 @@ async function getViewedManga(token: string) {
     const { data, error } = await client.GET("/v2/manga/viewed", {
         params: {
             query: {
-                limit: 6,
+                limit: 8,
             },
         },
         headers: {
@@ -130,7 +131,19 @@ async function HomeRecent() {
     return (
         <>
             <h2 className="text-3xl font-bold mb-2">Recently Viewed</h2>
-            <MangaGrid mangaList={data.data} className="lg:grid-cols-6" />
+            <div className={GRID_CLASS}>
+                {data.data.map((manga, index) => (
+                    <MangaCard
+                        key={manga.id}
+                        manga={manga}
+                        className={
+                            index > 5
+                                ? "block sm:hidden lg:block 2xl:hidden"
+                                : ""
+                        }
+                    />
+                ))}
+            </div>
         </>
     );
 }
