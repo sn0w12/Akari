@@ -58,10 +58,7 @@ export function ChapterSelector({
                     onChange(e.target.value);
                 }}
                 aria-label="Select chapter"
-                className={cn(
-                    "mt-2 mb-2 h-9 w-auto w-full md:hidden",
-                    className,
-                )}
+                className={cn("h-9 w-auto w-full md:hidden", className)}
             />
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>

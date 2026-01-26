@@ -1,8 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import BookmarkButton from "../manga-details/bookmark-button";
 import { Button } from "../ui/button";
-import { ChapterSelector } from "./chapter-selector";
-import { FooterBookmarkButton } from "./footer-bookmark";
 import { ButtonLink } from "../ui/button-link";
+import { ChapterSelector } from "./chapter-selector";
 
 export default function MangaFooter({
     chapter,
@@ -31,66 +31,65 @@ export default function MangaFooter({
                         value={chapter.number.toString()}
                     />
                 </div>
-                <div className="flex flex-col w-full sm:w-72 md:w-auto md:flex-row gap-4">
-                    <div className="flex items-center gap-4">
-                        <Button
+                <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">
+                    {lastChapterExists ? (
+                        <ButtonLink
+                            href={`./${chapter.lastChapter}`}
                             variant="outline"
-                            className="flex-1"
-                            onClick={toggleReaderMode}
+                            className="w-full order-0 xl:order-3"
+                            aria-label="Previous Chapter"
+                            prefetch={false}
                         >
-                            Toggle Reader
-                        </Button>
-                        <FooterBookmarkButton chapter={chapter} />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {lastChapterExists ? (
-                            <ButtonLink
-                                href={`./${chapter.lastChapter}`}
-                                variant="outline"
-                                className="flex-1"
-                                aria-label="Previous Chapter"
-                                prefetch={false}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                Previous
-                            </ButtonLink>
-                        ) : (
-                            <ButtonLink
-                                href=""
-                                disabled
-                                variant="outline"
-                                className="flex-1"
-                                aria-label="Previous Chapter"
-                                tabIndex={-1}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                Previous
-                            </ButtonLink>
-                        )}
-                        {nextChapterExists ? (
-                            <ButtonLink
-                                href={`./${chapter.nextChapter}`}
-                                className="flex-1"
-                                aria-label="Next Chapter"
-                                prefetch={false}
-                            >
-                                Next
-                                <ChevronRight className="h-4 w-4" />
-                            </ButtonLink>
-                        ) : (
-                            <ButtonLink
-                                href=""
-                                disabled
-                                className="flex-1"
-                                aria-label="Next Chapter"
-                                aria-disabled="true"
-                                tabIndex={-1}
-                            >
-                                Next
-                                <ChevronRight className="h-4 w-4" />
-                            </ButtonLink>
-                        )}
-                    </div>
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </ButtonLink>
+                    ) : (
+                        <ButtonLink
+                            href=""
+                            disabled
+                            variant="outline"
+                            className="w-full order-0 xl:order-3"
+                            aria-label="Previous Chapter"
+                            tabIndex={-1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </ButtonLink>
+                    )}
+                    {nextChapterExists ? (
+                        <ButtonLink
+                            href={`./${chapter.nextChapter}`}
+                            className="w-full order-1 xl:order-4"
+                            aria-label="Next Chapter"
+                            prefetch={false}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </ButtonLink>
+                    ) : (
+                        <ButtonLink
+                            href=""
+                            disabled
+                            className="w-full order-1 xl:order-4"
+                            aria-label="Next Chapter"
+                            aria-disabled="true"
+                            tabIndex={-1}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </ButtonLink>
+                    )}
+                    <Button
+                        variant="outline"
+                        className="w-full order-2 xl:order-1"
+                        onClick={toggleReaderMode}
+                    >
+                        Toggle Reader
+                    </Button>
+                    <BookmarkButton
+                        mangaId={chapter.mangaId}
+                        className="w-full order-3 xl:order-2 p-2 h-9"
+                    />
                 </div>
             </div>
         </div>
