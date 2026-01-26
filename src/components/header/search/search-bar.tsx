@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { useSetting, useShortcutSetting } from "@/lib/settings";
+import { Input } from "@/components/ui/input";
 import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
-import { getSearchResults } from "@/lib/api/search";
-import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
+import { getSearchResults } from "@/lib/api/search";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn, generateSizes } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -95,6 +95,7 @@ export default function SearchBar() {
                     onFocus={() => {
                         setIsFocused(true);
                     }}
+                    role="combobox"
                     aria-expanded={isFocused}
                     aria-controls="search-results"
                     aria-autocomplete="list"
@@ -145,6 +146,7 @@ export default function SearchBar() {
                                             className="max-h-24 w-auto rounded mr-2"
                                             height={144}
                                             width={96}
+                                            quality={40}
                                             sizes={generateSizes({
                                                 default: "96px",
                                             })}
