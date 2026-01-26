@@ -7,13 +7,15 @@ import {
     PopoverDrawerTrigger,
 } from "@/components/ui/popover-drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
+import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
 import type { components } from "@/types/api";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -30,12 +32,14 @@ function ImageGrid({
     onSelect,
     emptyMessage,
     onClose,
+    onDelete,
 }: {
     uploads: UploadResponse[];
     isLoading: boolean;
     onSelect?: (upload: UploadResponse) => void;
     emptyMessage: string;
     onClose: () => void;
+    onDelete?: (upload: UploadResponse) => void;
 }) {
     return (
         <>
@@ -51,25 +55,40 @@ function ImageGrid({
             ) : uploads.length > 0 ? (
                 <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
                     {uploads.map((upload) => (
-                        <button
+                        <div
                             key={upload.id}
-                            onClick={() => {
-                                onSelect?.(upload);
-                                onClose();
-                            }}
-                            className="aspect-square w-full overflow-hidden rounded border hover:border-primary transition-colors"
+                            className="relative aspect-square w-full"
                         >
-                            <Image
-                                src={upload.url}
-                                alt={upload.tags.join(", ")}
-                                className="w-full h-full object-contain"
-                                height={96}
-                                width={96}
-                                sizes={generateSizes({
-                                    default: "128px",
-                                })}
-                            />
-                        </button>
+                            <button
+                                onClick={() => {
+                                    onSelect?.(upload);
+                                    onClose();
+                                }}
+                                className="w-full h-full overflow-hidden rounded border hover:border-primary transition-colors"
+                            >
+                                <Image
+                                    src={upload.url}
+                                    alt={upload.tags.join(", ")}
+                                    className="w-full h-full object-contain"
+                                    height={96}
+                                    width={96}
+                                    sizes={generateSizes({
+                                        default: "128px",
+                                    })}
+                                />
+                            </button>
+                            {onDelete && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDelete(upload);
+                                    }}
+                                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors"
+                                >
+                                    <X className="h-3 w-3" />
+                                </button>
+                            )}
+                        </div>
                     ))}
                 </div>
             ) : (
@@ -90,6 +109,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useUser();
+    const { confirm } = useConfirm();
 
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
         wait: 300,
@@ -170,6 +190,38 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
             console.error("Failed to upload image:", error);
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleDelete = async (upload: UploadResponse) => {
+        const confirmed = await confirm({
+            title: "Confirm Deletion",
+            description: "Are you sure you want to delete this upload?",
+            confirmText: "Delete",
+            cancelText: "Cancel",
+            variant: "destructive",
+        });
+        if (!confirmed) return;
+
+        try {
+            const { error } = await client.DELETE("/v2/uploads/{id}", {
+                params: {
+                    path: { id: upload.id },
+                },
+            });
+
+            if (error) {
+                new Toast("Failed to delete upload", "error");
+                throw new Error(
+                    error.data.message || "Failed to delete upload",
+                );
+            }
+
+            new Toast("Upload deleted", "success");
+            queryClient.invalidateQueries({ queryKey: ["my-uploads"] });
+        } catch (error) {
+            console.error("Failed to delete upload:", error);
+            return;
         }
     };
 
@@ -292,6 +344,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                 onSelect={onSelect}
                                 emptyMessage="No uploads found."
                                 onClose={() => setOpen(false)}
+                                onDelete={handleDelete}
                             />
                         </TabsContent>
                     )}
