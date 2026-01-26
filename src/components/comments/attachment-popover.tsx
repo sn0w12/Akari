@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
     PopoverDrawer,
     PopoverDrawerContent,
@@ -11,10 +11,12 @@ import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import { generateSizes } from "@/lib/utils";
 import type { components } from "@/types/api";
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
 
@@ -84,9 +86,14 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const [isDragOver, setIsDragOver] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [tags, setTags] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useUser();
+
+    const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
+        wait: 300,
+    });
 
     useEffect(() => {
         if (file) {
@@ -107,10 +114,16 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     }, [file]);
 
     const { data: uploads = [], isLoading } = useQuery({
-        queryKey: ["uploads"],
+        queryKey: ["uploads", debouncedSearchQuery],
         queryFn: async () => {
             const { data } = await client.GET("/v2/uploads", {
-                params: { query: { page: 1, pageSize: 50 } },
+                params: {
+                    query: {
+                        page: 1,
+                        pageSize: 50,
+                        query: debouncedSearchQuery,
+                    },
+                },
             });
             return data?.data?.items || [];
         },
@@ -185,6 +198,13 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     </TabsList>
                     <TabsContent value="select" className="space-y-2">
                         <h4 className="font-medium text-sm">Select an image</h4>
+                        <Input
+                            type="search"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search images..."
+                            className="w-full"
+                        />
                         <ImageGrid
                             uploads={uploads}
                             isLoading={isLoading}
