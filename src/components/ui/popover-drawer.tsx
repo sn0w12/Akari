@@ -32,6 +32,8 @@ function mergeClassName(
 
 export interface PopoverDrawerProps {
     children: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export interface PopoverDrawerTriggerProps {
@@ -58,7 +60,11 @@ export function PopoverDrawerContent({ children }: PopoverDrawerContentProps) {
     return <>{children}</>;
 }
 
-export function PopoverDrawer({ children }: PopoverDrawerProps) {
+export function PopoverDrawer({
+    children,
+    open,
+    onOpenChange,
+}: PopoverDrawerProps) {
     const width = useWindowWidth();
     const childrenArray = React.Children.toArray(children);
 
@@ -94,7 +100,7 @@ export function PopoverDrawer({ children }: PopoverDrawerProps) {
 
     if (width !== undefined && width < 768) {
         return (
-            <Drawer>
+            <Drawer open={open} onOpenChange={onOpenChange}>
                 <DrawerTrigger asChild>{trigger}</DrawerTrigger>
                 <DrawerContent className={drawerClassName}>
                     {content}
@@ -104,7 +110,7 @@ export function PopoverDrawer({ children }: PopoverDrawerProps) {
     }
 
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={onOpenChange}>
             <PopoverTrigger asChild>{trigger}</PopoverTrigger>
             <PopoverContent
                 side={popoverSide}
