@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { CommentsButton } from "./info-popovers/comments";
 import { InfoPopover } from "./info-popovers/info";
-import { InfoDrawer } from "./info-popovers/info-drawer";
 import { SettingsPopover } from "./info-popovers/settings";
 
 export function ChapterInfo({
@@ -57,7 +56,7 @@ export function ChapterInfo({
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoDrawer chapter={chapter} />
+                    <InfoPopover chapter={chapter} orientation={orientation} />
                 )}
                 <CommentsButton />
             </ButtonGroup>

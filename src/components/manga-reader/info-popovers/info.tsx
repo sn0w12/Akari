@@ -2,9 +2,14 @@
 
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import Link from "next/link";
+
 import { Button } from "../../ui/button";
 import { ButtonLink } from "../../ui/button-link";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import {
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "../../ui/popover-drawer";
 import { ChapterSelector } from "../chapter-selector";
 import { FooterBookmarkButton } from "../footer-bookmark";
 
@@ -74,19 +79,20 @@ export function InfoPopover({
     orientation: "vertical" | "horizontal";
 }) {
     return (
-        <Popover>
-            <PopoverTrigger asChild>
+        <PopoverDrawer>
+            <PopoverDrawerTrigger>
                 <Button variant="outline" size="icon" className="h-7.5 md:h-9">
                     <Info className="h-4 w-4" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent
-                side={orientation === "vertical" ? "left" : "bottom"}
-                align="end"
-                className="w-auto sm:w-96 max-h-96 overflow-y-auto"
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent
+                popoverSide={orientation === "vertical" ? "left" : "bottom"}
+                popoverAlign="end"
+                popoverClassName="w-auto sm:w-96 max-h-96 overflow-y-auto"
+                wrapperClassName="max-h-[calc(100vh-10rem)] overflow-y-auto p-2 pt-0 mt-4 md:mt-0 md:max-h-none md:overflow-visible md:p-0"
             >
                 <InfoContent chapter={chapter} />
-            </PopoverContent>
-        </Popover>
+            </PopoverDrawerContent>
+        </PopoverDrawer>
     );
 }

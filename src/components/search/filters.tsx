@@ -2,12 +2,11 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "@/components/ui/popover-drawer";
 import {
     Select,
     SelectContent,
@@ -209,60 +208,27 @@ export function FiltersContent({ filters, onChange }: FiltersProps) {
 
 export function Filters({ filters, onChange }: FiltersProps) {
     return (
-        <>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="hidden md:flex">
-                        <FilterIcon className="w-4 h-4" />
-                        Filter
-                        {(filters.genres.length > 0 ||
-                            filters.types.length > 0 ||
-                            filters.excludedGenres.length > 0 ||
-                            filters.excludedTypes.length > 0) && (
-                            <Badge className="px-1">
-                                {filters.genres.length +
-                                    filters.types.length +
-                                    filters.excludedGenres.length +
-                                    filters.excludedTypes.length}
-                            </Badge>
-                        )}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                    side="bottom"
-                    align="end"
-                    className="w-80 md:w-128"
-                >
-                    <FiltersContent filters={filters} onChange={onChange} />
-                </PopoverContent>
-            </Popover>
-            <Drawer>
-                <DrawerTrigger asChild>
-                    <Button variant="outline" className="flex md:hidden">
-                        <FilterIcon className="w-4 h-4" />
-                        Filter
-                        {(filters.genres.length > 0 ||
-                            filters.types.length > 0 ||
-                            filters.excludedGenres.length > 0 ||
-                            filters.excludedTypes.length > 0) && (
-                            <Badge className="px-1">
-                                {filters.genres.length +
-                                    filters.types.length +
-                                    filters.excludedGenres.length +
-                                    filters.excludedTypes.length}
-                            </Badge>
-                        )}
-                    </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                    <div
-                        className="overflow-y-auto p-2 pt-0 mt-4"
-                        style={{ maxHeight: "calc(100vh - 10rem)" }}
-                    >
-                        <FiltersContent filters={filters} onChange={onChange} />
-                    </div>
-                </DrawerContent>
-            </Drawer>
-        </>
+        <PopoverDrawer>
+            <PopoverDrawerTrigger>
+                <Button variant="outline">
+                    <FilterIcon className="w-4 h-4" />
+                    Filter
+                    {(filters.genres.length > 0 ||
+                        filters.types.length > 0 ||
+                        filters.excludedGenres.length > 0 ||
+                        filters.excludedTypes.length > 0) && (
+                        <Badge className="px-1">
+                            {filters.genres.length +
+                                filters.types.length +
+                                filters.excludedGenres.length +
+                                filters.excludedTypes.length}
+                        </Badge>
+                    )}
+                </Button>
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent popoverClassName="w-80 md:w-128">
+                <FiltersContent filters={filters} onChange={onChange} />
+            </PopoverDrawerContent>
+        </PopoverDrawer>
     );
 }
