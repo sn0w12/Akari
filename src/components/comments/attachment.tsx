@@ -38,7 +38,7 @@ export function CommentAttachment({
                 </DialogTrigger>
             </div>
             <DialogContent
-                className="flex max-h-[90vh] w-auto max-w-[90vw] items-center justify-center p-2"
+                className="flex max-h-[90vh] max-w-[90vw] sm:max-w-[90vw] w-auto items-center justify-center p-2"
                 showCloseButton
             >
                 <DialogTitle className="sr-only">
