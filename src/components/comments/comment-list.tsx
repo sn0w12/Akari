@@ -31,7 +31,7 @@ export function CommentList({
     currentUser,
 }: CommentListProps) {
     return (
-        <div className="space-y-2">
+        <>
             {onNewComment && (
                 <CommentForm
                     onSubmit={onNewComment}
@@ -61,6 +61,6 @@ export function CommentList({
                     />
                 ))
             )}
-        </div>
+        </>
     );
 }

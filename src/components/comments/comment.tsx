@@ -192,241 +192,272 @@ export function Comment({
             : [];
 
     return (
-        <div
-            className={cn(
-                "flex gap-2 sm:gap-3",
-                depth > 0 && "ml-4 sm:ml-8 mt-3 sm:mt-4",
-            )}
-        >
-            <Avatar name={comment.userProfile.username} />
-            <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
-                    <Link
-                        href={`/user/${comment.userProfile.id}`}
-                        className="font-medium text-foreground hover:underline"
-                    >
-                        {comment.userProfile.displayName}
-                    </Link>
-                    <span className="text-muted-foreground truncate">
-                        @{comment.userProfile.username}
-                    </span>
-                    <span className="text-muted-foreground hidden sm:inline">
-                        •
-                    </span>
-                    <span className="text-muted-foreground text-xs sm:text-sm">
-                        {formatDate(comment.createdAt)}
-                    </span>
-                    {comment.edited && (
-                        <>
-                            <span className="text-muted-foreground hidden sm:inline">
-                                •
-                            </span>
-                            <span className="text-muted-foreground text-xs">
-                                edited
-                            </span>
-                        </>
+        <>
+            <div className={cn("flex gap-2", depth > 0 && "relative")}>
+                {depth > 0 && (
+                    <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -left-2 sm:-left-4 top-0 h-4 w-4 rounded-bl-md border-b border-l border-accent"
+                    />
+                )}
+                <div className="flex flex-col gap-2 items-center">
+                    <Avatar name={comment.userProfile.username} />
+                    {displayReplies.length > 0 && showReplies && (
+                        <span
+                            aria-hidden="true"
+                            className="pointer-events-none relative left-0 top-0 h-full w-px bg-accent"
+                        />
                     )}
-
-                    <CommentMenu
-                        onReport={() => setShowReportDialog(true)}
-                        onEdit={() => setIsEditing(true)}
-                        onDelete={
-                            onDelete
-                                ? async () => {
-                                      if (
-                                          await confirm({
-                                              title: "Are you sure you want to delete this comment?",
-                                              description:
-                                                  "This action cannot be undone. The comment will be permanently deleted.",
-                                              variant: "destructive",
-                                          })
-                                      ) {
-                                          await onDelete(comment.id);
-                                      }
-                                  }
-                                : undefined
-                        }
-                        isOwner={
-                            currentUser
-                                ? comment.userProfile.id === currentUser.userId
-                                : false
-                        }
-                        commentDeleted={comment.deleted}
-                        showReplyForm={showReplyForm}
-                        isEditing={isEditing}
-                    />
                 </div>
-
-                {isEditing ? (
-                    <Textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        placeholder="Edit your comment..."
-                        className="min-h-[80px] text-sm sm:text-base mb-1"
-                    />
-                ) : (
-                    <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">
-                        {comment.content}
-                    </p>
-                )}
-
-                {comment.attachment && (
-                    <CommentAttachment attachment={comment.attachment} />
-                )}
-
-                <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="flex items-center gap-0.5">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                                "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
-                                userVote === "up" &&
-                                    "bg-primary/10 text-primary hover:bg-primary/20",
-                            )}
-                            onClick={() => handleVote("up")}
-                            disabled={comment.deleted || isBanned}
+                <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 text-xs sm:text-sm">
+                        <Link
+                            href={`/user/${comment.userProfile.id}`}
+                            className="font-medium text-foreground hover:underline"
                         >
-                            <ChevronUp className="h-4 w-4" />
-                        </Button>
-                        <span className="text-xs font-medium text-muted-foreground px-1 sm:px-1.5 min-w-[20px] sm:min-w-[24px] text-center">
-                            {localUpvotes - localDownvotes}
+                            {comment.userProfile.displayName}
+                        </Link>
+                        <span className="text-muted-foreground truncate">
+                            @{comment.userProfile.username}
                         </span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                                "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
-                                userVote === "down" &&
-                                    "bg-destructive/10 text-destructive hover:bg-destructive/20",
-                            )}
-                            onClick={() => handleVote("down")}
-                            disabled={comment.deleted || isBanned}
-                        >
-                            <ChevronDown className="h-4 w-4" />
-                        </Button>
+                        <span className="text-muted-foreground hidden sm:inline">
+                            •
+                        </span>
+                        <span className="text-muted-foreground text-xs sm:text-sm">
+                            {formatDate(comment.createdAt)}
+                        </span>
+                        {comment.edited && (
+                            <>
+                                <span className="text-muted-foreground hidden sm:inline">
+                                    •
+                                </span>
+                                <span className="text-muted-foreground text-xs">
+                                    edited
+                                </span>
+                            </>
+                        )}
+
+                        <CommentMenu
+                            onReport={() => setShowReportDialog(true)}
+                            onEdit={() => setIsEditing(true)}
+                            onDelete={
+                                onDelete
+                                    ? async () => {
+                                          if (
+                                              await confirm({
+                                                  title: "Are you sure you want to delete this comment?",
+                                                  description:
+                                                      "This action cannot be undone. The comment will be permanently deleted.",
+                                                  variant: "destructive",
+                                              })
+                                          ) {
+                                              await onDelete(comment.id);
+                                          }
+                                      }
+                                    : undefined
+                            }
+                            isOwner={
+                                currentUser
+                                    ? comment.userProfile.id ===
+                                      currentUser.userId
+                                    : false
+                            }
+                            commentDeleted={comment.deleted}
+                            showReplyForm={showReplyForm}
+                            isEditing={isEditing}
+                        />
                     </div>
 
                     {isEditing ? (
-                        <ButtonGroup orientation="horizontal">
-                            <Button
-                                onClick={async () => {
-                                    if (!onEdit) return;
-                                    try {
-                                        await onEdit(comment.id, editContent);
-                                        setIsEditing(false);
-                                    } catch (error) {
-                                        console.error(
-                                            "Failed to edit comment:",
-                                            error,
-                                        );
-                                    }
-                                }}
-                                size="sm"
-                                className="h-8 sm:h-7 px-2 text-xs"
-                            >
-                                Save
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    setIsEditing(false);
-                                    setEditContent(comment.content);
-                                }}
-                                size="sm"
-                                className="h-8 sm:h-7 px-2 text-xs"
-                            >
-                                Cancel
-                            </Button>
-                        </ButtonGroup>
+                        <Textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            placeholder="Edit your comment..."
+                            className="min-h-[80px] text-sm sm:text-base mb-1"
+                        />
                     ) : (
-                        <ButtonGroup orientation="horizontal">
-                            {hasReplies && (
-                                <>
+                        <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">
+                            {comment.content}
+                        </p>
+                    )}
+
+                    {comment.attachment && (
+                        <CommentAttachment attachment={comment.attachment} />
+                    )}
+
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-0.5">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
+                                    userVote === "up" &&
+                                        "bg-primary/10 text-primary hover:bg-primary/20",
+                                )}
+                                onClick={() => handleVote("up")}
+                                disabled={comment.deleted || isBanned}
+                            >
+                                <ChevronUp className="h-4 w-4" />
+                            </Button>
+                            <span className="text-xs font-medium text-muted-foreground px-1 sm:px-1.5 min-w-[20px] sm:min-w-[24px] text-center">
+                                {localUpvotes - localDownvotes}
+                            </span>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    "h-8 w-8 sm:h-7 sm:w-7 p-0 hover:bg-accent",
+                                    userVote === "down" &&
+                                        "bg-destructive/10 text-destructive hover:bg-destructive/20",
+                                )}
+                                onClick={() => handleVote("down")}
+                                disabled={comment.deleted || isBanned}
+                            >
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        {isEditing ? (
+                            <ButtonGroup orientation="horizontal">
+                                <Button
+                                    onClick={async () => {
+                                        if (!onEdit) return;
+                                        try {
+                                            await onEdit(
+                                                comment.id,
+                                                editContent,
+                                            );
+                                            setIsEditing(false);
+                                        } catch (error) {
+                                            console.error(
+                                                "Failed to edit comment:",
+                                                error,
+                                            );
+                                        }
+                                    }}
+                                    size="sm"
+                                    className="h-8 sm:h-7 px-2 text-xs"
+                                >
+                                    Save
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setIsEditing(false);
+                                        setEditContent(comment.content);
+                                    }}
+                                    size="sm"
+                                    className="h-8 sm:h-7 px-2 text-xs"
+                                >
+                                    Cancel
+                                </Button>
+                            </ButtonGroup>
+                        ) : (
+                            <ButtonGroup orientation="horizontal">
+                                {hasReplies && (
+                                    <>
+                                        <Button
+                                            onClick={handleShowReplies}
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                                        >
+                                            <MessageSquare className="h-3 w-3" />
+                                            <span className="sr-only sm:not-sr-only">
+                                                {isLoadingReplies
+                                                    ? "Loading..."
+                                                    : showReplies
+                                                      ? "Hide replies"
+                                                      : `Show ${replyCount} ${
+                                                            replyCount === 1
+                                                                ? "reply"
+                                                                : "replies"
+                                                        }`}
+                                            </span>
+                                        </Button>
+                                        {currentUser && (
+                                            <ButtonGroupSeparator />
+                                        )}
+                                    </>
+                                )}
+                                {currentUser && (
                                     <Button
-                                        onClick={handleShowReplies}
                                         variant="ghost"
                                         size="sm"
-                                        className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                                        className={cn(
+                                            "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
+                                            showReplyForm &&
+                                                "bg-primary/10 text-primary hover:bg-primary/20",
+                                        )}
+                                        onClick={() =>
+                                            setShowReplyForm(!showReplyForm)
+                                        }
+                                        disabled={comment.deleted || isBanned}
                                     >
-                                        <MessageSquare className="h-3 w-3" />
+                                        <MessageSquareReply className="h-3 w-3" />
                                         <span className="sr-only sm:not-sr-only">
-                                            {isLoadingReplies
-                                                ? "Loading..."
-                                                : showReplies
-                                                  ? "Hide replies"
-                                                  : `Show ${replyCount} ${
-                                                        replyCount === 1
-                                                            ? "reply"
-                                                            : "replies"
-                                                    }`}
+                                            Reply
                                         </span>
                                     </Button>
-                                    {currentUser && <ButtonGroupSeparator />}
-                                </>
-                            )}
-                            {currentUser && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className={cn(
-                                        "h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground",
-                                        showReplyForm &&
-                                            "bg-primary/10 text-primary hover:bg-primary/20",
-                                    )}
-                                    onClick={() =>
-                                        setShowReplyForm(!showReplyForm)
-                                    }
-                                    disabled={comment.deleted || isBanned}
-                                >
-                                    <MessageSquareReply className="h-3 w-3" />
-                                    <span className="sr-only sm:not-sr-only">
-                                        Reply
-                                    </span>
-                                </Button>
-                            )}
-                        </ButtonGroup>
-                    )}
-                </div>
-
-                {showReplyForm && !isEditing && (
-                    <div className="mt-3">
-                        <CommentForm
-                            onSubmit={handleReplySubmit}
-                            placeholder={`Reply to ${comment.userProfile.displayName}...`}
-                            submitLabel="Reply"
-                            onCancel={() => setShowReplyForm(false)}
-                            autoFocus
-                            currentUser={currentUser}
-                        />
+                                )}
+                            </ButtonGroup>
+                        )}
                     </div>
-                )}
 
-                {showReplies && displayReplies.length > 0 && (
-                    <div className="space-y-4 mt-4">
-                        {displayReplies.map((reply) => (
-                            <Comment
-                                key={reply.id}
-                                comment={reply}
-                                onLoadReplies={onLoadReplies}
-                                onVote={onVote}
-                                onReply={onReply}
-                                onEdit={onEdit}
-                                onDelete={onDelete}
-                                depth={depth + 1}
-                                userVotes={userVotes}
+                    {showReplyForm && !isEditing && (
+                        <div className="mt-3">
+                            <CommentForm
+                                onSubmit={handleReplySubmit}
+                                placeholder={`Reply to ${comment.userProfile.displayName}...`}
+                                submitLabel="Reply"
+                                onCancel={() => setShowReplyForm(false)}
+                                autoFocus
                                 currentUser={currentUser}
                             />
-                        ))}
-                    </div>
-                )}
+                        </div>
+                    )}
+                </div>
+                <ReportCommentDialog
+                    commentId={comment.id}
+                    isOpen={showReportDialog}
+                    onOpenChange={setShowReportDialog}
+                />
             </div>
-
-            <ReportCommentDialog
-                commentId={comment.id}
-                isOpen={showReportDialog}
-                onOpenChange={setShowReportDialog}
-            />
-        </div>
+            {showReplies && displayReplies.length > 0 && (
+                <>
+                    {displayReplies.map((reply, index) => {
+                        const isLast = index === displayReplies.length - 1;
+                        return (
+                            <div
+                                key={reply.id}
+                                className={cn(
+                                    "relative pl-2 sm:pl-4",
+                                    depth >= 0 && "ml-4",
+                                )}
+                            >
+                                {!isLast && (
+                                    <span
+                                        aria-hidden="true"
+                                        className="pointer-events-none absolute left-0 top-0 h-full w-px bg-accent"
+                                    />
+                                )}
+                                <Comment
+                                    comment={reply}
+                                    onLoadReplies={onLoadReplies}
+                                    onVote={onVote}
+                                    onReply={onReply}
+                                    onEdit={onEdit}
+                                    onDelete={onDelete}
+                                    depth={depth + 1}
+                                    userVotes={userVotes}
+                                    currentUser={currentUser}
+                                />
+                            </div>
+                        );
+                    })}
+                </>
+            )}
+        </>
     );
 }
