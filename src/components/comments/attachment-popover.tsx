@@ -10,12 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
+import { StorageManager } from "@/lib/storage";
 import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
 import type { components } from "@/types/api";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon, Star, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -33,6 +34,8 @@ function ImageGrid({
     emptyMessage,
     onClose,
     onDelete,
+    onToggleFavorite,
+    favorites = [],
 }: {
     uploads: UploadResponse[];
     isLoading: boolean;
@@ -40,6 +43,8 @@ function ImageGrid({
     emptyMessage: string;
     onClose: () => void;
     onDelete?: (upload: UploadResponse) => void;
+    onToggleFavorite?: (upload: UploadResponse) => void;
+    favorites?: string[];
 }) {
     return (
         <>
@@ -77,6 +82,24 @@ function ImageGrid({
                                     })}
                                 />
                             </button>
+                            {onToggleFavorite && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onToggleFavorite(upload);
+                                    }}
+                                    className="absolute top-1 left-1 bg-background/80 backdrop-blur-sm rounded-full p-1 hover:bg-background transition-colors"
+                                    aria-label="Toggle favorite"
+                                >
+                                    <Star
+                                        className={`h-3 w-3 ${
+                                            favorites.includes(upload.id)
+                                                ? "fill-yellow-400 text-yellow-400"
+                                                : "text-muted-foreground"
+                                        }`}
+                                    />
+                                </button>
+                            )}
                             {onDelete && (
                                 <button
                                     onClick={(e) => {
@@ -106,10 +129,42 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [tags, setTags] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [favorites, setFavorites] = useState<string[]>([]);
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useUser();
     const { confirm } = useConfirm();
+
+    // Load favorites from storage
+    useEffect(() => {
+        const storage = StorageManager.get("favoriteAttachments");
+        const data = storage.getWithDefaults();
+        setFavorites(data.ids as string[]);
+    }, []);
+
+    const toggleFavorite = (upload: UploadResponse) => {
+        const storage = StorageManager.get("favoriteAttachments");
+        const current = storage.getWithDefaults();
+        const currentIds = current.ids as string[];
+        const currentUrls = current.urls as string[];
+
+        const index = currentIds.indexOf(upload.id);
+        let newIds: string[];
+        let newUrls: string[];
+
+        if (index > -1) {
+            // Remove from favorites
+            newIds = currentIds.filter((_, i) => i !== index);
+            newUrls = currentUrls.filter((_, i) => i !== index);
+        } else {
+            // Add to favorites
+            newIds = [...currentIds, upload.id];
+            newUrls = [...currentUrls, upload.url || ""];
+        }
+
+        storage.set({ ids: newIds, urls: newUrls });
+        setFavorites(newIds);
+    };
 
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
         wait: 300,
@@ -159,6 +214,25 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
             return data?.data?.items || [];
         },
         enabled: open && !!user,
+    });
+
+    // Get favorite uploads from storage (no API calls needed)
+    const favoriteUploads: UploadResponse[] = favorites.map((id, index) => {
+        const storage = StorageManager.get("favoriteAttachments");
+        const data = storage.getWithDefaults();
+        const urls = data.urls as string[];
+
+        return {
+            id,
+            userId: "",
+            md5Hash: null,
+            size: 0,
+            url: urls[index] || "",
+            usageCount: 0,
+            tags: [],
+            createdAt: "",
+            deleted: false,
+        } as UploadResponse;
     });
 
     const handleUpload = async (e: React.FormEvent) => {
@@ -241,6 +315,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                 <Tabs defaultValue="select" className="w-full">
                     <TabsList className="w-full">
                         <TabsTrigger value="select">Select</TabsTrigger>
+                        <TabsTrigger value="favorites">Favorites</TabsTrigger>
                         {user && (
                             <TabsTrigger value="my-uploads">
                                 My Uploads
@@ -263,6 +338,20 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                             onSelect={onSelect}
                             emptyMessage="No images found."
                             onClose={() => setOpen(false)}
+                            onToggleFavorite={toggleFavorite}
+                            favorites={favorites}
+                        />
+                    </TabsContent>
+                    <TabsContent value="favorites" className="space-y-2">
+                        <h4 className="font-medium text-sm">Favorite images</h4>
+                        <ImageGrid
+                            uploads={favoriteUploads}
+                            isLoading={false}
+                            onSelect={onSelect}
+                            emptyMessage="No favorite images yet."
+                            onClose={() => setOpen(false)}
+                            onToggleFavorite={toggleFavorite}
+                            favorites={favorites}
                         />
                     </TabsContent>
                     <TabsContent value="upload" className="space-y-2">
@@ -345,6 +434,8 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                 emptyMessage="No uploads found."
                                 onClose={() => setOpen(false)}
                                 onDelete={handleDelete}
+                                onToggleFavorite={toggleFavorite}
+                                favorites={favorites}
                             />
                         </TabsContent>
                     )}

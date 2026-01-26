@@ -73,11 +73,28 @@ export class StorageWrapper<T extends SchemaDefinition> {
 
         for (const key in this.schema) {
             if (data[key] !== undefined) {
-                const value = String(data[key]).replace(
+                const fieldDef = this.schema[key];
+                let encodedValue: string;
+
+                if (fieldDef.type === "array" && Array.isArray(data[key])) {
+                    const arraySep = fieldDef.arraySeparator || ";";
+                    const arrayValues = (data[key] as (string | number)[]).map(
+                        (item) =>
+                            String(item).replace(
+                                new RegExp(`\\${arraySep}`, "g"),
+                                `\\${arraySep}`,
+                            ),
+                    );
+                    encodedValue = arrayValues.join(arraySep);
+                } else {
+                    encodedValue = String(data[key]);
+                }
+
+                encodedValue = encodedValue.replace(
                     new RegExp(`\\${this.separator}`, "g"),
                     `\\${this.separator}`,
                 );
-                values.push(value);
+                values.push(encodedValue);
             } else {
                 values.push("");
             }
@@ -93,7 +110,8 @@ export class StorageWrapper<T extends SchemaDefinition> {
 
         keys.forEach((key, index) => {
             const value = values[index] || "";
-            const fieldType = this.schema[key].type;
+            const fieldDef = this.schema[key];
+            const fieldType = fieldDef.type;
 
             switch (fieldType) {
                 case "number":
@@ -102,6 +120,20 @@ export class StorageWrapper<T extends SchemaDefinition> {
                 case "boolean":
                     result[key] = value === "true";
                     break;
+                case "array": {
+                    const arraySep = fieldDef.arraySeparator || ";";
+                    const arrayType = fieldDef.arrayType || "string";
+                    if (!value) {
+                        result[key] = [];
+                    } else {
+                        const items = this.splitWithEscape(value, arraySep);
+                        result[key] =
+                            arrayType === "number"
+                                ? items.map((item) => Number(item))
+                                : items;
+                    }
+                    break;
+                }
                 case "string":
                 default:
                     result[key] = value;
@@ -286,7 +318,16 @@ export const createKeyPattern = (basePattern: string): RegExp => {
 export const createField = <T extends FieldType>(
     type: T,
     defaultValue: StorageValue,
-) => ({ type, default: defaultValue }) as const;
+    options?: { arrayType?: "string" | "number"; arraySeparator?: string },
+) =>
+    ({
+        type,
+        default: defaultValue,
+        ...(options?.arrayType && { arrayType: options.arrayType }),
+        ...(options?.arraySeparator && {
+            arraySeparator: options.arraySeparator,
+        }),
+    }) as const;
 
 export function useStorage<T extends SchemaKey>(
     schemaKey: T,

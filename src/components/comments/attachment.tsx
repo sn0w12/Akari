@@ -1,7 +1,9 @@
 "use client";
 
+import { StorageManager } from "@/lib/storage";
 import { generateSizes } from "@/lib/utils";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 import {
     Dialog,
@@ -9,13 +11,46 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Star } from "lucide-react";
 
 export function CommentAttachment({
     attachment,
 }: {
     attachment: components["schemas"]["UploadResponse"];
 }) {
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useEffect(() => {
+        const storage = StorageManager.get("favoriteAttachments");
+        const data = storage.getWithDefaults();
+        setIsFavorite((data.ids as string[]).includes(attachment.id));
+    }, [attachment.id]);
+
+    const toggleFavorite = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const storage = StorageManager.get("favoriteAttachments");
+        const current = storage.getWithDefaults();
+        const currentIds = current.ids as string[];
+        const currentUrls = current.urls as string[];
+
+        const index = currentIds.indexOf(attachment.id);
+        let newIds: string[];
+        let newUrls: string[];
+
+        if (index > -1) {
+            // Remove from favorites
+            newIds = currentIds.filter((_, i) => i !== index);
+            newUrls = currentUrls.filter((_, i) => i !== index);
+        } else {
+            // Add to favorites
+            newIds = [...currentIds, attachment.id];
+            newUrls = [...currentUrls, attachment.url || ""];
+        }
+
+        storage.set({ ids: newIds, urls: newUrls });
+        setIsFavorite(!isFavorite);
+    };
+
     if (!attachment.url) {
         return (
             <div className="p-2 border-1 w-fit rounded-lg mb-2 flex flex-col items-center justify-center text-destructive border-destructive">
@@ -30,7 +65,7 @@ export function CommentAttachment({
             <DialogTrigger asChild>
                 <button
                     type="button"
-                    className="group rounded-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="group rounded-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background relative"
                     aria-label="Open attachment"
                 >
                     <Image
@@ -43,6 +78,19 @@ export function CommentAttachment({
                             default: "256px",
                         })}
                     />
+                    <button
+                        onClick={toggleFavorite}
+                        className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 hover:bg-background transition-colors opacity-0 group-hover:opacity-100"
+                        aria-label="Toggle favorite"
+                    >
+                        <Star
+                            className={`h-4 w-4 ${
+                                isFavorite
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-muted-foreground"
+                            }`}
+                        />
+                    </button>
                 </button>
             </DialogTrigger>
             <DialogContent

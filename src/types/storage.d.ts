@@ -1,5 +1,5 @@
-export type StorageValue = string | number | boolean;
-export type FieldType = "string" | "number" | "boolean";
+export type StorageValue = string | number | boolean | string[] | number[];
+export type FieldType = "string" | "number" | "boolean" | "array";
 export type StorageBackend = "local" | "session";
 export type StorageSchema = Record<string, StorageValue>;
 export type StorageEntry<T extends StorageSchema> = {
@@ -9,6 +9,8 @@ export type StorageEntry<T extends StorageSchema> = {
 export type SchemaField = {
     type: FieldType;
     default: StorageValue;
+    arrayType?: "string" | "number";
+    arraySeparator?: string;
 };
 
 export type SchemaDefinition = Record<string, SchemaField>;
@@ -32,5 +34,11 @@ export type DataFromSchema<T extends SchemaDefinition> = {
         ? string
         : T[K]["type"] extends "number"
           ? number
-          : boolean;
+          : T[K]["type"] extends "boolean"
+            ? boolean
+            : T[K]["type"] extends "array"
+              ? T[K]["arrayType"] extends "number"
+                  ? number[]
+                  : string[]
+              : never;
 };

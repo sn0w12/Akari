@@ -508,4 +508,11 @@ export const STORAGE_SCHEMAS = {
             name: createField("string", ""),
         },
     },
+    favoriteAttachments: {
+        key: "favorite-attachments",
+        schema: {
+            ids: createField("array", [], { arrayType: "string" }),
+            urls: createField("array", [], { arrayType: "string" }),
+        },
+    },
 } satisfies StorageSchemas;
