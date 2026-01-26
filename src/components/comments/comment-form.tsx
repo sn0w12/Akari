@@ -72,7 +72,7 @@ export function CommentForm({
                 {selectedAttachment && (
                     <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
                         <Image
-                            src={selectedAttachment.url}
+                            src={selectedAttachment.url!}
                             alt="Selected attachment"
                             className="h-10 w-10 object-cover rounded"
                             height={40}
