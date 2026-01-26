@@ -22,6 +22,61 @@ interface AttachmentPopoverProps {
     onSelect?: (upload: UploadResponse) => void;
 }
 
+function ImageGrid({
+    uploads,
+    isLoading,
+    onSelect,
+    emptyMessage,
+    onClose,
+}: {
+    uploads: UploadResponse[];
+    isLoading: boolean;
+    onSelect?: (upload: UploadResponse) => void;
+    emptyMessage: string;
+    onClose: () => void;
+}) {
+    return (
+        <>
+            {isLoading ? (
+                <div className="grid grid-cols-4 gap-2">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="aspect-square bg-muted rounded animate-pulse"
+                        />
+                    ))}
+                </div>
+            ) : uploads.length > 0 ? (
+                <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                    {uploads.map((upload) => (
+                        <button
+                            key={upload.id}
+                            onClick={() => {
+                                onSelect?.(upload);
+                                onClose();
+                            }}
+                            className="aspect-square w-full overflow-hidden rounded border hover:border-primary transition-colors"
+                        >
+                            <Image
+                                src={upload.url}
+                                alt={upload.tags.join(", ")}
+                                className="w-full h-full object-contain"
+                                height={96}
+                                width={96}
+                                sizes={generateSizes({
+                                    default: "128px",
+                                })}
+                            />
+                        </button>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+            )}
+        </>
+    );
+}
+
 export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -130,44 +185,13 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     </TabsList>
                     <TabsContent value="select" className="space-y-2">
                         <h4 className="font-medium text-sm">Select an image</h4>
-                        {isLoading ? (
-                            <div className="grid grid-cols-4 gap-2">
-                                {Array.from({ length: 12 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="aspect-square bg-muted rounded animate-pulse"
-                                    />
-                                ))}
-                            </div>
-                        ) : uploads.length > 0 ? (
-                            <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
-                                {uploads.map((upload) => (
-                                    <button
-                                        key={upload.id}
-                                        onClick={() => {
-                                            onSelect?.(upload);
-                                            setOpen(false);
-                                        }}
-                                        className="max-h-24 w-auto overflow-hidden rounded border hover:border-primary transition-colors"
-                                    >
-                                        <Image
-                                            src={upload.url}
-                                            alt={upload.tags.join(", ")}
-                                            className="w-full h-full object-cover"
-                                            height={96}
-                                            width={96}
-                                            sizes={generateSizes({
-                                                default: "128px",
-                                            })}
-                                        />
-                                    </button>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="text-sm text-muted-foreground">
-                                No images found.
-                            </p>
-                        )}
+                        <ImageGrid
+                            uploads={uploads}
+                            isLoading={isLoading}
+                            onSelect={onSelect}
+                            emptyMessage="No images found."
+                            onClose={() => setOpen(false)}
+                        />
                     </TabsContent>
                     <TabsContent value="upload" className="space-y-2">
                         <h4 className="font-medium text-sm">Upload an image</h4>
@@ -242,44 +266,13 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     {user && (
                         <TabsContent value="my-uploads" className="space-y-2">
                             <h4 className="font-medium text-sm">My uploads</h4>
-                            {isLoadingMy ? (
-                                <div className="grid grid-cols-4 gap-2">
-                                    {Array.from({ length: 12 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="aspect-square bg-muted rounded animate-pulse"
-                                        />
-                                    ))}
-                                </div>
-                            ) : myUploads.length > 0 ? (
-                                <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
-                                    {myUploads.map((upload) => (
-                                        <button
-                                            key={upload.id}
-                                            onClick={() => {
-                                                onSelect?.(upload);
-                                                setOpen(false);
-                                            }}
-                                            className="max-h-24 w-auto overflow-hidden rounded border hover:border-primary transition-colors"
-                                        >
-                                            <Image
-                                                src={upload.url}
-                                                alt={upload.tags.join(", ")}
-                                                className="w-full h-full object-cover"
-                                                height={80}
-                                                width={80}
-                                                sizes={generateSizes({
-                                                    default: "128px",
-                                                })}
-                                            />
-                                        </button>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">
-                                    No uploads found.
-                                </p>
-                            )}
+                            <ImageGrid
+                                uploads={myUploads}
+                                isLoading={isLoadingMy}
+                                onSelect={onSelect}
+                                emptyMessage="No uploads found."
+                                onClose={() => setOpen(false)}
+                            />
                         </TabsContent>
                     )}
                 </Tabs>
