@@ -143,6 +143,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                         height={600}
                         preload={true}
                         fetchPriority="high"
+                        quality={60}
                         sizes={generateSizes({
                             sm: "128px",
                             lg: "400px",
@@ -162,6 +163,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             height={600}
                             preload={true}
                             fetchPriority="high"
+                            quality={60}
                             sizes={generateSizes({
                                 sm: "128px",
                                 lg: "400px",

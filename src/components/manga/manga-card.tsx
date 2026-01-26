@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, generateSizes } from "@/lib/utils";
+import { useThrottledCallback } from "@tanstack/react-pacer";
 import Image from "next/image";
 import Link from "next/link";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
-import { useThrottledCallback } from "@tanstack/react-pacer";
+import { useEffect, useRef, useState } from "react";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -160,7 +160,7 @@ export function MangaCard({
                         className="h-full w-full object-cover"
                         width={200}
                         height={300}
-                        quality={60}
+                        quality={20}
                         loading={priority ? "eager" : "lazy"}
                         preload={priority}
                         decoding="async"

@@ -131,7 +131,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
                 width={200}
                 height={300}
-                quality={80}
+                quality={40}
                 loading={priority ? "eager" : "lazy"}
                 preload={priority}
                 decoding="async"
