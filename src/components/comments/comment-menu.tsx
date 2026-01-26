@@ -5,11 +5,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Flag, Edit, Trash } from "lucide-react";
 import { useUser } from "@/contexts/user-context";
+import { Edit, Flag, MoreVertical, Trash } from "lucide-react";
 
 interface CommentMenuProps {
     onReport: () => void;
@@ -45,16 +44,17 @@ export function CommentMenu({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-                <DropdownMenuItem
-                    onClick={onReport}
-                    disabled={commentDeleted || !user || user.banned}
-                >
-                    <Flag className="h-3 w-3" />
-                    <span>Report</span>
-                </DropdownMenuItem>
+                {!isOwner && (
+                    <DropdownMenuItem
+                        onClick={onReport}
+                        disabled={commentDeleted || !user || user.banned}
+                    >
+                        <Flag className="h-3 w-3" />
+                        <span>Report</span>
+                    </DropdownMenuItem>
+                )}
                 {isOwner && !commentDeleted && (
                     <>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={onEdit}
                             disabled={showReplyForm || !user || user.banned}
