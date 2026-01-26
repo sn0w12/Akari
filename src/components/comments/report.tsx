@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { client } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
@@ -18,8 +17,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { useState } from "react";
 
 interface ReportCommentDialogProps {
     commentId: string;
@@ -92,10 +92,10 @@ export function ReportCommentDialog({
                                 )
                             }
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select a reason" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent align="center">
                                 <SelectItem value="spam">
                                     Spam or irrelevant content
                                 </SelectItem>
@@ -121,7 +121,7 @@ export function ReportCommentDialog({
                             value={details}
                             onChange={(e) => setDetails(e.target.value)}
                             placeholder="Provide more details about why you're reporting this comment..."
-                            className="min-h-[80px]"
+                            className="min-h-[80px] resize-none"
                         />
                     </div>
                 </div>
