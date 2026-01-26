@@ -246,7 +246,7 @@ export function SettingsInput({
                                     )}
                             </ContextMenuContent>
                         </ContextMenu>
-                        <SelectContent>
+                        <SelectContent align="center">
                             {setting.options.map((option) => (
                                 <SelectItem
                                     key={option.value}

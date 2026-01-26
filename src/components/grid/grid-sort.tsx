@@ -45,7 +45,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort By" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="center">
                 {sorting.sortItems.map((item, index) =>
                     isSeparator(item) ? (
                         <SelectSeparator key={`separator-${index}`} />

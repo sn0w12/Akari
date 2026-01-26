@@ -1,4 +1,4 @@
-import { Select, SelectTrigger, SelectContent, SelectItem } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 
 export function CommentSorting({
     sort,
@@ -17,7 +17,7 @@ export function CommentSorting({
             <SelectTrigger className="min-w-36">
                 {sort === "Latest" ? "Latest" : "Most Upvoted"}
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="center">
                 <SelectItem value="Latest">Latest</SelectItem>
                 <SelectItem value="Upvoted">Most Upvoted</SelectItem>
             </SelectContent>

@@ -288,7 +288,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                             <SelectTrigger className="w-full sm:w-auto">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent align="center">
                                 {RATINGS.filter(
                                     (rating) =>
                                         rating.value !== -1 ||

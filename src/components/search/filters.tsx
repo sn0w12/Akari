@@ -149,7 +149,7 @@ export function FiltersContent({ filters, onChange }: FiltersProps) {
                 <SelectTrigger size="sm" className="min-w-36">
                     <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent align="center">
                     <SelectItem value="search">Default</SelectItem>
                     <SelectItem value="popular">Popular</SelectItem>
                     <SelectItem value="latest">Latest</SelectItem>
