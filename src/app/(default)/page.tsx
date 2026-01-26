@@ -6,6 +6,7 @@ import {
     PopularMangaSkeleton,
 } from "@/components/home/popular-manga";
 import { MangaCard } from "@/components/manga/manga-card";
+import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
@@ -42,10 +43,18 @@ export default async function Home() {
                             <h2 className="text-3xl font-bold mb-2">
                                 Recently Viewed
                             </h2>
-                            <GridBodySkeleton
-                                pageSize={6}
-                                className="lg:grid-cols-6"
-                            />
+                            <div className={GRID_CLASS}>
+                                {[...Array(8)].map((index) => (
+                                    <MangaCardSkeleton
+                                        key={index}
+                                        className={
+                                            index > 5
+                                                ? "block sm:hidden lg:block 2xl:hidden"
+                                                : ""
+                                        }
+                                    />
+                                ))}
+                            </div>
                         </>
                     }
                 >
