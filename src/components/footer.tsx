@@ -14,7 +14,7 @@ export default async function Footer() {
             >
                 <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-2">
                     <div>
-                        <p className="text-center text-base text-muted-foreground flex items-center justify-center gap-2">
+                        <p className="text-center text-base flex items-center justify-center gap-2">
                             <span>&copy; {new Date().getFullYear()} Akari</span>
                             <span className="h-4 border-r border-gray-400"></span>
                             <span>v{version}</span>
@@ -23,7 +23,7 @@ export default async function Footer() {
                                 href={
                                     "https://www.gnu.org/licenses/agpl-3.0.html"
                                 }
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 AGPL-3.0.
@@ -34,21 +34,21 @@ export default async function Footer() {
                         <div className="flex flex-row w-full justify-between">
                             <Link
                                 href="/about"
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 About
                             </Link>
                             <Link
                                 href="/privacy"
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 Privacy
                             </Link>
                             <Link
                                 href="/terms"
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 Terms
@@ -60,7 +60,7 @@ export default async function Footer() {
                                 href="https://github.com/sn0w12/akari"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 <span>GitHub</span>
@@ -69,7 +69,7 @@ export default async function Footer() {
                                 href="https://github.com/sn0w12/akari/issues"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-ring"
+                                className="hover:text-foreground/70"
                                 prefetch={false}
                             >
                                 <span>Report issues</span>

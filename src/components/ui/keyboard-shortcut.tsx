@@ -69,7 +69,7 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
     return (
         <span
             className={cn(
-                "text-muted-foreground pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-1 text-sm",
+                "text-foreground/70 pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-1 text-sm",
                 className,
             )}
         >

@@ -1,11 +1,5 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
-import SearchBar from "./header/search/search-bar";
-import SearchButton from "./header/search/search-button";
-import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import BookmarksButton from "./header/bookmarks-button";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -13,18 +7,24 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { ButtonLink } from "./ui/button-link";
-import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useSetting, useSettingsChange } from "@/lib/settings";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { inPreview } from "@/config";
+import { useBorderColor } from "@/contexts/border-color-context";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
-import { HomeIcon } from "lucide-react";
+import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
+import { useSetting, useSettingsChange } from "@/lib/settings";
 import Toast from "@/lib/toast-wrapper";
-import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
-import { useBorderColor } from "@/contexts/border-color-context";
+import { HomeIcon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import BookmarksButton from "./header/bookmarks-button";
+import SearchBar from "./header/search/search-bar";
+import SearchButton from "./header/search/search-button";
+import { Badge } from "./ui/badge";
+import { ButtonLink } from "./ui/button-link";
 
 interface HeaderProps {
     notification: string;
@@ -123,7 +123,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
                     <Badge
                         variant="positive"
                         className={cn(
-                            "hidden md:block text-xs font-bold px-2 h-5",
+                            "hidden md:block text-xs font-bold px-2 h-5 dark:text-sidebar",
                             {
                                 "ml-1": isSidebarCollapsed,
                             },
