@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "@/components/ui/popover-drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
@@ -106,8 +106,8 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     };
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+        <PopoverDrawer open={open} onOpenChange={setOpen}>
+            <PopoverDrawerTrigger>
                 <Button
                     variant="outline"
                     size="sm"
@@ -116,10 +116,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                 >
                     <ImageIcon className="h-4 w-4" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-screen sm:w-96 p-4" side="top">
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent popoverSide="top">
                 <Tabs defaultValue="select" className="w-full">
-                    <TabsList>
+                    <TabsList className="w-full">
                         <TabsTrigger value="select">Select</TabsTrigger>
                         {user && (
                             <TabsTrigger value="my-uploads">
@@ -283,7 +283,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         </TabsContent>
                     )}
                 </Tabs>
-            </PopoverContent>
-        </Popover>
+            </PopoverDrawerContent>
+        </PopoverDrawer>
     );
 }
