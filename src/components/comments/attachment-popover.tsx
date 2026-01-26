@@ -67,7 +67,7 @@ function ImageGrid({
                                 className="w-full h-full overflow-hidden rounded border hover:border-primary transition-colors"
                             >
                                 <Image
-                                    src={upload.url}
+                                    src={upload.url!}
                                     alt={upload.tags.join(", ")}
                                     className="w-full h-full object-contain"
                                     height={96}

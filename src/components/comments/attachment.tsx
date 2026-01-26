@@ -9,12 +9,22 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { ImageIcon } from "lucide-react";
 
 export function CommentAttachment({
     attachment,
 }: {
     attachment: components["schemas"]["UploadResponse"];
 }) {
+    if (!attachment.url) {
+        return (
+            <div className="p-2 border-1 w-fit rounded-lg mb-2 flex flex-col items-center justify-center text-destructive border-destructive">
+                <ImageIcon className="size-8" />
+                <p>Attachment Deleted</p>
+            </div>
+        );
+    }
+
     return (
         <Dialog>
             <DialogTrigger asChild>

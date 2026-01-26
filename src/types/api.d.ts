@@ -4726,15 +4726,16 @@ export interface components {
             id: string;
             /** Format: uuid */
             userId: string;
-            md5Hash: string;
+            md5Hash?: string | null;
             /** Format: int64 */
             size: number;
-            url: string;
+            url?: string | null;
             /** Format: int32 */
             usageCount: number;
             tags: string[];
             /** Format: date-time */
             createdAt: string;
+            deleted: boolean;
         };
         UploadResponsePaginatedResponse: {
             items: components["schemas"]["UploadResponse"][];
