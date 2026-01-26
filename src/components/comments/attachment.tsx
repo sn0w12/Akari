@@ -38,7 +38,7 @@ export function CommentAttachment({
                 </DialogTrigger>
             </div>
             <DialogContent
-                className="flex max-h-[90vh] w-auto max-w-[90vw] items-center justify-center p-2 sm:max-w-5xl"
+                className="flex max-h-[90vh] w-auto max-w-[90vw] items-center justify-center p-2"
                 showCloseButton
             >
                 <DialogTitle className="sr-only">
@@ -47,7 +47,7 @@ export function CommentAttachment({
                 <Image
                     src={attachment.url}
                     alt="Comment attachment"
-                    className="h-auto max-h-[85vh] w-auto max-w-[90vw] rounded-md"
+                    className="h-auto max-h-[85vh] w-auto max-w-[85vw] rounded-md"
                     height={1200}
                     width={1200}
                     sizes={generateSizes({
