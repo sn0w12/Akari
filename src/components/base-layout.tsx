@@ -34,6 +34,7 @@ import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { AccountButton } from "./account/account-button";
 import { HeaderComponent } from "./header";
+import { PullToRefresh } from "./pull-to-refresh";
 import { KeyboardShortcut } from "./ui/keyboard-shortcut";
 import { Separator } from "./ui/separator";
 
@@ -64,6 +65,10 @@ export function BaseLayout({
         enabled: !!user,
     });
 
+    const handleRefresh = async (): Promise<void> => {
+        router.refresh();
+    };
+
     const handleSettingsClick = () => {
         router.push("/settings");
     };
@@ -82,7 +87,7 @@ export function BaseLayout({
     return (
         <div className="flex flex-col w-full" data-vaul-drawer-wrapper>
             <Suspense
-                fallback={<div className="h-12 md:h-10 bg-sidebar border-b" />}
+                fallback={<div className="h-14 md:h-10 bg-sidebar border-b" />}
             >
                 <HeaderComponent notification={notification} />
             </Suspense>
@@ -92,13 +97,13 @@ export function BaseLayout({
                         <SidebarMenu className="p-2 pt-3 gap-0.5">
                             <Separator className="hidden md:block" />
 
-                            <SidebarMenuItem>
+                            <SidebarMenuItem className="hidden md:block">
                                 <SidebarMenuLink tooltip="Home" href="/">
                                     <HomeIcon />
                                     <span>Home</span>
                                 </SidebarMenuLink>
                             </SidebarMenuItem>
-                            <SidebarMenuItem>
+                            <SidebarMenuItem className="hidden md:block">
                                 <SidebarMenuLink
                                     tooltip={`Bookmarks${
                                         notification ? " •" : ""
@@ -119,7 +124,7 @@ export function BaseLayout({
                                     />
                                 </SidebarMenuLink>
                             </SidebarMenuItem>
-                            <SidebarMenuItem>
+                            <SidebarMenuItem className="hidden md:block">
                                 <SidebarMenuLink
                                     tooltip="Popular"
                                     href="/popular"
@@ -138,7 +143,7 @@ export function BaseLayout({
                                 </SidebarMenuLink>
                             </SidebarMenuItem>
 
-                            <Separator />
+                            <Separator className="hidden md:block" />
 
                             {Object.entries(GENRE_CATEGORIES).map(
                                 ([category, genres]) => (
@@ -188,16 +193,18 @@ export function BaseLayout({
                         </SidebarMenuItem>
                     </SidebarFooter>
                 </Sidebar>
-                <main
+                <PullToRefresh
+                    as="main"
+                    onRefresh={handleRefresh}
                     className={cn(
-                        `bg-background flex flex-col flex-1 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full`,
+                        "bg-background flex flex-col flex-1 mb-14 md:mb-0 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full",
                         borderClass,
                     )}
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                     id="scroll-element"
                 >
                     {children}
-                </main>
+                </PullToRefresh>
             </div>
         </div>
     );

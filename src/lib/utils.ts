@@ -191,7 +191,7 @@ export function createMetadata(options: MetadataOptions): Metadata {
         },
         appleWebApp: {
             title: "Akari",
-            statusBarStyle: "black",
+            statusBarStyle: "black-translucent",
             startupImage: [
                 {
                     url: "/pwa/apple-splash-2048-2732.jpg",

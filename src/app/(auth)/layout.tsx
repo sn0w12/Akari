@@ -1,14 +1,24 @@
 import "@/app/globals.css";
-import localFont from "next/font/local";
-import { inDevelopment } from "@/config";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { inDevelopment } from "@/config";
+import { Viewport } from "next";
+import localFont from "next/font/local";
 
 const geistSans = localFont({
     src: "../../../public/fonts/GeistVF.woff",
     variable: "--font-geist-sans",
     weight: "100 900",
 });
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    themeColor: [
+        { media: "(prefers-color-scheme: dark)", color: "rgb(10, 10, 10)" },
+        { media: "(prefers-color-scheme: light)", color: "rgb(255, 255, 255)" },
+    ],
+};
 
 export default async function RootLayout({
     children,

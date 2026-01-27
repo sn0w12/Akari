@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 
-type borderColor = `border-${string}`;
+type borderColor = `border-${string}` | undefined;
 
 interface BorderColorContextType {
     borderClass: string;
@@ -15,14 +15,12 @@ const BorderColorContext = createContext<BorderColorContextType | undefined>(
 
 export function BorderColorProvider({
     children,
-    baseColor,
     duration = 1000,
 }: {
     children: ReactNode;
-    baseColor: borderColor;
     duration?: number;
 }) {
-    const [currentColor, setCurrentColor] = useState<borderColor>(baseColor);
+    const [currentColor, setCurrentColor] = useState<borderColor>(undefined);
     const borderClass = useMemo(() => {
         return `${currentColor} transition-colors duration-[${duration}ms] ease-in-out`;
     }, [currentColor, duration]);
@@ -30,7 +28,7 @@ export function BorderColorProvider({
     function flashColor(color: borderColor) {
         setCurrentColor(color);
         setTimeout(() => {
-            setCurrentColor(baseColor);
+            setCurrentColor(undefined);
         }, duration);
     }
 

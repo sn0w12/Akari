@@ -1,3 +1,4 @@
+import { useDevice } from "@/contexts/device-context";
 import { useKeyPressed } from "@/hooks/use-keys-pressed";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
@@ -62,9 +63,10 @@ function Kbd({
 function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
+    const { deviceType } = useDevice();
 
     const shouldShow = useSetting("showShortcuts");
-    if (!shouldShow) return null;
+    if (!shouldShow || deviceType === "mobile") return null;
 
     return (
         <span
@@ -91,9 +93,10 @@ function ContextKeyboardShortcut({
 }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
+    const { deviceType } = useDevice();
 
     const shouldShow = useSetting("showShortcuts");
-    if (!shouldShow) return null;
+    if (!shouldShow || deviceType === "mobile") return null;
 
     return (
         <span

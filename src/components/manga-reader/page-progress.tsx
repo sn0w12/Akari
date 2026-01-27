@@ -87,17 +87,13 @@ export default function PageProgress({
     return (
         <div
             className={cn(
-                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto",
+                "flex transition-opacity fixed z-50 left-4 right-4 bottom-16 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,
                 },
             )}
-            style={
-                windowWidth <= cutoff
-                    ? { bottom: "1rem", width: "calc(100% - 118px)" }
-                    : {}
-            }
+            style={windowWidth <= cutoff ? { width: "calc(100% - 118px)" } : {}}
         >
             <div
                 ref={containerRef}

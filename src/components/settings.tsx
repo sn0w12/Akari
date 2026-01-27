@@ -252,7 +252,7 @@ export default function SettingsPage() {
                         <TabsContent key={groupName} value={groupName}>
                             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr]">
                                 <Card className="gap-0 pt-0 rounded-t-none md:rounded-tr-xl">
-                                    <CardHeader className="bg-card sticky top-11 md:top-8 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
+                                    <CardHeader className="bg-card sticky top-9 md:top-8 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
                                         <CardTitle className="w-full">
                                             <h2 className="w-full border-b pt-3 pb-2 text-2xl font-medium">
                                                 {groupName
@@ -599,7 +599,7 @@ export default function SettingsPage() {
                                                                                 }} // adjust for sticky header
                                                                             >
                                                                                 {/* Sticky main group header */}
-                                                                                <h3 className="bg-card sticky top-29 md:top-26 z-20 border-b pb-2 text-lg font-medium">
+                                                                                <h3 className="bg-card sticky top-27 md:top-26 z-20 border-b pb-2 text-lg font-medium">
                                                                                     {
                                                                                         groupName
                                                                                     }
@@ -635,7 +635,7 @@ export default function SettingsPage() {
                                                                                             }}
                                                                                         >
                                                                                             {/* Sticky subgroup header */}
-                                                                                            <h4 className="text-md bg-card sticky top-38 md:top-35 z-10 flex items-center pt-1 font-medium">
+                                                                                            <h4 className="text-md bg-card sticky top-36 md:top-35 z-10 flex items-center pt-1 font-medium">
                                                                                                 {
                                                                                                     subgroupPath
                                                                                                 }

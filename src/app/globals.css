@@ -91,7 +91,7 @@ body {
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
 
-    --reader-offset: 49px;
+    --reader-offset: 56px;
 }
 
 .dark {
