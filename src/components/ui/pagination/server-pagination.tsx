@@ -1,13 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { BasePagination } from "./base-pagination";
 
 interface PaginationElementProps {
     currentPage: number;
     totalPages: number;
+    href: string;
     className?: string;
-    href?: string;
 }
 
 export function ServerPagination({
@@ -16,30 +17,56 @@ export function ServerPagination({
     className,
     href,
 }: PaginationElementProps) {
+    return (
+        <Suspense
+            fallback={
+                <ServerPaginationFallback
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    className={className}
+                    href={href}
+                />
+            }
+        >
+            <ServerPaginationContent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                className={className}
+                href={href}
+            />
+        </Suspense>
+    );
+}
+
+function ServerPaginationContent({
+    currentPage,
+    totalPages,
+    className,
+    href,
+}: PaginationElementProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const createPageUrl = (page: number) => {
-        if (typeof window === "undefined") {
-            return href || `?page=${page}`;
-        }
-
-        const base = href || "";
-        const separator = base.includes("?") ? "&" : "?";
-
         // Get all current search params except 'page'
         const params = new URLSearchParams();
-        const searchParams = new URL(window.location.href).searchParams;
         searchParams.forEach((value, key) => {
             if (key !== "page" && value) {
                 params.append(key, value);
             }
         });
 
-        // Add the new page param
-        params.set("page", page.toString());
-
         const paramsString = params.toString();
-        return base + separator + paramsString;
+
+        let url = href;
+        if (page > 1) {
+            url += `/${page}`;
+        }
+        if (paramsString) {
+            url += `?${paramsString}`;
+        }
+
+        return url;
     };
 
     return (
@@ -49,6 +76,25 @@ export function ServerPagination({
             className={className}
             getPageUrl={createPageUrl}
             onPrefetch={(url) => router.prefetch(url)}
+        />
+    );
+}
+
+function ServerPaginationFallback({
+    currentPage,
+    totalPages,
+    className,
+    href,
+}: PaginationElementProps) {
+    return (
+        <BasePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            className={className}
+            getPageUrl={() => {
+                return href;
+            }}
+            onPrefetch={() => {}}
         />
     );
 }

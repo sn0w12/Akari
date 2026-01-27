@@ -1,5 +1,4 @@
 import ErrorPage from "@/components/error-page";
-import { GridBodySkeleton } from "@/components/grid-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
@@ -10,13 +9,9 @@ import {
 import { createMetadata, createOgImage } from "@/lib/utils";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
-import { Suspense } from "react";
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-    searchParams: Promise<{
-        page: string;
-    }>;
+export interface AuthorPageProps {
+    params: Promise<{ id: string; page?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -33,7 +28,9 @@ export async function generateStaticParams() {
     return authorIds.map((id) => ({ id }));
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
+export async function generateMetadata(
+    props: AuthorPageProps,
+): Promise<Metadata> {
     const params = await props.params;
     const name = params.id.replaceAll("-", " ");
     const description = `View all manga by ${name} on Akari for free.`;
@@ -46,7 +43,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
 }
 
-async function getAuthor(name: string, page: number) {
+export async function getAuthor(name: string, page: number) {
     "use cache";
     cacheLife("hours");
     cacheTag("author", `author-${name}`);
@@ -71,36 +68,29 @@ async function getAuthor(name: string, page: number) {
     return { data, error: null };
 }
 
-export default async function AuthorPage(props: PageProps) {
+export default async function AuthorPage(props: AuthorPageProps) {
     return (
         <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
             <div className="flex gap-4">
-                <AuthorHeader {...props} />
+                <AuthorHeader params={props.params} />
             </div>
-
-            <Suspense fallback={<GridBodySkeleton pageSize={6} />}>
-                <AuthorBody {...props} />
-            </Suspense>
+            <AuthorBody params={props.params} />
         </div>
     );
 }
 
-async function AuthorHeader(props: PageProps) {
-    const params = await props.params;
-    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+export async function AuthorHeader({ params }: AuthorPageProps) {
+    const { id } = await params;
+    const title = decodeURIComponent(id).replaceAll("-", " ");
 
     return <h2 className="text-3xl font-bold mb-2">{title}</h2>;
 }
 
-async function AuthorBody(props: PageProps) {
-    const params = await props.params;
-    const searchParams = await props.searchParams;
-    const title = decodeURIComponent(params.id).replaceAll("-", " ");
+export async function AuthorBody({ params }: AuthorPageProps) {
+    const { id, page } = await params;
+    const title = decodeURIComponent(id).replaceAll("-", " ");
 
-    const { data, error } = await getAuthor(
-        title,
-        Number(searchParams.page) || 1,
-    );
+    const { data, error } = await getAuthor(title, Number(page) || 1);
 
     if (error || !data) {
         return <ErrorPage error={error} />;
@@ -113,6 +103,7 @@ async function AuthorBody(props: PageProps) {
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
                 className="mt-4"
+                href={`/author/${id}`}
             />
         </>
     );

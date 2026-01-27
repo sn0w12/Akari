@@ -13,8 +13,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 
 interface PageProps {
+    params: Promise<{ page?: string }>;
     searchParams: Promise<{
-        page: string;
         days: string;
     }>;
 }
@@ -98,7 +98,8 @@ async function PopularSorting(props: PageProps) {
 }
 
 async function PopularBody(props: PageProps) {
-    const { page, days } = await props.searchParams;
+    const { page } = await props.params;
+    const { days } = await props.searchParams;
     const { data, error } = await getPopularData(
         Number(page) || 1,
         Number(days) || 30,
@@ -115,6 +116,7 @@ async function PopularBody(props: PageProps) {
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
                 className="mt-4"
+                href="/popular"
             />
         </>
     );

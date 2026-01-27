@@ -1,17 +1,13 @@
 import ErrorPage from "@/components/error-page";
-import { GridBodySkeleton } from "@/components/grid-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { createMetadata } from "@/lib/utils";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
-import { Suspense } from "react";
 
 interface PageProps {
-    searchParams: Promise<{
-        page: string;
-    }>;
+    params: Promise<{ page?: string }>;
 }
 
 export const metadata: Metadata = createMetadata({
@@ -46,15 +42,13 @@ export default async function Latest(props: PageProps) {
                 <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
             </div>
 
-            <Suspense fallback={<GridBodySkeleton />}>
-                <LatestBody {...props} />
-            </Suspense>
+            <LatestBody {...props} />
         </div>
     );
 }
 
 async function LatestBody(props: PageProps) {
-    const { page } = await props.searchParams;
+    const { page } = await props.params;
     const { data, error } = await getLatestData(Number(page) || 1);
 
     if (error || !data) {
@@ -68,6 +62,7 @@ async function LatestBody(props: PageProps) {
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
                 className="mt-4"
+                href="/latest"
             />
         </>
     );

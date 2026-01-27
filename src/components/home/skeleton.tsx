@@ -1,8 +1,8 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ServerPagination } from "../ui/pagination/server-pagination";
-import MangaCardSkeleton from "../manga/manga-card-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GRID_CLASS } from "../grid-page";
+import MangaCardSkeleton from "../manga/manga-card-skeleton";
+import { ServerPagination } from "../ui/pagination/server-pagination";
 
 export default function HomeSkeleton() {
     return (
@@ -32,7 +32,7 @@ export default function HomeSkeleton() {
                     ))}
                 </div>
             </div>
-            <ServerPagination currentPage={1} totalPages={400} />
+            <ServerPagination currentPage={1} totalPages={400} href="/latest" />
         </>
     );
 }
