@@ -27,10 +27,6 @@ export const metadata: Metadata = { title: "Akari" };
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    themeColor: [
-        { media: "(prefers-color-scheme: dark)", color: "rgb(10, 10, 10)" },
-        { media: "(prefers-color-scheme: light)", color: "rgb(255, 255, 255)" },
-    ],
 };
 
 export default async function RootLayout({
