@@ -85,7 +85,10 @@ export function BaseLayout({
     );
 
     return (
-        <div className="flex flex-col w-full" data-vaul-drawer-wrapper>
+        <div
+            className="flex flex-col w-full standalone:mt-8"
+            data-vaul-drawer-wrapper
+        >
             <Suspense
                 fallback={<div className="h-14 md:h-10 bg-sidebar border-b" />}
             >
@@ -93,7 +96,10 @@ export function BaseLayout({
             </Suspense>
             <div className="bg-sidebar flex flex-1">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
-                    <SidebarContent data-scrollbar-custom="true">
+                    <SidebarContent
+                        data-scrollbar-custom="true"
+                        className="standalone:mt-8"
+                    >
                         <SidebarMenu className="p-2 pt-3 gap-0.5">
                             <Separator className="hidden md:block" />
 
