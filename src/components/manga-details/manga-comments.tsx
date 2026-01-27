@@ -1,14 +1,9 @@
 "use server";
 
 import { client, serverHeaders } from "@/lib/api";
-import { cacheLife, cacheTag } from "next/cache";
 import { MangaCommentList } from "./manga-comment-list";
 
-const getMangaComments = async (id: string) => {
-    "use cache";
-    cacheLife("minutes");
-    cacheTag("comments", `comments-${id}`);
-
+async function getMangaComments(id: string) {
     const { data, error } = await client.GET("/v2/comments/{id}", {
         params: {
             path: {
@@ -28,7 +23,7 @@ const getMangaComments = async (id: string) => {
     }
 
     return { data: data.data, error: null };
-};
+}
 
 export type CommentTarget = "manga" | "chapter";
 
