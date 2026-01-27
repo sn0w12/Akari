@@ -314,7 +314,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                 </Button>
             </PopoverDrawerTrigger>
             <PopoverDrawerContent popoverSide="top" popoverClassName="w-96">
-                <Tabs defaultValue="select" className="w-full">
+                <Tabs defaultValue="select" className="w-full text-base">
                     <TabsList className="w-full">
                         <TabsTrigger value="select">Select</TabsTrigger>
                         <TabsTrigger value="favorites">Favorites</TabsTrigger>
@@ -326,7 +326,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         <TabsTrigger value="upload">Upload</TabsTrigger>
                     </TabsList>
                     <TabsContent value="select" className="space-y-2">
-                        <h4 className="font-medium text-sm">Select an image</h4>
+                        <h4 className="font-medium">Select an image</h4>
                         <Input
                             type="search"
                             value={searchQuery}
@@ -345,7 +345,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         />
                     </TabsContent>
                     <TabsContent value="favorites" className="space-y-2">
-                        <h4 className="font-medium text-sm">Favorite images</h4>
+                        <h4 className="font-medium">Favorite images</h4>
                         <ImageGrid
                             uploads={favoriteUploads}
                             isLoading={false}
@@ -357,7 +357,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         />
                     </TabsContent>
                     <TabsContent value="upload" className="space-y-2">
-                        <h4 className="font-medium text-sm">Upload an image</h4>
+                        <h4 className="font-medium">Upload an image</h4>
                         <form onSubmit={handleUpload} className="space-y-2">
                             <div
                                 className={`border-2 border-dashed bg-background rounded-lg p-4 text-center cursor-pointer transition-colors ${
@@ -389,12 +389,12 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                             height={80}
                                             width={80}
                                         />
-                                        <p className="text-sm">{file.name}</p>
+                                        <p>{file.name}</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
                                         <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-muted-foreground">
                                             Drop image here or click to select
                                         </p>
                                     </div>
@@ -414,7 +414,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                 placeholder="Enter tags separated by commas (optional)"
                                 value={tags}
                                 onChange={(e) => setTags(e.target.value)}
-                                className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+                                className="w-full px-3 py-2 border border-input bg-background rounded-md"
                             />
                             <Button
                                 type="submit"
@@ -428,7 +428,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                     </TabsContent>
                     {user && (
                         <TabsContent value="my-uploads" className="space-y-2">
-                            <h4 className="font-medium text-sm">My uploads</h4>
+                            <h4 className="font-medium">My uploads</h4>
                             <ImageGrid
                                 uploads={myUploads}
                                 isLoading={isLoadingMy}

@@ -62,7 +62,7 @@ export function CommentForm({
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder={placeholder}
-                    className="min-h-[80px] resize-none text-sm sm:text-base"
+                    className="min-h-[80px] resize-none text-base"
                     autoFocus={autoFocus}
                     disabled={
                         isSubmitting || !currentUser || currentUser.banned
