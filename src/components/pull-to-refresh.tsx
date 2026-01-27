@@ -70,7 +70,7 @@ export function PullToRefresh({
     const [canPull, setCanPull] = useState<boolean>(false);
     const pullTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    useBodyScrollListener((element) => setIsAtTop(element.scrollTop === 0), {
+    useBodyScrollListener((element) => setIsAtTop(element.scrollTop < 20), {
         passive: true,
     });
 
@@ -97,8 +97,8 @@ export function PullToRefresh({
     useEffect(() => {
         if (typeof document === "undefined") return;
         document.documentElement.style.overscrollBehavior =
-            isEnabled && isAtTop ? "none" : "auto";
-    }, [isEnabled, isAtTop]);
+            isEnabled && isAtTop && canPull ? "none" : "auto";
+    }, [isEnabled, isAtTop, canPull]);
 
     const progress: number = useMemo(
         () => Math.min(pullDistance / threshold, 1),
