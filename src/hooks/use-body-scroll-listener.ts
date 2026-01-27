@@ -3,8 +3,11 @@ import { useEffect } from "react";
 export function useBodyScrollListener(
     callback: (element: HTMLElement) => void,
     options: AddEventListenerOptions = { passive: true },
+    enabled: boolean = true,
 ) {
     useEffect(() => {
+        if (!enabled) return;
+
         const mainElement = document.getElementById(
             "scroll-element",
         ) as HTMLElement;
@@ -43,5 +46,5 @@ export function useBodyScrollListener(
         return () => {
             controller.abort();
         };
-    }, [callback, options]);
+    }, [callback, options, enabled]);
 }

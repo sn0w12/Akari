@@ -73,15 +73,20 @@ export function PullToRefresh({
 
     const handleScroll = useThrottledCallback(
         (element: HTMLElement) => {
+            console.log("scroll", element.scrollTop);
             setIsAtTop(element.scrollTop < 20);
         },
         {
             wait: 50,
         },
     );
-    useBodyScrollListener(handleScroll, {
-        passive: true,
-    });
+    useBodyScrollListener(
+        handleScroll,
+        {
+            passive: true,
+        },
+        isEnabled,
+    );
 
     useEffect(() => {
         if (isAtTop) {
