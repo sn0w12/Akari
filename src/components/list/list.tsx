@@ -318,13 +318,13 @@ export function ListComponent({ id }: { id: string }) {
     }
 
     return (
-        <div className="px-4 pb-4 pt-2">
+        <div className="px-4 pb-4 pt-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold">{data.title}</h1>
                     <p className="text-muted-foreground">{data.description}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col-reverse md:flex-row gap-2 items-end">
                     {isOwner && <ListCommand listId={id} />}
                     <Link
                         href={`/user/${data.user.userId}`}
