@@ -45,7 +45,7 @@ function ChaptersControls({
                 onClick={() =>
                     onSortChange(sortOrder === "asc" ? "desc" : "asc")
                 }
-                className="flex-1"
+                className="flex-1 has-[>svg]:px-4"
             >
                 <ArrowUpDown className="h-4 w-4" />
                 Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
