@@ -31,6 +31,7 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Popular Manga"
                     href="/popular"
+                    prefetch={true}
                     active={pathname === "/popular"}
                     className={borderClass}
                 >
@@ -39,6 +40,7 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Home"
                     href="/"
+                    prefetch={true}
                     active={pathname === "/" || pathname.startsWith("/latest")}
                     className={borderClass}
                 >
@@ -47,6 +49,7 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Search"
                     href="/search"
+                    prefetch={true}
                     active={pathname === "/search"}
                     className={borderClass}
                 >

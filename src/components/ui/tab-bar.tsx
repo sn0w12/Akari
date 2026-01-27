@@ -55,6 +55,7 @@ export interface TabBarTriggerProps
         React.ButtonHTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof tabBarTriggerVariants> {
     href?: string;
+    prefetch?: boolean | "auto" | null;
     active?: boolean;
 }
 
@@ -62,6 +63,7 @@ function TabBarTrigger({
     className,
     variant,
     href,
+    prefetch,
     active,
     children,
     ...props
@@ -72,6 +74,7 @@ function TabBarTrigger({
         return (
             <Link
                 href={href}
+                prefetch={prefetch}
                 className={cn(
                     tabBarTriggerVariants({ variant, active: isActive }),
                     className,
