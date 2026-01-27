@@ -1,23 +1,21 @@
 "use client";
 
-import Image from "next/image";
-import MangaFooter from "../manga-footer";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { syncAllServices } from "@/lib/manga/sync";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import StripPageProgress from "../strip-page-progress";
+import { useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
+import MangaFooter from "../manga-footer";
+import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
     scrollMetrics: {
         pixels: number;
         percentage: number;
-        useDocumentScroll: boolean;
-        mainTop: number;
         clientHeight: number;
     };
     toggleReaderMode: () => void;
@@ -52,18 +50,14 @@ export default function StripReader({
             imagesLoaded !== chapter.images.length
         )
             return;
-        const { useDocumentScroll, mainTop, clientHeight } = scrollMetrics;
+        const { clientHeight } = scrollMetrics;
         const firstImage = readerRef.current.querySelector(
             "img",
         ) as HTMLImageElement;
         if (!firstImage) return;
-        const firstImageTop = useDocumentScroll
-            ? firstImage.offsetTop
-            : firstImage.offsetTop - mainTop;
+        const firstImageTop = firstImage.offsetTop;
         const lastImage = lastImageRef.current;
-        const lastImageBottom = useDocumentScroll
-            ? lastImage.offsetTop + lastImage.offsetHeight
-            : lastImage.offsetTop + lastImage.offsetHeight - mainTop;
+        const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
         const totalHeight = lastImageBottom - clientHeight - firstImageTop;
         const currentPosition = scrollMetrics.pixels - firstImageTop;
         const newProgress = Math.max(

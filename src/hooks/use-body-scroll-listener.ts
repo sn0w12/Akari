@@ -11,11 +11,25 @@ export function useBodyScrollListener(
         if (!mainElement) return;
 
         // Initial call to set up metrics
-        callback(mainElement);
+        const initialMainScroll = mainElement.scrollTop;
+        const initialWindowScroll = window.scrollY;
+        const initialElement =
+            initialMainScroll >= initialWindowScroll
+                ? mainElement
+                : document.documentElement;
+        callback(initialElement);
 
         const controller = new AbortController();
         const signal = controller.signal;
-        const wrappedCallback = () => callback(mainElement);
+        const wrappedCallback = () => {
+            const mainScroll = mainElement.scrollTop;
+            const windowScroll = window.scrollY;
+            const element =
+                mainScroll >= windowScroll
+                    ? mainElement
+                    : document.documentElement;
+            callback(element);
+        };
 
         mainElement.addEventListener("scroll", wrappedCallback, {
             ...options,

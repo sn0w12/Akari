@@ -48,8 +48,6 @@ export function Reader({ chapter }: ReaderProps) {
     const [scrollMetrics, setScrollMetrics] = useState({
         pixels: 0,
         percentage: 0,
-        useDocumentScroll: false,
-        mainTop: 0,
         clientHeight: 0,
     });
 
@@ -97,31 +95,15 @@ export function Reader({ chapter }: ReaderProps) {
     }, [resetInactivityTimer]);
 
     const calculateScrollMetrics = (mainElement: HTMLElement) => {
-        const mainScrollTop = mainElement.scrollTop;
-        const documentScrollTop = document.documentElement.scrollTop;
-        const mainTop = mainElement.offsetTop;
-
-        // Determine which scroll values to use based on the condition
-        const useDocumentScroll =
-            mainScrollTop === 0 && documentScrollTop !== 0;
-
-        const scrollTop = useDocumentScroll ? documentScrollTop : mainScrollTop;
-
-        const scrollHeight = useDocumentScroll
-            ? document.documentElement.scrollHeight
-            : mainElement.scrollHeight;
-
-        const clientHeight = useDocumentScroll
-            ? window.innerHeight
-            : mainElement.clientHeight;
+        const scrollTop = mainElement.scrollTop;
+        const scrollHeight = mainElement.scrollHeight;
+        const clientHeight = mainElement.clientHeight;
 
         // Calculate percentage
         const percentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
         setScrollMetrics({
             pixels: scrollTop,
             percentage: Math.min(100, Math.max(0, percentage)),
-            useDocumentScroll,
-            mainTop,
             clientHeight,
         });
     };
