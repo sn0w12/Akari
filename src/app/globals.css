@@ -293,3 +293,9 @@ li {
     background-color: var(--accent-color);
     color: oklch(0.985 0 0);
 }
+
+@media (display-mode: standalone) {
+    html {
+        overscroll-behavior: none;
+    }
+}
