@@ -11,6 +11,7 @@ function Drawer({
     return (
         <DrawerPrimitive.Root
             repositionInputs={false}
+            shouldScaleBackground={true}
             data-slot="drawer"
             {...props}
         />

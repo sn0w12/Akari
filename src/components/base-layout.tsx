@@ -80,7 +80,7 @@ export function BaseLayout({
     );
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full" data-vaul-drawer-wrapper>
             <Suspense
                 fallback={<div className="h-12 md:h-10 bg-sidebar border-b" />}
             >
