@@ -3,6 +3,7 @@
 import { useDevice } from "@/contexts/device-context";
 import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { cn } from "@/lib/utils";
+import { useThrottledCallback } from "@tanstack/react-pacer";
 import { ArrowDown } from "lucide-react";
 import React, {
     CSSProperties,
@@ -70,7 +71,15 @@ export function PullToRefresh({
     const [canPull, setCanPull] = useState<boolean>(false);
     const pullTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    useBodyScrollListener((element) => setIsAtTop(element.scrollTop < 20), {
+    const handleScroll = useThrottledCallback(
+        (element: HTMLElement) => {
+            setIsAtTop(element.scrollTop < 20);
+        },
+        {
+            wait: 50,
+        },
+    );
+    useBodyScrollListener(handleScroll, {
         passive: true,
     });
 
