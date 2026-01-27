@@ -62,7 +62,7 @@ export function JumpToPagePopover({
                     <p className="text-xs text-muted-foreground text-center">
                         Jump to page
                     </p>
-                    <div className="flex gap-1">
+                    <div className="flex">
                         <NumberInput
                             type="number"
                             min="1"
@@ -71,7 +71,7 @@ export function JumpToPagePopover({
                             onChange={(e) => setJumpToPage(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Page"
-                            className="h-7 text-xs"
+                            className="h-7 text-xs rounded-r-none"
                             wrapperClassName="flex-1"
                             autoFocus
                         />
@@ -83,7 +83,7 @@ export function JumpToPagePopover({
                                 Number.parseInt(jumpToPage) < 1 ||
                                 Number.parseInt(jumpToPage) > totalPages
                             }
-                            className="h-7 px-2 text-xs"
+                            className="h-7 px-2 text-xs rounded-l-none"
                         >
                             Go
                         </Button>
