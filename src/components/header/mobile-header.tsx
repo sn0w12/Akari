@@ -1,7 +1,6 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
-import { cn } from "@/lib/utils";
 import {
     BookmarkIcon,
     HomeIcon,
@@ -19,8 +18,8 @@ export function MobileHeader() {
     const { borderClass } = useBorderColor();
 
     return (
-        <TabBar className={cn("md:hidden")}>
-            <TabBarList className="standalone:pb-4">
+        <TabBar className="md:hidden">
+            <TabBarList className="standalone:h-20">
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}
