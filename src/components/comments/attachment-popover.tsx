@@ -314,7 +314,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                 </Button>
             </PopoverDrawerTrigger>
             <PopoverDrawerContent popoverSide="top" popoverClassName="w-96">
-                <Tabs defaultValue="select" className="w-full text-base">
+                <Tabs
+                    defaultValue="select"
+                    className="w-full text-base flex flex-col-reverse md:flex-col"
+                >
                     <TabsList className="w-full">
                         <TabsTrigger value="select">Select</TabsTrigger>
                         <TabsTrigger value="favorites">Favorites</TabsTrigger>
