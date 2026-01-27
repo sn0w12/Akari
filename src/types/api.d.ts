@@ -4981,7 +4981,7 @@ export interface components {
             userId: string;
             username: string;
             displayName: string;
-            role: string;
+            role: components["schemas"]["UserRole"];
             banned: boolean;
             /** Format: date-time */
             createdAt?: string | null;
@@ -5010,7 +5010,7 @@ export interface components {
             userId: string;
             username: string;
             displayName: string;
-            role: string;
+            role: components["schemas"]["UserRole"];
             banned: boolean;
         };
         UserResponseSuccessResponse: {
@@ -5020,6 +5020,8 @@ export interface components {
             status: number;
             data: components["schemas"]["UserResponse"];
         };
+        /** @enum {string} */
+        UserRole: "user" | "admin" | "moderator" | "owner";
         ViewMangaRequest: {
             saveUserId?: boolean;
         };

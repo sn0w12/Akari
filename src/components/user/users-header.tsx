@@ -7,6 +7,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { client, serverHeaders } from "@/lib/api";
+import { capitalize } from "@/lib/utils";
 import {
     Bookmark,
     ImageIcon,
@@ -15,7 +16,7 @@ import {
     TrendingUp,
 } from "lucide-react";
 import { cacheLife, cacheTag } from "next/cache";
-import { Badge } from "../ui/badge";
+import { Badge, BadgeVariantProps } from "../ui/badge";
 
 interface UserStatProps {
     icon: React.ReactElement;
@@ -60,6 +61,16 @@ async function getUserData(userId: string) {
     return { data, error: null };
 }
 
+const ROLE_VARIANT_MAP: Record<
+    components["schemas"]["UserRole"],
+    BadgeVariantProps["variant"]
+> = {
+    user: "default",
+    admin: "info",
+    moderator: "positive",
+    owner: "warning",
+};
+
 export async function UserHeader({
     params,
 }: {
@@ -87,11 +98,13 @@ export async function UserHeader({
                         @{data.data.username}
                     </p>
                     {data.data.banned ? (
-                        <Badge
-                            className="self-center md:mt-2"
-                            variant="destructive"
-                        >
+                        <Badge className="self-center" variant="destructive">
                             Banned
+                        </Badge>
+                    ) : null}
+                    {data.data.role !== "user" ? (
+                        <Badge className="self-center" variant={ROLE_VARIANT_MAP[data.data.role]}>
+                            {capitalize(data.data.role)}
                         </Badge>
                     ) : null}
                 </div>
