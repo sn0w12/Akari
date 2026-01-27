@@ -12,11 +12,7 @@ import { inPreview } from "@/config";
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/contexts/user-context";
-import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import { useSetting, useSettingsChange } from "@/lib/settings";
-import Toast from "@/lib/toast-wrapper";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
@@ -38,12 +34,6 @@ export function DesktopHeader({ notification }: HeaderProps) {
         () => sidebarState === "collapsed",
         [sidebarState],
     );
-    const { setTheme } = useTheme();
-    const validNotifs = useSetting("groupLoginToasts") as string[];
-
-    useSettingsChange((event) => {
-        setTheme(String(event.detail.value));
-    }, "theme");
 
     const isUUID = (str: string) =>
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -71,23 +61,6 @@ export function DesktopHeader({ notification }: HeaderProps) {
             setSegments(modifiedSegments);
         });
     }, [pathname, overrides]);
-
-    useEffect(() => {
-        if (!user || !validNotifs) return;
-
-        async function validate() {
-            const validated = await validateSecondaryAccounts();
-            for (const account of validated) {
-                if (validNotifs.includes(account.id) && !account.valid) {
-                    new Toast(`${account.name} session has expired.`, "error", {
-                        description:
-                            "You can disable this notification in settings.",
-                    });
-                }
-            }
-        }
-        validate();
-    }, [user, validNotifs]);
 
     const getSegmentDisplayName = (
         segment: string,
