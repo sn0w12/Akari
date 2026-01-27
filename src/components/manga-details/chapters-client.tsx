@@ -123,7 +123,7 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
             </div>
 
             {/* Chapters Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 pointer-events-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mb-4 pointer-events-auto">
                 {currentChapters?.map((chapter) => (
                     <Link
                         href={`/manga/${mangaId}/${chapter.number}`}

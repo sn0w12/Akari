@@ -13,13 +13,13 @@ export function MangaDetailsBody({
         <Tabs defaultValue="chapters" className="w-full">
             <TabsList className="bg-background p-0 gap-2">
                 <TabsTrigger
-                    className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                    className="text-xl py-0 md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
                     value="chapters"
                 >
                     Chapters
                 </TabsTrigger>
                 <TabsTrigger
-                    className="text-xl md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
+                    className="text-xl py-0 md:text-2xl font-bold px-0 border-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-background dark:data-[state=active]:bg-background"
                     value="recommendations"
                 >
                     Recommendations
