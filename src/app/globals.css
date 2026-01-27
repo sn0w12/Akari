@@ -91,7 +91,7 @@ body {
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
 
-    --reader-offset: 56px;
+    --reader-offset: calc(var(--spacing) * 14);
 }
 
 .dark {
@@ -264,11 +264,17 @@ li {
 
 @media (min-width: 768px) {
     :root {
-        --reader-offset: 41px;
+        --reader-offset: calc(var(--spacing) * 10);
     }
 
     main {
         height: calc(100vh - calc(var(--spacing) * 10));
+    }
+}
+
+@media (display-mode: standalone) {
+    :root {
+        --reader-offset: calc(var(--spacing) * 20) !important;
     }
 }
 
