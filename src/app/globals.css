@@ -274,7 +274,9 @@ li {
 
 @media (display-mode: standalone) {
     :root {
-        --reader-offset: calc(var(--spacing) * 20) !important;
+        --reader-offset: calc(
+            calc(var(--spacing) * 14) + env(safe-area-inset-bottom)
+        ) !important;
     }
 }
 
