@@ -73,7 +73,6 @@ export function PullToRefresh({
 
     const handleScroll = useThrottledCallback(
         (element: HTMLElement) => {
-            console.log("scroll", element.scrollTop);
             setIsAtTop(element.scrollTop < 20);
         },
         {
