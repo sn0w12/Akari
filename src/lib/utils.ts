@@ -355,5 +355,8 @@ export function createMetadata(options: MetadataOptions): Metadata {
                 },
             ],
         },
+        other: {
+            "apple-mobile-web-app-capable": "yes",
+        },
     };
 }
