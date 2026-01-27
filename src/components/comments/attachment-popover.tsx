@@ -47,18 +47,18 @@ function ImageGrid({
     favorites?: string[];
 }) {
     return (
-        <>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 overflow-y-auto">
             {isLoading ? (
-                <div className="grid grid-cols-4 gap-2">
+                <>
                     {Array.from({ length: 12 }).map((_, i) => (
                         <div
                             key={i}
                             className="aspect-square bg-muted rounded animate-pulse"
                         />
                     ))}
-                </div>
+                </>
             ) : uploads.length > 0 ? (
-                <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                <>
                     {uploads.map((upload) => (
                         <div
                             key={upload.id}
@@ -114,11 +114,11 @@ function ImageGrid({
                             )}
                         </div>
                     ))}
-                </div>
+                </>
             ) : (
                 <p className="text-sm text-muted-foreground">{emptyMessage}</p>
             )}
-        </>
+        </div>
     );
 }
 
