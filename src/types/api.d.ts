@@ -3554,6 +3554,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/uploads/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["BatchUploadRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UploadResponseListSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/uploads/{id}": {
         parameters: {
             query?: never;
@@ -4074,6 +4131,9 @@ export interface components {
         };
         BatchUpdateBookmarksRequest: {
             items: components["schemas"]["BatchUpdateBookmarkItem"][];
+        };
+        BatchUploadRequest: {
+            ids: string[];
         };
         BookmarkChapter: {
             /** Format: uuid */
@@ -4736,6 +4796,13 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             deleted: boolean;
+        };
+        UploadResponseListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["UploadResponse"][];
         };
         UploadResponsePaginatedResponse: {
             items: components["schemas"]["UploadResponse"][];

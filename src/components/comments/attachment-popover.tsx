@@ -147,24 +147,23 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
         const storage = StorageManager.get("favoriteAttachments");
         const current = storage.getWithDefaults();
         const currentIds = current.ids as string[];
-        const currentUrls = current.urls as string[];
 
         const index = currentIds.indexOf(upload.id);
         let newIds: string[];
-        let newUrls: string[];
 
         if (index > -1) {
             // Remove from favorites
             newIds = currentIds.filter((_, i) => i !== index);
-            newUrls = currentUrls.filter((_, i) => i !== index);
         } else {
             // Add to favorites
             newIds = [...currentIds, upload.id];
-            newUrls = [...currentUrls, upload.url || ""];
         }
 
-        storage.set({ ids: newIds, urls: newUrls });
+        storage.set({ ids: newIds });
         setFavorites(newIds);
+
+        // Invalidate favorites query to refetch
+        queryClient.invalidateQueries({ queryKey: ["favorite-uploads"] });
     };
 
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
@@ -217,23 +216,33 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
         enabled: open && !!user,
     });
 
-    // Get favorite uploads from storage (no API calls needed)
-    const favoriteUploads: UploadResponse[] = favorites.map((id, index) => {
-        const storage = StorageManager.get("favoriteAttachments");
-        const data = storage.getWithDefaults();
-        const urls = data.urls as string[];
+    // Fetch favorite uploads from API
+    const { data: favoriteUploads = [], isLoading: isLoadingFavorites } = useQuery({
+        queryKey: ["favorite-uploads", favorites],
+        queryFn: async () => {
+            if (favorites.length === 0) return [];
 
-        return {
-            id,
-            userId: "",
-            md5Hash: null,
-            size: 0,
-            url: urls[index] || "",
-            usageCount: 0,
-            tags: [],
-            createdAt: "",
-            deleted: false,
-        } as UploadResponse;
+            const { data, error } = await client.POST("/v2/uploads/batch", {
+                body: { ids: favorites },
+            });
+
+            if (error || !data?.data) return [];
+
+            // Filter out deleted attachments
+            const validUploads = data.data.filter(upload => !upload.deleted);
+            const validIds = validUploads.map(upload => upload.id);
+
+            // Check if any favorites were deleted and update storage
+            const deletedIds = favorites.filter(id => !validIds.includes(id));
+            if (deletedIds.length > 0) {
+                const storage = StorageManager.get("favoriteAttachments");
+                storage.set({ ids: validIds });
+                setFavorites(validIds);
+            }
+
+            return validUploads;
+        },
+        enabled: open && favorites.length > 0,
     });
 
     const handleUpload = async (e: React.FormEvent) => {
@@ -351,7 +360,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         <h4 className="font-medium">Favorite images</h4>
                         <ImageGrid
                             uploads={favoriteUploads}
-                            isLoading={false}
+                            isLoading={isLoadingFavorites}
                             onSelect={onSelect}
                             emptyMessage="No favorite images yet."
                             onClose={() => setOpen(false)}
