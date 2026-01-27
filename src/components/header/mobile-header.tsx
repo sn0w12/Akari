@@ -1,6 +1,7 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
+import { useDevice } from "@/contexts/device-context";
 import { cn } from "@/lib/utils";
 import {
     BookmarkIcon,
@@ -17,10 +18,11 @@ export function MobileHeader() {
     const { toggleSidebar } = useSidebar();
     const pathname = usePathname();
     const { borderClass } = useBorderColor();
+    const { isPWA } = useDevice();
 
     return (
         <TabBar className={cn("md:hidden")}>
-            <TabBarList>
+            <TabBarList className={isPWA ? "pb-2" : ""}>
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}

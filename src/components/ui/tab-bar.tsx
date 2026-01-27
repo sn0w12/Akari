@@ -42,7 +42,7 @@ function TabBarList({
     return (
         <div
             className={cn(
-                "flex h-14 items-center justify-around pwa:pb-2",
+                "flex h-14 items-center justify-around",
                 className,
             )}
             {...props}
