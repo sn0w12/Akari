@@ -28,6 +28,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { Avatar } from "../ui/avatar";
+import { ListCommand } from "./list-command";
 import { ListSkeleton } from "./list-skeleton";
 
 function Entry({
@@ -323,13 +324,16 @@ export function ListComponent({ id }: { id: string }) {
                     <h1 className="text-2xl font-bold">{data.title}</h1>
                     <p className="text-muted-foreground">{data.description}</p>
                 </div>
-                <Link
-                    href={`/user/${data.user.userId}`}
-                    className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
-                >
-                    <Avatar name={data.user.username} size={32} />
-                    {data.user.displayName}
-                </Link>
+                <div className="flex gap-2">
+                    {isOwner && <ListCommand listId={id} />}
+                    <Link
+                        href={`/user/${data.user.userId}`}
+                        className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
+                    >
+                        <Avatar name={data.user.username} size={32} />
+                        {data.user.displayName}
+                    </Link>
+                </div>
             </div>
             <DndContext
                 sensors={sensors}
