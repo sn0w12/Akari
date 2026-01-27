@@ -1,12 +1,14 @@
 "use client";
 
 import { useDevice } from "@/contexts/device-context";
+import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { cn } from "@/lib/utils";
-import { ArrowDown, RefreshCcw } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import React, {
     CSSProperties,
     ReactNode,
     useCallback,
+    useEffect,
     useMemo,
     useRef,
     useState,
@@ -19,6 +21,7 @@ export interface PullToRefreshProps {
     enabled?: boolean;
     threshold?: number;
     maxPull?: number;
+    minRefreshTime?: number;
     className?: string;
     style?: CSSProperties;
     contentClassName?: string;
@@ -34,8 +37,9 @@ interface TouchPoint {
     y: number;
 }
 
-const DEFAULT_THRESHOLD: number = 72;
-const DEFAULT_MAX_PULL: number = 120;
+const DEFAULT_THRESHOLD: number = 80;
+const DEFAULT_MAX_PULL: number = 300;
+const CAN_PULL_DELAY_MS: number = 500;
 
 export function PullToRefresh({
     children,
@@ -43,13 +47,14 @@ export function PullToRefresh({
     enabled,
     threshold = DEFAULT_THRESHOLD,
     maxPull = DEFAULT_MAX_PULL,
+    minRefreshTime = 1000,
     className,
     style,
     contentClassName,
     indicatorClassName,
     pullText = "Pull to refresh",
     releaseText = "Release to refresh",
-    refreshingText = "Refreshing...",
+    refreshingText = "",
     as = "div",
     id,
 }: PullToRefreshProps) {
@@ -61,6 +66,39 @@ export function PullToRefresh({
     const [pullDistance, setPullDistance] = useState<number>(0);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+    const [isAtTop, setIsAtTop] = useState<boolean>(true);
+    const [canPull, setCanPull] = useState<boolean>(false);
+    const pullTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useBodyScrollListener((element) => setIsAtTop(element.scrollTop === 0), {
+        passive: true,
+    });
+
+    useEffect(() => {
+        if (isAtTop) {
+            pullTimeoutRef.current = setTimeout(
+                () => setCanPull(true),
+                CAN_PULL_DELAY_MS,
+            );
+        } else {
+            if (pullTimeoutRef.current) {
+                clearTimeout(pullTimeoutRef.current);
+                pullTimeoutRef.current = null;
+            }
+            setCanPull(false);
+        }
+        return () => {
+            if (pullTimeoutRef.current) {
+                clearTimeout(pullTimeoutRef.current);
+            }
+        };
+    }, [isAtTop]);
+
+    useEffect(() => {
+        if (typeof document === "undefined") return;
+        document.documentElement.style.overscrollBehavior =
+            isEnabled && isAtTop ? "none" : "auto";
+    }, [isEnabled, isAtTop]);
 
     const progress: number = useMemo(
         () => Math.min(pullDistance / threshold, 1),
@@ -80,37 +118,46 @@ export function PullToRefresh({
 
     const handleTouchStart = useCallback(
         (event: React.TouchEvent<HTMLElement>): void => {
-            if (!isEnabled || isRefreshing) return;
+            if (!isEnabled || isRefreshing || !canPull || !isAtTop) return;
 
             const container = containerRef.current;
             if (!container) return;
-            if (container.scrollTop > 0) return;
 
             const touch = event.touches[0];
             startRef.current = { y: touch.clientY };
             setIsDragging(true);
         },
-        [isEnabled, isRefreshing],
+        [isEnabled, isRefreshing, canPull, isAtTop],
     );
 
     const handleTouchMove = useCallback(
         (event: React.TouchEvent<HTMLElement>): void => {
-            if (!isEnabled || isRefreshing || !isDragging) return;
+            if (!isEnabled || isRefreshing || !isDragging || !canPull) return;
+            if (!isAtTop) {
+                setIsDragging(false);
+                setPullDistance(0);
+                return;
+            }
             const start = startRef.current;
             if (!start) return;
 
             const touch = event.touches[0];
             const delta = touch.clientY - start.y;
 
-            if (delta <= 0) {
+            if (delta > 0) {
+                event.preventDefault();
+                // Apply non-linear damping to make pull feel more natural
+                const dampedDelta = Math.pow(delta, 0.8);
+                setPullDistance(Math.min(dampedDelta, maxPull));
+            } else if (delta > -20) {
+                // Small tolerance for finger slips, keep current pull distance
+                event.preventDefault();
+            } else {
+                // Significant upward drag, reset pull
                 setPullDistance(0);
-                return;
             }
-
-            event.preventDefault();
-            setPullDistance(Math.min(delta, maxPull));
         },
-        [isEnabled, isRefreshing, isDragging, maxPull],
+        [isEnabled, isRefreshing, isDragging, canPull, isAtTop, maxPull],
     );
 
     const finishPull = useCallback(async (): Promise<void> => {
@@ -122,7 +169,9 @@ export function PullToRefresh({
         }
 
         setIsRefreshing(true);
-        setPullDistance(threshold);
+        setPullDistance(32);
+
+        const startTime = Date.now();
 
         try {
             if (onRefresh) {
@@ -131,15 +180,20 @@ export function PullToRefresh({
                 window.location.reload();
             }
         } finally {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, minRefreshTime - elapsed);
+            if (remaining > 0) {
+                await new Promise((resolve) => setTimeout(resolve, remaining));
+            }
             setIsRefreshing(false);
             setPullDistance(0);
         }
-    }, [onRefresh, pullDistance, threshold]);
+    }, [onRefresh, pullDistance, threshold, minRefreshTime]);
 
     const handleTouchEnd = useCallback((): void => {
-        if (!isEnabled || isRefreshing) return;
+        if (!isEnabled || isRefreshing || !canPull || !isAtTop) return;
         void finishPull();
-    }, [isEnabled, isRefreshing, finishPull]);
+    }, [isEnabled, isRefreshing, canPull, isAtTop, finishPull]);
 
     const handleTouchCancel = useCallback((): void => {
         setIsDragging(false);
@@ -148,9 +202,8 @@ export function PullToRefresh({
 
     const IndicatorIcon = useMemo(() => {
         if (isRefreshing) return null;
-        if (progress >= 1) return RefreshCcw;
         return ArrowDown;
-    }, [isRefreshing, progress]);
+    }, [isRefreshing]);
 
     const Component = as;
 
@@ -180,7 +233,7 @@ export function PullToRefresh({
                 <div className="flex items-center gap-2 text-xs">
                     {isRefreshing ? (
                         <Spinner size={24} />
-                    ) : IndicatorIcon ? (
+                    ) : pullDistance > 0 && IndicatorIcon ? (
                         <IndicatorIcon
                             className="size-4 transition-transform"
                             style={{
@@ -188,13 +241,15 @@ export function PullToRefresh({
                             }}
                         />
                     ) : null}
-                    <span>
-                        {isRefreshing
-                            ? refreshingText
-                            : progress >= 1
-                              ? releaseText
-                              : pullText}
-                    </span>
+                    {(pullDistance > 0 || isRefreshing) && (
+                        <span>
+                            {isRefreshing
+                                ? refreshingText
+                                : progress >= 1
+                                  ? releaseText
+                                  : pullText}
+                        </span>
+                    )}
                 </div>
             </div>
 
