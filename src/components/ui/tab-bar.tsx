@@ -41,7 +41,10 @@ function TabBarList({
 }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
-            className={cn("flex h-14 items-center justify-around", className)}
+            className={cn(
+                "flex h-14 items-center justify-around pwa:pb-2",
+                className,
+            )}
             {...props}
         />
     );
