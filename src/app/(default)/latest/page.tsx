@@ -37,7 +37,7 @@ export const getLatestData = async (currentPage: number) => {
 
 export default async function Latest(props: PageProps) {
     return (
-        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+        <div className="flex-1 px-4 pt-2 pb-4">
             <div className="flex gap-4">
                 <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
             </div>

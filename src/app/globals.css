@@ -98,6 +98,10 @@ body {
     --reader-offset: calc(
         calc(var(--spacing) * 14) + var(--safe-top) + var(--safe-bottom)
     );
+
+    --visible-height: calc(
+        100dvh - calc(var(--header-height) + var(--safe-top))
+    );
 }
 
 .dark {
@@ -275,7 +279,7 @@ li {
     }
 
     main {
-        height: calc(100vh - calc(var(--spacing) * 10));
+        height: calc(100vh - var(--header-height));
     }
 }
 

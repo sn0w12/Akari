@@ -85,16 +85,13 @@ export function BaseLayout({
     );
 
     return (
-        <div
-            className="flex flex-col w-full mt-[var(--safe-top)] md:mt-0"
-            data-vaul-drawer-wrapper
-        >
+        <div className="flex flex-col w-full" data-vaul-drawer-wrapper>
             <Suspense
                 fallback={<div className="h-14 md:h-10 bg-sidebar border-b" />}
             >
                 <HeaderComponent notification={notification} />
             </Suspense>
-            <div className="bg-background md:bg-sidebar flex flex-1">
+            <div className="bg-background md:bg-sidebar flex flex-1 h-full">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent
                         data-scrollbar-custom="true"
@@ -203,7 +200,7 @@ export function BaseLayout({
                     as="main"
                     onRefresh={handleRefresh}
                     className={cn(
-                        "bg-background flex flex-col flex-1 mb-[var(--header-height)] md:mb-0 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full",
+                        "bg-background min-h-[var(--visible-height)] md:min-h-none h-full w-full flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto",
                         borderClass,
                     )}
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}

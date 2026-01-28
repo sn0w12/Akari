@@ -192,7 +192,7 @@ export default function SettingsPage() {
     }, [settingsMaps, activeTab, activeSection]);
 
     return (
-        <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 h-full">
+        <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 w-full h-full">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Settings</h1>
                 <Button

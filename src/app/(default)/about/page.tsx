@@ -1,5 +1,5 @@
-import { Metadata } from "next";
 import { robots } from "@/lib/utils";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "About Akari",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
     return (
-        <div className="bg-background text-foreground">
+        <div className="flex-1 bg-background text-foreground">
             <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 <h1 className="text-3xl font-bold mb-6">About Akari</h1>
                 <p className="text-lg mb-4">

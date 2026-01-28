@@ -52,7 +52,7 @@ export default async function RootLayout({
                 {inDevelopment && <style>{buildDebugStyle()}</style>}
             </head>
             <body
-                className={`${geistSans.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
+                className={`${geistSans.variable} md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)] md:pt-0 mb-[var(--header-height)] md:mb-0 md:overflow-hidden`}
             >
                 <ThemeProvider
                     attribute="class"
@@ -61,7 +61,10 @@ export default async function RootLayout({
                     disableTransitionOnChange
                 >
                     <DeviceProvider>
-                        <SidebarProvider defaultOpen={false}>
+                        <SidebarProvider
+                            defaultOpen={false}
+                            className="min-h-none"
+                        >
                             <ConfirmProvider>
                                 <QueryProvider>
                                     <UserProvider>
@@ -71,9 +74,7 @@ export default async function RootLayout({
                                                     <Suspense fallback={null}>
                                                         <AnalyticsWrapper />
                                                     </Suspense>
-                                                    <div className="flex-1">
-                                                        {children}
-                                                    </div>
+                                                    {children}
                                                     <Toaster
                                                         position="top-right"
                                                         visibleToasts={5}

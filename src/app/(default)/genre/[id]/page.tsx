@@ -58,7 +58,7 @@ export async function getGenre(
 
 export default async function GenrePage(props: PageProps) {
     return (
-        <div className="min-h-screen bg-background text-foreground mx-auto px-4 pt-2 pb-4">
+        <div className="flex-1 px-4 pt-2 pb-4">
             <div className="flex gap-4">
                 <GenreHeader {...props} />
             </div>

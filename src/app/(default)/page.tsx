@@ -25,8 +25,8 @@ export const metadata: Metadata = createMetadata({
 
 export default async function Home() {
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto px-4 pt-2 pb-4">
+        <>
+            <div className="flex-1 px-4 pt-2 pb-4">
                 <div>
                     <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
                     <HomePopular />
@@ -63,7 +63,7 @@ export default async function Home() {
                 <InstallPrompt />
                 <NotificationPrompt />
             </PromptStack>
-        </div>
+        </>
     );
 }
 
@@ -91,7 +91,7 @@ async function HomeLatest() {
                 currentPage={1}
                 href="./latest"
                 totalPages={data.data.totalPages}
-                className="my-4"
+                className="mt-4"
             />
         </>
     );

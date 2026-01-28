@@ -23,13 +23,11 @@ export const metadata: Metadata = {
 
 export default async function Bookmarks(props: PageProps) {
     return (
-        <div className="h-full bg-background text-foreground">
-            <div className="mx-auto p-4 h-full">
-                <BookmarksHeader />
-                <Suspense fallback={<BookmarksSkeleton />}>
-                    <BookmarksGrid {...props} />
-                </Suspense>
-            </div>
+        <div className="flex-1 p-4">
+            <BookmarksHeader />
+            <Suspense fallback={<BookmarksSkeleton />}>
+                <BookmarksGrid {...props} />
+            </Suspense>
         </div>
     );
 }

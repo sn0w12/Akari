@@ -7,11 +7,8 @@ export default async function Footer() {
 
     const version = pkg.version;
     return (
-        <footer className="border-t">
-            <div
-                className="mx-auto px-4 sm:px-6 lg:px-8"
-                style={{ paddingBlock: "calc(var(--spacing) * 5.25)" }}
-            >
+        <footer className="flex flex-col justify-center border-t h-30 md:h-23 flex-shrink-0">
+            <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-2">
                     <div>
                         <p className="text-center text-base flex items-center justify-center gap-2">
