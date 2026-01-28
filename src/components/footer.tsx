@@ -41,7 +41,7 @@ export default async function Footer() {
                                 className="hover:text-foreground/70"
                                 prefetch={false}
                             >
-                                Privacy
+                                Privacy Policy
                             </Link>
                             <Link
                                 href="/terms"
