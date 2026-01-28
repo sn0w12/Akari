@@ -94,7 +94,7 @@ export function BaseLayout({
             >
                 <HeaderComponent notification={notification} />
             </Suspense>
-            <div className="bg-sidebar flex flex-1">
+            <div className="bg-background md:bg-sidebar flex flex-1">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent
                         data-scrollbar-custom="true"

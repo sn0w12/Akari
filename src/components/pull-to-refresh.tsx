@@ -25,7 +25,6 @@ export interface PullToRefreshProps {
     minRefreshTime?: number;
     className?: string;
     style?: CSSProperties;
-    contentClassName?: string;
     indicatorClassName?: string;
     pullText?: string;
     releaseText?: string;
@@ -51,7 +50,6 @@ export function PullToRefresh({
     minRefreshTime = 1000,
     className,
     style,
-    contentClassName,
     indicatorClassName,
     pullText = "Pull to refresh",
     releaseText = "Release to refresh",
@@ -120,13 +118,14 @@ export function PullToRefresh({
 
     const contentStyle: CSSProperties = useMemo(
         () => ({
+            ...style,
             transform:
                 pullDistance > 0
                     ? `translate3d(0, ${pullDistance}px, 0)`
                     : undefined,
             transition: isDragging ? "none" : "transform 200ms ease-out",
         }),
-        [pullDistance, isDragging],
+        [pullDistance, isDragging, style],
     );
 
     const handleTouchStart = useCallback(
@@ -236,19 +235,7 @@ export function PullToRefresh({
     const Component = as;
 
     return (
-        <Component
-            id={id}
-            ref={(node) => {
-                containerRef.current = node;
-            }}
-            className={cn("relative select-none", className)}
-            style={style}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onTouchCancel={handleTouchCancel}
-            aria-busy={isRefreshing}
-        >
+        <>
             <div
                 className={cn(
                     "pointer-events-none absolute left-0 right-0 top-0 z-10 flex h-12 items-center justify-center text-muted-foreground transition-opacity",
@@ -280,13 +267,21 @@ export function PullToRefresh({
                     )}
                 </div>
             </div>
-
-            <div
-                className={cn("min-h-full", contentClassName)}
+            <Component
+                id={id}
+                ref={(node) => {
+                    containerRef.current = node;
+                }}
+                className={cn("relative select-none", className)}
                 style={contentStyle}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchCancel}
+                aria-busy={isRefreshing}
             >
                 {children}
-            </div>
-        </Component>
+            </Component>
+        </>
     );
 }
