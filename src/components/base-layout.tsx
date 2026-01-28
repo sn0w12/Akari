@@ -203,7 +203,7 @@ export function BaseLayout({
                     as="main"
                     onRefresh={handleRefresh}
                     className={cn(
-                        "bg-background flex flex-col flex-1 mb-[var(--reader-offset)] md:mb-0 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full",
+                        "bg-background flex flex-col flex-1 mb-14 md:mb-0 md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto w-full",
                         borderClass,
                     )}
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
