@@ -1,9 +1,12 @@
-import createClient from "openapi-fetch";
-import type { paths } from "@/types/api";
 import { inPreview } from "@/config";
+import type { paths } from "@/types/api";
+import createClient from "openapi-fetch";
 import pkg from "../../../package.json";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5188/";
+const apiUrl =
+    process.env.NEXT_PRIVATE_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:5188/";
 
 export function getAuthCookie() {
     if (typeof document === "undefined") {
@@ -52,6 +55,7 @@ export function getAuthCookie() {
 }
 
 const authenticatedFetch = async (input: Request): Promise<Response> => {
+    console.log("Authenticated fetch called for:", input.url);
     const request = input.clone();
     const session = getAuthCookie();
 
