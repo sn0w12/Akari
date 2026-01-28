@@ -55,7 +55,6 @@ export function getAuthCookie() {
 }
 
 const authenticatedFetch = async (input: Request): Promise<Response> => {
-    console.log("Authenticated fetch called for:", input.url);
     const request = input.clone();
     const session = getAuthCookie();
 
