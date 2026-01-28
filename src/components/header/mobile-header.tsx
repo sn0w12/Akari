@@ -23,6 +23,11 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}
+                    active={
+                        pathname === "/settings" ||
+                        pathname === "/account" ||
+                        pathname.startsWith("/genre/")
+                    }
                     className={borderClass}
                 >
                     <Menu className="size-6" />
