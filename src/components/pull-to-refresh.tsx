@@ -238,7 +238,7 @@ export function PullToRefresh({
         <>
             <div
                 className={cn(
-                    "pointer-events-none absolute left-0 right-0 top-0 z-10 flex h-12 items-center justify-center text-muted-foreground transition-opacity",
+                    "pointer-events-none absolute left-0 right-0 top-0 z-10 flex h-12 items-center justify-center text-muted-foreground transition-opacity mt-[env(safe-area-inset-top)]",
                     pullDistance > 0 || isRefreshing
                         ? "opacity-100"
                         : "opacity-0",
