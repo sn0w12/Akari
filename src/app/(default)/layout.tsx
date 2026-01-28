@@ -23,7 +23,7 @@ const geistSans = localFont({
     weight: "100 900",
 });
 
-export const metadata: Metadata = { title: "Akari" };
+export const metadata: Metadata = { title: "Akari Manga" };
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
