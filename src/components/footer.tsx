@@ -28,7 +28,7 @@ export default async function Footer() {
                         </p>
                     </div>
                     <div className="flex justify-center flex-col">
-                        <div className="flex flex-row w-full justify-between">
+                        <div className="flex flex-row w-full justify-between gap-6">
                             <Link
                                 href="/about"
                                 className="hover:text-foreground/70"
