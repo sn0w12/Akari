@@ -91,9 +91,10 @@ body {
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
 
-    --reader-offset: calc(
-        56px - calc(env(safe-area-inset-top) - env(safe-area-inset-bottom))
+    --header-height: calc(
+        calc(var(--spacing) * 14) + env(safe-area-inset-bottom)
     );
+    --reader-offset: calc(calc(var(--spacing) * 14) + env(safe-area-inset-top));
 }
 
 .dark {
@@ -267,6 +268,7 @@ li {
 @media (min-width: 768px) {
     :root {
         --reader-offset: calc(var(--spacing) * 10);
+        --header-height: calc(var(--spacing) * 10);
     }
 
     main {
