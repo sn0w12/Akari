@@ -272,14 +272,6 @@ li {
     }
 }
 
-@media (display-mode: standalone) {
-    :root {
-        --reader-offset: calc(
-            calc(var(--spacing) * 14) + env(safe-area-inset-bottom)
-        ) !important;
-    }
-}
-
 .progress-bar {
     width: calc(var(--progress) - 8px);
     height: calc(100% - 8px);
