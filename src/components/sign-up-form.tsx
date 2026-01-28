@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -12,6 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -49,7 +49,7 @@ export function SignUpForm({
                 options: {
                     emailRedirectTo: `${window.location.origin}/account`,
                     data: {
-                        username: userName,
+                        username: userName.toLowerCase(),
                         display_name: displayName,
                     },
                 },
@@ -94,7 +94,9 @@ export function SignUpForm({
                                     required
                                     value={userName}
                                     onChange={(e) =>
-                                        setUserName(e.target.value)
+                                        setUserName(
+                                            e.target.value.toLowerCase(),
+                                        )
                                     }
                                 />
                             </div>
