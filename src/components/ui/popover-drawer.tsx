@@ -15,7 +15,7 @@ export type PopoverDrawerAlign = "start" | "center" | "end";
 export type PopoverDrawerSide = "top" | "right" | "bottom" | "left";
 
 const DEFAULT_WRAPPER_CLASSNAME =
-    "max-h-[calc(100vh-10rem)] overflow-y-auto px-2 pt-0 pb-4 mt-4 md:mt-0 md:max-h-none md:p-0";
+    "max-h-[calc(100vh-10rem)] overflow-y-auto px-2 pt-0 mt-4 md:mt-0 md:max-h-none md:p-0";
 const DEFAULT_DRAWER_CLASSNAME = "p-0";
 
 type ClassNameProps = { className?: string };
@@ -93,7 +93,15 @@ export function PopoverDrawer({
     const trigger = mergeClassName(triggerChild, className ?? "");
 
     const content = wrapperClassName ? (
-        <div className={wrapperClassName}>{contentChild}</div>
+        <div
+            className={wrapperClassName}
+            style={{
+                paddingBottom:
+                    "max(calc(calc(var(--spacing) * 2)), env(safe-area-inset-bottom))",
+            }}
+        >
+            {contentChild}
+        </div>
     ) : (
         contentChild
     );
