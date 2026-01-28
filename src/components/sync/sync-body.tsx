@@ -33,7 +33,7 @@ export function SyncBody<T>({
     data,
 }: SyncBodyProps<T>) {
     return (
-        <div className="container mx-auto p-4">
+        <div className="flex-1 container mx-auto p-4">
             {loading ? (
                 <div className="flex flex-col items-center justify-center h-64 gap-4">
                     <p className="text-lg">Loading data...</p>
