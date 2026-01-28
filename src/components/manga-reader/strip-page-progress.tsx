@@ -34,7 +34,7 @@ export default function StripPageProgress({
             style={
                 windowWidth <= cutoff
                     ? {
-                          bottom: "calc(calc(var(--spacing) * 16) + env(safe-area-inset-bottom))",
+                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
                       }
                     : {}
             }

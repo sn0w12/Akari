@@ -19,7 +19,7 @@ export function MobileHeader() {
 
     return (
         <TabBar className="md:hidden">
-            <TabBarList className="mb-[env(safe-area-inset-bottom)]">
+            <TabBarList className="mb-[var(--safe-bottom)]">
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}

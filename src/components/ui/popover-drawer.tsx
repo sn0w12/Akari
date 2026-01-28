@@ -97,7 +97,7 @@ export function PopoverDrawer({
             className={wrapperClassName}
             style={{
                 paddingBottom:
-                    "max(calc(calc(var(--spacing) * 2)), env(safe-area-inset-bottom))",
+                    "max(calc(calc(var(--spacing) * 2)), var(--safe-bottom))",
             }}
         >
             {contentChild}

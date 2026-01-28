@@ -97,7 +97,7 @@ export default function PageProgress({
                 windowWidth <= cutoff
                     ? {
                           width: "calc(100% - 118px)",
-                          bottom: "calc(calc(var(--spacing) * 16) + env(safe-area-inset-bottom))",
+                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
                       }
                     : {}
             }

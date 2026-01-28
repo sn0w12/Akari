@@ -86,7 +86,7 @@ export function BaseLayout({
 
     return (
         <div
-            className="flex flex-col w-full mt-[env(safe-area-inset-top)]"
+            className="flex flex-col w-full mt-[var(--safe-top)] md:mt-0"
             data-vaul-drawer-wrapper
         >
             <Suspense
@@ -98,7 +98,7 @@ export function BaseLayout({
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <SidebarContent
                         data-scrollbar-custom="true"
-                        className="mt-[env(safe-area-inset-top)]"
+                        className="mt-[var(--safe-top)] md:mt-0"
                     >
                         <SidebarMenu className="p-2 pt-3 gap-0.5">
                             <Separator className="hidden md:block" />
@@ -173,7 +173,7 @@ export function BaseLayout({
                             )}
                         </SidebarMenu>
                     </SidebarContent>
-                    <SidebarFooter className="mb-[env(safe-area-inset-bottom)]">
+                    <SidebarFooter className="mb-[var(--safe-bottom)] md:mb-0">
                         <Separator />
                         <SidebarMenuItem>
                             <SidebarMenuLink

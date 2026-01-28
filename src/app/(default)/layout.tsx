@@ -30,6 +30,15 @@ export const viewport: Viewport = {
     viewportFit: "cover",
 };
 
+function buildDebugStyle(): string {
+    let style = ":root {";
+    if (process.env.NEXT_PUBLIC_SIMULATE_SAFE_AREA_INSETS == "1") {
+        style += `--safe-top: 1rem; --safe-bottom: 2rem;`;
+    }
+    style += "}";
+    return style;
+}
+
 export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -40,6 +49,7 @@ export default async function RootLayout({
                     // eslint-disable-next-line @next/next/no-sync-scripts
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
+                {inDevelopment && <style>{buildDebugStyle()}</style>}
             </head>
             <body
                 className={`${geistSans.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}

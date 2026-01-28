@@ -48,7 +48,7 @@ export function ChapterInfo({
             style={
                 orientation === "horizontal"
                     ? {
-                          bottom: "calc(calc(var(--spacing) * 16) + env(safe-area-inset-bottom))",
+                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
                       }
                     : {}
             }

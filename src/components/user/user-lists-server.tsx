@@ -1,5 +1,6 @@
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
+import ErrorPage from "../error-page";
 import { UserLists } from "./user-lists";
 
 export async function UserListsServer({
@@ -27,7 +28,7 @@ export async function UserListsServer({
     });
 
     if (error || !data) {
-        throw new Error("Failed to fetch user lists");
+        return <ErrorPage error={error} />;
     }
 
     return <UserLists userId={id} initialData={data} />;
