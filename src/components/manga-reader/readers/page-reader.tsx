@@ -21,6 +21,7 @@ interface PageReaderProps {
     setBookmarkState: (state: boolean | null) => void;
 }
 
+const pageHeightStyle = "calc(100dvh - var(--reader-offset))";
 export default function PageReader({
     chapter,
     scrollMetrics,
@@ -145,43 +146,49 @@ export default function PageReader({
             />
             <div
                 className="w-full h-full flex flex-col relative"
-                style={{ height: "calc(100dvh - var(--reader-offset))" }}
+                style={{ height: pageHeightStyle }}
             >
-                <div className="my-auto">
-                    {chapter.images[currentPage] && (
-                        <Image
-                            src={chapter.images[currentPage]}
-                            alt={`Page ${currentPage + 1}`}
-                            className={cn("w-full h-auto object-contain", {
-                                "cursor-none":
-                                    isInactive &&
-                                    currentPage !== chapter.images.length,
-                                "cursor-pointer":
-                                    !isInactive &&
-                                    currentPage !== chapter.images.length,
-                            })}
-                            style={{
-                                maxHeight:
-                                    "calc(100dvh - var(--reader-offset))",
-                            }}
-                            loading="eager"
-                            width={720}
-                            height={1500}
-                            unoptimized={true}
-                            preload={true}
-                            fetchPriority="high"
-                            onClick={handleClick}
+                <div className="flex flex-col h-full">
+                    {/* Spacer for 1/3 of available space at the top */}
+                    <div className="flex-1"></div>
+                    {/* Content container: image or end-of-manga, no shrinking/growing */}
+                    <div className="flex-shrink-0">
+                        {chapter.images[currentPage] && (
+                            <Image
+                                src={chapter.images[currentPage]}
+                                alt={`Page ${currentPage + 1}`}
+                                className={cn("w-full h-auto object-contain", {
+                                    "cursor-none":
+                                        isInactive &&
+                                        currentPage !== chapter.images.length,
+                                    "cursor-pointer":
+                                        !isInactive &&
+                                        currentPage !== chapter.images.length,
+                                })}
+                                style={{
+                                    maxHeight: pageHeightStyle,
+                                }}
+                                loading="eager"
+                                width={720}
+                                height={1500}
+                                unoptimized={true}
+                                preload={true}
+                                fetchPriority="high"
+                                onClick={handleClick}
+                            />
+                        )}
+                        <EndOfManga
+                            title={chapter.title}
+                            identifier={chapter.mangaId}
+                            className={`${
+                                currentPage !== chapter.images.length
+                                    ? "hidden"
+                                    : ""
+                            }`}
                         />
-                    )}
-                    <EndOfManga
-                        title={chapter.title}
-                        identifier={chapter.mangaId}
-                        className={`${
-                            currentPage !== chapter.images.length
-                                ? "hidden"
-                                : ""
-                        }`}
-                    />
+                    </div>
+                    {/* Spacer for 2/3 of available space at the bottom */}
+                    <div style={{ flex: 2 }}></div>
                 </div>
                 <div className={"hidden"}>
                     {typeof chapter.images[currentPage + 1] === "string" && (
@@ -190,8 +197,7 @@ export default function PageReader({
                             alt={`Page ${currentPage + 2}`}
                             className="w-full h-auto max-h-screen object-contain"
                             style={{
-                                maxHeight:
-                                    "calc(100dvh - var(--reader-offset))",
+                                maxHeight: pageHeightStyle,
                             }}
                             loading="eager"
                             width={720}
