@@ -1,37 +1,43 @@
 import "@/app/globals.css";
-import localFont from "next/font/local";
-import { inDevelopment } from "@/config";
 import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper";
-import { ThemeProvider } from "@/components/theme-provider";
 import { BaseLayout } from "@/components/base-layout";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ProximityPrefetch } from "@/lib/proximity-prefetch";
-import { CookieConsent } from "@/components/cookie-consent";
 import Footer from "@/components/footer";
 import { QueryProvider } from "@/components/query-provider";
-import { ConfirmProvider } from "@/contexts/confirm-context";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { inDevelopment } from "@/config";
+import { BorderColorProvider } from "@/contexts/border-color-context";
+import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
+import { ConfirmProvider } from "@/contexts/confirm-context";
+import { DeviceProvider } from "@/contexts/device-context";
+import { UserProvider } from "@/contexts/user-context";
+import localFont from "next/font/local";
+import { Suspense } from "react";
 
-import type { Metadata } from "next";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 
 const geistSans = localFont({
     src: "../../../public/fonts/GeistVF.woff",
     variable: "--font-geist-sans",
     weight: "100 900",
 });
-const geistMono = localFont({
-    src: "../../../public/fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
 
-export const metadata: Metadata = { title: "灯 - Akari" };
+export const metadata: Metadata = { title: "Akari" };
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
+    viewportFit: "cover",
 };
+
+function buildDebugStyle(): string {
+    let style = ":root {";
+    if (process.env.NEXT_PUBLIC_SIMULATE_SAFE_AREA_INSETS == "1") {
+        style += `--safe-top: 1rem; --safe-bottom: 2rem;`;
+    }
+    style += "}";
+    return style;
+}
 
 export default async function RootLayout({
     children,
@@ -43,37 +49,46 @@ export default async function RootLayout({
                     // eslint-disable-next-line @next/next/no-sync-scripts
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
+                {inDevelopment && <style>{buildDebugStyle()}</style>}
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased bg-background overflow-y-auto md:overflow-hidden`}
+                className={`${geistSans.variable} md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0! mb-[var(--header-height)] md:mb-0 md:overflow-hidden`}
             >
-                <ProximityPrefetch>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <SidebarProvider defaultOpen={false}>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <DeviceProvider>
+                        <SidebarProvider
+                            defaultOpen={false}
+                            className="min-h-none"
+                        >
                             <ConfirmProvider>
                                 <QueryProvider>
-                                    <BaseLayout gutter={true}>
-                                        <AnalyticsWrapper />
-                                        <div className="flex-1 pt-2 md:p-4 md:pb-0">
-                                            {children}
-                                        </div>
-                                        <CookieConsent />
-                                        <Toaster
-                                            richColors
-                                            position="top-right"
-                                        />
-                                        <Footer />
-                                    </BaseLayout>
+                                    <UserProvider>
+                                        <BreadcrumbProvider>
+                                            <BorderColorProvider>
+                                                <BaseLayout gutter={true}>
+                                                    <Suspense fallback={null}>
+                                                        <AnalyticsWrapper />
+                                                    </Suspense>
+                                                    {children}
+                                                    <Toaster
+                                                        position="top-right"
+                                                        visibleToasts={5}
+                                                    />
+                                                    <Footer />
+                                                </BaseLayout>
+                                            </BorderColorProvider>
+                                        </BreadcrumbProvider>
+                                    </UserProvider>
                                 </QueryProvider>
                             </ConfirmProvider>
                         </SidebarProvider>
-                    </ThemeProvider>
-                </ProximityPrefetch>
+                    </DeviceProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

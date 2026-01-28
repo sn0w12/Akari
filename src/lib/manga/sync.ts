@@ -1,15 +1,16 @@
-import { Chapter } from "@/types/manga";
-import Toast from "../toast-wrapper";
-import { syncMal } from "./secondary-accounts/mal";
+import { SECONDARY_ACCOUNTS } from "../auth/secondary-accounts";
 import { checkIfBookmarked, updateBookmark } from "./bookmarks";
-import { getSetting } from "../settings";
+import { SyncHandler } from "../auth/secondary-accounts";
 
-type SyncHandler = (data: Chapter) => Promise<unknown>;
-const services = ["MangaNato", "MAL"];
+const services = ["Akari", ...SECONDARY_ACCOUNTS.map((acc) => acc.name)];
 
-export async function syncAllServices(data: Chapter) {
-    const syncHandlers: SyncHandler[] = [updateBookmark, syncBookmark];
-    let success = true;
+export async function syncAllServices(
+    data: components["schemas"]["ChapterResponse"],
+) {
+    const syncHandlers: SyncHandler[] = [
+        updateBookmark,
+        ...SECONDARY_ACCOUNTS.map((acc) => acc.sync),
+    ];
 
     const mangaId = data.mangaId;
     if (!mangaId) {
@@ -23,61 +24,27 @@ export async function syncAllServices(data: Chapter) {
     }
 
     const results = await Promise.allSettled(
-        syncHandlers.map((handler) => handler(data))
+        syncHandlers.map((handler) => handler(data)),
     );
 
-    success = results[0].status === "fulfilled";
     const authorizedServices: string[] = [];
     const unAuthorizedServices: string[] = [];
     results.forEach((result, index) => {
-        if (result.status === "rejected") {
-            const error = result.reason;
-            if (error instanceof Response) {
-                unAuthorizedServices.push(services[index]);
+        if (result.status === "fulfilled") {
+            if (result.value === false) {
+                unAuthorizedServices.push(services[index]!);
             } else {
-                console.error(`Failed to sync with handler:`, error);
+                authorizedServices.push(services[index]!);
             }
         } else {
-            authorizedServices.push(services[index]);
+            // Handle rejected promises (e.g., treat as unauthorized or log error)
+            console.error(`Sync failed for ${services[index]}:`, result.reason);
+            unAuthorizedServices.push(services[index]!);
         }
     });
-    if (unAuthorizedServices.length > 0) {
-        const notToastServices = getSetting(
-            "groupLoginToasts"
-        ) as unknown as string[];
-        const servicesToToast = unAuthorizedServices.filter(
-            (service) => !notToastServices.includes(service)
-        );
-        if (servicesToToast.length > 0) {
-            new Toast(
-                `Not logged in to services: ${servicesToToast.join(", ")}`,
-                "warning"
-            );
-        }
-    }
 
-    // Display a toast notification after all sync handlers are done
-    if (success) {
-        new Toast(`Bookmark updated successfully`, "success", {
-            Description: `${authorizedServices.join(", ")}`,
-        });
-    } else {
-        new Toast("Failed to update bookmark.", "error");
-    }
-
-    if (authorizedServices.includes(services[0])) {
+    if (authorizedServices.includes(services[0]!)) {
         return true;
     }
     return false;
-}
-
-async function syncBookmark(data: Chapter) {
-    if (!data.malId) return;
-
-    const regex = /Chapter\s(\d+)/;
-    const match = data.chapter.match(regex);
-    const chapterNumber = match ? match[1] : null;
-    if (!chapterNumber) return;
-
-    await syncMal(data.malId, chapterNumber, false);
 }

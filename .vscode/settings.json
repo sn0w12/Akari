@@ -1,20 +1,5 @@
 {
-    "cSpell.words": [
-        "Akari",
-        "chapterlastdateupdate",
-        "chapterlastname",
-        "dexie",
-        "Keybind",
-        "Keybinds",
-        "mangalist",
-        "Manganato",
-        "namenow",
-        "noteid",
-        "numbernow",
-        "storyid",
-        "storyname",
-        "Umami"
-    ],
+    "cSpell.words": ["Akari", "Keybind", "Keybinds", "mangalist", "Umami"],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "eslint.format.enable": true,
     "editor.codeActionsOnSave": {

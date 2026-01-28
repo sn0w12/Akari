@@ -1,5 +1,5 @@
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -13,20 +13,25 @@ const badgeVariants = cva(
                 secondary:
                     "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 destructive:
-                    "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+                    "bg-destructive/70 border border-destructive text-white hover:bg-destructive/90",
                 outline: "text-foreground",
                 shadow: "relative hover:translate-y-[-2px] transition-transform duration-200",
+                positive:
+                    "border-transparent bg-accent-positive dark:text-background",
+                info: "border-transparent bg-info text-background dark:text-foreground",
+                warning: "border-transparent bg-warning dark:text-background",
             },
         },
         defaultVariants: {
             variant: "default",
         },
-    }
+    },
 );
 
+export type BadgeVariantProps = VariantProps<typeof badgeVariants>;
+
 export interface BadgeProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof badgeVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>, BadgeVariantProps {
     withShadow?: boolean;
     shadowClassName?: string;
 }
@@ -45,7 +50,7 @@ function Badge({
                     className={cn(
                         badgeVariants({ variant }),
                         "relative z-10 hover:bg-primary",
-                        className
+                        className,
                     )}
                     {...props}
                 />
@@ -55,7 +60,7 @@ function Badge({
                         "bg-accent-positive text-transparent absolute top-0 left-0 z-0 scale-90",
                         "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:scale-100",
                         "transition-all duration-200 pointer-events-none",
-                        shadowClassName ?? className
+                        shadowClassName ?? className,
                     )}
                     {...props}
                 />

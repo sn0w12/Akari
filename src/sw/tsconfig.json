@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": ["ES2017", "DOM", "WebWorker"],
+        "outDir": "../../public",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "noEmitOnError": false,
+        "resolveJsonModule": true
+    },
+    "include": ["sw.ts"]
+}

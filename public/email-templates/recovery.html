@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            :root {
+                --radius: 0.625rem;
+                --accent-color: oklch(0.631 0.2157 287.24);
+                --background: oklch(1 0 0);
+                --foreground: oklch(0.145 0 0);
+                --card: oklch(1 0 0);
+                --card-foreground: oklch(0.145 0 0);
+                --primary: oklch(0.205 0 0);
+                --secondary: oklch(0.97 0 0);
+                --muted-foreground: oklch(0.556 0 0);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --background: oklch(0.145 0 0);
+                    --foreground: oklch(0.985 0 0);
+                    --card: oklch(0.205 0 0);
+                    --primary: oklch(0.922 0 0);
+                    --secondary: oklch(0.269 0 0);
+                    --muted-foreground: oklch(0.708 0 0);
+                }
+            }
+            body {
+                font-family: Arial, sans-serif;
+                color: var(--foreground);
+                background: var(--background);
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: var(--card);
+                padding: 40px;
+                border-radius: var(--radius);
+            }
+            .btn {
+                background: var(--accent-color);
+                color: var(--background);
+                padding: 12px 24px;
+                text-decoration: none;
+                border-radius: var(--radius);
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Reset Your Password</h1>
+            <p>Use the link below to set a new password:</p>
+            <a
+                class="btn"
+                href="https://akarimanga.dpdns.org/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/auth/reset-password"
+            >
+                Reset Password
+            </a>
+        </div>
+    </body>
+</html>

@@ -1,5 +1,7 @@
-import React from "react";
+import { useDevice } from "@/contexts/device-context";
 import { useKeyPressed } from "@/hooks/use-keys-pressed";
+import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
 
 interface KeyboardShortcutProps {
     keys: string[] | string;
@@ -35,25 +37,51 @@ function getKeyVisual(key: string): string {
     return KEY_VISUALS[normalized] ?? key;
 }
 
+function Kbd({
+    children,
+    isPressed,
+}: {
+    children: React.ReactNode;
+    isPressed: boolean;
+}) {
+    return (
+        <kbd
+            className={cn(
+                "rounded-md border px-1 py-0.5 text-xs transition-colors",
+                {
+                    "bg-accent-positive border-accent-positive text-primary-foreground":
+                        isPressed,
+                    "bg-muted": !isPressed,
+                },
+            )}
+        >
+            {children}
+        </kbd>
+    );
+}
+
 function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
+    const { deviceType } = useDevice();
+
+    const shouldShow = useSetting("showShortcuts");
+    if (!shouldShow || deviceType === "mobile") return null;
 
     return (
         <span
-            className={`text-muted-foreground pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-2 text-sm ${className}`}
+            className={cn(
+                "text-foreground/70 pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-1 text-sm",
+                className,
+            )}
         >
             {parsedKeys.map((key, index) => (
-                <kbd
+                <Kbd
                     key={`${parsedKeys.join("-")}-${index}`}
-                    className={`rounded-md border px-1 py-0.5 text-xs transition-colors ${
-                        pressedKeys.has(key.toLowerCase())
-                            ? "bg-accent-positive border-accent-positive text-primary-foreground"
-                            : "bg-muted"
-                    }`}
+                    isPressed={pressedKeys.has(key.toLowerCase())}
                 >
                     {getKeyVisual(key)}
-                </kbd>
+                </Kbd>
             ))}
         </span>
     );
@@ -65,52 +93,28 @@ function ContextKeyboardShortcut({
 }: KeyboardShortcutProps) {
     const parsedKeys = ParseShortcutKeys(keys);
     const pressedKeys = useKeyPressed();
+    const { deviceType } = useDevice();
+
+    const shouldShow = useSetting("showShortcuts");
+    if (!shouldShow || deviceType === "mobile") return null;
 
     return (
         <span
-            className={`text-muted-foreground pointer-events-none flex gap-1 text-sm ${className}`}
+            className={cn(
+                "text-muted-foreground pointer-events-none flex gap-1 text-sm",
+                className,
+            )}
         >
             {parsedKeys.map((key, index) => (
-                <kbd
+                <Kbd
                     key={`${parsedKeys.join("-")}-${index}`}
-                    className={`rounded-md border px-1 py-0.5 text-xs transition-colors ${
-                        pressedKeys.has(key.toLowerCase())
-                            ? "bg-accent-positive border-accent-positive text-primary-foreground"
-                            : "bg-muted"
-                    }`}
+                    isPressed={pressedKeys.has(key.toLowerCase())}
                 >
                     {getKeyVisual(key)}
-                </kbd>
+                </Kbd>
             ))}
         </span>
     );
 }
 
-function TooltipKeyboardShortcut({
-    keys,
-    className = "",
-}: KeyboardShortcutProps) {
-    const parsedKeys = ParseShortcutKeys(keys);
-    const pressedKeys = useKeyPressed();
-
-    return (
-        <span
-            className={`text-background pointer-events-none z-10 flex gap-1 text-sm ${className}`}
-        >
-            {parsedKeys.map((key, index) => (
-                <kbd
-                    key={`${parsedKeys.join("-")}-${index}`}
-                    className={`bg-primary rounded-sm border px-1 text-xs transition-colors ${
-                        pressedKeys.has(key.toLowerCase())
-                            ? "bg-accent-positive border-accent-positive text-primary-foreground"
-                            : "bg-muted"
-                    }`}
-                >
-                    {getKeyVisual(key)}
-                </kbd>
-            ))}
-        </span>
-    );
-}
-
-export { KeyboardShortcut, ContextKeyboardShortcut, TooltipKeyboardShortcut };
+export { ContextKeyboardShortcut, KeyboardShortcut };

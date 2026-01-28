@@ -1,14 +1,21 @@
-import { SmallManga } from "@/types/manga";
+import { cn } from "@/lib/utils";
+import { GRID_CLASS } from "../grid-page";
 import { MangaCard } from "./manga-card";
 interface MangaGridProps {
-    mangaList: SmallManga[];
+    mangaList: components["schemas"]["MangaResponse"][];
+    priority?: number;
+    className?: string;
 }
 
-export function MangaGrid({ mangaList }: MangaGridProps) {
+export function MangaGrid({ mangaList, priority, className }: MangaGridProps) {
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {mangaList.map((manga) => (
-                <MangaCard key={manga.id} manga={manga} isBookmarked={false} />
+        <div className={cn(GRID_CLASS, className)}>
+            {mangaList.map((manga, index) => (
+                <MangaCard
+                    key={manga.id}
+                    manga={manga}
+                    priority={index < (priority ?? 0)}
+                />
             ))}
         </div>
     );

@@ -3,12 +3,12 @@
 import type React from "react";
 
 import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { NumberInput } from "@/components/ui/input";
 
 interface JumpToPagePopoverProps {
     currentPage: number;
@@ -50,7 +50,7 @@ export function JumpToPagePopover({
                 <Button
                     variant="default"
                     size="sm"
-                    className="min-w-[2.5rem] h-9"
+                    className="min-w-9 h-9"
                     aria-label={`Current page ${currentPage}, click to jump to page`}
                     aria-current="page"
                 >
@@ -62,7 +62,7 @@ export function JumpToPagePopover({
                     <p className="text-xs text-muted-foreground text-center">
                         Jump to page
                     </p>
-                    <div className="flex gap-1">
+                    <div className="flex">
                         <NumberInput
                             type="number"
                             min="1"
@@ -71,7 +71,7 @@ export function JumpToPagePopover({
                             onChange={(e) => setJumpToPage(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Page"
-                            className="h-7 text-xs"
+                            className="h-7 text-xs rounded-r-none"
                             wrapperClassName="flex-1"
                             autoFocus
                         />
@@ -83,7 +83,7 @@ export function JumpToPagePopover({
                                 Number.parseInt(jumpToPage) < 1 ||
                                 Number.parseInt(jumpToPage) > totalPages
                             }
-                            className="h-7 px-2 text-xs"
+                            className="h-7 px-2 text-xs rounded-l-none"
                         >
                             Go
                         </Button>

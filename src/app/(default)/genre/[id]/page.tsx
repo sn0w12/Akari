@@ -1,57 +1,100 @@
+import ErrorPage from "@/components/error-page";
+import { MangaGrid } from "@/components/manga/manga-grid";
+import { ServerPagination } from "@/components/ui/pagination/server-pagination";
+import { client, serverHeaders } from "@/lib/api";
+import { genres } from "@/lib/api/search";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { Metadata } from "next";
-import GenrePage from "@/components/genre";
-import { unstable_cacheLife as cacheLife } from "next/cache";
-import { getBaseUrl } from "@/lib/api/base-url";
-import { robots } from "@/lib/utils";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface PageProps {
-    params: Promise<{ id: string }>;
-    searchParams: Promise<{
-        page: string;
-        sort?: string;
-        [key: string]: string | string[] | undefined;
-    }>;
+    params: Promise<{ id: string; page?: string }>;
+}
+
+export async function generateStaticParams() {
+    return genres.map((id) => ({ id }));
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
-
     const params = await props.params;
-    const name = params.id.replaceAll("_", " ");
+    const name = params.id.replaceAll("-", " ");
     const description = `View all ${name} manga`;
-    const ogImage = `${getBaseUrl()}/og/categories/${params.id
-        .toLowerCase()
-        .replaceAll(" ", "_")}.webp`;
 
-    return {
+    return createMetadata({
         title: name,
         description: description,
-        robots: robots(),
-        openGraph: {
-            title: name,
-            description: description,
-            images: ogImage,
-        },
-        twitter: {
-            title: name,
-            description: description,
-            images: ogImage,
-        },
-    };
+        image: createOgImage("genre", params.id),
+        canonicalPath: `/genre/${params.id}`,
+    });
 }
 
-export default async function Home(props: PageProps) {
-    const searchParams = await props.searchParams;
-    const params = await props.params;
+export async function getGenre(
+    name: string,
+    page: number,
+    sort: components["schemas"]["MangaListSortOrder"] = "latest",
+) {
+    "use cache";
+    cacheLife("minutes");
+    cacheTag("genre", `genre-${name}`);
+
+    const { data, error } = await client.GET("/v2/manga/list", {
+        params: {
+            query: {
+                genres: [name],
+                page: page,
+                pageSize: 24,
+                sortBy: sort,
+            },
+        },
+        headers: serverHeaders,
+    });
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    return { data, error: null };
+}
+
+export default async function GenrePage(props: PageProps) {
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <GenrePage
-                params={{
-                    id: params.id,
-                }}
-                searchParams={searchParams}
-            />
+        <div className="flex-1 px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <GenreHeader {...props} />
+            </div>
+
+            <GenreBody {...props} />
         </div>
+    );
+}
+
+async function GenreHeader(props: PageProps) {
+    const params = await props.params;
+    const name = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    return <h2 className="text-3xl font-bold mb-2">{name}</h2>;
+}
+
+async function GenreBody(props: PageProps) {
+    const params = await props.params;
+    const name = decodeURIComponent(params.id).replaceAll("-", " ");
+
+    const page = parseInt(params.page || "1");
+    const { data, error } = await getGenre(name, page);
+
+    if (error) {
+        return <ErrorPage error={error} />;
+    }
+
+    return (
+        <>
+            <MangaGrid mangaList={data.data.items} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+                href={`/genre/${params.id}`}
+            />
+        </>
     );
 }

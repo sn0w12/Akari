@@ -1,46 +1,34 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
+import Spinner from "@/components/ui/puff-loader";
+import { getSearchResults } from "@/lib/api/search";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
+import { cn, generateSizes } from "@/lib/utils";
+import { useDebouncedValue } from "@tanstack/react-pacer";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { useSetting, useShortcutSetting } from "@/lib/settings";
-import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
-import { getSearchResults } from "@/lib/api/search";
-import { useQuery } from "@tanstack/react-query";
-import Spinner from "@/components/ui/puff-loader";
+import { useRef, useState } from "react";
 
 export default function SearchBar() {
     const router = useRouter();
     const [searchText, setSearchText] = useState("");
-    const [debouncedSearchText, setDebouncedSearchText] = useState("");
+    const [debouncedSearchText] = useDebouncedValue(searchText, {
+        wait: 300,
+    });
     const [isFocused, setIsFocused] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState<number>(-1);
     const shouldCloseRef = useRef(true);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-
-    // Debounce search text
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchText(searchText);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchText]);
-
-    // Update showPopup based on focus and search text
-    useEffect(() => {
-        setShowPopup(isFocused && debouncedSearchText.trim().length > 0);
-    }, [isFocused, debouncedSearchText]);
+    const hasSearchText = searchText.trim().length > 0;
 
     // Fetch search results using React Query
-    const {
-        data: searchResults = { mangaList: [], totalPages: 0 },
-        isLoading: isSearchLoading,
-    } = useQuery({
+    const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
         queryKey: ["search", debouncedSearchText],
         queryFn: () => getSearchResults(debouncedSearchText),
         enabled: debouncedSearchText.trim().length > 0,
@@ -57,37 +45,29 @@ export default function SearchBar() {
         setTimeout(() => {
             if (shouldCloseRef.current) {
                 setIsFocused(false);
-                setShowPopup(false);
             }
         }, 100);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            if (
-                focusedIndex >= 0 &&
-                focusedIndex < searchResults.mangaList.length
-            ) {
+            if (focusedIndex >= 0 && focusedIndex < searchResults.length) {
                 // Navigate to the selected result
-                router.push(
-                    `/manga/${searchResults.mangaList[focusedIndex].id}`
-                );
+                router.push(`/manga/${searchResults[focusedIndex]!.id}`);
             } else {
                 // Navigate to search page if no result selected
                 router.push(`/search?q=${encodeURIComponent(searchText)}`);
             }
-            setShowPopup(false);
             inputRef.current?.blur();
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
             setFocusedIndex((prev) =>
-                prev < searchResults.mangaList.length - 1 ? prev + 1 : prev
+                prev < searchResults.length - 1 ? prev + 1 : prev,
             );
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
             setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
         } else if (e.key === "Escape") {
-            setShowPopup(false);
             setFocusedIndex(-1);
             inputRef.current?.blur();
         }
@@ -115,7 +95,8 @@ export default function SearchBar() {
                     onFocus={() => {
                         setIsFocused(true);
                     }}
-                    aria-expanded={showPopup}
+                    role="combobox"
+                    aria-expanded={isFocused}
                     aria-controls="search-results"
                     aria-autocomplete="list"
                     aria-activedescendant={
@@ -132,7 +113,7 @@ export default function SearchBar() {
                     }`}
                 />
             </div>
-            {showPopup && (
+            {isFocused && (
                 <Card
                     ref={popupRef}
                     className="hidden absolute p-2 z-10 mt-1 m-auto md:w-full md:block"
@@ -142,52 +123,59 @@ export default function SearchBar() {
                             <div className="flex justify-center">
                                 <Spinner />
                             </div>
-                        ) : searchResults.mangaList.length > 0 ? (
+                        ) : searchResults.length > 0 ? (
                             <>
-                                {searchResults.mangaList.map(
-                                    (result, index) => (
-                                        <Link
-                                            href={`/manga/${result.id}`}
-                                            key={result.id}
-                                            id={`search-result-${index}`}
-                                            onMouseDown={() => {
-                                                shouldCloseRef.current = false;
-                                            }}
-                                            className={`block p-2 hover:bg-accent flex items-center rounded-lg ${
-                                                index === focusedIndex
-                                                    ? "bg-accent"
-                                                    : ""
-                                            }`}
-                                            prefetch={true}
-                                        >
-                                            <Image
-                                                src={`/api/v1/image-proxy?imageUrl=${result.image}`}
-                                                alt={result.title}
-                                                className="max-h-24 w-auto rounded mr-2"
-                                                height={100}
-                                                width={70}
-                                            />
-                                            {result.title}
-                                        </Link>
-                                    )
-                                )}
-                                <Link
-                                    href={`/search?q=${encodeURIComponent(
-                                        searchText
-                                    )}`}
-                                    className="block pt-4 mt-2 text-center text-primary hover:text-primary/80 border-t"
-                                    onMouseDown={() => {
-                                        shouldCloseRef.current = false;
-                                    }}
-                                >
-                                    View all results
-                                </Link>
+                                {searchResults.map((result, index) => (
+                                    <Link
+                                        href={`/manga/${result.id}`}
+                                        key={result.id}
+                                        id={`search-result-${index}`}
+                                        onMouseDown={() => {
+                                            shouldCloseRef.current = false;
+                                        }}
+                                        className={`block p-2 hover:bg-accent flex items-center rounded-lg ${
+                                            index === focusedIndex
+                                                ? "bg-accent"
+                                                : ""
+                                        }`}
+                                        prefetch={true}
+                                    >
+                                        <Image
+                                            src={result.cover}
+                                            alt={result.title}
+                                            className="max-h-24 w-auto rounded mr-2"
+                                            height={144}
+                                            width={96}
+                                            quality={40}
+                                            sizes={generateSizes({
+                                                default: "96px",
+                                            })}
+                                        />
+                                        {result.title}
+                                    </Link>
+                                ))}
                             </>
-                        ) : (
+                        ) : hasSearchText ? (
                             <div className="text-center text-muted-foreground p-4">
                                 No Results
                             </div>
-                        )}
+                        ) : null}
+                        <Link
+                            href={`/search?q=${encodeURIComponent(searchText)}`}
+                            className={cn(
+                                "block text-center text-primary hover:text-primary/80",
+                                {
+                                    "border-t pt-4 mt-2": hasSearchText,
+                                },
+                            )}
+                            onMouseDown={() => {
+                                shouldCloseRef.current = false;
+                            }}
+                        >
+                            {hasSearchText
+                                ? "View all results"
+                                : "Go to search page"}
+                        </Link>
                     </CardContent>
                 </Card>
             )}

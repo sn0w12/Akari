@@ -1,20 +1,20 @@
-import React from "react";
-import { forwardRef, useMemo, useState } from "react";
-import { HexColorPicker } from "react-colorful";
-import { cn } from "@/lib/utils";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { forwardRef, useMemo, useState } from "react";
+import { HexColorPicker } from "react-colorful";
 
 interface ColorPickerProps {
     value: string;
     onChange: (value: string) => void;
     onBlur?: () => void;
+    id?: string;
 }
 
 const ColorPicker = forwardRef<
@@ -22,8 +22,8 @@ const ColorPicker = forwardRef<
     Omit<ButtonProps, "value" | "onChange" | "onBlur"> & ColorPickerProps
 >(
     (
-        { disabled, value, onChange, onBlur, name, className, ...props },
-        forwardedRef
+        { disabled, value, onChange, onBlur, name, className, id, ...props },
+        forwardedRef,
     ) => {
         const [open, setOpen] = useState(false);
 
@@ -36,6 +36,7 @@ const ColorPicker = forwardRef<
                 <PopoverTrigger asChild disabled={disabled} onBlur={onBlur}>
                     <Button
                         {...props}
+                        id={id}
                         className={cn("block", className)}
                         name={name}
                         onClick={() => {
@@ -68,7 +69,7 @@ const ColorPicker = forwardRef<
                 </PopoverContent>
             </Popover>
         );
-    }
+    },
 );
 ColorPicker.displayName = "ColorPicker";
 

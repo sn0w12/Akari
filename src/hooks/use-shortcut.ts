@@ -7,7 +7,7 @@ export type ShortcutOptions = {
 export function useShortcut(
     shortcutKey: string,
     callback: () => void,
-    options: ShortcutOptions = {}
+    options: ShortcutOptions = {},
 ) {
     const parseShortcut = useCallback((shortcut: string): string[] => {
         return shortcut.toLowerCase().split("+");
@@ -23,7 +23,7 @@ export function useShortcut(
 
             return JSON.stringify(pressedKeys) === JSON.stringify(keys);
         },
-        []
+        [],
     );
 
     useEffect(() => {

@@ -1,24 +1,14 @@
 "use client";
 
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
-import {
-    ChevronDown,
-    Circle,
-    Menu,
-    PanelLeftClose,
-    PanelLeftOpen,
-} from "lucide-react";
+import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import * as React from "react";
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
-    Sheet,
-    SheetContent,
     SheetDescription,
     SheetHeader,
     SheetTitle,
@@ -30,18 +20,12 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuSeparator,
-    ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcut } from "@/hooks/use-shortcut";
 import { useSetting } from "@/lib/settings";
-import { ScrollArea } from "./scroll-area";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ContextMenuLabel } from "@radix-ui/react-context-menu";
+import { Drawer, DrawerContent } from "./drawer";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -59,6 +43,9 @@ type SidebarContextProps = {
     toggleSidebar: () => void;
     isAnimating: boolean;
     onAnimationComplete: (callback: () => void) => () => void;
+    tooltipOpen: boolean;
+    onTooltipHoverStart: () => void;
+    onTooltipHoverEnd: () => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -88,7 +75,10 @@ function SidebarProvider({
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
+    const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const animationCallbacksRef = React.useRef<Set<() => void>>(new Set());
+    const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    const resetTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const [_open, _setOpen] = React.useState(() => {
         if (typeof window === "undefined") return defaultOpen;
@@ -126,7 +116,7 @@ function SidebarProvider({
                 animationCallbacksRef.current.forEach((callback) => callback());
             }, 250);
         },
-        [setOpenProp, open]
+        [setOpenProp, open],
     );
 
     const onAnimationComplete = React.useCallback((callback: () => void) => {
@@ -135,6 +125,28 @@ function SidebarProvider({
         return () => {
             animationCallbacksRef.current.delete(callback);
         };
+    }, []);
+
+    const onTooltipHoverStart = React.useCallback(() => {
+        if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+            resetTimeoutRef.current = null;
+        }
+        if (!tooltipOpen) {
+            hoverTimeoutRef.current = setTimeout(() => {
+                setTooltipOpen(true);
+            }, 700);
+        }
+    }, [tooltipOpen]);
+
+    const onTooltipHoverEnd = React.useCallback(() => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+            hoverTimeoutRef.current = null;
+        }
+        resetTimeoutRef.current = setTimeout(() => {
+            setTooltipOpen(false);
+        }, 700);
     }, []);
 
     const toggleSidebar = React.useCallback(() => {
@@ -159,6 +171,9 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
+            tooltipOpen,
+            onTooltipHoverStart,
+            onTooltipHoverEnd,
         }),
         [
             state,
@@ -170,12 +185,15 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
-        ]
+            tooltipOpen,
+            onTooltipHoverStart,
+            onTooltipHoverEnd,
+        ],
     );
 
     return (
         <SidebarContext.Provider value={contextValue}>
-            <TooltipProvider delayDuration={0}>
+            <TooltipProvider>
                 <div
                     data-slot="sidebar-wrapper"
                     style={
@@ -187,7 +205,7 @@ function SidebarProvider({
                     }
                     className={cn(
                         "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
-                        className
+                        className,
                     )}
                     {...props}
                 >
@@ -218,7 +236,7 @@ function Sidebar({
                 data-slot="sidebar"
                 className={cn(
                     "bg-sidebar text-sidebar-foreground mt-8 flex h-[calc(100vh-32px)] flex-col",
-                    className
+                    className,
                 )}
                 {...props}
             >
@@ -229,18 +247,21 @@ function Sidebar({
 
     if (isMobile) {
         return (
-            <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-                <SheetContent
+            <Drawer
+                direction={side}
+                open={openMobile}
+                onOpenChange={setOpenMobile}
+            >
+                <DrawerContent
                     data-sidebar="sidebar"
                     data-slot="sidebar"
                     data-mobile="true"
-                    className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+                    className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden rounded-r-md"
                     style={
                         {
                             "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
                         } as React.CSSProperties
                     }
-                    side={side}
                 >
                     <SheetHeader className="sr-only">
                         <SheetTitle>Sidebar</SheetTitle>
@@ -251,8 +272,8 @@ function Sidebar({
                     <div className="flex h-full w-full flex-col">
                         {children}
                     </div>
-                </SheetContent>
-            </Sheet>
+                </DrawerContent>
+            </Drawer>
         );
     }
 
@@ -273,7 +294,7 @@ function Sidebar({
                     "group-data-[side=right]:rotate-180",
                     variant === "floating" || variant === "inset"
                         ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-                        : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+                        : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
                 )}
             />
             <div
@@ -286,7 +307,7 @@ function Sidebar({
                     variant === "floating" || variant === "inset"
                         ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
                         : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
-                    className
+                    className,
                 )}
                 {...props}
             >
@@ -318,7 +339,7 @@ function SidebarTrigger({
                 size="icon"
                 className={cn(
                     "hidden md:flex hover:bg-accent hover:text-accent-foreground ease-snappy size-8",
-                    className
+                    className,
                 )}
                 onClick={(event) => {
                     onClick?.(event);
@@ -341,7 +362,7 @@ function SidebarTrigger({
                 size="icon"
                 className={cn(
                     "md:hidden hover:bg-accent transition-colors duration-200 select-none touch-none border",
-                    className
+                    className,
                 )}
                 onClick={(event) => {
                     onClick?.(event);
@@ -376,7 +397,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
                 "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
                 "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
                 "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
-                className
+                className,
             )}
             {...props}
         />
@@ -390,7 +411,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
             className={cn(
                 "bg-background relative flex w-full flex-1 flex-col",
                 "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]: md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
-                className
+                className,
             )}
             {...props}
         />
@@ -454,7 +475,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
             data-sidebar="content"
             className={cn(
                 "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
-                className
+                className,
             )}
             {...props}
         />
@@ -468,7 +489,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
             data-sidebar="group"
             className={cn(
                 "relative flex w-full min-w-0 flex-col p-2",
-                className
+                className,
             )}
             {...props}
         />
@@ -489,7 +510,7 @@ function SidebarGroupLabel({
             className={cn(
                 "text-sidebar-foreground/70 ring-sidebar-ring ease-snappy flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
                 "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
-                className
+                className,
             )}
             {...props}
         />
@@ -511,7 +532,7 @@ function SidebarGroupAction({
                 "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
                 "after:absolute after:-inset-2 md:after:hidden",
                 "group-data-[collapsible=icon]:hidden",
-                className
+                className,
             )}
             {...props}
         />
@@ -555,7 +576,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-    "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 transition-[background-color] duration-200 ease-snappy",
+    "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 transition-[background-color] duration-200 ease-snappy",
     {
         variants: {
             variant: {
@@ -565,13 +586,13 @@ const sidebarMenuButtonVariants = cva(
                     "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
             },
             size: {
-                default: "h-8 text-sm",
+                default: "h-8 text-base md:text-sm",
                 sm: "h-7 text-xs",
                 lg: "h-12 text-sm group-data-[collapsible=icon]:p-0!",
             },
         },
         defaultVariants: { variant: "default", size: "default" },
-    }
+    },
 );
 
 function SidebarMenuButton({
@@ -591,13 +612,19 @@ function SidebarMenuButton({
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const {
+        isMobile,
+        state,
+        tooltipOpen,
+        onTooltipHoverStart,
+        onTooltipHoverEnd,
+    } = useSidebar();
 
     const wrappedChildren = (
         <div
             className={cn(
                 `flex items-center gap-2 ${isMobile ? "w-full" : ""}`,
-                labelClassName
+                labelClassName,
             )}
             style={{ marginLeft: -4 }}
         >
@@ -613,8 +640,10 @@ function SidebarMenuButton({
             data-active={isActive}
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
-                className
+                className,
             )}
+            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
+            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
             {...props}
         >
             {wrappedChildren}
@@ -630,7 +659,7 @@ function SidebarMenuButton({
     }
 
     return (
-        <Tooltip>
+        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
             <TooltipTrigger asChild>{button}</TooltipTrigger>
             <TooltipContent
                 side="right"
@@ -652,6 +681,7 @@ function SidebarMenuLink({
     children,
     href,
     labelClassName,
+    prefetch,
     ...props
 }: React.ComponentProps<"a"> & {
     asChild?: boolean;
@@ -659,15 +689,23 @@ function SidebarMenuLink({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href: string;
     labelClassName?: string;
+    prefetch?: boolean;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : Link;
-    const { isMobile, state, setOpenMobile } = useSidebar();
+    const {
+        isMobile,
+        state,
+        tooltipOpen,
+        setOpenMobile,
+        onTooltipHoverStart,
+        onTooltipHoverEnd,
+    } = useSidebar();
 
     const wrappedChildren = (
         <div
             className={cn(
                 `flex items-center gap-2 ${isMobile ? "w-full" : ""}`,
-                labelClassName
+                labelClassName,
             )}
             style={{ marginLeft: -4 }}
         >
@@ -684,14 +722,16 @@ function SidebarMenuLink({
             href={href}
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
-                className
+                className,
             )}
             onClick={() => {
                 if (isMobile) {
                     setOpenMobile(false);
                 }
             }}
-            prefetch={false}
+            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
+            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
+            prefetch={prefetch || true}
             {...props}
         >
             {wrappedChildren}
@@ -707,7 +747,7 @@ function SidebarMenuLink({
     }
 
     return (
-        <Tooltip>
+        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
             <TooltipTrigger asChild>{link}</TooltipTrigger>
             <TooltipContent
                 side="right"
@@ -743,7 +783,7 @@ function SidebarMenuAction({
                 "group-data-[collapsible=icon]:hidden",
                 showOnHover &&
                     "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
-                className
+                className,
             )}
             {...props}
         />
@@ -765,7 +805,7 @@ function SidebarMenuBadge({
                 "peer-data-[size=default]/menu-button:top-1.5",
                 "peer-data-[size=lg]/menu-button:top-2.5",
                 "group-data-[collapsible=icon]:hidden",
-                className
+                className,
             )}
             {...props}
         />
@@ -777,9 +817,9 @@ function SidebarMenuSkeleton({
     showIcon = false,
     ...props
 }: React.ComponentProps<"div"> & { showIcon?: boolean }) {
-    const width = React.useMemo(() => {
-        return `${Math.floor(Math.random() * 40) + 50}%`;
-    }, []);
+    const [width] = React.useState(
+        () => `${Math.floor(Math.random() * 40) + 50}%`,
+    );
 
     return (
         <div
@@ -787,7 +827,7 @@ function SidebarMenuSkeleton({
             data-sidebar="menu-skeleton"
             className={cn(
                 "flex h-8 items-center gap-2 rounded-md px-2",
-                className
+                className,
             )}
             {...props}
         >
@@ -814,7 +854,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
             className={cn(
                 "border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
                 "group-data-[collapsible=icon]:hidden",
-                className
+                className,
             )}
             {...props}
         />
@@ -860,86 +900,22 @@ function SidebarMenuSubButton({
                 size === "sm" && "text-xs",
                 size === "md" && "text-sm",
                 "group-data-[collapsible=icon]:hidden",
-                className
+                className,
             )}
             {...props}
         />
     );
 }
 
-type SectionItem = { id: string; name: string; pinned?: boolean };
-
-interface ContextMenuItemDef {
-    label: string;
-    onClick: (id: string) => void;
-    icon?: React.ReactNode;
-    variant?: "default" | "destructive";
-    position?: "before-pin" | "after-pin";
-}
+type SectionItem = { id: string; name: string };
 
 interface SidebarSectionProps {
     title: string;
     icon: React.ReactNode;
     items: SectionItem[];
     isActive: boolean;
-    isSidebarCollapsed: boolean;
     basePath: string;
-    onNavigate: (path: string) => void;
     isItemActive: (itemId: string) => boolean;
-    contextMenuItems?: ContextMenuItemDef[];
-    onPinItem?: (itemId: string, pinned: boolean) => void;
-    maxHeight?: number;
-}
-
-function usePinnedItems(sectionTitle: string) {
-    const storageKey = `pinned_items_${sectionTitle
-        .toLowerCase()
-        .replace(/\s+/g, "_")}`;
-    const [pinnedIds, setPinnedIds] = React.useState<string[]>([]);
-    React.useEffect(() => {
-        try {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                setPinnedIds(JSON.parse(saved));
-            }
-        } catch (error) {
-            console.error(
-                "Failed to load pinned items from localStorage",
-                error
-            );
-        }
-    }, [storageKey]);
-
-    const togglePin = React.useCallback(
-        (id: string, pinned: boolean) => {
-            setPinnedIds((prev) => {
-                const newPinnedIds = pinned
-                    ? [...prev, id]
-                    : prev.filter((pinnedId) => pinnedId !== id);
-
-                try {
-                    localStorage.setItem(
-                        storageKey,
-                        JSON.stringify(newPinnedIds)
-                    );
-                } catch (error) {
-                    console.error(
-                        "Failed to save pinned items to localStorage",
-                        error
-                    );
-                }
-
-                return newPinnedIds;
-            });
-        },
-        [storageKey]
-    );
-
-    return {
-        pinnedIds,
-        isPinned: (id: string) => pinnedIds.includes(id),
-        togglePin,
-    };
 }
 
 function SidebarSection({
@@ -947,111 +923,21 @@ function SidebarSection({
     icon,
     items,
     isActive,
-    isSidebarCollapsed,
     basePath,
     isItemActive,
-    maxHeight = 320,
-}: SidebarSectionProps) {
-    const { isPinned } = usePinnedItems(title);
+}: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
-    const { setOpen } = useSidebar();
-    const [isExpanded, setIsExpanded] = React.useState(isActive);
-    const hoverIndexRef = React.useRef<number | null>(null);
-    const isHoveringRef = React.useRef<boolean>(false);
-    const indicatorRef = React.useRef<HTMLDivElement>(null);
-    const [isHovering, setIsHovering] = React.useState(false);
-    const [contentHeight, setContentHeight] = React.useState<number | null>(
-        null
-    );
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const itemsContainerRef = React.useRef<HTMLDivElement>(null);
-    const itemRefs = React.useRef<(HTMLElement | null)[]>([]);
+    const { setOpen, state } = useSidebar();
+    const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
 
-    React.useLayoutEffect(() => {
-        if (contentRef.current) {
-            setContentHeight(
-                Math.min(contentRef.current.scrollHeight, maxHeight)
-            );
-        }
-    }, [items, isExpanded, maxHeight]);
-
-    const getItemRef = (index: number) => (el: HTMLElement | null) => {
-        itemRefs.current[index] = el;
-    };
-
-    const updateIndicator = React.useCallback((index: number | null) => {
-        if (index === null || !indicatorRef.current) {
-            if (indicatorRef.current) {
-                indicatorRef.current.style.opacity = "0";
-            }
-            return;
-        }
-
-        const item = itemRefs.current[index];
-        if (!item || !itemsContainerRef.current) return;
-
-        const itemRect = item.getBoundingClientRect();
-        const containerRect = itemsContainerRef.current.getBoundingClientRect();
-        const top = itemRect.top - containerRect.top;
-
-        if (indicatorRef.current) {
-            indicatorRef.current.style.height = `${itemRect.height}px`;
-            indicatorRef.current.style.top = `${top}px`;
-            indicatorRef.current.style.opacity = isHoveringRef.current
-                ? "1"
-                : "0";
-        }
-    }, []);
-
-    const handleItemHover = React.useCallback(
-        (index: number) => {
-            hoverIndexRef.current = index;
-            requestAnimationFrame(() => {
-                updateIndicator(index);
-            });
-        },
-        [updateIndicator]
-    );
-
-    const handleMouseEnter = React.useCallback(() => {
-        isHoveringRef.current = true;
-        if (hoverIndexRef.current !== null) {
-            updateIndicator(hoverIndexRef.current);
-        }
-
-        setTimeout(() => {
-            setIsHovering(true);
-        }, 50);
-    }, [updateIndicator]);
-
-    const handleMouseLeave = React.useCallback(() => {
-        isHoveringRef.current = false;
-        updateIndicator(null);
-
-        setTimeout(() => {
-            setIsHovering(false);
-        }, 50);
-    }, [updateIndicator]);
-
-    const handleSectionToggle = (e: React.MouseEvent) => {
+    const handleSectionToggle = (e: React.MouseEvent): void => {
         e.stopPropagation();
         e.preventDefault();
-        setIsExpanded(!isExpanded);
+        setIsExpanded((prev) => !prev);
         setOpen(true);
     };
 
-    const sortedItems = React.useMemo(() => {
-        return [...items].sort((a, b) => {
-            const aPinned = a.pinned !== undefined ? a.pinned : isPinned(a.id);
-            const bPinned = b.pinned !== undefined ? b.pinned : isPinned(b.id);
-
-            if (aPinned && !bPinned) return -1;
-            if (!aPinned && bPinned) return 1;
-            return 0;
-        });
-    }, [items, isPinned]);
-
-    const handleLinkClick = () => {
+    const handleLinkClick = (): void => {
         const escEvent = new KeyboardEvent("keydown", {
             key: "Escape",
             code: "Escape",
@@ -1062,140 +948,49 @@ function SidebarSection({
 
     return (
         <SidebarMenuItem>
-            <ContextMenu>
-                <ContextMenuTrigger asChild>
-                    <SidebarMenuButton
-                        onClick={handleSectionToggle}
-                        isActive={isActive}
-                        tooltip={title}
-                        labelClassName={
-                            isSidebarCollapsed ? "" : "w-full justify-between"
-                        }
-                        aria-label={title}
-                    >
-                        <div className="flex max-w-[85%] items-center gap-2">
-                            <div className="min-w-6">{icon}</div>
-                            <span className="truncate">{title}</span>
-                        </div>
-                        {(!isSidebarCollapsed || isMobile) && (
-                            <ChevronDown
-                                className={cn(
-                                    "ease-snappy h-4 w-4 transition-transform duration-200",
-                                    isExpanded ? "rotate-0" : "-rotate-90"
-                                )}
-                            />
+            <SidebarMenuButton
+                onClick={handleSectionToggle}
+                isActive={isActive}
+                tooltip={title}
+                labelClassName={
+                    state === "collapsed" ? "" : "w-full justify-between"
+                }
+                aria-label={title}
+            >
+                <div className="flex max-w-[85%] items-center gap-2">
+                    <div className="min-w-6">{icon}</div>
+                    <span className="truncate">{title}</span>
+                </div>
+                {(state !== "collapsed" || isMobile) && (
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4",
+                            isExpanded ? "rotate-0" : "-rotate-90",
                         )}
-                    </SidebarMenuButton>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-48">
-                    <ContextMenuLabel>
-                        <span className="text-sm p-2 font-medium">{title}</span>
-                    </ContextMenuLabel>
-                    <ContextMenuSeparator />
-                    <ScrollArea
-                        className="w-full"
-                        style={{
-                            height:
-                                sortedItems.length > 0
-                                    ? Math.min(sortedItems.length * 32, 384) +
-                                      "px"
-                                    : "40px",
-                        }}
-                    >
-                        {sortedItems.length > 0 ? (
-                            <>
-                                {sortedItems.map((item) => (
-                                    <ContextMenuItem key={item.id}>
-                                        <Link
-                                            key={"link" + item.id}
-                                            href={`${basePath}/${item.id}`}
-                                            className="flex items-center w-full"
-                                            onClick={handleLinkClick}
-                                            data-no-prefetch
-                                        >
-                                            {item.name}
-                                        </Link>
-                                    </ContextMenuItem>
-                                ))}
-                            </>
-                        ) : (
-                            <ContextMenuItem disabled>
-                                No items available
-                            </ContextMenuItem>
-                        )}
-                    </ScrollArea>
-                </ContextMenuContent>
-            </ContextMenu>
+                    />
+                )}
+            </SidebarMenuButton>
 
-            {(!isSidebarCollapsed || isMobile) && (
+            {(state !== "collapsed" || isMobile) && isExpanded && (
                 <div
-                    ref={contentRef}
-                    className={cn(
-                        "ease-snappy overflow-auto transition-all duration-200",
-                        !isExpanded && "h-0"
-                    )}
-                    style={{
-                        height: isExpanded
-                            ? contentHeight
-                                ? `${contentHeight}px`
-                                : "auto"
-                            : "0px",
-                    }}
+                    className="border-muted mt-0.5 ml-6 border-l-2 pt-0 pl-2 max-h-84 overflow-y-auto"
                     data-scrollbar-custom="true"
                 >
-                    <div
-                        ref={itemsContainerRef}
-                        className="border-muted relative mt-1 ml-6 border-l-2 pt-0 pl-2"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                    >
-                        <div
-                            ref={indicatorRef}
-                            className="bg-sidebar-accent pointer-events-none absolute right-0 left-0 ml-2 rounded-md will-change-transform"
-                            style={{
-                                height: "0px",
-                                top: "0px",
-                                opacity: 0,
-                                transition: isHovering
-                                    ? "all 200ms cubic-bezier(0.16, 1, 0.3, 1)"
-                                    : "opacity 200ms cubic-bezier(0.16, 1, 0.3, 1)",
-                                transform: "translateZ(0)",
-                            }}
-                        />
-
-                        {sortedItems.map((item, index) => {
-                            const itemPinned =
-                                item.pinned !== undefined
-                                    ? item.pinned
-                                    : isPinned(item.id);
-
-                            return (
-                                <SidebarMenuLink
-                                    ref={getItemRef(index)}
-                                    key={item.id}
-                                    href={`${basePath}/${item.id}`}
-                                    isActive={isItemActive(item.id)}
-                                    tooltip={item.name}
-                                    size="sm"
-                                    className={cn(
-                                        "relative z-10 mt-1 px-3 py-1 text-sm hover:bg-transparent",
-                                        itemPinned && "font-medium"
-                                    )}
-                                    onMouseEnter={() => handleItemHover(index)}
-                                    data-no-prefetch
-                                >
-                                    <div className="flex max-w-[150px] items-center gap-1.5">
-                                        {itemPinned && (
-                                            <Circle className="text-accent-positive h-2 w-2 fill-current" />
-                                        )}
-                                        <span className={`truncate`}>
-                                            {item.name}
-                                        </span>
-                                    </div>
-                                </SidebarMenuLink>
-                            );
-                        })}
-                    </div>
+                    {items.map((item) => (
+                        <SidebarMenuLink
+                            key={item.id}
+                            href={`${basePath}/${item.id}`}
+                            isActive={isItemActive(item.id)}
+                            tooltip={item.name}
+                            size="sm"
+                            className="relative z-10 px-3 text-base md:text-sm hover:bg-accent"
+                            onClick={handleLinkClick}
+                        >
+                            <div className="flex max-w-[150px] items-center gap-1.5">
+                                <span className="truncate">{item.name}</span>
+                            </div>
+                        </SidebarMenuLink>
+                    ))}
                 </div>
             )}
         </SidebarMenuItem>
@@ -1217,16 +1012,16 @@ export {
     SidebarMenuAction,
     SidebarMenuBadge,
     SidebarMenuButton,
-    SidebarMenuLink,
     SidebarMenuItem,
+    SidebarMenuLink,
     SidebarMenuSkeleton,
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarProvider,
     SidebarRail,
+    SidebarSection,
     SidebarSeparator,
     SidebarTrigger,
-    SidebarSection,
     useSidebar,
 };

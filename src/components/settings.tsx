@@ -1,27 +1,31 @@
 "use client";
 
-import React from "react";
-import { Label } from "@/components/ui/label";
+import { SettingsInput } from "@/components/settings/settings-input";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tree, TreeItem } from "@/components/ui/tree";
+import { APP_SETTINGS, inDevelopment } from "@/config";
+import { useConfirm } from "@/contexts/confirm-context";
+import { useDevice } from "@/contexts/device-context";
 import { useSettings } from "@/hooks/use-settings";
+import { useSticky } from "@/hooks/use-sticky";
 import {
     createAllSettingsMaps,
     CustomRenderSettingKeys,
     defaultSettings,
-    renderInput,
     resetAllSettingsToDefault,
     Setting,
+    shouldShowSetting,
 } from "@/lib/settings";
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/contexts/confirm-context";
-import { Tree, TreeItem } from "@/components/ui/tree";
-import { useSticky } from "@/hooks/use-sticky";
-import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { TableOfContents } from "lucide-react";
+import React from "react";
 
 import { SettingsSearch } from "@/components/settings/search";
+import { capitalize, cn } from "@/lib/utils";
 
 interface HierarchicalGroup {
     settings: Record<string, Setting>;
@@ -31,13 +35,68 @@ interface HierarchicalGroup {
 export default function SettingsPage() {
     const { settings, setSettings } = useSettings();
     const { confirm } = useConfirm();
+    const { deviceType, isPWA } = useDevice();
 
-    const settingsMaps = createAllSettingsMaps(settings, setSettings);
+    const allSettingsMaps = createAllSettingsMaps(settings, setSettings);
+    const settingsMaps = React.useMemo(() => {
+        const filtered: Record<string, Record<string, Setting>> = {};
+
+        Object.entries(allSettingsMaps).forEach(
+            ([categoryLabel, settingsMap]) => {
+                const categoryKey = Object.keys(APP_SETTINGS).find(
+                    (key) =>
+                        APP_SETTINGS[key as keyof typeof APP_SETTINGS].label ===
+                        categoryLabel,
+                );
+
+                if (categoryKey) {
+                    const category =
+                        APP_SETTINGS[categoryKey as keyof typeof APP_SETTINGS];
+                    const categoryVisibility =
+                        "visibility" in category
+                            ? category.visibility
+                            : undefined;
+                    if (
+                        !shouldShowSetting(
+                            categoryVisibility,
+                            deviceType,
+                            isPWA,
+                        )
+                    ) {
+                        return; // Skip this entire category
+                    }
+                }
+
+                // Skip Test Settings in production
+                if (categoryLabel === "Test Settings" && !inDevelopment) {
+                    return;
+                }
+
+                // Filter individual settings within the category
+                const filteredSettings: Record<string, Setting> = {};
+                Object.entries(settingsMap).forEach(([key, setting]) => {
+                    if (
+                        shouldShowSetting(setting.visibility, deviceType, isPWA)
+                    ) {
+                        filteredSettings[key] = setting;
+                    }
+                });
+
+                // Only include the category if it has visible settings
+                if (Object.keys(filteredSettings).length > 0) {
+                    filtered[categoryLabel] = filteredSettings;
+                }
+            },
+        );
+
+        return filtered;
+    }, [allSettingsMaps, deviceType, isPWA]);
+
     const firstTab = Object.keys(settingsMaps)[0];
     const [activeTab, setActiveTab] = React.useState(firstTab);
-    const [stickyRef, isSticky] = useSticky(-16);
+    const [stickyRef, isSticky] = useSticky(-8);
     const [activeSection, setActiveSection] = React.useState<string | null>(
-        null
+        null,
     );
 
     const customRenderers: Record<CustomRenderSettingKeys, React.ReactNode> = {
@@ -89,7 +148,7 @@ export default function SettingsPage() {
                     defaultCollapsed={false}
                     onClick={() => {
                         const el = document.getElementById(
-                            `settings-section-${groupName}`
+                            `settings-section-${groupName}`,
                         );
                         if (el) {
                             el.scrollIntoView({
@@ -108,7 +167,7 @@ export default function SettingsPage() {
                                 label={subgroupPath}
                                 onClick={() => {
                                     const el = document.getElementById(
-                                        `settings-subsection-${groupName}__${subgroupPath}`
+                                        `settings-subsection-${groupName}__${subgroupPath}`,
                                     );
                                     if (el) {
                                         el.scrollIntoView({
@@ -116,7 +175,7 @@ export default function SettingsPage() {
                                             block: "start",
                                         });
                                         setActiveSection(
-                                            `${groupName}__${subgroupPath}`
+                                            `${groupName}__${subgroupPath}`,
                                         );
                                     }
                                 }}
@@ -125,15 +184,15 @@ export default function SettingsPage() {
                                     `${groupName}__${subgroupPath}`
                                 }
                             />
-                        )
+                        ),
                     )}
                 </TreeItem>
-            )
+            ),
         );
     }, [settingsMaps, activeTab, activeSection]);
 
     return (
-        <div className="flex flex-col p-4">
+        <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 w-full h-full">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Settings</h1>
                 <Button
@@ -157,39 +216,43 @@ export default function SettingsPage() {
             </div>
 
             <Tabs
-                defaultValue="General"
                 value={activeTab}
+                defaultValue="General"
                 onValueChange={(tab) => {
                     setActiveTab(tab);
                     setActiveSection(null);
                 }}
                 className="w-full gap-0"
             >
-                <TabsList
+                <div
                     ref={stickyRef}
-                    className={`bg-background sticky top-0 z-40 py-4 ${
-                        isSticky ? "settings-tabs-sticky border-b" : ""
-                    }`}
+                    className={cn(
+                        "bg-background sticky top-0 z-40 border-border overflow-x-auto",
+                        {
+                            "border-b": isSticky,
+                        },
+                    )}
                 >
-                    {Object.keys(settingsMaps).map((groupName, index) => (
-                        <TabsTrigger
-                            key={groupName}
-                            index={index}
-                            value={groupName}
-                        >
-                            {groupName.charAt(0).toUpperCase() +
-                                groupName.slice(1)}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                    <TabsList className={`bg-background rounded-b-none p-0`}>
+                        {Object.keys(settingsMaps).map((groupName) => (
+                            <TabsTrigger
+                                key={groupName}
+                                value={groupName}
+                                className="border-b-0 rounded-b-none data-[state=active]:border-border"
+                            >
+                                {capitalize(groupName)}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </div>
 
                 {/* Render all settings tabs from settings maps */}
                 {Object.entries(settingsMaps).map(
                     ([groupName, settingsMap]) => (
                         <TabsContent key={groupName} value={groupName}>
                             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr]">
-                                <Card className="gap-0 pt-0">
-                                    <CardHeader className="bg-card sticky top-16 z-30 flex flex-row items-center justify-between rounded-xl py-3">
+                                <Card className="gap-0 pt-0 rounded-t-none md:rounded-tr-xl">
+                                    <CardHeader className="bg-card sticky top-9 md:top-8 z-30 flex flex-row items-center justify-between rounded-tr-xl py-3">
                                         <CardTitle className="w-full">
                                             <h2 className="w-full border-b pt-3 pb-2 text-2xl font-medium">
                                                 {groupName
@@ -231,12 +294,12 @@ export default function SettingsPage() {
                                                     .filter(
                                                         ([, setting]) =>
                                                             setting.type ===
-                                                            "custom-render"
+                                                            "custom-render",
                                                     )
                                                     .map(([key]) => key);
                                             const totalSettingKeys =
                                                 Object.keys(settingsMap).filter(
-                                                    (k) => k !== "label"
+                                                    (k) => k !== "label",
                                                 );
                                             const onlySingleCustom =
                                                 customSettingKeys.length ===
@@ -294,7 +357,7 @@ export default function SettingsPage() {
 
                                                             // Separate settings with and without groups
                                                             Object.entries(
-                                                                settingsMap
+                                                                settingsMap,
                                                             ).forEach(
                                                                 ([
                                                                     key,
@@ -323,7 +386,7 @@ export default function SettingsPage() {
                                                                         ] =
                                                                             setting as Setting;
                                                                     }
-                                                                }
+                                                                },
                                                             );
 
                                                             // Create hierarchical structure
@@ -334,7 +397,7 @@ export default function SettingsPage() {
 
                                                             // Process settings with groups
                                                             Object.entries(
-                                                                settingsWithGroups
+                                                                settingsWithGroups,
                                                             ).forEach(
                                                                 ([
                                                                     key,
@@ -415,7 +478,7 @@ export default function SettingsPage() {
                                                                                 setting;
                                                                         }
                                                                     }
-                                                                }
+                                                                },
                                                             );
 
                                                             // Function to render a group of settings
@@ -424,12 +487,12 @@ export default function SettingsPage() {
                                                                     groupSettings: Record<
                                                                         string,
                                                                         Setting
-                                                                    >
+                                                                    >,
                                                                 ) => {
                                                                     return (
                                                                         <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4">
                                                                             {Object.entries(
-                                                                                groupSettings
+                                                                                groupSettings,
                                                                             ).map(
                                                                                 ([
                                                                                     key,
@@ -476,19 +539,27 @@ export default function SettingsPage() {
                                                                                             </div>
                                                                                             <div className="mt-1">
                                                                                                 {setting.type ===
-                                                                                                "custom-render"
-                                                                                                    ? customRenderers[
-                                                                                                          key as keyof typeof customRenderers
-                                                                                                      ]
-                                                                                                    : renderInput(
-                                                                                                          key,
-                                                                                                          setting as Setting,
-                                                                                                          settingsMap
-                                                                                                      )}
+                                                                                                "custom-render" ? (
+                                                                                                    customRenderers[
+                                                                                                        key as keyof typeof customRenderers
+                                                                                                    ]
+                                                                                                ) : (
+                                                                                                    <SettingsInput
+                                                                                                        settingKey={
+                                                                                                            key
+                                                                                                        }
+                                                                                                        setting={
+                                                                                                            setting as Setting
+                                                                                                        }
+                                                                                                        settingsMap={
+                                                                                                            settingsMap
+                                                                                                        }
+                                                                                                    />
+                                                                                                )}
                                                                                             </div>
                                                                                         </div>
                                                                                     );
-                                                                                }
+                                                                                },
                                                                             )}
                                                                         </div>
                                                                     );
@@ -498,19 +569,19 @@ export default function SettingsPage() {
                                                                 <div className="space-y-8">
                                                                     {/* Render ungrouped settings first if they exist */}
                                                                     {Object.keys(
-                                                                        settingsWithoutGroups
+                                                                        settingsWithoutGroups,
                                                                     ).length >
                                                                         0 && (
                                                                         <div className="space-y-4">
                                                                             {renderSettingsGroup(
-                                                                                settingsWithoutGroups
+                                                                                settingsWithoutGroups,
                                                                             )}
                                                                         </div>
                                                                     )}
 
                                                                     {/* Render hierarchical groups */}
                                                                     {Object.entries(
-                                                                        hierarchicalGroups
+                                                                        hierarchicalGroups,
                                                                     ).map(
                                                                         ([
                                                                             groupName,
@@ -528,7 +599,7 @@ export default function SettingsPage() {
                                                                                 }} // adjust for sticky header
                                                                             >
                                                                                 {/* Sticky main group header */}
-                                                                                <h3 className="bg-card sticky top-34 z-20 border-b pb-2 text-lg font-medium">
+                                                                                <h3 className="bg-card sticky top-27 md:top-26 z-20 border-b pb-2 text-lg font-medium">
                                                                                     {
                                                                                         groupName
                                                                                     }
@@ -536,17 +607,17 @@ export default function SettingsPage() {
 
                                                                                 {/* Main group settings */}
                                                                                 {Object.keys(
-                                                                                    groupData.settings
+                                                                                    groupData.settings,
                                                                                 )
                                                                                     .length >
                                                                                     0 &&
                                                                                     renderSettingsGroup(
-                                                                                        groupData.settings
+                                                                                        groupData.settings,
                                                                                     )}
 
                                                                                 {/* Subgroups */}
                                                                                 {Object.entries(
-                                                                                    groupData.subgroups
+                                                                                    groupData.subgroups,
                                                                                 ).map(
                                                                                     ([
                                                                                         subgroupPath,
@@ -564,7 +635,7 @@ export default function SettingsPage() {
                                                                                             }}
                                                                                         >
                                                                                             {/* Sticky subgroup header */}
-                                                                                            <h4 className="text-md bg-card sticky top-43 z-10 flex items-center pt-1 font-medium">
+                                                                                            <h4 className="text-md bg-card sticky top-36 md:top-35 z-10 flex items-center pt-1 font-medium">
                                                                                                 {
                                                                                                     subgroupPath
                                                                                                 }
@@ -572,13 +643,13 @@ export default function SettingsPage() {
 
                                                                                             {/* Subgroup settings */}
                                                                                             {renderSettingsGroup(
-                                                                                                subgroupSettings
+                                                                                                subgroupSettings,
                                                                                             )}
                                                                                         </div>
-                                                                                    )
+                                                                                    ),
                                                                                 )}
                                                                             </div>
-                                                                        )
+                                                                        ),
                                                                     )}
                                                                 </div>
                                                             );
@@ -591,7 +662,7 @@ export default function SettingsPage() {
                                 </Card>
                             </div>
                         </TabsContent>
-                    )
+                    ),
                 )}
             </Tabs>
         </div>

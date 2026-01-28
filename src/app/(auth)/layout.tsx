@@ -1,19 +1,21 @@
 import "@/app/globals.css";
-import localFont from "next/font/local";
-import { inDevelopment } from "@/config";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { inDevelopment } from "@/config";
+import { Viewport } from "next";
+import localFont from "next/font/local";
 
 const geistSans = localFont({
     src: "../../../public/fonts/GeistVF.woff",
     variable: "--font-geist-sans",
     weight: "100 900",
 });
-const geistMono = localFont({
-    src: "../../../public/fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+};
 
 export default async function RootLayout({
     children,
@@ -26,9 +28,7 @@ export default async function RootLayout({
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
             </head>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
-            >
+            <body className={`${geistSans.variable} antialiased bg-background`}>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

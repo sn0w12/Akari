@@ -1,118 +1,108 @@
 "use client";
 
-import { Chapter, ChapterImage } from "@/types/manga";
+import { useShortcut } from "@/hooks/use-shortcut";
+import { useWindowWidth } from "@/hooks/use-window-width";
+import { syncAllServices } from "@/lib/manga/sync";
+import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ImageGroups } from "../reader";
-import Image from "next/image";
-import PageProgress from "../page-progress";
-import { syncAllServices } from "@/lib/manga/sync";
-import { useFooterVisibility } from "@/contexts/footer-context";
-import { useQueryClient } from "@tanstack/react-query";
-import MangaFooter from "../manga-footer";
+import { ChapterInfo } from "../chapter-info";
 import EndOfManga from "../end-of-manga";
+import MangaFooter from "../manga-footer";
+import PageProgress from "../page-progress";
 
 interface PageReaderProps {
-    chapter: Chapter;
-    images: ImageGroups;
-    toggleReaderMode: (override?: boolean) => void;
+    chapter: components["schemas"]["ChapterResponse"];
+    scrollMetrics: { pixels: number; percentage: number };
+    toggleReaderMode: () => void;
     isInactive: boolean;
-    bgColor: string;
     setBookmarkState: (state: boolean | null) => void;
 }
 
+const pageHeightStyle = "calc(100dvh - var(--reader-offset))";
 export default function PageReader({
     chapter,
-    images,
+    scrollMetrics,
     toggleReaderMode,
     isInactive,
-    bgColor,
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const readingDir = useSetting("readingDirection");
+    const continueAfterChapter = useSetting("continueAfterChapter");
+    const windowWidth = useWindowWidth();
     const [currentPage, setCurrentPage] = useState(() => {
         const pageParam = searchParams.get("page");
         if (!chapter) return 0;
-        if (pageParam === "last") return images.length - 1;
+        if (pageParam === "last") return chapter.images.length - 1;
         const pageNumber = parseInt(pageParam || "1", 10);
-        return isNaN(pageNumber) || pageNumber < 1 || pageNumber > images.length
+        return isNaN(pageNumber) ||
+            pageNumber < 1 ||
+            pageNumber > chapter.images.length
             ? 0
             : pageNumber - 1;
     });
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
-    const { isFooterVisible } = useFooterVisibility();
-    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!chapter) return;
 
         // Handle bookmark update
-        const isHalfwayThrough = currentPage >= Math.floor(images.length / 2);
+        const isHalfwayThrough =
+            currentPage >= Math.floor(chapter.images.length / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
             bookmarkUpdatedRef.current = true;
             syncAllServices(chapter).then((success) => {
                 setBookmarkState(success);
-                if (success) {
-                    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-                }
             });
         }
 
         // Handle prefetching next chapter
         if (chapter.nextChapter && !hasPrefetchedRef.current) {
             const threshold = Math.min(
-                Math.floor(images.length * 0.75),
-                images.length - 3
+                Math.floor(chapter.images.length * 0.75),
+                chapter.images.length - 3,
             );
 
             if (currentPage >= threshold) {
-                router.prefetch(`/manga/${chapter.nextChapter}?_prefetch=1`);
+                router.prefetch(`./${chapter.nextChapter}`);
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [
-        chapter,
-        currentPage,
-        router,
-        images.length,
-        setBookmarkState,
-        queryClient,
-    ]);
+    }, [chapter, currentPage, router, setBookmarkState]);
 
-    const updatePageUrl = useCallback((pageNum: number) => {
-        const url = new URL(window.location.href);
-        url.searchParams.set("page", (pageNum + 1).toString());
-        window.history.replaceState({}, "", url.toString());
+    const setPageWithUrlUpdate = useCallback((newPage: number) => {
+        setCurrentPage(newPage);
+
+        if (typeof window === "undefined") return;
+        // Use history.replaceState to update URL without triggering Next.js re-renders
+        window.history.replaceState(null, "", `?page=${newPage + 1}`);
     }, []);
-
-    const setPageWithUrlUpdate = useCallback(
-        (newPage: number) => {
-            setCurrentPage(newPage);
-            updatePageUrl(newPage);
-        },
-        [updatePageUrl]
-    );
 
     const nextPage = useCallback(() => {
         if (
-            currentPage === images.length - 1 &&
-            chapter.nextChapter.split("/").length > 1
+            currentPage === chapter.images.length - 1 &&
+            chapter.nextChapter &&
+            continueAfterChapter
         ) {
-            router.push(`/manga/${chapter.nextChapter}`);
+            router.push(`./${chapter.nextChapter}`);
             return;
         }
 
-        if (currentPage < images.length) {
+        if (currentPage < chapter.images.length) {
             setPageWithUrlUpdate(currentPage + 1);
         }
     }, [
         currentPage,
-        images.length,
-        setPageWithUrlUpdate,
+        chapter.images.length,
         chapter.nextChapter,
         router,
+        continueAfterChapter,
+        setPageWithUrlUpdate,
     ]);
 
     const prevPage = useCallback(() => {
@@ -121,112 +111,105 @@ export default function PageReader({
         }
     }, [currentPage, setPageWithUrlUpdate]);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "ArrowRight") {
-                nextPage();
-            } else if (e.key === "ArrowLeft") {
-                prevPage();
+    useShortcut(readingDir === "rtl" ? "ARROWLEFT" : "ARROWRIGHT", nextPage);
+    useShortcut(readingDir === "rtl" ? "ARROWRIGHT" : "ARROWLEFT", prevPage);
+
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            const screenWidth = windowWidth;
+            const clickX = e.clientX;
+            const middleZoneStart = screenWidth * 0.4;
+            const middleZoneEnd = screenWidth * 0.6;
+
+            if (readingDir === "rtl") {
+                if (clickX > middleZoneEnd) {
+                    prevPage();
+                } else if (clickX < middleZoneStart) {
+                    nextPage();
+                }
+            } else {
+                if (clickX > middleZoneEnd) {
+                    nextPage();
+                } else if (clickX < middleZoneStart) {
+                    prevPage();
+                }
             }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [nextPage, prevPage]);
-
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        const screenWidth = window.innerWidth;
-        const clickX = e.clientX;
-        const clickY = e.clientY;
-        const middleZoneStart = screenWidth * 0.4;
-        const middleZoneEnd = screenWidth * 0.6;
-
-        if (
-            clickY < 100 ||
-            clickY > window.innerHeight - 100 ||
-            isFooterVisible
-        )
-            return;
-
-        if (clickX > middleZoneEnd) {
-            nextPage();
-        } else if (clickX < middleZoneStart) {
-            prevPage();
-        }
-    };
-
-    const currentImages: ChapterImage[] = images[currentPage] || [];
-    const nextImages: ChapterImage[] = images[currentPage + 1] || [];
+        },
+        [nextPage, prevPage, readingDir, windowWidth],
+    );
 
     return (
         <>
+            <ChapterInfo
+                chapter={chapter}
+                hidden={scrollMetrics.pixels >= 50}
+            />
             <div
-                className={`w-full h-full flex flex-col relative transition-colors duration-500 ${bgColor} ${
-                    currentPage === images.length
-                        ? ""
-                        : isInactive
-                        ? "cursor-none"
-                        : "cursor-pointer"
-                }`}
-                style={{ height: "calc(100dvh - var(--reader-offset))" }}
-                onClick={handleClick}
+                className="w-full h-full flex flex-col relative"
+                style={{ height: pageHeightStyle }}
             >
-                <div
-                    className="my-auto"
-                    style={{ maxHeight: "calc(100dvh - var(--reader-offset))" }}
-                >
-                    {currentImages.map((img, idx) => {
-                        // Calculate relative height based on actual image dimensions
-                        const totalHeight = currentImages.reduce(
-                            (sum, image) => sum + (image.height || 1000),
-                            0
-                        );
-                        const relativeHeight = img.height
-                            ? `${(img.height / totalHeight) * 100}%`
-                            : `${100 / currentImages.length}%`;
-
-                        return (
+                <div className="flex flex-col h-full">
+                    {/* Spacer for 1/3 of available space at the top */}
+                    <div className="flex-1"></div>
+                    {/* Content container: image or end-of-manga, no shrinking/growing */}
+                    <div className="flex-shrink-0">
+                        {chapter.images[currentPage] && (
                             <Image
-                                key={idx}
-                                src={img.url}
-                                alt={`Page ${currentPage + 1}, panel ${
-                                    idx + 1
-                                }`}
-                                className="w-full h-auto object-contain"
+                                src={chapter.images[currentPage]}
+                                alt={`Page ${currentPage + 1}`}
+                                className={cn("w-full h-auto object-contain", {
+                                    "cursor-none":
+                                        isInactive &&
+                                        currentPage !== chapter.images.length,
+                                    "cursor-pointer":
+                                        !isInactive &&
+                                        currentPage !== chapter.images.length,
+                                })}
+                                style={{
+                                    maxHeight: pageHeightStyle,
+                                }}
                                 loading="eager"
                                 width={720}
-                                height={img.height || 1500}
-                                style={{ maxHeight: relativeHeight }}
+                                height={1500}
+                                unoptimized={true}
+                                preload={true}
+                                fetchPriority="high"
+                                onClick={handleClick}
                             />
-                        );
-                    })}
-                    <EndOfManga
-                        title={chapter.title}
-                        identifier={chapter.parentId}
-                        className={`${
-                            currentPage !== images.length ? "hidden" : ""
-                        }`}
-                    />
+                        )}
+                        <EndOfManga
+                            title={chapter.title}
+                            identifier={chapter.mangaId}
+                            className={`${
+                                currentPage !== chapter.images.length
+                                    ? "hidden"
+                                    : ""
+                            }`}
+                        />
+                    </div>
+                    {/* Spacer for 2/3 of available space at the bottom */}
+                    <div style={{ flex: 2 }}></div>
                 </div>
                 <div className={"hidden"}>
-                    {nextImages.map((img, idx) => (
+                    {typeof chapter.images[currentPage + 1] === "string" && (
                         <Image
-                            key={idx}
-                            src={img.url}
-                            alt={`Next page preview`}
-                            className="w-full h-auto object-contain"
+                            src={chapter.images[currentPage + 1] as string}
+                            alt={`Page ${currentPage + 2}`}
+                            className="w-full h-auto max-h-screen object-contain"
+                            style={{
+                                maxHeight: pageHeightStyle,
+                            }}
                             loading="eager"
                             width={720}
-                            height={img.height || 1500}
+                            height={1500}
+                            unoptimized={true}
                         />
-                    ))}
+                    )}
                 </div>
             </div>
             <div
                 className={`sm:opacity-0 lg:opacity-100 transition-opacity duration-300 ${
-                    isFooterVisible ? "opacity-100" : "opacity-0"
-                } ${
-                    currentPage !== images.length - 1
+                    currentPage !== chapter.images.length
                         ? "block"
                         : "hidden md:block"
                 }`}
@@ -234,25 +217,19 @@ export default function PageReader({
                 <PageProgress
                     currentPage={Math.max(
                         0,
-                        Math.min(currentPage, images.length - 1)
+                        Math.min(currentPage, chapter.images.length - 1),
                     )}
-                    totalPages={images.length}
+                    totalPages={chapter.images.length}
                     setCurrentPage={(page) => {
                         setPageWithUrlUpdate(page);
                     }}
-                    isFooterVisible={isFooterVisible}
+                    hidden={scrollMetrics.pixels >= 50}
                 />
             </div>
-            <div
-                className={`footer ${isFooterVisible ? "footer-visible" : ""} ${
-                    currentPage === images.length ? "hidden" : ""
-                }`}
-            >
-                <MangaFooter
-                    chapterData={chapter}
-                    toggleReaderMode={toggleReaderMode}
-                />
-            </div>
+            <MangaFooter
+                chapter={chapter}
+                toggleReaderMode={toggleReaderMode}
+            />
         </>
     );
 }

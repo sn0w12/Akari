@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useWindowWidth } from "@/hooks/use-window-width";
 import { useSetting } from "@/lib/settings";
+import { cn } from "@/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
 
 interface PageProgressProps {
     currentPage: number;
     totalPages: number;
     setCurrentPage: (page: number) => void;
-    isFooterVisible: boolean;
+    hidden?: boolean;
 }
 
 const cutoff = 1024;
@@ -16,57 +18,22 @@ export default function PageProgress({
     currentPage,
     totalPages,
     setCurrentPage,
-    isFooterVisible,
+    hidden = false,
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
-    const [gradient, setGradient] = useState(
-        "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40"
-    );
-    const [windowWidth, setWindowWidth] = useState(0);
-    const [footerHeight, setFooterHeight] = useState(0);
+    const windowWidth = useWindowWidth();
     const isVisible = useSetting("showPageProgress");
-
-    useEffect(() => {
-        setWindowWidth(window.innerWidth);
-
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    useEffect(() => {
-        const updateFooterHeight = () => {
-            const footer = document.querySelector(".footer");
-            setFooterHeight(footer?.clientHeight ?? 0);
-        };
-
-        updateFooterHeight();
-        const resizeObserver = new ResizeObserver(updateFooterHeight);
-        const footer = document.querySelector(".footer");
-        if (footer) {
-            resizeObserver.observe(footer);
-        }
-
-        return () => resizeObserver.disconnect();
-    }, []);
+    const readingDir = useSetting("readingDirection");
+    const gradient =
+        readingDir === "rtl"
+            ? "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-l lg:bg-gradient-to-b"
+            : "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
 
     const handleClick = (page: number, e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentPage(page);
     };
-
-    function getBottomOffset() {
-        if (!isFooterVisible) {
-            return "1rem";
-        }
-
-        const baseOffset = footerHeight + 16; // 16px (1rem) padding
-        return `${baseOffset}px`;
-    }
 
     useEffect(() => {
         const updateBackgroundStyle = () => {
@@ -87,18 +54,25 @@ export default function PageProgress({
                             height: `${top + buttonRect.height - offset}px`,
                             width: "calc(100% - 8px)",
                         });
-                        setGradient(
-                            "bg-gradient-to-b from-primary/20 via-primary/30 to-accent-color/40"
-                        );
                     } else {
-                        const left = buttonRect.left - containerRect.left;
-                        setBackgroundStyle({
-                            width: `${left + buttonRect.width - offset}px`,
-                            height: "calc(100% - 8px)",
-                        });
-                        setGradient(
-                            "bg-gradient-to-r from-primary/20 via-primary/30 to-accent-color/40"
-                        );
+                        if (readingDir === "rtl") {
+                            const right =
+                                containerRect.right - buttonRect.right;
+                            setBackgroundStyle({
+                                width: `${right + buttonRect.width - offset}px`,
+                                height: "calc(100% - 8px)",
+                                left: "auto",
+                                right: "4px",
+                            });
+                        } else {
+                            const left = buttonRect.left - containerRect.left;
+                            setBackgroundStyle({
+                                width: `${left + buttonRect.width - offset}px`,
+                                height: "calc(100% - 8px)",
+                                left: "4px",
+                                right: "auto",
+                            });
+                        }
                     }
                 }
             }
@@ -108,36 +82,72 @@ export default function PageProgress({
         window.addEventListener("resize", updateBackgroundStyle);
         return () =>
             window.removeEventListener("resize", updateBackgroundStyle);
-    }, [currentPage, totalPages, windowWidth]);
+    }, [currentPage, readingDir, totalPages, windowWidth]);
 
     return (
         <div
-            className={`${
-                isVisible ? "flex" : "hidden"
-            } transition-all fixed z-50 left-4 right-4 lg:bottom-auto lg:left-auto lg:right-4 lg:top-1/2 lg:-translate-y-1/2`}
-            style={windowWidth <= cutoff ? { bottom: getBottomOffset() } : {}}
-            onClick={(e) => e.stopPropagation()}
+            className={cn(
+                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-4 lg:top-auto",
+                {
+                    "opacity-100": isVisible && !hidden,
+                    "opacity-0 pointer-events-none": !isVisible || hidden,
+                },
+            )}
+            style={
+                windowWidth <= cutoff
+                    ? {
+                          width: "calc(100% - 118px)",
+                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
+                      }
+                    : {}
+            }
         >
             <div
                 ref={containerRef}
-                className="transition-all relative p-1 rounded-lg border border-primary/30 bg-background w-full h-[30px] lg:w-[30px] lg:hover:w-[60px] lg:h-[75vh]"
+                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:hover:w-18 lg:h-[75vh]"
+                onClick={(e) => e.stopPropagation()}
             >
                 <div
-                    className={`absolute left-1 top-1 lg:top-1 right-1 lg:right-1 transition-all duration-300 ease-in-out rounded-sm ${gradient}`}
+                    className={cn(
+                        "absolute top-1 lg:top-1 transition-[height,width] md:rounded-[3px]",
+                        readingDir === "rtl"
+                            ? "right-1 lg:right-1 rounded-r-md"
+                            : "left-1 rounded-l-md",
+                        gradient,
+                        {
+                            [readingDir === "rtl"
+                                ? "rounded-l-md"
+                                : "rounded-r-md"]:
+                                currentPage === totalPages - 1,
+                        },
+                    )}
                     style={backgroundStyle}
                 />
-                <div className="relative flex flex-row lg:flex-col h-full w-full gap-1 p-0.5">
+                <div
+                    className={cn(
+                        "relative flex lg:flex-col h-full w-full gap-0 md:gap-1 p-0.5",
+                        readingDir === "rtl" ? "flex-row-reverse" : "flex-row",
+                    )}
+                >
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={`flex-1 transition-all duration-300 ease-in-out rounded-[3px] ${
-                                index === currentPage
-                                    ? "bg-accent-positive hover:bg-accent-positive/70"
-                                    : index < currentPage
-                                    ? "bg-primary hover:bg-primary/80"
-                                    : "bg-primary/30 hover:bg-primary/50"
-                            }`}
+                            className={cn(
+                                "flex-1 transition-colors md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]",
+                                {
+                                    "bg-accent-positive hover:bg-accent-positive/70":
+                                        index === currentPage,
+                                    "bg-primary hover:bg-primary/80":
+                                        index < currentPage,
+                                    "bg-primary/30 hover:bg-primary/50":
+                                        index > currentPage,
+                                    "first:rounded-l-sm last:rounded-r-sm":
+                                        readingDir === "ltr",
+                                    "first:rounded-r-sm last:rounded-l-sm":
+                                        readingDir === "rtl",
+                                },
+                            )}
                             aria-label={`Go to page ${index + 1}`}
                         />
                     ))}

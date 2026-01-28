@@ -7,37 +7,36 @@ import { useRouter } from "next/navigation";
 
 interface CustomErrorProps {
     title?: string;
-    message: string;
-    actionLabel?: string;
-    onAction?: () => void;
+    error?: components["schemas"]["ErrorResponse"];
 }
 
-export default function ErrorComponent({
+export default function ErrorPage({
     title = "An error occurred",
-    message,
-    actionLabel,
-    onAction,
+    error,
 }: CustomErrorProps) {
     const router = useRouter();
-    if (!onAction && !actionLabel) {
-        actionLabel = "Go back";
-        onAction = () => router.back();
-    }
+    const actionLabel = "Go back";
+
+    const message = error?.data?.message || "An unexpected error occurred.";
+    const statusText = error?.status ? ` (Status: ${error.status})` : "";
 
     return (
-        <Alert variant="destructive" className="max-w-md mx-auto">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{title}</AlertTitle>
-            <AlertDescription>{message}</AlertDescription>
-            {actionLabel && onAction && (
+        <div className="flex align-center justify-center p-4">
+            <Alert variant="destructive" className="max-w-md mx-auto h-fit">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>
+                    {title}
+                    {statusText}
+                </AlertTitle>
+                <AlertDescription>{message}</AlertDescription>
                 <Button
                     variant="outline"
                     className="mt-4 w-fit bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={onAction}
+                    onClick={() => router.back()}
                 >
                     {actionLabel}
                 </Button>
-            )}
-        </Alert>
+            </Alert>
+        </div>
     );
 }

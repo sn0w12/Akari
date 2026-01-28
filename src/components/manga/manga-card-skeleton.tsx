@@ -1,10 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
-const imgSize = "w-full h-auto aspect-[8.5/12] xl:h-[260px] 2xl:h-[340px]";
-export default function MangaCardSkeleton() {
+const imgSize = "w-full h-auto aspect-[2/3]";
+export default function MangaCardSkeleton({
+    className,
+}: {
+    className?: string;
+}) {
     return (
-        <Card className="group relative overflow-hidden p-0">
+        <Card className={cn("group relative overflow-hidden p-0", className)}>
             <CardContent className="p-0">
                 <Skeleton className={imgSize} />
             </CardContent>

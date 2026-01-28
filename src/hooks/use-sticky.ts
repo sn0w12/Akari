@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
  * Returns a ref to attach to the sticky element and a boolean indicating if it's stuck.
  */
 export function useSticky(
-    offset: number = 0
+    offset: number = 0,
 ): [React.RefObject<HTMLDivElement | null>, boolean] {
     const ref = useRef<HTMLDivElement>(null);
     const [isSticky, setIsSticky] = useState(false);
@@ -25,7 +25,7 @@ export function useSticky(
         const grandParent = parent.parentElement;
         if (!grandParent) {
             console.log(
-                "No grandparent found for sticky element, sentinel will be appended to body."
+                "No grandparent found for sticky element, sentinel will be appended to body.",
             );
         }
 
@@ -55,7 +55,7 @@ export function useSticky(
             {
                 root: null,
                 threshold: 0,
-            }
+            },
         );
 
         observer.observe(sentinel);

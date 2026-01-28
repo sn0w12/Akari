@@ -34,8 +34,7 @@ interface EffectConfig {
     dynamicStyles?: (
         isHovered: boolean,
         event: React.MouseEvent<HTMLDivElement> | null,
-        containerRef: React.RefObject<HTMLDivElement | null>,
-        tiltValues?: { tiltX: number; tiltY: number }
+        tiltValues?: { tiltX: number; tiltY: number },
     ) => CSSProperties;
 }
 
@@ -112,9 +111,8 @@ const effectConfigs: Record<HoverEffect, EffectConfig> = {
         containerClass:
             "transition-transform duration-300 ease-out transform-gpu will-change-transform",
         imageClass: "",
-        dynamicStyles: (isHovered, event, containerRef, tiltValues) => {
-            if (!isHovered || !event || !containerRef.current || !tiltValues)
-                return {};
+        dynamicStyles: (isHovered, event, tiltValues) => {
+            if (!isHovered || !event || !tiltValues) return {};
 
             // Throttle calculations using rAF
             return {
@@ -197,7 +195,7 @@ export default function EnhancedImage({
 
     const containerStyle =
         dynamicStyles && fancyAnimationsEnabled
-            ? dynamicStyles(isHovered, mouseEvent, containerRef, tiltValues)
+            ? dynamicStyles(isHovered, mouseEvent, tiltValues)
             : {};
 
     const imageClassName = [

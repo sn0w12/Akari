@@ -1,11 +1,15 @@
+import { getManga, MangaDetailsComponent } from "@/components/manga-details";
+import { MangaDetailsBody } from "@/components/manga-details/body";
+import { MangaComments } from "@/components/manga-details/manga-comments";
+import {
+    getAllMangaIds,
+    STATIC_GENERATION_DISABLED,
+} from "@/lib/api/pre-render";
+import { createMetadata, createOgImage } from "@/lib/utils";
 import { Metadata } from "next";
-import { MangaDetailsComponent } from "@/components/manga-details";
-import { fetchMangaDetails } from "@/lib/manga/scraping";
-import { unstable_cacheLife as cacheLife } from "next/cache";
-import { robots } from "@/lib/utils";
-import { isApiErrorData } from "@/lib/api";
+import { Suspense } from "react";
 
-interface PageProps {
+export interface MangaPageProps {
     params: Promise<{ id: string }>;
 }
 
@@ -14,62 +18,53 @@ function truncate(text: string, maxLength: number): string {
     return text.slice(0, maxLength - 1).trimEnd() + "…";
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    "use cache";
-    cacheLife("weeks");
+export async function generateStaticParams() {
+    let limit = undefined;
+    if (STATIC_GENERATION_DISABLED) {
+        limit = 1;
+    }
 
+    const mangaIds = await getAllMangaIds(limit);
+    if (STATIC_GENERATION_DISABLED) {
+        return [{ id: mangaIds[0] }];
+    }
+
+    return mangaIds.map((id) => ({ id }));
+}
+
+export async function generateMetadata(
+    props: MangaPageProps,
+): Promise<Metadata> {
     const params = await props.params;
-    const manga = await fetchMangaDetails(params.id);
+    const { data, error } = await getManga(params.id);
 
-    if (isApiErrorData(manga)) {
+    if (error || !data) {
         return {
-            title: "Manga not found",
-            description: "The manga you are looking for could not be found.",
-            robots: robots(),
-            openGraph: {
-                title: "Manga not found",
-                description:
-                    "The manga you are looking for could not be found.",
-            },
-            twitter: {
-                card: "summary_large_image",
-                title: "Manga not found",
-                description:
-                    "The manga you are looking for could not be found.",
-            },
+            title: "Manga Not Found",
+            description: "The requested manga could not be found.",
         };
     }
 
-    const description = truncate(
-        manga.malData?.description ?? manga.description,
-        300
-    );
-    let image = `/api/v1/manga/${params.id}/og`;
-    if (process.env.NEXT_PUBLIC_HOST) {
-        image = `https://${process.env.NEXT_PUBLIC_HOST}/api/v1/manga/${params.id}/og`;
-    }
+    const manga = data.data;
+    const description = truncate(manga.description, 300);
 
-    return {
-        title: manga.name,
-        description,
-        robots: robots(),
-        openGraph: {
-            title: manga.name,
-            description,
-            type: "website",
-            siteName: "Akari Manga",
-            images: image,
-        },
-        twitter: {
-            card: "summary_large_image",
-            title: manga.name,
-            description,
-            images: image,
-        },
-    };
+    return createMetadata({
+        title: manga.title,
+        description: description,
+        image: createOgImage("manga", manga.id),
+        canonicalPath: `/manga/${params.id}`,
+    });
 }
 
-export default async function MangaPage(props: PageProps) {
-    const params = await props.params;
-    return <MangaDetailsComponent id={params.id} />;
+export default async function MangaPage(props: MangaPageProps) {
+    return (
+        <div className="mx-auto p-4">
+            <MangaDetailsComponent params={props.params} />
+            <MangaDetailsBody params={props.params} />
+
+            <Suspense fallback={null}>
+                <MangaComments params={props.params} target="manga" />
+            </Suspense>
+        </div>
+    );
 }

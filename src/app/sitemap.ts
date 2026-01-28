@@ -1,111 +1,139 @@
-import { parseStringPromise } from "xml2js";
+import { client } from "@/lib/api";
+import { serverHeaders } from "@/lib/api";
 import type { MetadataRoute } from "next";
-import { inPreview } from "@/config";
 
-export const dynamic = "force-dynamic";
-
-const NEXT_MANGA_URL = process.env.NEXT_MANGA_URL!;
 const NEXT_PUBLIC_HOST = process.env.NEXT_PUBLIC_HOST!;
 
-interface SitemapEntry {
-    url: string;
-    lastModified?: Date;
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
+const staticPages: SitemapEntry[] = [
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/`,
+        lastModified: new Date(),
+        changeFrequency: "hourly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/about`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/privacy`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/terms`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/login`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/register`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/settings`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/search`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/popular`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+    },
+    {
+        url: `https://${NEXT_PUBLIC_HOST}/latest`,
+        lastModified: new Date(),
+        changeFrequency: "hourly",
+    },
+];
+
+function mangaToSitemapEntry(
+    manga: components["schemas"]["MangaResponse"],
+): SitemapEntry {
+    return {
+        url: `https://${NEXT_PUBLIC_HOST}/manga/${manga.id}`,
+        lastModified: new Date(manga.updatedAt),
+        images: [manga.cover],
+        changeFrequency: ["completed", "hiatus"].includes(manga.status)
+            ? "monthly"
+            : "weekly",
+    };
 }
 
-interface RawUrlEntry {
-    loc: [string];
-    lastmod?: [string];
-}
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    if (process.env.GENERATE_SITEMAP !== "1") return [];
 
-interface RawUrlSet {
-    url: RawUrlEntry[];
-}
-
-function normalizeUrl(url: string): string {
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        return `https://${url}`;
-    }
-    return url;
-}
-
-async function fetchWithTimeout(
-    url: string,
-    timeoutMs: number = 10000
-): Promise<Response | null> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        return response;
-    } catch (error) {
-        clearTimeout(timeoutId);
-        console.error(`Fetch error for ${url}:`, error);
-        return null;
-    }
-}
+        const allUrls: SitemapEntry[] = [];
+        allUrls.push(...staticPages);
 
-export async function generateSitemaps(): Promise<{ id: number }[]> {
-    if (inPreview) return [];
-
-    try {
-        const baseUrl = normalizeUrl(NEXT_MANGA_URL);
-        const response = await fetchWithTimeout(`${baseUrl}/sitemap.xml`);
-        if (!response) {
-            console.error(
-                "Failed to fetch sitemap index: fetch timed out or failed"
-            );
-            return [];
-        }
-        if (!response.ok) {
-            throw new Error(
-                `Failed to fetch sitemap index: ${response.status}`
-            );
-        }
-        const xml = await response.text();
-        const parsed = await parseStringPromise(xml);
-        const sitemaps = parsed.sitemapindex.sitemap;
-        // Generate IDs based on the number of sitemaps in the index
-        return sitemaps.map((_: unknown, index: number) => ({ id: index }));
-    } catch (error) {
-        console.error("Error generating sitemaps:", error);
-        return []; // Fallback to empty if fetch fails
-    }
-}
-
-export default async function sitemap({
-    id,
-}: {
-    id: number;
-}): Promise<MetadataRoute.Sitemap> {
-    try {
-        const baseUrl = normalizeUrl(NEXT_MANGA_URL);
-        const response = await fetchWithTimeout(`${baseUrl}/sitemap${id}.xml`);
-        if (!response) {
-            console.error(
-                `Failed to fetch sitemap${id}.xml: fetch timed out or failed`
-            );
-            return [];
-        }
-        if (!response.ok) {
-            throw new Error(
-                `Failed to fetch sitemap${id}.xml: ${response.status}`
-            );
-        }
-        const xml = await response.text();
-        const parsed = await parseStringPromise(xml);
-
-        const rawUrlSet: RawUrlSet = parsed.urlset as RawUrlSet;
-
-        const urls: SitemapEntry[] = rawUrlSet.url.map(
-            (u: RawUrlEntry): SitemapEntry => ({
-                url: u.loc[0].replace(baseUrl, `https://${NEXT_PUBLIC_HOST}`),
-                lastModified: u.lastmod ? new Date(u.lastmod[0]) : undefined,
-            })
+        const { data: firstPageData, error: firstError } = await client.GET(
+            "/v2/manga/list",
+            {
+                params: {
+                    query: {
+                        page: 1,
+                        pageSize: 100,
+                    },
+                },
+                headers: serverHeaders,
+            },
         );
-        return urls;
-    } catch (error) {
-        console.error(`Error generating sitemap for id ${id}:`, error);
-        return []; // Fallback to empty if fetch fails
+
+        if (firstError || !firstPageData) {
+            console.error(
+                "Failed to fetch first page for sitemap:",
+                firstError,
+            );
+            return [];
+        }
+
+        const totalPages = firstPageData.data.totalPages;
+
+        allUrls.push(
+            ...firstPageData.data.items.map((manga) =>
+                mangaToSitemapEntry(manga),
+            ),
+        );
+
+        for (let page = 2; page <= totalPages; page++) {
+            const { data, error } = await client.GET("/v2/manga/list", {
+                params: {
+                    query: {
+                        page,
+                        pageSize: 100,
+                    },
+                },
+                headers: serverHeaders,
+            });
+
+            if (error || !data) {
+                console.error(
+                    `Failed to fetch page ${page} for sitemap:`,
+                    error,
+                );
+                continue;
+            }
+
+            allUrls.push(
+                ...data.data.items.map((manga) => mangaToSitemapEntry(manga)),
+            );
+        }
+
+        return allUrls;
+    } catch {
+        return [];
     }
 }

@@ -1,64 +1,76 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Bookmark } from "lucide-react";
-import Spinner from "../ui/puff-loader";
-import { ButtonConfirmDialog } from "../ui/confirm";
-import { useState } from "react";
-import React from "react";
-import { Manga } from "@/types/manga";
-import Toast from "@/lib/toast-wrapper";
+import { useUser } from "@/contexts/user-context";
+import {
+    bookmarkManga,
+    checkIfBookmarked,
+    removeBookmark,
+} from "@/lib/manga/bookmarks";
 import { useSetting } from "@/lib/settings";
-import { bookmarkManga, removeBookmark } from "@/lib/manga/bookmarks";
+import Toast from "@/lib/toast-wrapper";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Bookmark } from "lucide-react";
+import React, { useState } from "react";
+import { ButtonConfirmDialog } from "../ui/confirm";
+import Spinner from "../ui/puff-loader";
 
 interface BookmarkButtonProps {
-    manga: Manga;
-    isBookmarked: boolean | null;
+    mangaId: string;
+    className?: string;
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
-    manga,
-    isBookmarked,
+    mangaId,
+    className,
 }) => {
     const [hovered, setHovered] = useState(false);
-    const [isStateBookmarked, setIsStateBookmarked] = useState<boolean | null>(
-        isBookmarked
-    );
     const [isLoading, setIsLoading] = useState(false);
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
+    const { user } = useUser();
+
+    const { data: isBookmarked, isLoading: isQueryLoading } = useQuery({
+        queryKey: ["bookmark", mangaId],
+        queryFn: () => checkIfBookmarked(mangaId),
+        enabled: !!mangaId && !!user,
+    });
 
     const handleBookmarkClick = async () => {
-        if (!manga.mangaId || isStateBookmarked === null || isStateBookmarked)
-            return;
+        if (!mangaId || isBookmarked === null || isBookmarked) return;
 
         setIsLoading(true);
         try {
-            const data = await bookmarkManga(manga.mangaId);
-            setIsLoading(false);
-
+            const data = await bookmarkManga(mangaId);
             if (data) {
-                setIsStateBookmarked(!isStateBookmarked);
                 new Toast("Manga bookmarked", "success");
             }
         } catch (error) {
             console.error("Failed to bookmark:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleRemoveBookmark = async () => {
-        if (!manga.mangaId || isStateBookmarked === null || !isStateBookmarked)
-            return;
+        if (!mangaId || isBookmarked === null || !isBookmarked) return;
 
-        const result = await removeBookmark(manga.mangaId);
-        if (!result) return;
+        try {
+            setIsLoading(true);
+            const result = await removeBookmark(mangaId);
+            if (!result) return;
+        } catch (error) {
+            console.error("Failed to remove bookmark:", error);
+        } finally {
+            setIsLoading(false);
+        }
 
-        setIsStateBookmarked(false);
         new Toast("Bookmark removed", "success");
         return true;
     };
 
     const buttonContent =
-        isStateBookmarked === null || isLoading ? (
+        isBookmarked === null || isLoading || isQueryLoading ? (
             <Spinner size={30} />
         ) : (
             <div className="relative w-full h-full flex items-center justify-center">
@@ -66,14 +78,14 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
                     <>
                         <Bookmark
                             className={`transition-all duration-300 ease-in-out ${
-                                isStateBookmarked && hovered
+                                isBookmarked && hovered
                                     ? "-translate-x-7"
                                     : "translate-x-0"
                             }`}
                         />
                         <span
                             className={`absolute transition-all duration-300 ease-in-out -translate-x-6.5 ${
-                                isStateBookmarked && hovered
+                                isBookmarked && hovered
                                     ? "opacity-100"
                                     : "opacity-0"
                             }`}
@@ -82,7 +94,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
                         </span>
                         <span
                             className={`ml-2 transition-all duration-300 ease-in-out ${
-                                isStateBookmarked && hovered
+                                isBookmarked && hovered
                                     ? "translate-x-7"
                                     : "translate-x-0"
                             }`}
@@ -94,7 +106,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
                     <>
                         <Bookmark className="mr-2" />
                         <span>
-                            {isStateBookmarked
+                            {isBookmarked
                                 ? hovered
                                     ? "Remove"
                                     : "Bookmarked"
@@ -105,19 +117,22 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             </div>
         );
 
-    const buttonClass = `w-full xl:flex-1 relative overflow-hidden text-primary ${
-        isStateBookmarked
-            ? "bg-accent-positive hover:bg-negative"
-            : "bg-background border hover:border-accent-positive hover:bg-accent-positive"
-    }`;
+    const buttonClass = cn(
+        `w-full xl:flex-1 relative overflow-hidden text-primary ${
+            isBookmarked
+                ? "bg-accent-positive hover:bg-negative"
+                : "bg-background border hover:border-accent-positive hover:bg-accent-positive"
+        }`,
+        className,
+    );
 
     const button = (
         <Button
-            aria-label={isStateBookmarked ? "Remove Bookmark" : "Bookmark"}
+            aria-label={isBookmarked ? "Remove Bookmark" : "Bookmark"}
             variant={"default"}
             size="lg"
             className={buttonClass}
-            disabled={isStateBookmarked === undefined}
+            disabled={!user || isBookmarked === undefined}
             onClick={handleBookmarkClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
@@ -126,7 +141,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         </Button>
     );
 
-    return isStateBookmarked ? (
+    return isBookmarked ? (
         <ButtonConfirmDialog
             triggerButton={button}
             title="Confirm Bookmark Removal"

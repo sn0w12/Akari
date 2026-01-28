@@ -11,92 +11,107 @@
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a Next.js application designed to provide an enhanced manga reading experience for [Manganato](https://manganato.gg/) users. It leverages Manganato as a backend, allowing users to manage and retain their bookmarks directly within the application.
+Akari is a high-quality, open-source manga reader built with Next.js. It provides an enhanced reading experience, allowing users to manage bookmarks and reading history seamlessly.
 
 ## Table of Contents
 
--   [Features](#features)
--   [Settings](#settings)
--   [Technical Stack](#technical-stack)
--   [Getting Started](#getting-started)
-    -   [Online Usage](#online-usage)
-    -   [Local Installation](#local-installation)
+- [Features](#features)
+- [Getting Started](#getting-started)
+    - [Online Usage](#online-usage)
+    - [Local Installation](#local-installation)
+- [Screenshots](#screenshots)
 
-# Features
+## Features
 
-## Reader Experience
+### Reader Experience
 
--   **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
--   **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa.
--   **Responsive Design:** Fully responsive interface that works on mobile and desktop
+- **Enhanced Reading Interface:** Clean, modern UI optimized for manga reading
+- **Multiple View Modes:** Support for both individual page reading for manga and list reading for manhwa
+- **Responsive Design:** Fully responsive interface that works on mobile and desktop
 
-## Manga Management
+### Manga Management
 
--   **Genre Filtering:** Browse manga by specific genres
--   **Popular Manga Section:** Discover trending and popular manga
--   **Latest Updates:** Stay informed about newly added chapters
+- **Genre Filtering:** Browse manga by specific genres
+- **Popular Manga Section:** Discover trending and popular manga
+- **Latest Updates:** Stay informed about newly added chapters
 
-## Bookmarks and Sync
+### Bookmarks and Sync
 
--   **MyAnimeList Integration:**
-    -   Sync with MyAnimeList (MAL) account
-    -   Enhanced manga information from MAL
--   **Bookmark Management:**
-    -   Sync bookmarks with Manganato account
-    -   Quick bookmark removal from manga pages
-    -   Search through bookmarked manga
-    -   Up-to-date chapter tracking
-    -   Last read chapter tracking
+- **External Service Integration:** Sync with MyAnimeList (MAL) and AniList accounts to import your saved manga
+- **Bookmark Management:** Save, organize, and track your favorite manga titles with up-to-date chapter progress
 
-# Settings
+## Getting Started
 
-## General
-
-| Setting          | Default | Description                                           |
-| ---------------- | ------- | ----------------------------------------------------- |
-| Theme            | System  | Select the application theme.                         |
-| Fancy Animations | Enabled | Such as manga detail pages cover image.               |
-| Show Toasts      | Enabled | Show toast notifications for various actions.         |
-| Login Toasts     | Enabled | Show warnings when you aren't logged in to a service. |
-
-## Manga
-
-| Setting            | Default | Description                                            |
-| ------------------ | ------- | ------------------------------------------------------ |
-| Show Page Progress | Enabled | Shows a progress bar at the side/ bottom when reading. |
-| Strip Reader Width | 144     | Width of the strip reader.                             |
-
-## Shortcuts
-
-| Setting            | Default      | Description                 |
-| ------------------ | ------------ | --------------------------- |
-| Show Shortcuts     | Enabled      | Enable or disable shortcuts |
-| Search Manga       | Ctrl+K       | Open manga search           |
-| Toggle Sidebar     | Ctrl+B       | Toggle the sidebar          |
-| Open Settings      | Ctrl+,       | Open settings               |
-| Open Account       | Ctrl+.       | Open account page           |
-| Navigate Bookmarks | Ctrl+Shift+B | Navigate to bookmarks       |
-
-# Technical Stack
-
--   **Frontend**: Next.js 15, React 19, TailwindCSS
--   **Database**: Supabase integration for manga data
--   **Authentication**: Built-in Manganato authentication and MyAnimeList OAuth
-
-# Getting Started
-
-## Online Usage
+### Online Usage
 
 Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga instantly.
 
-If you have a [Manganato](https://manganato.gg/) account, press the account button in the top right and sign in to your account as normal.
+### Local Installation
 
-![Login](./images/LoginForm.webp)
+If you prefer to run Akari locally, follow these steps. Your akari account will not be available if running locally.
 
-After you've been logged in, you can use it as you normally would.
+#### Prerequisites
 
-<details>
-  <summary>Showcase of Pages</summary>
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+#### Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/sn0w12/Akari
+    cd Akari
+    ```
+
+2. Configure environment variables:
+
+    Create a `.env` file in the root directory by copying the example file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Edit `.env` and configure the following variables:
+
+    **Required:**
+    - `NEXT_PUBLIC_API_URL` - The API endpoint for fetching manga content, unless you know what you are doing, set it to `https://api.akarimanga.dpdns.org`
+
+    **Optional:**
+    - `NEXT_PUBLIC_HOST` - Your website host (e.g., `akari.mydomain.com`) used for metadata
+    - `NEXT_PUBLIC_ANI_CLIENT_ID` - AniList client ID for AniList integration
+    - `NEXT_PUBLIC_MAL_CLIENT_ID` - MyAnimeList client ID for MAL integration
+    - `NEXT_PUBLIC_PLAUSIBLE_ENDPOINT` - Your Plausible Analytics endpoint (e.g., `https://plausible.yourdomain.com/api/event`)
+    - `DISABLE_STATIC_GENERATION` - Set to `1` to disable static generation (default: `0`)
+    - `GENERATE_SITEMAP` - Set to `1` to enable sitemap generation (default: `0`)
+    - `NEXT_PUBLIC_VAPID_PUBLIC_KEY` - VAPID public key for web push notifications
+    - `NEXT_PUBLIC_SUPABASE_URL` - Supabase URL for account functionality
+    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY` - Supabase publishable/anon key for accounts
+
+3. Install dependencies:
+
+    ```bash
+    npm install
+    ```
+
+4. Start the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+#### Production Build
+
+To build for production:
+
+```bash
+npm run build
+npm run start
+```
+
+## Screenshots
 
 ### Front Page
 
@@ -112,7 +127,7 @@ After you've been logged in, you can use it as you normally would.
 
 ### Author
 
-![Author](./images/Author.png)
+![Author](./images/Author.webp)
 
 ### Genre
 
@@ -120,56 +135,6 @@ After you've been logged in, you can use it as you normally would.
 
 </details>
 
-## Local Installation
+## Disclaimer
 
-If you prefer to run Akari locally, follow these steps.
-
-### Prerequisites
-
-Before running Akari, make sure you have the following installed:
-
--   [Node.js](https://nodejs.org/)
--   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/sn0w12/Akari
-cd Akari
-```
-
-2. Install dependencies:
-
-If you are using yarn, replace npm with yarn.
-
-```bash
-npm install
-```
-
-### Running the Development Server
-
-To start the development server, run:
-
-```bash
-npm run dev
-```
-
-> **Note**: When running locally, MyAnimeList authentication only works on specific localhost ports. Currently supported ports are: 3000, 3016, 3456, 3789, and 4000. You can modify the port in your `package.json` scripts by adding a `-p` flag with `next dev / start`.
-
-Open http://localhost:3000 in your browser to see the application.
-
-### Production Build
-
-To build the app for production:
-
-```bash
-npm run build
-npm run start
-```
-
-# DMCA disclaimer
-
-The developers of this application do not have any affiliation with the content available in the app.
-It collects content from sources that are freely available through any web browser
+The developers of this application do not have any affiliation with the content available in the app. It collects content from sources that are freely available through any web browser.

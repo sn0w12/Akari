@@ -1,55 +1,73 @@
-import { Check, X } from "lucide-react";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ButtonConfirmDialog } from "@/components/ui/confirm";
+import { client } from "@/lib/api";
 import { removeBookmark } from "@/lib/manga/bookmarks";
-import { cn } from "@/lib/utils";
 import { syncAllServices } from "@/lib/manga/sync";
-import { Bookmark, Chapter } from "@/types/manga";
-import { fetchApi, isApiErrorResponse } from "@/lib/api";
+import Toast from "@/lib/toast-wrapper";
+import { cn } from "@/lib/utils";
+import { Check, X } from "lucide-react";
 
 export function ConfirmDialogs({
     bookmark,
-    setUpdatedBookmarks,
     className,
 }: {
-    bookmark: Bookmark;
-    setUpdatedBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
     className?: string;
 }) {
     async function handleRemoveBookmark(mangaId: string) {
         const data = await removeBookmark(mangaId);
 
-        if (data) {
-            setUpdatedBookmarks((prev) =>
-                prev.filter((bookmark) => bookmark.id !== mangaId)
-            );
-        }
-    }
-
-    async function handleUpdateBookmark(id: string, subId: string) {
-        const response = await fetchApi<Chapter>(
-            `/api/v1/manga/${id}/${subId}`
-        );
-        if (isApiErrorResponse(response)) {
+        if (!data) {
+            new Toast("Failed to remove bookmark", "error");
             return;
         }
 
-        return await syncAllServices(response.data);
+        new Toast("Bookmark removed successfully", "success");
+    }
+
+    async function handleUpdateBookmark(id: string, subId: number | undefined) {
+        if (!subId) {
+            return false;
+        }
+
+        const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
+            params: {
+                path: {
+                    id: id,
+                    subId: subId,
+                },
+            },
+        });
+
+        if (error) {
+            new Toast("Failed to update bookmark", "error");
+            return false;
+        }
+
+        const success = await syncAllServices(data.data);
+        if (!success) {
+            new Toast("Failed to sync manga services", "error");
+            return false;
+        }
+
+        new Toast("Bookmark updated successfully", "success");
     }
 
     return (
         <div
             className={cn(
                 "flex flex-row items-center gap-2 self-start",
-                className
+                className,
             )}
         >
             <ButtonConfirmDialog
                 triggerButton={
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-negative text-accent hover:text-negative focus:outline-none"
+                        size="sm"
+                        className="size-8 rounded-sm bg-negative border border-negative text-accent hover:text-negative focus:outline-none"
                         aria-label="Remove bookmark"
                     >
                         <X className="h-5 w-5" />
@@ -60,14 +78,14 @@ export function ConfirmDialogs({
                 confirmText="Remove"
                 cancelText="Cancel"
                 variant="destructive"
-                onConfirm={() => handleRemoveBookmark(bookmark.id)}
+                onConfirm={() => handleRemoveBookmark(bookmark.mangaId)}
             />
             <ButtonConfirmDialog
                 triggerButton={
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="w-5 h-5 md:w-10 md:h-10 bg-accent-positive text-accent hover:text-accent-positive focus:outline-none"
+                        size="sm"
+                        className="size-8 rounded-sm bg-accent-positive border border-accent-positive text-accent hover:text-accent-positive focus:outline-none"
                         aria-label="Mark as read"
                     >
                         <Check className="h-5 w-5" />
@@ -79,8 +97,8 @@ export function ConfirmDialogs({
                 cancelText="Cancel"
                 onConfirm={() =>
                     handleUpdateBookmark(
-                        bookmark.mangaUrl?.split("/").pop() || "",
-                        bookmark.latestChapter.url.split("/").pop() || ""
+                        bookmark.mangaId,
+                        bookmark.latestChapter.number,
                     )
                 }
             />
