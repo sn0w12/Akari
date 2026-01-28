@@ -45,6 +45,13 @@ export function ChapterInfo({
                     "opacity-100": !hidden,
                 },
             )}
+            style={
+                orientation === "horizontal"
+                    ? {
+                          bottom: "calc(calc(var(--spacing) * 16) + env(safe-area-inset-bottom))",
+                      }
+                    : {}
+            }
         >
             <ButtonGroup orientation={orientation}>
                 {orientation === "vertical" ? (
