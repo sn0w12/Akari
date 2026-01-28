@@ -1,26 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDownIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { formatRelativeDate, cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/api";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "@/components/ui/popover-drawer";
+import { Skeleton } from "@/components/ui/skeleton";
+import { client } from "@/lib/api";
+import { cn, formatRelativeDate } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronsUpDownIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface ChaptersPopupProps {
     mangaId: string;
+    title: string;
     lastReadChapter: components["schemas"]["MangaChapter"];
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     mangaId,
+    title,
     lastReadChapter,
 }) => {
     const [open, setOpen] = useState(false);
@@ -48,8 +50,8 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     });
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+        <PopoverDrawer open={open} onOpenChange={setOpen}>
+            <PopoverDrawerTrigger>
                 <Button
                     size="sm"
                     className="size-8"
@@ -57,12 +59,15 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                 >
                     <ChevronsUpDownIcon className="h-5 w-5" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72 p-4" align="end">
-                <div className="flex justify-between items-center mb-1 pb-1 border-b">
-                    <h4 className="font-semibold px-2">Chapters</h4>
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent popoverAlign="end">
+                <div className="flex items-center mb-1 pb-1 border-b gap-1 justify-center md:justify-start">
+                    <h4 className="font-semibold">{title}</h4>
                 </div>
-                <div className="max-h-64 overflow-y-auto" data-scrollbar-custom>
+                <div
+                    className="max-h-96 md:max-h-64 overflow-y-auto"
+                    data-scrollbar-custom
+                >
                     {isLoading ? (
                         <div className="space-y-2 py-2">
                             {Array(5)
@@ -125,7 +130,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                         </div>
                     )}
                 </div>
-            </PopoverContent>
-        </Popover>
+            </PopoverDrawerContent>
+        </PopoverDrawer>
     );
 };

@@ -129,6 +129,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
             )}
             <ChaptersPopup
                 mangaId={bookmark.mangaId}
+                title={bookmark.title}
                 lastReadChapter={bookmark.lastReadChapter}
             />
         </div>
