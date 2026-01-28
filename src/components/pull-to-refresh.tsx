@@ -133,6 +133,13 @@ export function PullToRefresh({
         (event: React.TouchEvent<HTMLElement>): void => {
             if (!isEnabled || isRefreshing || !canPull || !isAtTop) return;
 
+            // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
+            if (
+                typeof document !== "undefined" &&
+                document.querySelector("[data-radix-focus-guard]")
+            )
+                return;
+
             const container = containerRef.current;
             if (!container) return;
 
@@ -146,6 +153,14 @@ export function PullToRefresh({
     const handleTouchMove = useCallback(
         (event: React.TouchEvent<HTMLElement>): void => {
             if (!isEnabled || isRefreshing || !isDragging || !canPull) return;
+
+            // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
+            if (
+                typeof document !== "undefined" &&
+                document.querySelector("[data-radix-focus-guard]")
+            )
+                return;
+
             if (!isAtTop) {
                 setIsDragging(false);
                 setPullDistance(0);
