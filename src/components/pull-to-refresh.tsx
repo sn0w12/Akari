@@ -40,7 +40,7 @@ interface TouchPoint {
 
 const DEFAULT_THRESHOLD: number = 80;
 const DEFAULT_MAX_PULL: number = 300;
-const CAN_PULL_DELAY_MS: number = 500;
+const CAN_PULL_DELAY_MS: number = 750;
 
 export function PullToRefresh({
     children,
