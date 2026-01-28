@@ -52,7 +52,7 @@ export default async function RootLayout({
                 {inDevelopment && <style>{buildDebugStyle()}</style>}
             </head>
             <body
-                className={`${geistSans.variable} md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)] md:pt-0 mb-[var(--header-height)] md:mb-0 md:overflow-hidden`}
+                className={`${geistSans.variable} md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0 mb-[var(--header-height)] md:mb-0 md:overflow-hidden`}
             >
                 <ThemeProvider
                     attribute="class"
