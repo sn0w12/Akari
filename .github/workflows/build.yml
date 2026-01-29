@@ -28,3 +28,4 @@ jobs:
               env:
                   NEXT_PUBLIC_API_URL: "https://api.akarimanga.dpdns.org"
                   NEXT_PUBLIC_HOST: "akarimanga.dpdns.org"
+                  DISABLE_STATIC_GENERATION: "1"
