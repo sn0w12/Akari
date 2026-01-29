@@ -2,6 +2,7 @@ import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
+import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
 import { genres } from "@/lib/api/search";
 import { createMetadata, createOgImage } from "@/lib/utils";
 import { Metadata } from "next";
@@ -12,6 +13,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+    if (STATIC_GENERATION_DISABLED) {
+        return [{ id: genres[0] }];
+    }
     return genres.map((id) => ({ id }));
 }
 
