@@ -14,9 +14,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useDevice } from "@/contexts/device-context";
 import { GENRE_CATEGORIES, Genre, MANGA_TYPES } from "@/lib/api/search";
 import { cn } from "@/lib/utils";
 import { FilterIcon } from "lucide-react";
+import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 
 export interface SearchFilters {
     genres: Genre[];
@@ -69,7 +71,14 @@ function Filter({
     );
 }
 
+const SortingOptions: { value: SearchFilters["sort"]; label: string }[] = [
+    { value: "search", label: "Default" },
+    { value: "popular", label: "Popular" },
+    { value: "latest", label: "Latest" },
+];
+
 export function FiltersContent({ filters, onChange }: FiltersProps) {
+    const { deviceType } = useDevice();
     const updateFilters = <K extends keyof SearchFilters>(
         key: K,
         value: SearchFilters[K],
@@ -140,21 +149,45 @@ export function FiltersContent({ filters, onChange }: FiltersProps) {
     return (
         <div className="space-y-2">
             <h2 className="text-sm font-semibold">Sorting</h2>
-            <Select
-                value={filters.sort}
-                onValueChange={(value) =>
-                    updateFilters("sort", value as SearchFilters["sort"])
-                }
-            >
-                <SelectTrigger size="sm" className="min-w-36">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent align="center">
-                    <SelectItem value="search">Default</SelectItem>
-                    <SelectItem value="popular">Popular</SelectItem>
-                    <SelectItem value="latest">Latest</SelectItem>
-                </SelectContent>
-            </Select>
+            {deviceType === "mobile" ? (
+                <NativeSelect
+                    size="sm"
+                    value={filters.sort}
+                    onChange={(value) =>
+                        updateFilters(
+                            "sort",
+                            value.target.value as SearchFilters["sort"],
+                        )
+                    }
+                >
+                    {SortingOptions.map((option) => (
+                        <NativeSelectOption
+                            key={option.value}
+                            value={option.value}
+                        >
+                            {option.label}
+                        </NativeSelectOption>
+                    ))}
+                </NativeSelect>
+            ) : (
+                <Select
+                    value={filters.sort}
+                    onValueChange={(value) =>
+                        updateFilters("sort", value as SearchFilters["sort"])
+                    }
+                >
+                    <SelectTrigger size="sm" className="min-w-36">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="center">
+                        {SortingOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
 
             <h2 className="text-sm font-semibold">Filter by Type</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
