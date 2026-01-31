@@ -4,7 +4,6 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import { Combo } from "@/components/ui/combo";
 import {
     Command,
     CommandEmpty,
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 
 interface ChapterSelectorProps {
     chapters: { value: string; label: string }[];
@@ -51,15 +51,23 @@ export function ChapterSelector({
 
     return (
         <>
-            <Combo
-                options={chapters}
+            <NativeSelect
                 value={value}
                 onChange={(e) => {
                     onChange(e.target.value);
                 }}
                 aria-label="Select chapter"
                 className={cn("h-9 w-auto w-full md:hidden", className)}
-            />
+            >
+                {chapters.map((chapter) => (
+                    <NativeSelectOption
+                        key={chapter.value}
+                        value={chapter.value}
+                    >
+                        {chapter.label}
+                    </NativeSelectOption>
+                ))}
+            </NativeSelect>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
