@@ -1,5 +1,4 @@
-import { client } from "@/lib/api";
-import { serverHeaders } from "@/lib/api";
+import { client, serverHeaders } from "@/lib/api";
 import type { MetadataRoute } from "next";
 
 const NEXT_PUBLIC_HOST = process.env.NEXT_PUBLIC_HOST!;
@@ -28,12 +27,12 @@ const staticPages: SitemapEntry[] = [
         changeFrequency: "monthly",
     },
     {
-        url: `https://${NEXT_PUBLIC_HOST}/login`,
+        url: `https://${NEXT_PUBLIC_HOST}/auth/login`,
         lastModified: new Date(),
         changeFrequency: "monthly",
     },
     {
-        url: `https://${NEXT_PUBLIC_HOST}/register`,
+        url: `https://${NEXT_PUBLIC_HOST}/auth/register`,
         lastModified: new Date(),
         changeFrequency: "monthly",
     },
