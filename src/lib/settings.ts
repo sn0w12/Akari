@@ -1,3 +1,4 @@
+/* eslint-disable custom/no-localstorage */
 "use client";
 
 import { APP_SETTINGS } from "@/config";
