@@ -75,7 +75,7 @@
         "@types/react": "19.2.2",
         "@types/react-dom": "19.2.2",
         "eslint": "^9",
-        "eslint-config-next": "16.0.6",
+        "eslint-config-next": "16.1.6",
         "openapi-typescript": "^7.10.1",
         "prettier": "3.8.1",
         "prettier-plugin-organize-imports": "^4.3.0",
