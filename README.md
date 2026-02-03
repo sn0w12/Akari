@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./images/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
+  <img src="./public/screenshots/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
 </p>
 
 <h1 align="center">灯 - Akari</h1>
@@ -115,23 +115,23 @@ npm run start
 
 ### Front Page
 
-![FrontPage](./images/Homepage.webp)
+![FrontPage](./public/screenshots/wide/Homepage.webp)
 
 ### Bookmarks
 
-![Bookmarks](./images/Bookmarks.webp)
+![Bookmarks](./public/screenshots/wide/Bookmarks.webp)
 
 ### Manga
 
-![Manga](./images/Manga.webp)
+![Manga](./public/screenshots/wide/Manga.webp)
 
 ### Author
 
-![Author](./images/Author.webp)
+![Author](./public/screenshots/wide/Author.webp)
 
 ### Genre
 
-![Genre](./images/Genre.webp)
+![Genre](./public/screenshots/wide/Genre.webp)
 
 </details>
 

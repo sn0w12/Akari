@@ -43,6 +43,36 @@
             "url": "/bookmarks"
         }
     ],
+    "screenshots": [
+        {
+            "src": "/screenshots/wide/Homepage.webp",
+            "sizes": "1852x1004",
+            "type": "image/webp",
+            "form_factor": "wide",
+            "label": "Akari Homepage"
+        },
+        {
+            "src": "/screenshots/wide/Manga.webp",
+            "sizes": "1852x1004",
+            "type": "image/webp",
+            "form_factor": "wide",
+            "label": "Manga Page"
+        },
+        {
+            "src": "/screenshots/narrow/Homepage.webp",
+            "sizes": "375x812",
+            "type": "image/webp",
+            "form_factor": "narrow",
+            "label": "Akari Homepage"
+        },
+        {
+            "src": "/screenshots/narrow/Manga.webp",
+            "sizes": "375x812",
+            "type": "image/webp",
+            "form_factor": "narrow",
+            "label": "Manga Page"
+        }
+    ],
     "categories": ["books", "reading", "entertainment", "manga"],
     "related_applications": [],
     "prefer_related_applications": false
