@@ -7,7 +7,7 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsn0w12%2FAkari%2Frefs%2Fheads%2Fmaster%2Fpackage.json&query=%24.version&label=version&color=indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
