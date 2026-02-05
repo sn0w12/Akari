@@ -73,6 +73,8 @@ export const APP_SETTINGS = {
             readerType: {
                 label: "Page Display Type",
                 description: "Select the default reader type for manga.",
+                tooltip:
+                    "Auto will choose single page reader for manga and strip for others, unless manually overwritten.",
                 type: "select",
                 options: [
                     { label: "Auto", value: "auto" },
