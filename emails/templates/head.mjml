@@ -1,6 +1,7 @@
 <mj-head>
     <mj-attributes>
         <mj-all font-family="Arial, Helvetica, sans-serif" />
+        <mj-body background-color="#373737" />
         <mj-divider border-color="#373737" border-width="1px" padding="0px" />
         <mj-text
             color="#fafafa"

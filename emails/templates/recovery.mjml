@@ -1,6 +1,6 @@
 <mjml>
     <mj-include path="./head.mjml" />
-    <mj-body background-color="#f0f4ff">
+    <mj-body>
         <mj-section padding="20px">
             <mj-column css-class="container">
                 <mj-image
