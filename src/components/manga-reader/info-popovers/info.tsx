@@ -90,7 +90,7 @@ export function InfoPopover({
             </PopoverDrawerTrigger>
             <PopoverDrawerContent
                 popoverSide={orientation === "vertical" ? "left" : "bottom"}
-                popoverAlign="end"
+                popoverAlign="start"
                 popoverClassName="w-auto sm:w-96 max-h-96 overflow-y-auto"
             >
                 <InfoContent chapter={chapter} />

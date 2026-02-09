@@ -41,7 +41,7 @@ export function SettingsPopover({
             </PopoverTrigger>
             <PopoverContent
                 side={orientation === "vertical" ? "left" : "bottom"}
-                align="end"
+                align="start"
                 className="w-screen sm:w-128 max-h-96 overflow-y-auto"
                 data-scrollbar-custom
             >
