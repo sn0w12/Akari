@@ -65,7 +65,10 @@ export function ChapterInfo({
                 ) : (
                     <InfoPopover chapter={chapter} orientation={orientation} />
                 )}
-                <CommentsButton />
+                <CommentsButton
+                    chapterNumber={chapter.number}
+                    mangaType={chapter.type}
+                />
             </ButtonGroup>
         </div>
     );
