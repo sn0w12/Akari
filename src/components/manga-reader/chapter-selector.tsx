@@ -17,6 +17,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useWindowWidth } from "@/hooks/use-window-width";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { NativeSelect, NativeSelectOption } from "../ui/native-select";
@@ -33,8 +34,14 @@ export function ChapterSelector({
     className,
 }: ChapterSelectorProps) {
     const [open, setOpen] = React.useState(false);
+    const width = useWindowWidth();
     const router = useRouter();
     const selectedItemRef = React.useRef<HTMLDivElement>(null);
+
+    const currentLabel = React.useMemo(() => {
+        const chapter = chapters.find((chapter) => chapter.value === value);
+        return chapter ? chapter.label : null;
+    }, [chapters, value]);
 
     const onChange = (value: string) => {
         router.push(`./${value}`);
@@ -51,76 +58,79 @@ export function ChapterSelector({
 
     return (
         <>
-            <NativeSelect
-                value={value}
-                onChange={(e) => {
-                    onChange(e.target.value);
-                }}
-                aria-label="Select chapter"
-                className={cn("h-9 w-auto w-full md:hidden", className)}
-            >
-                {chapters.map((chapter) => (
-                    <NativeSelectOption
-                        key={chapter.value}
-                        value={chapter.value}
-                    >
-                        {chapter.label}
-                    </NativeSelectOption>
-                ))}
-            </NativeSelect>
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        aria-label="Select chapter"
-                        className={cn(
-                            "w-52 justify-between hidden md:flex",
-                            className,
-                        )}
-                    >
-                        Select chapter...
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                    id="chapter-selector"
-                    className="w-52 p-0 relative z-[2000]"
+            {width < 768 ? (
+                <NativeSelect
+                    value={value}
+                    onChange={(e) => {
+                        onChange(e.target.value);
+                    }}
+                    aria-label="Select chapter"
+                    className={cn("h-9 w-auto w-full", className)}
                 >
-                    <Command>
-                        <CommandInput placeholder="Search chapter..." />
-                        <CommandList data-scrollbar-custom>
-                            <CommandEmpty>No chapter found.</CommandEmpty>
-                            <CommandGroup>
-                                {chapters.map((chapter) => (
-                                    <CommandItem
-                                        key={chapter.value}
-                                        value={chapter.value}
-                                        onSelect={onChange}
-                                        className="cursor-pointer"
-                                        ref={
-                                            chapter.value === value
-                                                ? selectedItemRef
-                                                : null
-                                        }
-                                    >
-                                        <Check
-                                            className={cn(
-                                                "mr-2 h-4 w-4",
-                                                value === chapter.value
-                                                    ? "opacity-100"
-                                                    : "opacity-0",
-                                            )}
-                                        />
-                                        {chapter.label}
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
+                    {chapters.map((chapter) => (
+                        <NativeSelectOption
+                            key={chapter.value}
+                            value={chapter.value}
+                        >
+                            {chapter.label}
+                        </NativeSelectOption>
+                    ))}
+                </NativeSelect>
+            ) : (
+                <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            aria-label="Select chapter"
+                            className={cn(
+                                "w-52 justify-between flex",
+                                className,
+                            )}
+                        >
+                            {currentLabel ?? "Select Chapter"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                        id="chapter-selector"
+                        className="w-52 p-0 relative z-[2000]"
+                    >
+                        <Command>
+                            <CommandInput placeholder="Search chapter..." />
+                            <CommandList data-scrollbar-custom>
+                                <CommandEmpty>No chapter found.</CommandEmpty>
+                                <CommandGroup>
+                                    {chapters.map((chapter) => (
+                                        <CommandItem
+                                            key={chapter.value}
+                                            value={chapter.value}
+                                            onSelect={onChange}
+                                            className="cursor-pointer"
+                                            ref={
+                                                chapter.value === value
+                                                    ? selectedItemRef
+                                                    : null
+                                            }
+                                        >
+                                            <Check
+                                                className={cn(
+                                                    "mr-2 h-4 w-4",
+                                                    value === chapter.value
+                                                        ? "opacity-100"
+                                                        : "opacity-0",
+                                                )}
+                                            />
+                                            {chapter.label}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </PopoverContent>
+                </Popover>
+            )}
         </>
     );
 }
