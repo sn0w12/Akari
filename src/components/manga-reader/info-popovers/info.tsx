@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import Link from "next/link";
 
+import BookmarkButton from "@/components/manga-details/bookmark-button";
 import { Button } from "../../ui/button";
 import { ButtonLink } from "../../ui/button-link";
 import {
@@ -11,7 +12,6 @@ import {
     PopoverDrawerTrigger,
 } from "../../ui/popover-drawer";
 import { ChapterSelector } from "../chapter-selector";
-import { FooterBookmarkButton } from "../footer-bookmark";
 
 export function InfoContent({
     chapter,
@@ -39,7 +39,10 @@ export function InfoContent({
                 />
                 <div className="flex flex-col gap-2 md:pt-2 md:border-t">
                     <div className="flex items-center gap-2">
-                        <FooterBookmarkButton chapter={chapter} />
+                        <BookmarkButton
+                            mangaId={chapter.mangaId}
+                            className="w-full order-3 xl:order-2 p-2 h-9"
+                        />
                     </div>
                     <div className="flex items-center gap-2">
                         <ButtonLink
