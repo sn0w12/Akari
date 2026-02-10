@@ -30,7 +30,11 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
     const { user } = useUser();
 
-    const { data: isBookmarked, isLoading: isQueryLoading } = useQuery({
+    const {
+        data: isBookmarked,
+        isLoading: isQueryLoading,
+        refetch,
+    } = useQuery({
         queryKey: ["bookmark", mangaId],
         queryFn: () => checkIfBookmarked(mangaId),
         enabled: !!mangaId && !!user,
@@ -42,9 +46,11 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         setIsLoading(true);
         try {
             const data = await bookmarkManga(mangaId);
-            if (data) {
-                new Toast("Manga bookmarked", "success");
+            if (!data) {
+                throw new Error("Failed to bookmark manga");
             }
+            await refetch();
+            new Toast("Manga bookmarked", "success");
         } catch (error) {
             console.error("Failed to bookmark:", error);
         } finally {
@@ -59,6 +65,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             setIsLoading(true);
             const result = await removeBookmark(mangaId);
             if (!result) return;
+            await refetch();
         } catch (error) {
             console.error("Failed to remove bookmark:", error);
         } finally {
