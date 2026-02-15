@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+*.log
+.DS_Store
+*.tmp
+.cache
+dist
+build
+coverage
+.nyc_output
+.vscode
+.idea
+*.swp
+*.swo
+*~
