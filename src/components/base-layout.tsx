@@ -65,8 +65,87 @@ export function BaseLayout({
         enabled: !!user,
     });
 
+    // Trigger a router refresh and wait until the client network activity
+    // that follows has become idle for a short period. This avoids relying
+    // on DOM mutation observers or server layout changes.
     const handleRefresh = async (): Promise<void> => {
+        if (typeof window === "undefined") {
+            router.refresh();
+            return;
+        }
+
+        const waitForNetworkIdle = (timeout = 3000, idleMs = 120) =>
+            new Promise<void>((resolve) => {
+                const originalFetch = window.fetch.bind(window);
+                type Win = Window & { fetch: typeof fetch };
+                const win = window as Win;
+                let inFlight = 0;
+                let idleTimer: number | null = null;
+                let finished = false;
+
+                const cleanup = () => {
+                    if (idleTimer) {
+                        clearTimeout(idleTimer);
+                        idleTimer = null;
+                    }
+                    win.fetch = originalFetch;
+                };
+
+                const finish = () => {
+                    if (finished) return;
+                    finished = true;
+                    cleanup();
+                    resolve();
+                };
+
+                const shouldTrack = (input: RequestInfo | URL) => {
+                    try {
+                        const url = new URL(
+                            typeof input === "string"
+                                ? input
+                                : (input as Request).url || String(input),
+                            location.href,
+                        );
+                        // only track same-origin requests to avoid counting analytics/3rd-party
+                        return url.origin === location.origin;
+                    } catch {
+                        return false;
+                    }
+                };
+
+                // short-lived fetch wrapper to count same-origin requests that start
+                win.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+                    const track = shouldTrack(input);
+                    if (track) inFlight++;
+
+                    const p = originalFetch(
+                        input as RequestInfo,
+                        init as RequestInit,
+                    );
+
+                    p.finally(() => {
+                        if (track) {
+                            inFlight = Math.max(0, inFlight - 1);
+                            if (inFlight === 0) {
+                                if (idleTimer) clearTimeout(idleTimer);
+                                idleTimer = window.setTimeout(finish, idleMs);
+                            }
+                        }
+                    });
+
+                    return p;
+                };
+
+                // if nothing tracked starts, resolve after idleMs
+                idleTimer = window.setTimeout(finish, idleMs);
+
+                // absolute fallback
+                window.setTimeout(finish, timeout);
+            });
+
+        const networkPromise = waitForNetworkIdle(3000, 120);
         router.refresh();
+        await networkPromise;
     };
 
     const handleSettingsClick = () => {
@@ -198,6 +277,7 @@ export function BaseLayout({
                 </Sidebar>
                 <PullToRefresh
                     as="main"
+                    enabled
                     onRefresh={handleRefresh}
                     className={cn(
                         "bg-background min-h-[var(--visible-height)] md:min-h-none h-full w-full flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto",
