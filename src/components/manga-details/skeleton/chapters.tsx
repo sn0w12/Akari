@@ -7,10 +7,8 @@ export async function ChaptersSkeleton() {
     return (
         <>
             <div className="flex gap-2 w-full md:hidden mb-2">
-                <Button className="flex-1" disabled={true}>
-                    Find Latest Read
-                </Button>
-                <Button className="flex-1" disabled={true}>
+                <Button className="flex-1 md:w-40" disabled={true} />
+                <Button className="flex-1 md:w-40" disabled={true}>
                     <ArrowUpDown className="h-4 w-4" />
                     Sort Ascending
                 </Button>
