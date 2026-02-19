@@ -20,6 +20,5 @@ export async function GET(request: NextRequest) {
     }
 
     const firstChapter = chapters[chapters.length - 1].number;
-    console.log(`Redirecting to first chapter: /manga/${id}/${firstChapter}`);
     permanentRedirect(`/manga/${id}/${firstChapter}`);
 }
