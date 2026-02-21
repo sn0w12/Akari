@@ -277,7 +277,6 @@ export function BaseLayout({
                 </Sidebar>
                 <PullToRefresh
                     as="main"
-                    enabled
                     onRefresh={handleRefresh}
                     className={cn(
                         "bg-background min-h-[var(--visible-height)] md:min-h-none h-full w-full flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto",
