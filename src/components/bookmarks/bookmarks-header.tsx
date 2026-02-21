@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import Toast from "@/lib/toast-wrapper";
-import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/ui/puff-loader";
 import { client } from "@/lib/api";
-import { BookmarksDropdown } from "./bookmarks-dropdown";
+import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
+import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 export default function BookmarksHeader() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -131,7 +131,7 @@ export default function BookmarksHeader() {
                 >
                     Export Bookmarks
                 </Button>
-                <div className="relative w-full h-10 md:h-9">
+                <div className="relative w-full h-auto md:h-9">
                     <Input
                         type="search"
                         placeholder="Search bookmarks..."
@@ -142,9 +142,9 @@ export default function BookmarksHeader() {
                             setTimeout(() => setIsFocused(false), 150)
                         }
                         onKeyDown={handleKeyDown}
-                        className="no-cancel text-sm h-full"
+                        className="no-cancel md:h-full p-2"
                     />
-                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-muted-foreground" />
                 </div>
                 <BookmarksDropdown exportBookmarks={exportBookmarks} />
             </div>
