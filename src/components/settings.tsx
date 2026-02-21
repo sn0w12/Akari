@@ -147,6 +147,7 @@ export default function SettingsPage() {
                     collapsible={Object.keys(groupData.subgroups).length > 0}
                     defaultCollapsed={false}
                     onClick={() => {
+                        if (typeof window === "undefined") return;
                         const el = document.getElementById(
                             `settings-section-${groupName}`,
                         );
@@ -166,6 +167,7 @@ export default function SettingsPage() {
                                 key={subgroupPath}
                                 label={subgroupPath}
                                 onClick={() => {
+                                    if (typeof window === "undefined") return;
                                     const el = document.getElementById(
                                         `settings-subsection-${groupName}__${subgroupPath}`,
                                     );

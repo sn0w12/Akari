@@ -29,6 +29,7 @@ export const setCookie = (
     category: CookieCategory,
     maxAge = 31536000,
 ) => {
+    if (typeof window === "undefined") return false;
     document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
     return true;
 };

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 export type ShortcutOptions = {
     preventDefault?: boolean;
@@ -34,6 +34,7 @@ export function useShortcut(
                 : true;
 
         const handler = (event: KeyboardEvent) => {
+            if (typeof window === "undefined") return;
             const activeElement = document.activeElement;
             const isInputFocused =
                 activeElement instanceof HTMLElement &&

@@ -14,6 +14,7 @@ export function CommentsButton({
     mangaType,
 }: CommentsButtonProps) {
     const handleToggleComments = () => {
+        if (typeof window === "undefined") return;
         const commentsElement = document.getElementById("comments");
         if (commentsElement) {
             commentsElement.scrollIntoView({ behavior: "smooth" });
