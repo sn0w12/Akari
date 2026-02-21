@@ -272,7 +272,7 @@ export function PullToRefresh({
                 ref={(node) => {
                     containerRef.current = node;
                 }}
-                className={cn("relative select-none", className)}
+                className={cn("relative", className)}
                 style={contentStyle}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
