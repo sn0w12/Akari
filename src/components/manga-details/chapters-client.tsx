@@ -35,11 +35,11 @@ function ChaptersControls({
     isLoading,
     latestData,
 }: ChaptersControlsProps) {
-    const { user } = useUser();
+    const { user, isLoading: isUserLoading } = useUser();
 
     return (
         <div className="flex gap-2 w-full md:w-auto pointer-events-auto">
-            {isLoading || !user ? (
+            {isLoading || isUserLoading ? (
                 <Button className="flex-1 md:w-40" disabled />
             ) : latestData ? (
                 <Button
