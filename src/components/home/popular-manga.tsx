@@ -32,11 +32,11 @@ export function PopularManga({ manga }: PopularMangaProps) {
                 {manga.map((mangaItem, index) => (
                     <CarouselItem
                         key={mangaItem.id}
-                        className="pl-4 pr-[1px] 2xl:basis-1/2"
+                        className="pl-4 pr-[1px] basis-1/2 sm:basis-full 2xl:basis-1/2"
                     >
                         <PopularMangaCard
                             manga={mangaItem}
-                            priority={index < 1}
+                            priority={index < 2}
                         />
                     </CarouselItem>
                 ))}
@@ -133,8 +133,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 preload={priority}
                 decoding="async"
                 sizes={generateSizes({
-                    sm: "400px",
-                    md: "240px",
+                    default: "240px",
                 })}
             />
             <div className="space-y-2 py-2 px-4 w-full hidden sm:block">

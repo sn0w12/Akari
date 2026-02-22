@@ -30,6 +30,21 @@ export const viewport: Viewport = {
     viewportFit: "cover",
 };
 
+/**
+ * Return a safe origin to preconnect to from an input URL string.
+ * - If the value is falsy -> undefined
+ * - If it's a full URL -> return the origin (scheme + host + port)
+ * - Otherwise -> return the raw value (best-effort)
+ */
+function getApiPreconnect(url?: string | undefined): string | undefined {
+    if (!url) return undefined;
+    try {
+        return new URL(url).origin;
+    } catch {
+        return url;
+    }
+}
+
 function buildDebugStyle(): string {
     let style = ":root {";
     if (process.env.NEXT_PUBLIC_SIMULATE_SAFE_AREA_INSETS == "1") {
@@ -42,6 +57,8 @@ function buildDebugStyle(): string {
 export default async function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
+    const apiPreconnect = getApiPreconnect(process.env.NEXT_PUBLIC_API_URL);
+
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
@@ -50,6 +67,19 @@ export default async function RootLayout({
                     <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
                 )}
                 {inDevelopment && <style>{buildDebugStyle()}</style>}
+                {apiPreconnect && (
+                    // Preconnect to API origin to reduce handshake latency
+                    <link
+                        rel="preconnect"
+                        href={apiPreconnect}
+                        crossOrigin="anonymous"
+                    />
+                )}
+                <link
+                    rel="preconnect"
+                    href={"https://img.akarimanga.dpdns.org"}
+                    crossOrigin="anonymous"
+                />
             </head>
             <body
                 className={`${geistSans.variable} md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0! mb-[var(--header-height)] md:mb-0 md:overflow-hidden`}

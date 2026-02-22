@@ -1,5 +1,5 @@
-import { APP_SETTINGS } from "../src/config";
 import { Setting } from "@/lib/settings";
+import { APP_SETTINGS } from "../src/config";
 
 /**
  * Formats the default value of a setting for display in markdown tables.
@@ -26,16 +26,16 @@ function formatDefault(setting: Setting): string {
  * Generates markdown tables for the application settings, similar to the README.
  */
 export function generateSettingsMarkdown(): string {
-    let markdown = "# Settings\n\n";
+    let markdown = "## Settings\n\n";
 
     for (const [, category] of Object.entries(APP_SETTINGS)) {
         const displayableSettings = Object.entries(category.settings).filter(
-            ([, setting]) => setting.type !== "custom-render"
+            ([, setting]) => setting.type !== "custom-render",
         );
 
         if (displayableSettings.length === 0) continue;
 
-        markdown += `## ${category.label}\n\n`;
+        markdown += `### ${category.label}\n\n`;
         markdown += "| Setting | Default | Description |\n";
         markdown += "| ------- | ------- | ----------- |\n";
 

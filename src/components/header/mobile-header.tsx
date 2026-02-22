@@ -1,12 +1,14 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
+import { useUser } from "@/contexts/user-context";
 import {
     BookmarkIcon,
     HomeIcon,
     Menu,
     SearchIcon,
     TrendingUp,
+    User,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../ui/sidebar";
@@ -14,8 +16,9 @@ import { TabBar, TabBarList, TabBarTrigger } from "../ui/tab-bar";
 
 export function MobileHeader() {
     const { toggleSidebar } = useSidebar();
-    const pathname = usePathname();
     const { borderClass } = useBorderColor();
+    const { user } = useUser();
+    const pathname = usePathname();
 
     return (
         <TabBar className="md:hidden">
@@ -59,14 +62,25 @@ export function MobileHeader() {
                 >
                     <SearchIcon className="size-6" />
                 </TabBarTrigger>
-                <TabBarTrigger
-                    aria-label="Bookmarks"
-                    href="/bookmarks"
-                    active={pathname === "/bookmarks"}
-                    className={borderClass}
-                >
-                    <BookmarkIcon className="size-6" />
-                </TabBarTrigger>
+                {user ? (
+                    <TabBarTrigger
+                        aria-label="Bookmarks"
+                        href="/bookmarks"
+                        active={pathname === "/bookmarks"}
+                        className={borderClass}
+                    >
+                        <BookmarkIcon className="size-6" />
+                    </TabBarTrigger>
+                ) : (
+                    <TabBarTrigger
+                        aria-label="Login to view bookmarks"
+                        href="/auth/login"
+                        active={pathname === "/auth/login"}
+                        className={borderClass}
+                    >
+                        <User className="size-6" />
+                    </TabBarTrigger>
+                )}
             </TabBarList>
         </TabBar>
     );

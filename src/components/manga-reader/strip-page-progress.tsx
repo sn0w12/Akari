@@ -25,7 +25,7 @@ export default function StripPageProgress({
     return (
         <div
             className={cn(
-                "flex transition-opacity fixed z-50 left-4 right-4 lg:left-auto lg:right-4 lg:top-auto w-[calc(100%-118px)] lg:w-9",
+                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-7 lg:top-auto w-[calc(100%-118px)] lg:w-9",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,
@@ -41,7 +41,7 @@ export default function StripPageProgress({
         >
             <div
                 ref={containerRef}
-                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:h-[75vh]"
+                className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:h-[80vh]"
                 style={
                     {
                         "--progress": `${progress * 100}%`,

@@ -204,6 +204,10 @@ li {
     list-style: none;
 }
 
+[data-sonner-toaster][data-y-position="top"] {
+    top: calc(var(--safe-top) + var(--offset-top)) !important;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: calc(var(--spacing) * 2.5);

@@ -1,70 +1,47 @@
 "use client";
 
-import { useWindowWidth } from "@/hooks/use-window-width";
-import { ArrowUp, MessageCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ButtonLink } from "@/components/ui/button-link";
+import { MessageCircle } from "lucide-react";
 import { Button } from "../../ui/button";
 
-export function CommentsButton() {
-    const [savedScrollPosition, setSavedScrollPosition] = useState<
-        number | null
-    >(null);
-    const [isAtComments, setIsAtComments] = useState(false);
-    const [scrollElement, setScrollElement] = useState<HTMLElement | Window>(
-        typeof window !== "undefined" ? window : ({} as Window),
-    );
-    const windowWidth = useWindowWidth();
+interface CommentsButtonProps {
+    chapterNumber: number;
+    mangaType: components["schemas"]["MangaType"];
+}
 
-    useEffect(() => {
-        if (windowWidth < 768) {
-            queueMicrotask(() => {
-                setScrollElement(window);
-            });
-        } else {
-            const el = document.getElementById("scroll-element") as HTMLElement;
-            queueMicrotask(() => {
-                setScrollElement(el || window);
-            });
-        }
-    }, [windowWidth]);
-
+export function CommentsButton({
+    chapterNumber,
+    mangaType,
+}: CommentsButtonProps) {
     const handleToggleComments = () => {
-        if (isAtComments && savedScrollPosition !== null) {
-            // Return to saved position
-            scrollElement.scrollTo({
-                top: savedScrollPosition,
-                behavior: "smooth",
-            });
-            setSavedScrollPosition(null);
-            setIsAtComments(false);
-        } else {
-            // Save current position and scroll to comments
-            const currentScroll =
-                scrollElement === window
-                    ? window.scrollY
-                    : (scrollElement as HTMLElement).scrollTop;
-            setSavedScrollPosition(currentScroll);
-
-            const commentsElement = document.getElementById("comments");
-            if (commentsElement) {
-                commentsElement.scrollIntoView({ behavior: "smooth" });
-                setIsAtComments(true);
-            }
+        if (typeof window === "undefined") return;
+        const commentsElement = document.getElementById("comments");
+        if (commentsElement) {
+            commentsElement.scrollIntoView({ behavior: "smooth" });
         }
     };
 
     return (
-        <Button
-            variant="outline"
-            size="icon"
-            onClick={handleToggleComments}
-            className="h-7.5 md:h-9"
-        >
-            {isAtComments ? (
-                <ArrowUp className="h-4 w-4" />
+        <>
+            {mangaType === "Manga" ? (
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleToggleComments}
+                    className="h-7.5 md:h-9"
+                >
+                    <MessageCircle className="h-4 w-4" />
+                </Button>
             ) : (
-                <MessageCircle className="h-4 w-4" />
+                <ButtonLink
+                    variant="outline"
+                    size="icon"
+                    href={`./${chapterNumber}/comments`}
+                    className="h-7.5 md:h-9"
+                >
+                    <MessageCircle className="h-4 w-4" />
+                </ButtonLink>
             )}
-        </Button>
+        </>
     );
 }

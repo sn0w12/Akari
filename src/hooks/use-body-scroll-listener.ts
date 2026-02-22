@@ -7,6 +7,7 @@ export function useBodyScrollListener(
 ) {
     useEffect(() => {
         if (!enabled) return;
+        if (typeof window === "undefined") return;
 
         const mainElement = document.getElementById(
             "scroll-element",

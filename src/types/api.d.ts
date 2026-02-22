@@ -4687,7 +4687,7 @@ export interface components {
             data: components["schemas"]["MangaSearchResponse"][];
         };
         /** @enum {string} */
-        MangaType: "Manga" | "Manhwa" | "Manhua" | "OEL";
+        MangaType: "Manga" | "Manhwa" | "Manhua" | "Other";
         NotificationPayload: {
             title: string;
             body: string;

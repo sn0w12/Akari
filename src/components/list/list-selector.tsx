@@ -18,6 +18,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useUser } from "@/contexts/user-context";
+import { useWindowWidth } from "@/hooks/use-window-width";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
     const [open, setOpen] = React.useState(false);
     const queryClient = useQueryClient();
     const { user } = useUser();
+    const windowWidth = useWindowWidth();
     const { data: listData } = useQuery({
         queryKey: ["user-lists"],
         enabled: !!user && open,
@@ -107,7 +109,11 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
             </PopoverTrigger>
             <PopoverContent className="p-0 relative z-[2000]">
                 <Command>
-                    <CommandInput placeholder="Search list..." />
+                    <React.Activity
+                        mode={windowWidth < 768 ? "hidden" : "visible"}
+                    >
+                        <CommandInput placeholder="Search list..." />
+                    </React.Activity>
                     <CommandList data-scrollbar-custom>
                         <CommandEmpty>No lists found.</CommandEmpty>
                         <CommandGroup>

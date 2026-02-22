@@ -11,6 +11,8 @@ export function useSticky(
     const [isSticky, setIsSticky] = useState(false);
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
         const element = ref.current;
         if (!element || !element.parentElement) {
             console.warn("Sticky ref not attached to any element.");

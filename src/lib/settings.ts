@@ -1,3 +1,4 @@
+/* eslint-disable custom/no-localstorage */
 "use client";
 
 import { APP_SETTINGS } from "@/config";
@@ -411,6 +412,7 @@ export interface ContextMenuItemDef {
 interface BaseSetting {
     label: string;
     description?: string;
+    tooltip?: string;
     value?: SettingValue;
     default: SettingValue | (() => SettingValue);
     onChange?: (value: SettingValue) => void;

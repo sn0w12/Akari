@@ -47,7 +47,7 @@ export function PullToRefresh({
     enabled,
     threshold = DEFAULT_THRESHOLD,
     maxPull = DEFAULT_MAX_PULL,
-    minRefreshTime = 1000,
+    minRefreshTime = 0,
     className,
     style,
     indicatorClassName,
@@ -272,7 +272,7 @@ export function PullToRefresh({
                 ref={(node) => {
                     containerRef.current = node;
                 }}
-                className={cn("relative select-none", className)}
+                className={cn("relative", className)}
                 style={contentStyle}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}

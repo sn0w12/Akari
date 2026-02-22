@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./images/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
+  <img src="./public/screenshots/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
 </p>
 
 <h1 align="center">灯 - Akari</h1>
@@ -7,7 +7,7 @@
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/sn0w12/Akari">
-    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-indigo">
+    <img alt="Version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsn0w12%2FAkari%2Frefs%2Fheads%2Fmaster%2Fpackage.json&query=%24.version&label=version&color=indigo">
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
@@ -16,6 +16,7 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 ## Table of Contents
 
 - [Features](#features)
+- [Settings](#settings)
 - [Getting Started](#getting-started)
     - [Online Usage](#online-usage)
     - [Local Installation](#local-installation)
@@ -39,6 +40,39 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 
 - **External Service Integration:** Sync with MyAnimeList (MAL) and AniList accounts to import your saved manga
 - **Bookmark Management:** Save, organize, and track your favorite manga titles with up-to-date chapter progress
+
+## Settings
+
+### General
+
+| Setting          | Default  | Description                                           |
+| ---------------- | -------- | ----------------------------------------------------- |
+| Theme            | System   | Select the application theme.                         |
+| Fancy Animations | Enabled  | Such as manga detail pages cover image.               |
+| Show Toasts      | Enabled  | Show toast notifications for various actions.         |
+| Login Toasts     | Disabled | Show warnings when you aren't logged in to a service. |
+| Allow Analytics  | Enabled  | Allow the collection of anonymous analytics data.     |
+
+### Manga
+
+| Setting                      | Default       | Description                                                            |
+| ---------------------------- | ------------- | ---------------------------------------------------------------------- |
+| Page Display Type            | Auto          | Select the default reader type for manga.                              |
+| Show Page Progress           | Enabled       | Shows a progress bar at the side/ bottom when reading.                 |
+| Strip Reader Width           | 144           | Width of the strip reader.                                             |
+| Reading Direction            | Left to Right | Select the reading direction for manga.                                |
+| Advance chapter on last page | Enabled       | Automatically advance to the next chapter when reaching the last page. |
+
+### Shortcuts
+
+| Setting               | Default      | Description                           |
+| --------------------- | ------------ | ------------------------------------- |
+| Show Shortcuts        | Enabled      | Enable or disable keyboard shortcuts. |
+| Search Manga          | Ctrl+K       | Shortcut to search manga.             |
+| Toggle Sidebar        | Ctrl+B       | Shortcut to toggle the sidebar.       |
+| Open Settings         | Ctrl+,       | Shortcut to open settings.            |
+| Open Account          | Ctrl+.       | Shortcut to open account page.        |
+| Navigate to Bookmarks | Ctrl+Shift+B | Shortcut to navigate to bookmarks.    |
 
 ## Getting Started
 
@@ -115,23 +149,23 @@ npm run start
 
 ### Front Page
 
-![FrontPage](./images/Homepage.webp)
+![FrontPage](./public/screenshots/wide/Homepage.webp)
 
 ### Bookmarks
 
-![Bookmarks](./images/Bookmarks.webp)
+![Bookmarks](./public/screenshots/wide/Bookmarks.webp)
 
 ### Manga
 
-![Manga](./images/Manga.webp)
+![Manga](./public/screenshots/wide/Manga.webp)
 
 ### Author
 
-![Author](./images/Author.webp)
+![Author](./public/screenshots/wide/Author.webp)
 
 ### Genre
 
-![Genre](./images/Genre.webp)
+![Genre](./public/screenshots/wide/Genre.webp)
 
 </details>
 

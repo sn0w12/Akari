@@ -1,0 +1,32 @@
+<mjml>
+    <mj-include path="./head.mjml" />
+    <mj-body>
+        <mj-section padding="20px">
+            <mj-column css-class="container">
+                <mj-image
+                    src="https://akarimanga.dpdns.org/img/icon.png"
+                    alt="Akari Manga Logo"
+                    width="50px"
+                    align="center"
+                />
+
+                <mj-divider />
+
+                <mj-text css-class="title" font-size="24px">
+                    Welcome to Akari Manga!
+                </mj-text>
+
+                <mj-text css-class="text">
+                    We're excited to have you join Akari Manga! Click below to
+                    confirm your email address and start your reading journey.
+                </mj-text>
+
+                <mj-button
+                    href="https://akarimanga.dpdns.org/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/account"
+                >
+                    Confirm Email
+                </mj-button>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

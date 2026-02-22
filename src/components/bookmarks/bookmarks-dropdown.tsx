@@ -1,3 +1,4 @@
+import { MoreVertical } from "lucide-react";
 import { Button } from "../ui/button";
 import {
     DropdownMenu,
@@ -5,7 +6,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
 
 interface BookmarksDropdownProps {
     exportBookmarks: () => Promise<void>;
@@ -18,7 +18,7 @@ export function BookmarksDropdown({ exportBookmarks }: BookmarksDropdownProps) {
                 <Button
                     variant="outline"
                     size="icon"
-                    className="flex size-10 md:hidden"
+                    className="flex size-9 md:hidden"
                 >
                     <MoreVertical className="h-4 w-4" />
                 </Button>

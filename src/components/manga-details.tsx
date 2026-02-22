@@ -212,17 +212,6 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                         </div>
                     </div>
 
-                    {manga.alternativeTitles &&
-                        manga.alternativeTitles.length > 0 && (
-                            <div className="border-b pb-4 mb-4 flex flex-row lg:hidden justify-between items-center">
-                                <span className="px-1 rounded opacity-70">
-                                    {manga.alternativeTitles
-                                        .map((name: string) => name.trim())
-                                        .join(" | ")}
-                                </span>
-                            </div>
-                        )}
-
                     {/* Middle section grows as needed */}
                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}

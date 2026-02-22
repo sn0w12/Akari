@@ -152,7 +152,7 @@ export default function PageReader({
                     {/* Spacer for 1/3 of available space at the top */}
                     <div className="flex-1"></div>
                     {/* Content container: image or end-of-manga, no shrinking/growing */}
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0" onClick={handleClick}>
                         {chapter.images[currentPage] && (
                             <Image
                                 src={chapter.images[currentPage]}
@@ -174,7 +174,6 @@ export default function PageReader({
                                 unoptimized={true}
                                 preload={true}
                                 fetchPriority="high"
-                                onClick={handleClick}
                             />
                         )}
                         <EndOfManga

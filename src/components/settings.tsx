@@ -147,6 +147,7 @@ export default function SettingsPage() {
                     collapsible={Object.keys(groupData.subgroups).length > 0}
                     defaultCollapsed={false}
                     onClick={() => {
+                        if (typeof window === "undefined") return;
                         const el = document.getElementById(
                             `settings-section-${groupName}`,
                         );
@@ -166,6 +167,7 @@ export default function SettingsPage() {
                                 key={subgroupPath}
                                 label={subgroupPath}
                                 onClick={() => {
+                                    if (typeof window === "undefined") return;
                                     const el = document.getElementById(
                                         `settings-subsection-${groupName}__${subgroupPath}`,
                                     );
@@ -512,51 +514,30 @@ export default function SettingsPage() {
                                                                                             key={
                                                                                                 key
                                                                                             }
-                                                                                            className={`space-y-2 ${
-                                                                                                isFullWidth
-                                                                                                    ? "col-span-full"
-                                                                                                    : ""
-                                                                                            }`}
                                                                                         >
-                                                                                            <div className="flex flex-col space-y-1">
-                                                                                                <Label
-                                                                                                    htmlFor={
+                                                                                            {setting.type ===
+                                                                                            "custom-render" ? (
+                                                                                                customRenderers[
+                                                                                                    key as keyof typeof customRenderers
+                                                                                                ]
+                                                                                            ) : (
+                                                                                                <SettingsInput
+                                                                                                    settingKey={
                                                                                                         key
                                                                                                     }
-                                                                                                    className="font-medium"
-                                                                                                >
-                                                                                                    {
-                                                                                                        setting.label
+                                                                                                    setting={
+                                                                                                        setting as Setting
                                                                                                     }
-                                                                                                </Label>
-                                                                                                {setting.description && (
-                                                                                                    <p className="text-muted-foreground text-xs">
-                                                                                                        {
-                                                                                                            setting.description
-                                                                                                        }
-                                                                                                    </p>
-                                                                                                )}
-                                                                                            </div>
-                                                                                            <div className="mt-1">
-                                                                                                {setting.type ===
-                                                                                                "custom-render" ? (
-                                                                                                    customRenderers[
-                                                                                                        key as keyof typeof customRenderers
-                                                                                                    ]
-                                                                                                ) : (
-                                                                                                    <SettingsInput
-                                                                                                        settingKey={
-                                                                                                            key
-                                                                                                        }
-                                                                                                        setting={
-                                                                                                            setting as Setting
-                                                                                                        }
-                                                                                                        settingsMap={
-                                                                                                            settingsMap
-                                                                                                        }
-                                                                                                    />
-                                                                                                )}
-                                                                                            </div>
+                                                                                                    settingsMap={
+                                                                                                        settingsMap
+                                                                                                    }
+                                                                                                    className={
+                                                                                                        isFullWidth
+                                                                                                            ? "col-span-full"
+                                                                                                            : ""
+                                                                                                    }
+                                                                                                />
+                                                                                            )}
                                                                                         </div>
                                                                                     );
                                                                                 },
