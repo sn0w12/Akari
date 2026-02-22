@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
+import { compressUUIDBase58 } from "@/lib/uuid";
 import {
     closestCenter,
     DndContext,
@@ -30,7 +31,6 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { Avatar } from "../ui/avatar";
 import { ListCommand } from "./list-command";
 import { ListSkeleton } from "./list-skeleton";
-import { compressUUIDBase58 } from "@/lib/uuid";
 
 function Entry({
     entry,
@@ -344,10 +344,16 @@ export function ListComponent({ id }: { id: string }) {
 
                 <div className="flex flex-col md:flex-row gap-2 items-end">
                     {isOwner && <ListCommand listId={id} />}
-                    <Button variant="outline" size="sm" onClick={handleShare}>
-                        <Share />
-                        Share
-                    </Button>
+                    {data.isPublic && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleShare}
+                        >
+                            <Share />
+                            Share
+                        </Button>
+                    )}
                 </div>
             </div>
             <DndContext
