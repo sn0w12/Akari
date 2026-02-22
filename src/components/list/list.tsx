@@ -23,13 +23,14 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { GripVertical, X } from "lucide-react";
+import { GripVertical, Share, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { Avatar } from "../ui/avatar";
 import { ListCommand } from "./list-command";
 import { ListSkeleton } from "./list-skeleton";
+import { compressUUIDBase58 } from "@/lib/uuid";
 
 function Entry({
     entry,
@@ -317,22 +318,36 @@ export function ListComponent({ id }: { id: string }) {
         });
     }
 
+    function handleShare() {
+        const compressedId = compressUUIDBase58(id);
+        const url = `${window.location.origin}/l/${compressedId}`;
+        navigator.clipboard.writeText(url);
+        new Toast("Share URL copied to clipboard", "success");
+    }
+
     return (
         <div className="px-4 pb-4 pt-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold">{data.title}</h1>
+                    <div className="flex flex-col md:flex-row md:gap-2">
+                        <h1 className="text-2xl font-bold">{data.title}</h1>
+                        <Link
+                            href={`/user/${data.user.userId}`}
+                            className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
+                        >
+                            <Avatar name={data.user.username} size={32} />
+                            {data.user.displayName}
+                        </Link>
+                    </div>
                     <p className="text-muted-foreground">{data.description}</p>
                 </div>
-                <div className="flex flex-col-reverse md:flex-row gap-2 items-end">
+
+                <div className="flex flex-col md:flex-row gap-2 items-end">
                     {isOwner && <ListCommand listId={id} />}
-                    <Link
-                        href={`/user/${data.user.userId}`}
-                        className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
-                    >
-                        <Avatar name={data.user.username} size={32} />
-                        {data.user.displayName}
-                    </Link>
+                    <Button variant="outline" size="sm" onClick={handleShare}>
+                        <Share />
+                        Share
+                    </Button>
                 </div>
             </div>
             <DndContext

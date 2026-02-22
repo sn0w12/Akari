@@ -78,7 +78,7 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                 onClick={() => setOpen(true)}
                 disabled={disabled}
             >
-                <Plus className="h-4 w-4" />
+                <Plus />
                 Add manga
             </Button>
             <CommandDialog
