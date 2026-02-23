@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { ConfirmDialog } from "@/components/ui/confirm";
+import * as React from "react";
 
 interface ConfirmOptions {
     title: string;
@@ -29,31 +29,30 @@ export function useConfirm() {
 
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = React.useState(false);
-    const [options, setOptions] = React.useState<ConfirmOptions>({
-        title: "",
-        description: "",
-        variant: "default",
-    });
+    const [options, setOptions] = React.useState<ConfirmOptions | null>(null);
 
-    const [resolveRef, setResolveRef] = React.useState<
-        (value: boolean) => void
-    >(() => () => {});
+    const resolveRef = React.useRef<(value: boolean) => void>(() => {});
 
-    const confirm = React.useCallback((options: ConfirmOptions) => {
-        setOptions(options);
+    const confirm = React.useCallback((opts: ConfirmOptions) => {
+        setOptions(opts);
         setIsOpen(true);
+
         return new Promise<boolean>((resolve) => {
-            setResolveRef(() => resolve);
+            resolveRef.current = resolve;
         });
     }, []);
 
     const handleConfirm = React.useCallback(() => {
-        resolveRef(true);
-    }, [resolveRef]);
+        setIsOpen(false);
+        resolveRef.current(true);
+        setOptions(null);
+    }, []);
 
     const handleCancel = React.useCallback(() => {
-        resolveRef(false);
-    }, [resolveRef]);
+        setIsOpen(false);
+        resolveRef.current(false);
+        setOptions(null);
+    }, []);
 
     return (
         <ConfirmContext.Provider value={{ confirm }}>
@@ -61,11 +60,11 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
             <ConfirmDialog
                 open={isOpen}
                 onOpenChange={setIsOpen}
-                title={options.title}
-                description={options.description}
-                confirmText={options.confirmText ?? "Confirm"}
-                cancelText={options.cancelText ?? "Cancel"}
-                variant={options.variant}
+                title={options?.title ?? ""}
+                description={options?.description ?? ""}
+                confirmText={options?.confirmText ?? "Confirm"}
+                cancelText={options?.cancelText ?? "Cancel"}
+                variant={options?.variant ?? "default"}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
