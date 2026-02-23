@@ -17,7 +17,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
@@ -27,7 +27,7 @@ import { Badge } from "../ui/badge";
 export function ListSelector({ mangaId }: { mangaId: string }) {
     const [open, setOpen] = React.useState(false);
     const queryClient = useQueryClient();
-    const { user } = useUser();
+    const { data: user } = useUser();
     const windowWidth = useWindowWidth();
     const { data: listData } = useQuery({
         queryKey: ["user-lists"],

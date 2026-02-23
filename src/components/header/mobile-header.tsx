@@ -1,7 +1,6 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
-import { useUser } from "@/contexts/user-context";
 import {
     BookmarkIcon,
     HomeIcon,
@@ -13,11 +12,12 @@ import {
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../ui/sidebar";
 import { TabBar, TabBarList, TabBarTrigger } from "../ui/tab-bar";
+import { useUser } from "@/hooks/use-user";
 
 export function MobileHeader() {
     const { toggleSidebar } = useSidebar();
     const { borderClass } = useBorderColor();
-    const { user } = useUser();
+    const { data: user } = useUser();
     const pathname = usePathname();
 
     return (

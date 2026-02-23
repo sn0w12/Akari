@@ -7,7 +7,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { Edit, Flag, MoreVertical, Trash } from "lucide-react";
 
 interface CommentMenuProps {
@@ -29,7 +29,7 @@ export function CommentMenu({
     showReplyForm,
     isEditing,
 }: CommentMenuProps) {
-    const { user } = useUser();
+    const { data: user } = useUser();
 
     return (
         <DropdownMenu>

@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
-import { useUser } from "@/contexts/user-context";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
@@ -31,6 +30,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { Avatar } from "../ui/avatar";
 import { ListCommand } from "./list-command";
 import { ListSkeleton } from "./list-skeleton";
+import { useUser } from "@/hooks/use-user";
 
 function Entry({
     entry,
@@ -186,7 +186,7 @@ function SortableEntry({
 }
 
 export function ListComponent({ id }: { id: string }) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["list", id],
         queryFn: async () => {

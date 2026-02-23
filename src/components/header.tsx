@@ -8,14 +8,14 @@ import { useSetting, useSettingsChange } from "@/lib/settings";
 import { useEffect } from "react";
 import Toast from "@/lib/toast-wrapper";
 import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 
 interface HeaderProps {
     notification: string;
 }
 
 export function HeaderComponent({ notification }: HeaderProps) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { setTheme } = useTheme();
     const windowWidth = useWindowWidth();
     const validNotifs = useSetting("groupLoginToasts") as string[];

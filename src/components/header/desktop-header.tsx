@@ -11,12 +11,12 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { inPreview } from "@/config";
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { useUser } from "@/contexts/user-context";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
 import SearchBar from "./search/search-bar";
+import { useUser } from "@/hooks/use-user";
 
 interface HeaderProps {
     notification: string;
@@ -24,7 +24,7 @@ interface HeaderProps {
 
 export function DesktopHeader({ notification }: HeaderProps) {
     const pathname = usePathname();
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { overrides } = useBreadcrumb();
     const { borderClass } = useBorderColor();
     const [segments, setSegments] = useState<string[]>([]);

@@ -14,7 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,7 @@ async function getUserScore(mangaId: string): Promise<number | null> {
 }
 
 export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const queryClient = useQueryClient();
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [hoveredFill, setHoveredFill] = useState<0 | 0.5 | 1>(0);

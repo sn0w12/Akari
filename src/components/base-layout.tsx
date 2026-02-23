@@ -11,7 +11,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useBorderColor } from "@/contexts/border-color-context";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { GENRE_CATEGORIES } from "@/lib/api/search";
 import { fetchNotification } from "@/lib/manga/bookmarks";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
@@ -54,7 +54,7 @@ export function BaseLayout({
     gutter?: boolean;
 }) {
     const router = useRouter();
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { state: sidebarState } = useSidebar();
     const { borderClass } = useBorderColor();
     const isSidebarCollapsed = sidebarState === "collapsed";

@@ -1,14 +1,14 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { X } from "lucide-react";
-import { useUser } from "@/contexts/user-context";
+import { Card, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
+import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { X } from "lucide-react";
+import Link from "next/link";
 
 interface ListItemProps {
     list: components["schemas"]["UserMangaListResponse"];
@@ -16,7 +16,7 @@ interface ListItemProps {
 }
 
 export function ListItem({ list, onDelete }: ListItemProps) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { confirm } = useConfirm();
 
     async function deleteList(listId: string) {
