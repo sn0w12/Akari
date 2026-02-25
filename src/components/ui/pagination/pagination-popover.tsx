@@ -5,10 +5,10 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { NumberInput } from "@/components/ui/input";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "../popover-drawer";
 
 interface JumpToPagePopoverProps {
     currentPage: number;
@@ -45,8 +45,8 @@ export function JumpToPagePopover({
     };
 
     return (
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
+        <PopoverDrawer open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+            <PopoverDrawerTrigger>
                 <Button
                     variant="default"
                     size="sm"
@@ -56,8 +56,12 @@ export function JumpToPagePopover({
                 >
                     {currentPage}
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-42 p-2" align="center" side="top">
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent
+                popoverClassName="w-42 p-2"
+                popoverAlign="center"
+                popoverSide="top"
+            >
                 <div className="space-y-2">
                     <p className="text-xs text-muted-foreground text-center">
                         Jump to page
@@ -71,7 +75,7 @@ export function JumpToPagePopover({
                             onChange={(e) => setJumpToPage(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Page"
-                            className="h-7 text-xs rounded-r-none"
+                            className="h-7 md:text-xs rounded-r-none"
                             wrapperClassName="flex-1"
                             autoFocus
                         />
@@ -89,7 +93,7 @@ export function JumpToPagePopover({
                         </Button>
                     </div>
                 </div>
-            </PopoverContent>
-        </Popover>
+            </PopoverDrawerContent>
+        </PopoverDrawer>
     );
 }
