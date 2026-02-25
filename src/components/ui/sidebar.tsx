@@ -672,7 +672,6 @@ function SidebarMenuButton({
 }
 
 function SidebarMenuLink({
-    asChild = false,
     isActive = false,
     variant = "default",
     size = "default",
@@ -684,14 +683,12 @@ function SidebarMenuLink({
     prefetch,
     ...props
 }: React.ComponentProps<"a"> & {
-    asChild?: boolean;
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href: string;
     labelClassName?: string;
     prefetch?: boolean;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-    const Comp = asChild ? Slot : Link;
     const {
         isMobile,
         state,
@@ -714,7 +711,7 @@ function SidebarMenuLink({
     );
 
     const link = (
-        <Comp
+        <Link
             data-slot="sidebar-menu-link"
             data-sidebar="menu-button"
             data-size={size}
@@ -735,7 +732,7 @@ function SidebarMenuLink({
             {...props}
         >
             {wrappedChildren}
-        </Comp>
+        </Link>
     );
 
     if (!tooltip) {
