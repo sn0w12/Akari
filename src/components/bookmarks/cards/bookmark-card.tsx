@@ -47,6 +47,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                 <Link
                                     className="hover:underline"
                                     href={`/manga/${bookmark.mangaId}`}
+                                    prefetch={false}
                                 >
                                     <h3 className="line-clamp-2 flex-1 text-lg font-semibold leading-snug">
                                         {bookmark.title}
@@ -116,6 +117,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     variant="secondary"
                     size="sm"
                     className="flex-1 group"
+                    prefetch={false}
                 >
                     <p className="hidden md:inline">Continue Reading • </p>
                     Ch. {bookmark.nextChapter.number}
