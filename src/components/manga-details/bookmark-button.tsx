@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/contexts/user-context";
 import {
     bookmarkManga,
     checkIfBookmarked,
@@ -15,6 +14,7 @@ import { Bookmark } from "lucide-react";
 import React, { useState } from "react";
 import { ButtonConfirmDialog } from "../ui/confirm";
 import Spinner from "../ui/puff-loader";
+import { useUser } from "@/hooks/use-user";
 
 interface BookmarkButtonProps {
     mangaId: string;
@@ -28,7 +28,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const [hovered, setHovered] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
-    const { user } = useUser();
+    const { data: user } = useUser();
 
     const {
         data: isBookmarked,

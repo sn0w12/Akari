@@ -1,4 +1,4 @@
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { User } from "lucide-react";
 import router from "next/router";
@@ -11,7 +11,7 @@ export function AccountButton({
 }: {
     sidebarCollapsed: boolean;
 }) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const openAccount = useSetting("openAccount");
     useShortcutSetting("openAccount", () => router.push("/account"), {
         preventDefault: true,

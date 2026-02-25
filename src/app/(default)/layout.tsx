@@ -11,7 +11,6 @@ import { BorderColorProvider } from "@/contexts/border-color-context";
 import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { ConfirmProvider } from "@/contexts/confirm-context";
 import { DeviceProvider } from "@/contexts/device-context";
-import { UserProvider } from "@/contexts/user-context";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 
@@ -97,7 +96,6 @@ export default async function RootLayout({
                         >
                             <ConfirmProvider>
                                 <QueryProvider>
-                                    <UserProvider>
                                         <BreadcrumbProvider>
                                             <BorderColorProvider>
                                                 <BaseLayout gutter={true}>
@@ -113,7 +111,6 @@ export default async function RootLayout({
                                                 </BaseLayout>
                                             </BorderColorProvider>
                                         </BreadcrumbProvider>
-                                    </UserProvider>
                                 </QueryProvider>
                             </ConfirmProvider>
                         </SidebarProvider>

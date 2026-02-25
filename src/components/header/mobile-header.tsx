@@ -1,7 +1,7 @@
 "use client";
 
 import { useBorderColor } from "@/contexts/border-color-context";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import {
     BookmarkIcon,
     HomeIcon,
@@ -17,7 +17,7 @@ import { TabBar, TabBarList, TabBarTrigger } from "../ui/tab-bar";
 export function MobileHeader() {
     const { toggleSidebar } = useSidebar();
     const { borderClass } = useBorderColor();
-    const { user } = useUser();
+    const { data: user } = useUser();
     const pathname = usePathname();
 
     return (
@@ -68,6 +68,7 @@ export function MobileHeader() {
                         href="/bookmarks"
                         active={pathname === "/bookmarks"}
                         className={borderClass}
+                        prefetch={false}
                     >
                         <BookmarkIcon className="size-6" />
                     </TabBarTrigger>

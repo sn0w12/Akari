@@ -125,29 +125,33 @@ export default function PageProgress({
                 />
                 <div
                     className={cn(
-                        "relative flex lg:flex-col h-full w-full gap-0 md:gap-1 p-0.5",
+                        "relative flex lg:flex-col h-full w-full gap-0 p-0.5",
                         readingDir === "rtl" ? "flex-row-reverse" : "flex-row",
+                        {
+                            "md:gap-1": totalPages <= 100,
+                        },
                     )}
                 >
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
                             onClick={(e) => handleClick(index, e)}
-                            className={cn(
-                                "flex-1 transition-colors md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]",
-                                {
-                                    "bg-accent-positive hover:bg-accent-positive/70":
-                                        index === currentPage,
-                                    "bg-primary hover:bg-primary/80":
-                                        index < currentPage,
-                                    "bg-primary/30 hover:bg-primary/50":
-                                        index > currentPage,
-                                    "first:rounded-l-sm last:rounded-r-sm":
-                                        readingDir === "ltr",
-                                    "first:rounded-r-sm last:rounded-l-sm":
-                                        readingDir === "rtl",
-                                },
-                            )}
+                            className={cn("flex-1 transition-colors", {
+                                "bg-accent-positive hover:bg-accent-positive/70":
+                                    index === currentPage,
+                                "bg-primary hover:bg-primary/80":
+                                    index < currentPage,
+                                "bg-primary/30 hover:bg-primary/50":
+                                    index > currentPage,
+                                "first:rounded-l-sm last:rounded-r-sm":
+                                    readingDir === "ltr" && totalPages <= 100,
+                                "first:rounded-r-sm last:rounded-l-sm":
+                                    readingDir === "rtl" && totalPages <= 100,
+                                "md:first:rounded-t-[3px] md:last:rounded-b-[3px]":
+                                    totalPages > 100,
+                                "md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]":
+                                    totalPages <= 100,
+                            })}
                             aria-label={`Go to page ${index + 1}`}
                         />
                     ))}

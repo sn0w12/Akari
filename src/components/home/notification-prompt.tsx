@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { registerAndSubscribe } from "@/lib/notifications/subscribe";
 import { useStorage } from "@/lib/storage";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function NotificationPrompt() {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const [isVisible, setIsVisible] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const storage = useStorage("pushNotifications");

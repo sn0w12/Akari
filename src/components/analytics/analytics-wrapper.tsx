@@ -1,7 +1,7 @@
 "use client";
 
 import { useDevice } from "@/contexts/device-context";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { useSetting } from "@/lib/settings";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -48,7 +48,7 @@ export function generalizePathname(pathname: string): string {
 }
 
 export function AnalyticsWrapper() {
-    const { user, isLoading } = useUser();
+    const { data: user, isLoading } = useUser();
     const allowAnalytics = useSetting("allowAnalytics");
     const pathname = usePathname();
     const device = useDevice();

@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -13,9 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/contexts/user-context";
+import { useState } from "react";
 import { Providers } from "./auth/oauth";
 
 export function LoginForm({
@@ -26,7 +26,7 @@ export function LoginForm({
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const { refreshUser } = useUser();
+    const queryClient = useQueryClient();
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ export function LoginForm({
                 password,
             });
             if (error) throw error;
-            await refreshUser();
+            queryClient.invalidateQueries({ queryKey: ["user"] });
             router.push("/account");
         } catch (error: unknown) {
             setError(

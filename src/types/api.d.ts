@@ -1386,10 +1386,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get user lists
-         * @description *Authentication is optional for this endpoint.*
-         */
+        /** Get user lists */
         get: {
             parameters: {
                 query?: {
@@ -1442,10 +1439,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get list with entries
-         * @description *Authentication is optional for this endpoint.*
-         */
+        /** Get list with entries */
         get: {
             parameters: {
                 query?: never;
@@ -2828,6 +2822,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/manga/rate/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Batch rate multiple manga */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The request containing manga IDs and their ratings. */
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["BatchRateMangaRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StringSuccessResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/manga/mal/{id}": {
         parameters: {
             query?: never;
@@ -4122,6 +4184,15 @@ export interface components {
         };
         BatchGetMangaRequest: {
             malIds: number[];
+        };
+        BatchRateMangaItem: {
+            /** Format: uuid */
+            mangaId: string;
+            /** Format: int32 */
+            rating: number;
+        };
+        BatchRateMangaRequest: {
+            ratings: components["schemas"]["BatchRateMangaItem"][];
         };
         BatchUpdateBookmarkItem: {
             /** Format: uuid */

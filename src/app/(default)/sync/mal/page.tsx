@@ -183,15 +183,45 @@ export default function SyncMalPage() {
             const batch = malDataToSync
                 .slice(i, i + batchSize)
                 .map((item) => item.node.id);
+            const bookmarkRatings = bookmarks
+                .filter(
+                    (bookmark) =>
+                        bookmark.malId && batch.includes(bookmark.malId),
+                )
+                .map((bookmark) => {
+                    const malItem = malData.find(
+                        (item) => item.node.id === bookmark.malId,
+                    );
+                    return {
+                        mangaId: bookmark.mangaId,
+                        rating: malItem?.listStatus?.score,
+                    };
+                })
+                .filter(
+                    (item): item is { mangaId: string; rating: number } =>
+                        typeof item.rating === "number" && item.rating > 0,
+                );
 
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             const { data, error } = await client.POST("/v2/manga/mal/batch", {
                 body: { malIds: batch },
             });
+            const { data: ratingData, error: ratingError } = await client.POST(
+                "/v2/manga/rate/batch",
+                {
+                    body: { ratings: bookmarkRatings },
+                },
+            );
 
             if (error || !data) {
                 console.error("Error fetching manga batch:", error);
+                errorCount++;
+                continue;
+            }
+
+            if (ratingError || !ratingData) {
+                console.error("Error rating manga batch:", ratingError);
                 errorCount++;
                 continue;
             }

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import Toast from "@/lib/toast-wrapper";
 import { cn, formatRelativeDate } from "@/lib/utils";
@@ -25,6 +25,7 @@ interface ChaptersControlsProps {
     onSortChange: (order: "asc" | "desc") => void;
     isLoading: boolean;
     latestData: components["schemas"]["LastReadResponse"] | undefined | null;
+    firstChapterNumber: number;
 }
 
 function ChaptersControls({
@@ -34,8 +35,9 @@ function ChaptersControls({
     onSortChange,
     isLoading,
     latestData,
+    firstChapterNumber,
 }: ChaptersControlsProps) {
-    const { user, isLoading: isUserLoading } = useUser();
+    const { data: user, isLoading: isUserLoading } = useUser();
 
     return (
         <div className="flex gap-2 w-full md:w-auto pointer-events-auto">
@@ -51,7 +53,7 @@ function ChaptersControls({
                 </Button>
             ) : (
                 <ButtonLink
-                    href={`/manga/${mangaId}/first`}
+                    href={`/manga/${mangaId}/${firstChapterNumber}`}
                     className="flex-1 md:w-40"
                 >
                     Go to First Chapter
@@ -71,7 +73,7 @@ function ChaptersControls({
 }
 
 export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
-    const { user } = useUser();
+    const { data: user } = useUser();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -137,6 +139,7 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                     onSortChange={setSortOrder}
                     isLoading={isLoading}
                     latestData={data}
+                    firstChapterNumber={chapters[chapters.length - 1].number}
                 />
             </div>
 

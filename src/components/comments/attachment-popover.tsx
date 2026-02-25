@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover-drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConfirm } from "@/contexts/confirm-context";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
 import Toast from "@/lib/toast-wrapper";
@@ -133,7 +133,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const [favorites, setFavorites] = useState<string[]>([]);
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { user } = useUser();
+    const { data: user } = useUser();
     const { confirm } = useConfirm();
 
     // Load favorites from storage
@@ -217,33 +217,38 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     });
 
     // Fetch favorite uploads from API
-    const { data: favoriteUploads = [], isLoading: isLoadingFavorites } = useQuery({
-        queryKey: ["favorite-uploads", favorites],
-        queryFn: async () => {
-            if (favorites.length === 0) return [];
+    const { data: favoriteUploads = [], isLoading: isLoadingFavorites } =
+        useQuery({
+            queryKey: ["favorite-uploads", favorites],
+            queryFn: async () => {
+                if (favorites.length === 0) return [];
 
-            const { data, error } = await client.POST("/v2/uploads/batch", {
-                body: { ids: favorites },
-            });
+                const { data, error } = await client.POST("/v2/uploads/batch", {
+                    body: { ids: favorites },
+                });
 
-            if (error || !data?.data) return [];
+                if (error || !data?.data) return [];
 
-            // Filter out deleted attachments
-            const validUploads = data.data.filter(upload => !upload.deleted);
-            const validIds = validUploads.map(upload => upload.id);
+                // Filter out deleted attachments
+                const validUploads = data.data.filter(
+                    (upload) => !upload.deleted,
+                );
+                const validIds = validUploads.map((upload) => upload.id);
 
-            // Check if any favorites were deleted and update storage
-            const deletedIds = favorites.filter(id => !validIds.includes(id));
-            if (deletedIds.length > 0) {
-                const storage = StorageManager.get("favoriteAttachments");
-                storage.set({ ids: validIds });
-                setFavorites(validIds);
-            }
+                // Check if any favorites were deleted and update storage
+                const deletedIds = favorites.filter(
+                    (id) => !validIds.includes(id),
+                );
+                if (deletedIds.length > 0) {
+                    const storage = StorageManager.get("favoriteAttachments");
+                    storage.set({ ids: validIds });
+                    setFavorites(validIds);
+                }
 
-            return validUploads;
-        },
-        enabled: open && favorites.length > 0,
-    });
+                return validUploads;
+            },
+            enabled: open && favorites.length > 0,
+        });
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();

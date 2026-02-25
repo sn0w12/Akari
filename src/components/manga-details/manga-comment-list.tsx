@@ -2,7 +2,7 @@
 
 import type { CommentData, VoteType } from "@/components/comments/comment";
 import { CommentList } from "@/components/comments/comment-list";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -56,7 +56,7 @@ export function MangaCommentList({
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
             initialComments,
         );
-    const { user } = useUser();
+    const { data: user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
 
     const handleSortChange = (

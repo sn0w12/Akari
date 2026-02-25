@@ -1,15 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ButtonConfirmDialog } from "../ui/confirm";
-import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { logOut } from "@/lib/auth/akari";
-import { useUser } from "@/contexts/user-context";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
     user,
@@ -17,11 +17,11 @@ export function UserProfile({
     user: components["schemas"]["UserResponse"];
 }) {
     const router = useRouter();
-    const { refreshUser } = useUser();
+    const queryClient = useQueryClient();
 
     const handleLogout = async () => {
         await logOut(SECONDARY_ACCOUNTS);
-        refreshUser();
+        queryClient.invalidateQueries({ queryKey: ["user"] });
         router.push("/");
     };
 

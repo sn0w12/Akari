@@ -40,7 +40,13 @@
     "shortcuts": [
         {
             "name": "Bookmarks",
-            "url": "/bookmarks"
+            "url": "/bookmarks",
+            "icons": [
+                {
+                    "src": "/img/icons/bookmark.png",
+                    "sizes": "192x192"
+                }
+            ]
         }
     ],
     "screenshots": [
