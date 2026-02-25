@@ -40,7 +40,13 @@
     "shortcuts": [
         {
             "name": "Bookmarks",
-            "url": "/bookmarks"
+            "url": "https://akarimanga.dpdns.org/bookmarks",
+            "icons": [
+                {
+                    "src": "https://akarimanga.dpdns.org/img/icons/bookmark.png",
+                    "sizes": "192x192"
+                }
+            ]
         }
     ],
     "screenshots": [
