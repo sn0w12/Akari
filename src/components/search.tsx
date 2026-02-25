@@ -82,7 +82,7 @@ export default function SearchPage() {
             params.set("excludedTypes", filters.excludedTypes.join(","));
         if (filters.sort !== "search") params.set("sort", filters.sort);
 
-        router.replace(`/search?${params.toString()}`);
+        window.history.replaceState(null, "", `/search?${params.toString()}`);
     }, [searchQuery, currentPage, filters, router]);
 
     const { data: searchData, isLoading } = useQuery({
