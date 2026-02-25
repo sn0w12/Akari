@@ -66,7 +66,6 @@ export function MangaCard({
     }, [updateDirection]);
 
     const handleMouseEnter = () => {
-        router.prefetch(`/manga/${manga.id}`);
         if (isMobile) return;
 
         // Clear any pending collapse timeout
@@ -92,6 +91,7 @@ export function MangaCard({
         setUseFixedHeight(true);
         expandTimeoutRef.current = setTimeout(() => {
             setShouldExpand(true);
+            router.prefetch(`/manga/${manga.id}`);
         }, 300);
     };
 
