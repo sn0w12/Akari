@@ -44,6 +44,7 @@ export default function SyncAniPage() {
             const aniListUserStorage = StorageManager.get("aniListUser");
             const userName = aniListUserStorage.get()?.name;
             if (!userName) {
+                console.error("No AniList username found in storage");
                 setAniLoading(false);
                 return;
             }
@@ -159,15 +160,45 @@ export default function SyncAniPage() {
             const batch = aniDataToSync
                 .slice(i, i + batchSize)
                 .map((item) => item.media.id);
+            const bookmarkRatings = bookmarks
+                .filter(
+                    (bookmark) =>
+                        bookmark.aniId && batch.includes(bookmark.aniId),
+                )
+                .map((bookmark) => {
+                    const aniItem = aniData.find(
+                        (item) => item.media.id === bookmark.aniId,
+                    );
+                    return {
+                        mangaId: bookmark.mangaId,
+                        rating: aniItem?.score,
+                    };
+                })
+                .filter(
+                    (item): item is { mangaId: string; rating: number } =>
+                        typeof item.rating === "number" && item.rating > 0,
+                );
 
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             const { data, error } = await client.POST("/v2/manga/ani/batch", {
                 body: { aniIds: batch },
             });
+            const { data: ratingData, error: ratingError } = await client.POST(
+                "/v2/manga/rate/batch",
+                {
+                    body: { ratings: bookmarkRatings },
+                },
+            );
 
             if (error || !data) {
                 console.error("Error fetching manga batch:", error);
+                errorCount++;
+                continue;
+            }
+
+            if (ratingError || !ratingData) {
+                console.error("Error rating manga batch:", ratingError);
                 errorCount++;
                 continue;
             }
