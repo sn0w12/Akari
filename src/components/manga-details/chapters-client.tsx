@@ -25,6 +25,7 @@ interface ChaptersControlsProps {
     onSortChange: (order: "asc" | "desc") => void;
     isLoading: boolean;
     latestData: components["schemas"]["LastReadResponse"] | undefined | null;
+    firstChapterNumber: number;
 }
 
 function ChaptersControls({
@@ -34,6 +35,7 @@ function ChaptersControls({
     onSortChange,
     isLoading,
     latestData,
+    firstChapterNumber,
 }: ChaptersControlsProps) {
     const { data: user, isLoading: isUserLoading } = useUser();
 
@@ -51,7 +53,7 @@ function ChaptersControls({
                 </Button>
             ) : (
                 <ButtonLink
-                    href={`/manga/${mangaId}/first`}
+                    href={`/manga/${mangaId}/${firstChapterNumber}`}
                     className="flex-1 md:w-40"
                 >
                     Go to First Chapter
@@ -137,6 +139,7 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                     onSortChange={setSortOrder}
                     isLoading={isLoading}
                     latestData={data}
+                    firstChapterNumber={chapters[chapters.length - 1].number}
                 />
             </div>
 
