@@ -171,6 +171,7 @@ export default function SearchBar() {
                             onMouseDown={() => {
                                 shouldCloseRef.current = false;
                             }}
+                            prefetch={false}
                         >
                             {hasSearchText
                                 ? "View all results"
