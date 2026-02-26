@@ -26,7 +26,10 @@ const ErrorContext = React.createContext<ErrorContextType | undefined>(
 export function useError() {
     const context = React.useContext(ErrorContext);
     if (!context) {
-        throw new Error("useError must be used within an ErrorProvider");
+        return {
+            setError: () => {},
+            clearError: () => {},
+        };
     }
     return context;
 }
