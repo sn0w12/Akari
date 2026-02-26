@@ -286,7 +286,9 @@ export function BaseLayout({
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                     id="scroll-element"
                 >
-                    <ErrorProvider>{children}</ErrorProvider>
+                    <Suspense fallback={children}>
+                        <ErrorProvider>{children}</ErrorProvider>
+                    </Suspense>
                 </PullToRefresh>
             </div>
         </div>
