@@ -3408,6 +3408,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/notifications/website": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get visible website notifications */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WebsiteNotificationIEnumerableSuccessResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/notifications/send": {
         parameters: {
             query?: never;
@@ -5175,6 +5220,21 @@ export interface components {
         VoteCommentRequest: {
             /** Format: int32 */
             value: number;
+        };
+        WebsiteNotification: {
+            /** Format: int64 */
+            id: number;
+            title: string;
+            content: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        WebsiteNotificationIEnumerableSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["WebsiteNotification"][];
         };
     };
     responses: never;

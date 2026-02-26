@@ -2,6 +2,7 @@ import { GRID_CLASS } from "@/components/grid-page";
 import { InstallPrompt } from "@/components/home/install-prompt";
 import { NotificationPrompt } from "@/components/home/notification-prompt";
 import { PopularManga } from "@/components/home/popular-manga";
+import { RemotePrompts } from "@/components/home/remote-prompts";
 import { MangaCard } from "@/components/manga/manga-card";
 import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
@@ -62,6 +63,9 @@ export default async function Home() {
             <PromptStack>
                 <InstallPrompt />
                 <NotificationPrompt />
+                <Suspense fallback={null}>
+                    <RemotePrompts />
+                </Suspense>
             </PromptStack>
         </>
     );

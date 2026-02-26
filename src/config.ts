@@ -235,6 +235,12 @@ export const STORAGE_SCHEMAS = {
             dismissed: createField("boolean", false),
         },
     },
+    remotePrompt: {
+        key: createDynamicKey("prompt-{id}", ["id"]),
+        schema: {
+            dismissed: createField("boolean", false),
+        },
+    },
     secondaryAccountCache: {
         key: createDynamicKey("secondary-account-{accountId}", ["accountId"]),
         schema: {
