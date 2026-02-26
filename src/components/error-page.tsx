@@ -221,6 +221,8 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
                 <Link
                     className="text-foreground hover:underline"
                     href="https://github.com/sn0w12/akari/issues"
+                    target="_blank"
+                    rel="noopener noreferrer"
                 >
                     GitHub
                 </Link>
