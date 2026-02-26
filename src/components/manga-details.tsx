@@ -25,6 +25,7 @@ import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
+import ErrorPage from "./error-page";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -122,13 +123,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
     const { data, error } = await getManga(id);
 
     if (error || !data) {
-        return (
-            <div className="mx-auto p-4">
-                <p className="text-center text-muted-foreground">
-                    Failed to load manga details. Please try again later.
-                </p>
-            </div>
-        );
+        return <ErrorPage error={error} />;
     }
 
     const manga = data.data;

@@ -37,18 +37,7 @@ export async function MangaComments({ params, target }: MangaCommentsProps) {
     const { data, error } = await getMangaComments(id);
 
     if (error) {
-        return (
-            <div>
-                <h2 className="text-2xl font-bold mb-2 pb-2 border-b">
-                    Comments
-                </h2>
-                <div className="text-center py-12">
-                    <p className="text-muted-foreground">
-                        Failed to load comments. Please try again later.
-                    </p>
-                </div>
-            </div>
-        );
+        return null;
     }
 
     // Convert CommentResponse[] to CommentWithRepliesResponse[] with empty replies
