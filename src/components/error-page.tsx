@@ -216,7 +216,15 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
                 <span className="font-medium text-foreground">
                     {"What to do: "}
                 </span>
-                {info.suggestion}
+                {info.suggestion} If the issue persists, please consider
+                reporting it on{" "}
+                <Link
+                    className="text-foreground hover:underline"
+                    href="https://github.com/sn0w12/akari/issues"
+                >
+                    GitHub
+                </Link>
+                .
             </p>
 
             {/* Divider */}
