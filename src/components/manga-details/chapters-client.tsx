@@ -9,7 +9,7 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
 
@@ -121,6 +121,12 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
             });
         }, 100);
     };
+    const firstChapterNumber = useMemo(() => {
+        if (!chapters || chapters.length === 0) {
+            return 1;
+        }
+        return chapters[chapters.length - 1].number;
+    }, [chapters]);
 
     const sortedChapters = getSortedChapters();
     const totalPages = Math.ceil(sortedChapters.length / 24);
@@ -139,7 +145,7 @@ export function ChaptersSection({ mangaId, chapters }: ChaptersSectionProps) {
                     onSortChange={setSortOrder}
                     isLoading={isLoading}
                     latestData={data}
-                    firstChapterNumber={chapters[chapters.length - 1].number}
+                    firstChapterNumber={firstChapterNumber}
                 />
             </div>
 
