@@ -19,7 +19,7 @@ export function UserLists({ userId, initialData }: UserListsProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const queryClient = useQueryClient();
     const { data, isLoading } = useQuery({
-        queryKey: ["user-lists", currentPage],
+        queryKey: ["user-lists", userId, currentPage],
         initialData: currentPage === 1 ? initialData : undefined,
         refetchOnMount: false,
         queryFn: async () => {
@@ -46,7 +46,7 @@ export function UserLists({ userId, initialData }: UserListsProps) {
     });
 
     const handleDelete = () => {
-        queryClient.invalidateQueries({ queryKey: ["user-lists"] });
+        queryClient.invalidateQueries({ queryKey: ["user-lists", userId] });
     };
 
     if (isLoading || !data) {
