@@ -180,7 +180,7 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
     const info = getStatusInfo(status);
 
     return (
-        <div className="flex-1 flex flex-col justify-center mx-auto w-full max-w-lg">
+        <div className="flex-1 flex flex-col justify-center mx-auto w-full max-w-lg px-4">
             {/* Status code */}
             <div className="flex items-center gap-3 text-muted-foreground">
                 <div className="flex size-10 items-center justify-center rounded-lg bg-card text-foreground border border-border">
