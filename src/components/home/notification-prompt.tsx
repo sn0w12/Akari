@@ -4,8 +4,14 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/use-user";
 import { registerAndSubscribe } from "@/lib/notifications/subscribe";
 import { useStorage } from "@/lib/storage";
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+    Prompt,
+    PromptActions,
+    PromptContent,
+    PromptHeader,
+    PromptTitle,
+} from "../ui/prompt-stack";
 
 export function NotificationPrompt() {
     const { data: user } = useUser();
@@ -65,28 +71,21 @@ export function NotificationPrompt() {
     if (!isVisible) return null;
 
     return (
-        <div className="bg-background border rounded-lg p-4 shadow-lg w-full sm:max-w-sm">
-            <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold">Enable Notifications</h3>
-                <button
-                    onClick={handleDecline}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Close notification prompt"
-                >
-                    <X size={20} />
-                </button>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">
+        <Prompt>
+            <PromptHeader onDecline={handleDecline}>
+                <PromptTitle>Enable Notifications</PromptTitle>
+            </PromptHeader>
+            <PromptContent>
                 Would you like to receive push notifications for new chapters?
-            </p>
-            <div className="flex gap-2">
+            </PromptContent>
+            <PromptActions>
                 <Button onClick={handleEnable} disabled={isProcessing}>
                     Enable Notifications
                 </Button>
                 <Button variant="ghost" onClick={handleDecline}>
                     No thanks
                 </Button>
-            </div>
-        </div>
+            </PromptActions>
+        </Prompt>
     );
 }
