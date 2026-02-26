@@ -61,7 +61,7 @@ async function getUserData(userId: string) {
     return { data, error: null };
 }
 
-const ROLE_VARIANT_MAP: Record<
+export const ROLE_VARIANT_MAP: Record<
     components["schemas"]["UserRole"],
     BadgeVariantProps["variant"]
 > = {

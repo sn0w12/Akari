@@ -3963,6 +3963,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a paginated list of users */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The page number (1-based). */
+                    page?: number;
+                    /** @description The number of items per page. */
+                    pageSize?: number;
+                    /** @description The field to sort by. */
+                    sortBy?: components["schemas"]["UserSortBy"];
+                    /** @description The sort direction. */
+                    sortDirection?: components["schemas"]["SortDirection"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserProfileDetailsResponsePaginatedResponseSuccessResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/user/{userId}": {
         parameters: {
             query?: never;
@@ -4830,6 +4884,8 @@ export interface components {
             userName: string;
             displayName: string;
         };
+        /** @enum {string} */
+        SortDirection: "Ascending" | "Descending";
         StringSuccessResponse: {
             /** @enum {string} */
             result: "Success";
@@ -5069,6 +5125,24 @@ export interface components {
             /** Format: int64 */
             totalLists: number;
         };
+        UserProfileDetailsResponsePaginatedResponse: {
+            items: components["schemas"]["UserProfileDetailsResponse"][];
+            /** Format: int32 */
+            totalItems: number;
+            /** Format: int32 */
+            currentPage: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            readonly totalPages: number;
+        };
+        UserProfileDetailsResponsePaginatedResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["UserProfileDetailsResponsePaginatedResponse"];
+        };
         UserProfileDetailsResponseSuccessResponse: {
             /** @enum {string} */
             result: "Success";
@@ -5093,6 +5167,8 @@ export interface components {
         };
         /** @enum {string} */
         UserRole: "user" | "admin" | "moderator" | "owner";
+        /** @enum {string} */
+        UserSortBy: "CreatedAt" | "Username" | "TotalComments" | "TotalUpvotes" | "TotalBookmarks" | "TotalUploads" | "TotalLists";
         ViewMangaRequest: {
             saveUserId?: boolean;
         };
