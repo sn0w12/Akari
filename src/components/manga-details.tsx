@@ -175,7 +175,10 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             {manga.alternativeTitles &&
                                 manga.alternativeTitles.length > 0 && (
                                     <Tooltip>
-                                        <TooltipTrigger className="hidden lg:block">
+                                        <TooltipTrigger
+                                            className="hidden lg:block"
+                                            aria-label="Alternative Names"
+                                        >
                                             <InfoIcon className="w-5 h-5" />
                                         </TooltipTrigger>
                                         <TooltipContent side="bottom">
