@@ -91,8 +91,7 @@ export function generateSizes(options: {
     // Add min-width conditions from largest to smallest (most restrictive first)
     for (const bp of breakpoints.slice().reverse()) {
         const size = options[bp.key as keyof typeof options];
-        if (size && bp.key !== "sm") {
-            // Skip 'sm' since it's the fallback
+        if (size) {
             sizes.push(`(min-width: ${bp.min}px) ${size}`);
         }
     }
