@@ -90,7 +90,7 @@ async function HomeLatest() {
 
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <MangaGrid mangaList={data.data.items} priority={2} />
             <ServerPagination
                 currentPage={1}
                 href="./latest"
@@ -142,6 +142,7 @@ async function HomeRecent() {
                     <MangaCard
                         key={manga.id}
                         manga={manga}
+                        priority={index < 2}
                         className={
                             index > 5
                                 ? "block sm:hidden lg:block 2xl:hidden"
