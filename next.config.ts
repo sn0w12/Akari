@@ -24,9 +24,6 @@ const config: NextConfig = {
             expire: 60 * 60, // 1 hour
         },
     },
-    experimental: {
-        inlineCss: true,
-    },
 };
 
 export default config;
