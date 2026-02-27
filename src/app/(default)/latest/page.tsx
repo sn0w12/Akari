@@ -57,7 +57,7 @@ async function LatestBody(props: PageProps) {
 
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
