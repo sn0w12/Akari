@@ -7,7 +7,7 @@ import {
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
-import { createMetadata } from "@/lib/seo";
+import { createMetadata, getNextPage, getPreviousPage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
@@ -19,12 +19,27 @@ interface PageProps {
     }>;
 }
 
-export const metadata: Metadata = createMetadata({
-    title: "Akari Manga",
-    description: "Read the most popular manga for free on Akari.",
-    image: "/og/popular.webp",
-    canonicalPath: "/popular",
-});
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    const { page } = await props.params;
+    const { days } = await props.searchParams;
+    const description = "Read the most popular manga for free on Akari.";
+
+    const { data } = await getPopularData(
+        page ? parseInt(page) : 1,
+        days ? parseInt(days) : 30,
+    );
+
+    return createMetadata({
+        title: "Popular Manga",
+        description: description,
+        image: "/og/popular.webp",
+        canonicalPath: `/popular/${page ? page : "1"}`,
+        pagination: {
+            next: getNextPage(`popular`, data?.data),
+            previous: getPreviousPage(`popular`, data?.data),
+        },
+    });
+}
 
 const CACHE_TIMES: Record<
     string,

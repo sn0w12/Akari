@@ -23,6 +23,9 @@ export const metadata: Metadata = createMetadata({
     description: "Read manga for free on Akari.",
     image: "/og/akari.webp",
     canonicalPath: "/",
+    pagination: {
+        next: "/latest/2",
+    }
 });
 
 export default async function Home() {

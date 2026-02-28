@@ -2,7 +2,7 @@ import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
-import { createMetadata } from "@/lib/seo";
+import { createMetadata, getNextPage, getPreviousPage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -10,12 +10,23 @@ interface PageProps {
     params: Promise<{ page?: string }>;
 }
 
-export const metadata: Metadata = createMetadata({
-    title: "Latest Releases",
-    description: "Read the latest manga releases for free on Akari.",
-    image: "/og/akari.webp",
-    canonicalPath: "/latest",
-});
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    const { page } = await props.params;
+    const description = "Read the latest manga releases for free on Akari.";
+
+    const { data } = await getLatestData(page ? parseInt(page) : 1);
+
+    return createMetadata({
+        title: "Latest Releases",
+        description: description,
+        image: "/og/akari.webp",
+        canonicalPath: `/latest/${page ? page : "1"}`,
+        pagination: {
+            next: getNextPage(`latest`, data?.data),
+            previous: getPreviousPage(`latest`, data?.data),
+        },
+    });
+}
 
 export const getLatestData = async (currentPage: number) => {
     "use cache";

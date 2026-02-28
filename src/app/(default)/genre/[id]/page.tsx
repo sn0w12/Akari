@@ -4,7 +4,13 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
 import { genres } from "@/lib/api/search";
-import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
+import {
+    createJsonLd,
+    createMetadata,
+    createOgImage,
+    getNextPage,
+    getPreviousPage,
+} from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
@@ -21,15 +27,21 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    const params = await props.params;
-    const name = params.id.replaceAll("-", " ");
+    const { id, page } = await props.params;
+    const name = id.replaceAll("-", " ");
     const description = `View all ${name} manga`;
+
+    const { data } = await getGenre(name, page ? parseInt(page) : 1);
 
     return createMetadata({
         title: name,
         description: description,
-        image: createOgImage("genre", params.id),
-        canonicalPath: `/genre/${params.id}`,
+        image: createOgImage("genre", id),
+        canonicalPath: `/genre/${id}`,
+        pagination: {
+            next: getNextPage(`genre/${id}`, data?.data),
+            previous: getPreviousPage(`genre/${id}`, data?.data),
+        },
     });
 }
 

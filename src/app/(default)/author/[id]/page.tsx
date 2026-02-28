@@ -6,7 +6,13 @@ import {
     getAllAuthors,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
-import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
+import {
+    createJsonLd,
+    createMetadata,
+    createOgImage,
+    getNextPage,
+    getPreviousPage,
+} from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { Person } from "schema-dts";
@@ -32,15 +38,21 @@ export async function generateStaticParams() {
 export async function generateMetadata(
     props: AuthorPageProps,
 ): Promise<Metadata> {
-    const params = await props.params;
-    const name = params.id.replaceAll("-", " ");
+    const { id, page } = await props.params;
+    const name = id.replaceAll("-", " ");
     const description = `View all manga by ${name} on Akari for free.`;
+
+    const { data } = await getAuthor(name, page ? parseInt(page) : 1);
 
     return createMetadata({
         title: name,
         description: description,
-        image: createOgImage("author", params.id),
-        canonicalPath: `/author/${params.id}`,
+        image: createOgImage("author", id),
+        canonicalPath: `/author/${id}`,
+        pagination: {
+            next: getNextPage(`author/${id}`, data?.data),
+            previous: getPreviousPage(`author/${id}`, data?.data),
+        },
     });
 }
 

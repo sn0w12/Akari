@@ -15,27 +15,29 @@ export function robots() {
     }
 }
 
-type OpenGraphType =
-    | "website"
-    | "article"
-    | "book"
-    | "profile"
-    | "music.song"
-    | "music.album"
-    | "music.playlist"
-    | "music.radio_station"
-    | "video.movie"
-    | "video.episode"
-    | "video.tv_show"
-    | "video.other";
+interface PaginationInfo {
+    totalItems: number;
+    currentPage: number;
+    pageSize: number;
+    readonly totalPages: number;
+}
 
-interface MetadataOptions {
-    title: string;
-    description: string;
-    canonicalPath: string;
-    image?: string;
-    siteName?: string;
-    type?: OpenGraphType;
+export function getNextPage(
+    prefix: string,
+    pagination: PaginationInfo | undefined,
+): string | undefined {
+    if (!pagination) return undefined;
+    const hasNextPage = pagination.currentPage < pagination.totalPages;
+    return hasNextPage ? `/${prefix}/${pagination.currentPage + 1}` : undefined;
+}
+
+export function getPreviousPage(
+    prefix: string,
+    pagination: PaginationInfo | undefined,
+): string | undefined {
+    if (!pagination) return undefined;
+    const hasPreviousPage = pagination.currentPage > 1;
+    return hasPreviousPage ? `/${prefix}/${pagination.currentPage - 1}` : undefined;
 }
 
 export function createOgImage(type: "manga" | "author" | "genre", id: string) {
@@ -67,6 +69,33 @@ export function createJsonLd<T>(input: SchemaInput<T>): JsonLd<T> {
         "@id": pageUrl,
         url: pageUrl,
     } as unknown as JsonLd<T>;
+}
+
+type OpenGraphType =
+    | "website"
+    | "article"
+    | "book"
+    | "profile"
+    | "music.song"
+    | "music.album"
+    | "music.playlist"
+    | "music.radio_station"
+    | "video.movie"
+    | "video.episode"
+    | "video.tv_show"
+    | "video.other";
+
+interface MetadataOptions {
+    title: string;
+    description: string;
+    canonicalPath: string;
+    image?: string;
+    siteName?: string;
+    type?: OpenGraphType;
+    pagination?: {
+        previous?: string;
+        next?: string;
+    };
 }
 
 export function createMetadata(options: MetadataOptions): Metadata {
@@ -102,6 +131,7 @@ export function createMetadata(options: MetadataOptions): Metadata {
             description: description,
             images: image,
         },
+        pagination: options.pagination,
         appleWebApp: {
             title: "Akari",
             statusBarStyle: "black-translucent",
