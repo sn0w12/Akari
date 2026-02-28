@@ -25,7 +25,7 @@ export const metadata: Metadata = createMetadata({
     canonicalPath: "/",
     pagination: {
         next: "/latest/2",
-    }
+    },
 });
 
 export default async function Home() {
@@ -53,36 +53,42 @@ export default async function Home() {
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/",
+                item: `${siteUrl}/`,
                 position: 1,
                 name: "Home",
             }),
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/popular",
+                item: `${siteUrl}/popular`,
                 position: 2,
                 name: "Popular",
             }),
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/latest",
+                item: `${siteUrl}/latest`,
                 position: 3,
                 name: "Latest",
             }),
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/search",
+                item: `${siteUrl}/search`,
                 position: 4,
                 name: "Search",
             }),
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/bookmarks",
+                item: `${siteUrl}/bookmarks`,
                 position: 5,
                 name: "Bookmarks",
             }),
             createJsonLd<ListItem>({
                 "@type": "ListItem",
                 url: "/lists",
+                item: `${siteUrl}/lists`,
                 position: 6,
                 name: "Lists",
             }),
