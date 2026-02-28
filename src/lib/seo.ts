@@ -41,6 +41,33 @@ interface MetadataOptions {
 export function createOgImage(type: "manga" | "author" | "genre", id: string) {
     return `https://img.akarimanga.dpdns.org/og/${type}/${id}.webp`;
 }
+type SchemaObject<T> = Extract<T, Record<"@type", string>>;
+type JsonLd<T> = { "@context": "https://schema.org" } & SchemaObject<T>;
+type SchemaInput<T> =
+    SchemaObject<T> extends infer U
+        ? U extends Record<"@type", string>
+            ? Partial<Omit<U, "@type" | "url">> & {
+                  "@type": U["@type"];
+                  url: string;
+              }
+            : never
+        : never;
+type BaseSchemaInput = { "@type": string; url: string } & Record<
+    string,
+    unknown
+>;
+
+export function createJsonLd<T>(input: SchemaInput<T>): JsonLd<T> {
+    const { url, ...rest } = input as BaseSchemaInput;
+    const pageUrl = `https://${process.env.NEXT_PUBLIC_HOST}/${url.startsWith("/") ? url.slice(1) : url}`;
+
+    return {
+        "@context": "https://schema.org",
+        ...rest,
+        "@id": pageUrl,
+        url: pageUrl,
+    } as unknown as JsonLd<T>;
+}
 
 export function createMetadata(options: MetadataOptions): Metadata {
     const title = `${options.title} - Akari`;

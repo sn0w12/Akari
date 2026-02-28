@@ -4,9 +4,10 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
 import { genres } from "@/lib/api/search";
-import { createMetadata, createOgImage } from "@/lib/seo";
+import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
+import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 interface PageProps {
     params: Promise<{ id: string; page?: string }>;
@@ -90,8 +91,49 @@ async function GenreBody(props: PageProps) {
         return <ErrorPage error={error} />;
     }
 
+    const jsonLd = createJsonLd<CollectionPage>({
+        "@type": "CollectionPage",
+        url: `/genre/${params.id}`,
+        name: name,
+        image: createOgImage("genre", params.id),
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: data.data.items.map((item, index) =>
+                createJsonLd<ListItem>({
+                    "@type": "ListItem",
+                    position: (page - 1) * data.data.pageSize + index + 1,
+                    url: `/manga/${item.id}`,
+                    item: createJsonLd<ComicSeries>({
+                        "@type": "ComicSeries",
+                        url: `/manga/${item.id}`,
+                        name: item.title,
+                        description: item.description,
+                        image: item.cover,
+                        genre: item.genres,
+                        author: item.authors.map((author) => ({
+                            "@type": "Person",
+                            name: author,
+                        })),
+                        aggregateRating: {
+                            "@type": "AggregateRating",
+                            ratingValue: item.score,
+                            bestRating: 10,
+                            worstRating: 0,
+                        },
+                    }),
+                }),
+            ),
+        },
+    });
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
             <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}

@@ -10,10 +10,11 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
-import { createMetadata } from "@/lib/seo";
+import { createJsonLd, createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import { Suspense } from "react";
+import { BreadcrumbList, ListItem, WebSite } from "schema-dts";
 import { getLatestData } from "./latest/page";
 import { getPopularData } from "./popular/page";
 
@@ -25,8 +26,86 @@ export const metadata: Metadata = createMetadata({
 });
 
 export default async function Home() {
+    const siteUrl = `https://${process.env.NEXT_PUBLIC_HOST}`;
+
+    const websiteJsonLd = createJsonLd<WebSite>({
+        "@type": "WebSite",
+        url: "/",
+        name: "Akari Manga",
+        description: "Read manga for free on Akari.",
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+        } as never,
+    });
+
+    const breadcrumbJsonLd = createJsonLd<BreadcrumbList>({
+        "@type": "BreadcrumbList",
+        url: "/",
+        itemListElement: [
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/",
+                position: 1,
+                name: "Home",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/popular",
+                position: 2,
+                name: "Popular",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/latest",
+                position: 3,
+                name: "Latest",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/search",
+                position: 4,
+                name: "Search",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/bookmarks",
+                position: 5,
+                name: "Bookmarks",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/lists",
+                position: 6,
+                name: "Lists",
+            }),
+        ],
+    });
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(websiteJsonLd).replace(
+                        /</g,
+                        "\\u003c",
+                    ),
+                }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(breadcrumbJsonLd).replace(
+                        /</g,
+                        "\\u003c",
+                    ),
+                }}
+            />
             <div className="flex-1 px-4 pt-2 pb-4">
                 <div>
                     <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>

@@ -6,9 +6,10 @@ import {
     getAllAuthors,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
-import { createMetadata, createOgImage } from "@/lib/seo";
+import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
+import { Person } from "schema-dts";
 
 export interface AuthorPageProps {
     params: Promise<{ id: string; page?: string }>;
@@ -96,8 +97,22 @@ export async function AuthorBody({ params }: AuthorPageProps) {
         return <ErrorPage error={error} />;
     }
 
+    const jsonLd = createJsonLd<Person>({
+        "@type": "Person",
+        url: `/author/${id}`,
+        name: title,
+        image: createOgImage("author", id),
+        knowsAbout: ["Manga", "Comics"],
+    });
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
             <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}
