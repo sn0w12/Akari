@@ -7,7 +7,7 @@ import {
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";

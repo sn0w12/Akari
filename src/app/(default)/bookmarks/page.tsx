@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
-import { robots } from "@/lib/utils";
+import { robots } from "@/lib/seo";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";

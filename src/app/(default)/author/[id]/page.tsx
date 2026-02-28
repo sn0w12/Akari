@@ -6,7 +6,7 @@ import {
     getAllAuthors,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 

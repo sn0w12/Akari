@@ -1,4 +1,4 @@
-import { createMetadata } from "@/lib/utils";
+import { createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import Page from "../page";
 

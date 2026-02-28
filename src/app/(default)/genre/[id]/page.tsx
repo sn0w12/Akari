@@ -4,7 +4,7 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
 import { genres } from "@/lib/api/search";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import { createMetadata, createOgImage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 

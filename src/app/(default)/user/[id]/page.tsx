@@ -4,7 +4,7 @@ import { UserListsServer } from "@/components/user/user-lists-server";
 import { UserListsSkeleton } from "@/components/user/user-lists-skeleton";
 import { UserHeader } from "@/components/user/users-header";
 import { client, serverHeaders } from "@/lib/api";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { Suspense } from "react";
 

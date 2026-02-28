@@ -10,7 +10,7 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import { Suspense } from "react";
