@@ -126,12 +126,16 @@ async function GenreBody(props: PageProps) {
                             "@type": "Person",
                             name: author,
                         })),
-                        aggregateRating: {
-                            "@type": "AggregateRating",
-                            ratingValue: item.score,
-                            bestRating: 10,
-                            worstRating: 0,
-                        },
+                        aggregateRating:
+                            item.rating.average > 0
+                                ? {
+                                      "@type": "AggregateRating",
+                                      ratingValue: item.rating.average,
+                                      ratingCount: item.rating.total,
+                                      bestRating: 10,
+                                      worstRating: 0,
+                                  }
+                                : undefined,
                     }),
                 }),
             ),

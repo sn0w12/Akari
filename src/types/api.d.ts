@@ -4727,8 +4727,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;
@@ -4785,6 +4784,35 @@ export interface components {
         };
         /** @enum {string} */
         MangaListSortOrder: "latest" | "popular" | "newest" | "search";
+        MangaRatingDistribution: {
+            /** Format: int32 */
+            1: number;
+            /** Format: int32 */
+            2: number;
+            /** Format: int32 */
+            3: number;
+            /** Format: int32 */
+            4: number;
+            /** Format: int32 */
+            5: number;
+            /** Format: int32 */
+            6: number;
+            /** Format: int32 */
+            7: number;
+            /** Format: int32 */
+            8: number;
+            /** Format: int32 */
+            9: number;
+            /** Format: int32 */
+            10: number;
+        };
+        MangaRatingResponse: {
+            /** Format: double */
+            average: number;
+            /** Format: int32 */
+            total: number;
+            distribution: components["schemas"]["MangaRatingDistribution"];
+        };
         MangaResponse: {
             /** Format: uuid */
             id: string;
@@ -4797,8 +4825,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;
@@ -4835,8 +4862,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;

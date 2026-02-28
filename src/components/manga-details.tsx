@@ -146,12 +146,16 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
         ),
         datePublished: manga.createdAt,
         dateModified: manga.updatedAt,
-        aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: manga.score,
-            bestRating: 10,
-            worstRating: 0,
-        },
+        aggregateRating:
+            manga.rating.average > 0
+                ? {
+                      "@type": "AggregateRating",
+                      ratingValue: manga.rating.average,
+                      ratingCount: manga.rating.total,
+                      bestRating: 10,
+                      worstRating: 0,
+                  }
+                : undefined,
     });
 
     return (
@@ -346,7 +350,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                 <div className="my-2 flex-grow">
                                     <ScoreDisplay
                                         mangaId={manga.id}
-                                        score={manga.score / 2}
+                                        score={manga.rating.average / 2}
                                     />
                                 </div>
                             </div>
