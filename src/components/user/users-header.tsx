@@ -61,7 +61,7 @@ async function getUserData(userId: string) {
     return { data, error: null };
 }
 
-const ROLE_VARIANT_MAP: Record<
+export const ROLE_VARIANT_MAP: Record<
     components["schemas"]["UserRole"],
     BadgeVariantProps["variant"]
 > = {
@@ -80,7 +80,7 @@ export async function UserHeader({
     const { data, error } = await getUserData(id);
 
     if (error) {
-        return <ErrorPage title="Failed to load user" error={error} />;
+        return <ErrorPage error={error} />;
     }
 
     const userScore = data.data.totalUpvotes - data.data.totalDownvotes;
@@ -103,7 +103,10 @@ export async function UserHeader({
                         </Badge>
                     ) : null}
                     {data.data.role !== "user" ? (
-                        <Badge className="self-center" variant={ROLE_VARIANT_MAP[data.data.role]}>
+                        <Badge
+                            className="self-center"
+                            variant={ROLE_VARIANT_MAP[data.data.role]}
+                        >
                             {capitalize(data.data.role)}
                         </Badge>
                     ) : null}

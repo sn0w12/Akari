@@ -1,6 +1,6 @@
 import { ListComponent } from "@/components/list/list";
 import { ListSkeleton } from "@/components/list/list-skeleton";
-import { createMetadata } from "@/lib/utils";
+import { createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { Suspense } from "react";
 

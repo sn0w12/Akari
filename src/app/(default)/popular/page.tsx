@@ -7,10 +7,16 @@ import {
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
-import { createMetadata } from "@/lib/utils";
+import {
+    createJsonLd,
+    createMetadata,
+    getNextPage,
+    getPreviousPage,
+} from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
+import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 interface PageProps {
     params: Promise<{ page?: string }>;
@@ -19,12 +25,27 @@ interface PageProps {
     }>;
 }
 
-export const metadata: Metadata = createMetadata({
-    title: "Akari Manga",
-    description: "Read the most popular manga for free on Akari.",
-    image: "/og/popular.webp",
-    canonicalPath: "/popular",
-});
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+    const { page } = await props.params;
+    const { days } = await props.searchParams;
+    const description = "Read the most popular manga for free on Akari.";
+
+    const { data } = await getPopularData(
+        page ? parseInt(page) : 1,
+        days ? parseInt(days) : 30,
+    );
+
+    return createMetadata({
+        title: "Popular Manga",
+        description: description,
+        image: "/og/popular.webp",
+        canonicalPath: `/popular/${page ? page : "1"}`,
+        pagination: {
+            next: getNextPage(`popular`, data?.data),
+            previous: getPreviousPage(`popular`, data?.data),
+        },
+    });
+}
 
 const CACHE_TIMES: Record<
     string,
@@ -100,8 +121,11 @@ async function PopularSorting(props: PageProps) {
 async function PopularBody(props: PageProps) {
     const { page } = await props.params;
     const { days } = await props.searchParams;
+
+    const currentPage = Number(page) || 1;
+
     const { data, error } = await getPopularData(
-        Number(page) || 1,
+        currentPage,
         Number(days) || 30,
     );
 
@@ -109,9 +133,55 @@ async function PopularBody(props: PageProps) {
         return <ErrorPage error={error} />;
     }
 
+    const jsonLd = createJsonLd<CollectionPage>({
+        "@type": "CollectionPage",
+        url: `/popular/${currentPage}`,
+        name: "Popular",
+        image: "/og/akari.webp",
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: data.data.items.map((item, index) =>
+                createJsonLd<ListItem>({
+                    "@type": "ListItem",
+                    position:
+                        (currentPage - 1) * data.data.pageSize + index + 1,
+                    url: `/manga/${item.id}`,
+                    item: createJsonLd<ComicSeries>({
+                        "@type": "ComicSeries",
+                        url: `/manga/${item.id}`,
+                        name: item.title,
+                        description: item.description,
+                        image: item.cover,
+                        genre: item.genres,
+                        author: item.authors.map((author) => ({
+                            "@type": "Person",
+                            name: author,
+                        })),
+                        aggregateRating:
+                            item.rating.average > 0
+                                ? {
+                                      "@type": "AggregateRating",
+                                      ratingValue: item.rating.average,
+                                      ratingCount: item.rating.total,
+                                      bestRating: 10,
+                                      worstRating: 0,
+                                  }
+                                : undefined,
+                    }),
+                }),
+            ),
+        },
+    });
+
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}

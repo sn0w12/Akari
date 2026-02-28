@@ -125,15 +125,16 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 src={manga.cover}
                 alt={manga.title}
                 className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
-                width={200}
-                height={300}
+                width={160}
+                height={240}
                 quality={40}
                 loading={priority ? "eager" : "lazy"}
                 fetchPriority={priority ? "high" : "auto"}
                 preload={priority}
                 decoding="async"
                 sizes={generateSizes({
-                    default: "240px",
+                    default: "20vw",
+                    sm: "240px",
                 })}
             />
             <div className="space-y-2 py-2 px-4 w-full hidden sm:block">

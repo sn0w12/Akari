@@ -1,5 +1,5 @@
 import { Setting, SettingVisibility } from "./lib/settings";
-import { createDynamicKey, createField } from "./lib/storage";
+import { createDynamicKey, createField } from "./lib/storage-helpers";
 import { StorageSchemas } from "./types/storage";
 
 /**
@@ -231,6 +231,12 @@ export const STORAGE_SCHEMAS = {
     },
     installPromptDismissed: {
         key: "install-prompt-dismissed",
+        schema: {
+            dismissed: createField("boolean", false),
+        },
+    },
+    remotePrompt: {
+        key: createDynamicKey("prompt-{id}", ["id"]),
         schema: {
             dismissed: createField("boolean", false),
         },

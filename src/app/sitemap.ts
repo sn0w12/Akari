@@ -32,7 +32,7 @@ const staticPages: SitemapEntry[] = [
         changeFrequency: "monthly",
     },
     {
-        url: `https://${NEXT_PUBLIC_HOST}/auth/register`,
+        url: `https://${NEXT_PUBLIC_HOST}/auth/sign-up`,
         lastModified: new Date(),
         changeFrequency: "monthly",
     },

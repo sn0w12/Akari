@@ -6,9 +6,16 @@ import {
     getAllAuthors,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import {
+    createJsonLd,
+    createMetadata,
+    createOgImage,
+    getNextPage,
+    getPreviousPage,
+} from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
+import { Person } from "schema-dts";
 
 export interface AuthorPageProps {
     params: Promise<{ id: string; page?: string }>;
@@ -31,15 +38,21 @@ export async function generateStaticParams() {
 export async function generateMetadata(
     props: AuthorPageProps,
 ): Promise<Metadata> {
-    const params = await props.params;
-    const name = params.id.replaceAll("-", " ");
+    const { id, page } = await props.params;
+    const name = id.replaceAll("-", " ");
     const description = `View all manga by ${name} on Akari for free.`;
+
+    const { data } = await getAuthor(name, page ? parseInt(page) : 1);
 
     return createMetadata({
         title: name,
         description: description,
-        image: createOgImage("author", params.id),
-        canonicalPath: `/author/${params.id}`,
+        image: createOgImage("author", id),
+        canonicalPath: `/author/${id}`,
+        pagination: {
+            next: getNextPage(`author/${id}`, data?.data),
+            previous: getPreviousPage(`author/${id}`, data?.data),
+        },
     });
 }
 
@@ -96,9 +109,23 @@ export async function AuthorBody({ params }: AuthorPageProps) {
         return <ErrorPage error={error} />;
     }
 
+    const jsonLd = createJsonLd<Person>({
+        "@type": "Person",
+        url: `/author/${id}`,
+        name: title,
+        image: createOgImage("author", id),
+        knowsAbout: ["Manga", "Comics"],
+    });
+
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}

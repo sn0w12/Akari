@@ -1,6 +1,6 @@
 import SearchPage from "@/components/search";
 import SearchPageSkeleton from "@/components/search/skeleton";
-import { robots } from "@/lib/utils";
+import { robots } from "@/lib/seo";
 import { Metadata } from "next";
 import { Suspense } from "react";
 

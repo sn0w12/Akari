@@ -4,9 +4,16 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
 import { genres } from "@/lib/api/search";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import {
+    createJsonLd,
+    createMetadata,
+    createOgImage,
+    getNextPage,
+    getPreviousPage,
+} from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
+import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 interface PageProps {
     params: Promise<{ id: string; page?: string }>;
@@ -20,15 +27,21 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-    const params = await props.params;
-    const name = params.id.replaceAll("-", " ");
+    const { id, page } = await props.params;
+    const name = id.replaceAll("-", " ");
     const description = `View all ${name} manga`;
+
+    const { data } = await getGenre(name, page ? parseInt(page) : 1);
 
     return createMetadata({
         title: name,
         description: description,
-        image: createOgImage("genre", params.id),
-        canonicalPath: `/genre/${params.id}`,
+        image: createOgImage("genre", id),
+        canonicalPath: `/genre/${id}`,
+        pagination: {
+            next: getNextPage(`genre/${id}`, data?.data),
+            previous: getPreviousPage(`genre/${id}`, data?.data),
+        },
     });
 }
 
@@ -90,9 +103,54 @@ async function GenreBody(props: PageProps) {
         return <ErrorPage error={error} />;
     }
 
+    const jsonLd = createJsonLd<CollectionPage>({
+        "@type": "CollectionPage",
+        url: `/genre/${params.id}`,
+        name: name,
+        image: createOgImage("genre", params.id),
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: data.data.items.map((item, index) =>
+                createJsonLd<ListItem>({
+                    "@type": "ListItem",
+                    position: (page - 1) * data.data.pageSize + index + 1,
+                    url: `/manga/${item.id}`,
+                    item: createJsonLd<ComicSeries>({
+                        "@type": "ComicSeries",
+                        url: `/manga/${item.id}`,
+                        name: item.title,
+                        description: item.description,
+                        image: item.cover,
+                        genre: item.genres,
+                        author: item.authors.map((author) => ({
+                            "@type": "Person",
+                            name: author,
+                        })),
+                        aggregateRating:
+                            item.rating.average > 0
+                                ? {
+                                      "@type": "AggregateRating",
+                                      ratingValue: item.rating.average,
+                                      ratingCount: item.rating.total,
+                                      bestRating: 10,
+                                      worstRating: 0,
+                                  }
+                                : undefined,
+                    }),
+                }),
+            ),
+        },
+    });
+
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}

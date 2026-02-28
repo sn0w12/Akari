@@ -3408,6 +3408,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/notifications/website": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get visible website notifications */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WebsiteNotificationIEnumerableSuccessResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/notifications/send": {
         parameters: {
             query?: never;
@@ -3942,6 +3987,60 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a paginated list of users */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The page number (1-based). */
+                    page?: number;
+                    /** @description The number of items per page. */
+                    pageSize?: number;
+                    /** @description The field to sort by. */
+                    sortBy?: components["schemas"]["UserSortBy"];
+                    /** @description The sort direction. */
+                    sortDirection?: components["schemas"]["SortDirection"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserProfileDetailsResponsePaginatedResponseSuccessResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -4628,8 +4727,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;
@@ -4686,6 +4784,35 @@ export interface components {
         };
         /** @enum {string} */
         MangaListSortOrder: "latest" | "popular" | "newest" | "search";
+        MangaRatingDistribution: {
+            /** Format: int32 */
+            1: number;
+            /** Format: int32 */
+            2: number;
+            /** Format: int32 */
+            3: number;
+            /** Format: int32 */
+            4: number;
+            /** Format: int32 */
+            5: number;
+            /** Format: int32 */
+            6: number;
+            /** Format: int32 */
+            7: number;
+            /** Format: int32 */
+            8: number;
+            /** Format: int32 */
+            9: number;
+            /** Format: int32 */
+            10: number;
+        };
+        MangaRatingResponse: {
+            /** Format: double */
+            average: number;
+            /** Format: int32 */
+            total: number;
+            distribution: components["schemas"]["MangaRatingDistribution"];
+        };
         MangaResponse: {
             /** Format: uuid */
             id: string;
@@ -4698,8 +4825,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;
@@ -4736,8 +4862,7 @@ export interface components {
             genres: string[];
             /** Format: int32 */
             views: number;
-            /** Format: double */
-            score: number;
+            rating: components["schemas"]["MangaRatingResponse"];
             alternativeTitles?: string[] | null;
             /** Format: int32 */
             malId?: number | null;
@@ -4830,6 +4955,8 @@ export interface components {
             userName: string;
             displayName: string;
         };
+        /** @enum {string} */
+        SortDirection: "Ascending" | "Descending";
         StringSuccessResponse: {
             /** @enum {string} */
             result: "Success";
@@ -5069,6 +5196,24 @@ export interface components {
             /** Format: int64 */
             totalLists: number;
         };
+        UserProfileDetailsResponsePaginatedResponse: {
+            items: components["schemas"]["UserProfileDetailsResponse"][];
+            /** Format: int32 */
+            totalItems: number;
+            /** Format: int32 */
+            currentPage: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            readonly totalPages: number;
+        };
+        UserProfileDetailsResponsePaginatedResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["UserProfileDetailsResponsePaginatedResponse"];
+        };
         UserProfileDetailsResponseSuccessResponse: {
             /** @enum {string} */
             result: "Success";
@@ -5093,12 +5238,29 @@ export interface components {
         };
         /** @enum {string} */
         UserRole: "user" | "admin" | "moderator" | "owner";
+        /** @enum {string} */
+        UserSortBy: "CreatedAt" | "Username" | "TotalComments" | "TotalUpvotes" | "TotalBookmarks" | "TotalUploads" | "TotalLists";
         ViewMangaRequest: {
             saveUserId?: boolean;
         };
         VoteCommentRequest: {
             /** Format: int32 */
             value: number;
+        };
+        WebsiteNotification: {
+            /** Format: int64 */
+            id: number;
+            title: string;
+            content: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        WebsiteNotificationIEnumerableSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["WebsiteNotification"][];
         };
     };
     responses: never;

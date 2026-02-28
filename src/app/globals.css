@@ -205,7 +205,7 @@ li {
 }
 
 [data-sonner-toaster][data-y-position="top"] {
-    top: calc(var(--safe-top) + var(--offset-top)) !important;
+    top: max(var(--safe-top), var(--offset-top)) !important;
 }
 
 /* Custom Scrollbar */

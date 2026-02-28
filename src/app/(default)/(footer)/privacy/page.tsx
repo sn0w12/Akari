@@ -1,4 +1,4 @@
-import { robots } from "@/lib/utils";
+import { robots } from "@/lib/seo";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

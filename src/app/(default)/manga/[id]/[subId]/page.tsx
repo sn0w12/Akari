@@ -6,10 +6,11 @@ import {
     getAllChapterIds,
     STATIC_GENERATION_DISABLED,
 } from "@/lib/api/pre-render";
-import { createMetadata, createOgImage } from "@/lib/utils";
+import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
+import { ComicSeries, ComicStory } from "schema-dts";
 
 const getChapter = async (id: string, subId: number) => {
     "use cache";
@@ -110,5 +111,29 @@ async function MangaReaderBody({ params }: MangaReaderProps) {
         return <ErrorPage error={error} />;
     }
 
-    return <Reader chapter={data} />;
+    const jsonLd = createJsonLd<ComicSeries>({
+        "@type": "ComicSeries",
+        url: `/manga/${data.mangaId}/${data.number}`,
+        name: data.mangaTitle,
+        image: createOgImage("manga", data.mangaId),
+        hasPart: data.chapters.map((chapter) =>
+            createJsonLd<ComicStory>({
+                "@type": "ComicStory",
+                url: `/manga/${data.mangaId}/${chapter.value}`,
+                name: chapter.label,
+            }),
+        ),
+    });
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <Reader chapter={data} />
+        </>
+    );
 }

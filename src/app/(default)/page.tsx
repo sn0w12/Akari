@@ -2,6 +2,7 @@ import { GRID_CLASS } from "@/components/grid-page";
 import { InstallPrompt } from "@/components/home/install-prompt";
 import { NotificationPrompt } from "@/components/home/notification-prompt";
 import { PopularManga } from "@/components/home/popular-manga";
+import { RemotePrompts } from "@/components/home/remote-prompts";
 import { MangaCard } from "@/components/manga/manga-card";
 import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
@@ -9,10 +10,11 @@ import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth/server";
-import { createMetadata } from "@/lib/utils";
+import { createJsonLd, createMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import { Suspense } from "react";
+import { BreadcrumbList, ListItem, WebSite } from "schema-dts";
 import { getLatestData } from "./latest/page";
 import { getPopularData } from "./popular/page";
 
@@ -21,11 +23,98 @@ export const metadata: Metadata = createMetadata({
     description: "Read manga for free on Akari.",
     image: "/og/akari.webp",
     canonicalPath: "/",
+    pagination: {
+        next: "/latest/2",
+    },
 });
 
 export default async function Home() {
+    const siteUrl = `https://${process.env.NEXT_PUBLIC_HOST}`;
+
+    const websiteJsonLd = createJsonLd<WebSite>({
+        "@type": "WebSite",
+        url: "/",
+        name: "Akari Manga",
+        description: "Read manga for free on Akari.",
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+        } as never,
+    });
+
+    const breadcrumbJsonLd = createJsonLd<BreadcrumbList>({
+        "@type": "BreadcrumbList",
+        url: "/",
+        itemListElement: [
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/",
+                item: `${siteUrl}/`,
+                position: 1,
+                name: "Home",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/popular",
+                item: `${siteUrl}/popular`,
+                position: 2,
+                name: "Popular",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/latest",
+                item: `${siteUrl}/latest`,
+                position: 3,
+                name: "Latest",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/search",
+                item: `${siteUrl}/search`,
+                position: 4,
+                name: "Search",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/bookmarks",
+                item: `${siteUrl}/bookmarks`,
+                position: 5,
+                name: "Bookmarks",
+            }),
+            createJsonLd<ListItem>({
+                "@type": "ListItem",
+                url: "/lists",
+                item: `${siteUrl}/lists`,
+                position: 6,
+                name: "Lists",
+            }),
+        ],
+    });
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(websiteJsonLd).replace(
+                        /</g,
+                        "\\u003c",
+                    ),
+                }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(breadcrumbJsonLd).replace(
+                        /</g,
+                        "\\u003c",
+                    ),
+                }}
+            />
             <div className="flex-1 px-4 pt-2 pb-4">
                 <div>
                     <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
@@ -62,6 +151,9 @@ export default async function Home() {
             <PromptStack>
                 <InstallPrompt />
                 <NotificationPrompt />
+                <Suspense fallback={null}>
+                    <RemotePrompts />
+                </Suspense>
             </PromptStack>
         </>
     );
@@ -86,7 +178,7 @@ async function HomeLatest() {
 
     return (
         <>
-            <MangaGrid mangaList={data.data.items} />
+            <MangaGrid mangaList={data.data.items} priority={2} />
             <ServerPagination
                 currentPage={1}
                 href="./latest"
@@ -138,6 +230,7 @@ async function HomeRecent() {
                     <MangaCard
                         key={manga.id}
                         manga={manga}
+                        priority={index < 2}
                         className={
                             index > 5
                                 ? "block sm:hidden lg:block 2xl:hidden"

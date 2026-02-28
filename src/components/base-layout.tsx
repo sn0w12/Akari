@@ -11,6 +11,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useBorderColor } from "@/contexts/border-color-context";
+import { ErrorProvider } from "@/contexts/error-context";
 import { useUser } from "@/hooks/use-user";
 import { GENRE_CATEGORIES } from "@/lib/api/search";
 import { fetchNotification } from "@/lib/manga/bookmarks";
@@ -285,7 +286,9 @@ export function BaseLayout({
                     style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
                     id="scroll-element"
                 >
-                    {children}
+                    <Suspense fallback={children}>
+                        <ErrorProvider>{children}</ErrorProvider>
+                    </Suspense>
                 </PullToRefresh>
             </div>
         </div>

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
+import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { generateSizes } from "@/lib/utils";
@@ -27,10 +28,10 @@ import { GripVertical, Share, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
+import ErrorPage from "../error-page";
 import { Avatar } from "../ui/avatar";
 import { ListCommand } from "./list-command";
 import { ListSkeleton } from "./list-skeleton";
-import { useUser } from "@/hooks/use-user";
 
 function Entry({
     entry,
@@ -185,9 +186,17 @@ function SortableEntry({
     );
 }
 
+function isListError(x: unknown): x is components["schemas"]["ErrorResponse"] {
+    return (
+        typeof x === "object" &&
+        x !== null &&
+        (x as components["schemas"]["ErrorResponse"]).result === "Error"
+    );
+}
+
 export function ListComponent({ id }: { id: string }) {
     const { data: user } = useUser();
-    const { data, isLoading, isError, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["list", id],
         queryFn: async () => {
             const { data, error } = await client.GET(`/v2/lists/{id}`, {
@@ -199,7 +208,7 @@ export function ListComponent({ id }: { id: string }) {
             });
 
             if (error) {
-                throw new Error(error.data?.message || "Failed to load list");
+                return error;
             }
 
             return data.data;
@@ -254,35 +263,25 @@ export function ListComponent({ id }: { id: string }) {
         return <ListSkeleton />;
     }
 
-    if (isError) {
-        return (
-            <div className="text-center py-8">
-                <h2 className="text-xl font-semibold mb-2">
-                    Error Loading List
-                </h2>
-                <p className="text-muted-foreground">
-                    {error?.message ||
-                        "Something went wrong. Please try again."}
-                </p>
-            </div>
-        );
+    if (!data) {
+        const mockError = {
+            result: "Error",
+            status: 404,
+            data: {
+                message: "List not found",
+            },
+        } as const;
+        return <ErrorPage error={mockError} />;
     }
 
-    if (!data) {
-        return (
-            <div className="text-center py-8">
-                <h2 className="text-xl font-semibold mb-2">List Not Found</h2>
-                <p className="text-muted-foreground">
-                    The requested list could not be found.
-                </p>
-            </div>
-        );
+    if (isListError(data)) {
+        return <ErrorPage error={data} />;
     }
 
     const isOwner = user?.userId === data.userId;
 
     function handleDragEnd(event: DragEndEvent) {
-        if (!isOwner || !data) return;
+        if (!isOwner || !data || isListError(data)) return;
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 

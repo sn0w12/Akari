@@ -21,10 +21,13 @@ import EnhancedImage from "./ui/enhanced-image";
 
 import { MangaPageProps } from "@/app/(default)/manga/[id]/page";
 import { client, serverHeaders } from "@/lib/api";
+import { createJsonLd } from "@/lib/seo";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
+import { ComicSeries, Person } from "schema-dts";
+import ErrorPage from "./error-page";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -122,18 +125,47 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
     const { data, error } = await getManga(id);
 
     if (error || !data) {
-        return (
-            <div className="mx-auto p-4">
-                <p className="text-center text-muted-foreground">
-                    Failed to load manga details. Please try again later.
-                </p>
-            </div>
-        );
+        return <ErrorPage error={error} />;
     }
 
     const manga = data.data;
+    const jsonLd = createJsonLd<ComicSeries>({
+        "@type": "ComicSeries",
+        url: `/manga/${manga.id}`,
+        name: manga.title,
+        alternateName: manga.alternativeTitles?.join(", "),
+        image: manga.cover,
+        description: manga.description,
+        genre: manga.genres,
+        author: manga.authors.map((author) =>
+            createJsonLd<Person>({
+                "@type": "Person",
+                url: `/author/${encodeURIComponent(author.replaceAll(" ", "-"))}`,
+                name: author,
+            }),
+        ),
+        datePublished: manga.createdAt,
+        dateModified: manga.updatedAt,
+        aggregateRating:
+            manga.rating.average > 0
+                ? {
+                      "@type": "AggregateRating",
+                      ratingValue: manga.rating.average,
+                      ratingCount: manga.rating.total,
+                      bestRating: 10,
+                      worstRating: 0,
+                  }
+                : undefined,
+    });
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
             <div className="flex flex-col justify-center gap-4 lg:flex-row mb-2 items-stretch h-auto">
                 {/* Image and Details Section */}
@@ -180,7 +212,10 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             {manga.alternativeTitles &&
                                 manga.alternativeTitles.length > 0 && (
                                     <Tooltip>
-                                        <TooltipTrigger className="hidden lg:block">
+                                        <TooltipTrigger
+                                            className="hidden lg:block"
+                                            aria-label="Alternative Names"
+                                        >
                                             <InfoIcon className="w-5 h-5" />
                                         </TooltipTrigger>
                                         <TooltipContent side="bottom">
@@ -315,7 +350,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                 <div className="my-2 flex-grow">
                                     <ScoreDisplay
                                         mangaId={manga.id}
-                                        score={manga.score / 2}
+                                        score={manga.rating.average / 2}
                                     />
                                 </div>
                             </div>
