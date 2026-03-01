@@ -350,7 +350,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                 <div className="my-2 flex-grow">
                                     <ScoreDisplay
                                         mangaId={manga.id}
-                                        score={manga.rating.average / 2}
+                                        rating={manga.rating}
                                     />
                                 </div>
                             </div>

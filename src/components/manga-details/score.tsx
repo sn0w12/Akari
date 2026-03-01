@@ -17,10 +17,10 @@ import {
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
-import { cn } from "@/lib/utils";
+import { cn, formatNumberShort } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Star, StarHalf } from "lucide-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 const RATINGS = [
     { label: "Remove Rating", value: -1 },
@@ -38,7 +38,7 @@ const RATINGS = [
 
 interface ScoreDisplayProps {
     mangaId: string;
-    score: number;
+    rating: components["schemas"]["MangaRatingResponse"];
 }
 
 async function getUserScore(mangaId: string): Promise<number | null> {
@@ -57,7 +57,7 @@ async function getUserScore(mangaId: string): Promise<number | null> {
     return data.data;
 }
 
-export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
+export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     const { data: user } = useUser();
     const queryClient = useQueryClient();
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -75,7 +75,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
         staleTime: Infinity,
     });
 
-    const clampedScore = Math.max(0, Math.min(5, score));
+    const clampedScore = Math.max(0, Math.min(5, rating.average));
     const fullStars = Math.floor(clampedScore);
     const hasHalfStar = clampedScore % 1 >= 0.5;
     const isAnyHovered = hoveredIndex !== null;
@@ -263,7 +263,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                     })}
                 </div>
                 <p className="text-sm text-accent-foreground/70 h-5">
-                    {score.toFixed(1)} / 5
+                    {rating.average.toFixed(1)} / 5
                 </p>
             </div>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -278,6 +278,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                             )}
                         </DialogTitle>
                     </DialogHeader>
+                    <ScoreGraph rating={rating} userScore={userScore} />
                     <div className="flex flex-col sm:flex-row gap-2">
                         <Select
                             value={selectedRating.toString()}
@@ -285,7 +286,7 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                                 setSelectedRating(parseFloat(value))
                             }
                         >
-                            <SelectTrigger className="w-full sm:w-auto">
+                            <SelectTrigger className="w-full sm:w-38">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent align="center">
@@ -319,6 +320,40 @@ export default function ScoreDisplay({ mangaId, score }: ScoreDisplayProps) {
                     </div>
                 </DialogContent>
             </Dialog>
+        </div>
+    );
+}
+
+function ScoreGraph({
+    rating,
+    userScore,
+}: {
+    rating: components["schemas"]["MangaRatingResponse"];
+    userScore?: number | null;
+}) {
+    const maxCount = useMemo(
+        () => Math.max(...Object.values(rating.distribution)),
+        [rating.distribution],
+    );
+
+    return (
+        <div className="w-full h-40 flex flex-row gap-1 font-mono">
+            {Object.entries(rating.distribution).map(([score, count]) => (
+                <div
+                    key={score}
+                    className="flex-1 flex flex-col items-center justify-between"
+                >
+                    <p>{formatNumberShort(count)}</p>
+                    <div
+                        key={score}
+                        className={cn("bg-primary w-full h-full rounded", {
+                            "bg-accent-positive": userScore === parseInt(score),
+                        })}
+                        style={{ height: `${(count / maxCount) * 100}%` }}
+                    />
+                    <p>{score}</p>
+                </div>
+            ))}
         </div>
     );
 }
