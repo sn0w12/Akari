@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import Buttons from "./manga-details/buttons";
-import ScoreDisplay from "./manga-details/score";
+import { ScoreDisplay } from "./manga-details/score/score-display";
 import {
     MangaUpdatedAt,
     MangaUpdatedAtFallback,
