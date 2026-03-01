@@ -5,7 +5,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { generateSizes, pluralize } from "@/lib/utils";
+import { formatNumberShort, generateSizes, pluralize } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,20 +42,15 @@ const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     }
 };
 
-const getViewsColor = (views: number) => {
-    if (views < 100)
-        return { bg: "bg-[#ffc659] hover:bg-[#ffc659]", text: "text-black" };
-    else if (views < 1_000)
-        return { bg: "bg-[#ff8f70] hover:bg-[#ff8f70]", text: "text-black" };
+const getViewsColor = (views: number): string => {
+    if (views < 100) return "bg-[#ffc659] hover:bg-[#ffc659] text-black";
+    else if (views < 1_000) return "bg-[#ff8f70] hover:bg-[#ff8f70] text-black";
     else if (views < 10_000)
-        return { bg: "bg-[#ff609e] hover:bg-[#ff609e]", text: "text-white" };
+        return "bg-[#ff609e] hover:bg-[#ff609e] text-white";
     else if (views < 100_000)
-        return { bg: "bg-[#e255d0] hover:bg-[#e255d0]", text: "text-white" };
+        return "bg-[#e255d0] hover:bg-[#e255d0] text-white";
 
-    return {
-        bg: "bg-accent-positive hover:bg-accent-positive",
-        text: "text-white",
-    };
+    return "bg-accent-positive hover:bg-accent-positive text-white";
 };
 
 function ExternalLinks({
@@ -313,11 +308,9 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         Views:
                                     </div>
                                     <Badge
-                                        className={`${
-                                            getViewsColor(manga.views).bg
-                                        } ${getViewsColor(manga.views).text}`}
+                                        className={getViewsColor(manga.views)}
                                     >
-                                        {manga.views}
+                                        {formatNumberShort(manga.views)}
                                     </Badge>
                                 </div>
                             </div>
