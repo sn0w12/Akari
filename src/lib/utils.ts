@@ -89,8 +89,9 @@ export function formatRelativeDate(dateString: string): string {
     }
 }
 
-const imageSizes = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
-export type SizesValue = `${number}vw` | `${(typeof imageSizes)[number]}px`;
+export type SizesValue =
+    | `${number}vw`
+    | `${48 | 96 | 128 | 240 | 320 | 400 | 640 | 1080 | 1920}px`;
 
 export function generateSizes(options: {
     default?: SizesValue;
