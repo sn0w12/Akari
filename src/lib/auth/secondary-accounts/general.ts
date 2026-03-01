@@ -127,6 +127,8 @@ export abstract class SecondaryAccountBase implements SecondaryAccount {
         origin: string,
     ): Promise<boolean>;
 
+    abstract getAccountUrl(): string | null;
+
     /**
      * Updates the login toast setting for the current account.
      *

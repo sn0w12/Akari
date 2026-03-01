@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ButtonLink } from "../ui/button-link";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, LogIn, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
     SECONDARY_ACCOUNTS,
     SecondaryAccount,
     SmallSecondaryAccount,
     validateSecondaryAccounts,
 } from "@/lib/auth/secondary-accounts";
-import { ButtonConfirmDialog } from "../ui/confirm";
 import { cn } from "@/lib/utils";
+import { Download, LogIn, LogOut } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ButtonLink } from "../ui/button-link";
+import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function ConnectedAccounts() {
     const [validAccounts, setValidAccounts] = useState<SmallSecondaryAccount[]>(
@@ -58,6 +59,7 @@ export function ConnectedAccounts() {
                     );
                     const isValid = validAccount?.valid;
                     const accountName = account.userStorage.get()?.name ?? null;
+                    const accountUrl = account.getAccountUrl();
 
                     const isFirst = index === 0;
                     const isLast = index === SECONDARY_ACCOUNTS.length - 1;
@@ -92,7 +94,17 @@ export function ConnectedAccounts() {
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-medium text-foreground">
-                                            {account.name}
+                                            {accountUrl ? (
+                                                <Link
+                                                    href={accountUrl}
+                                                    target="_blank"
+                                                    className="hover:underline"
+                                                >
+                                                    {account.name}
+                                                </Link>
+                                            ) : (
+                                                account.name
+                                            )}
                                         </h3>
                                         {isValid && accountName && (
                                             <Badge className="w-fit">

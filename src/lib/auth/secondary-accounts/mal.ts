@@ -105,6 +105,12 @@ export class MalAccount extends SecondaryAccountBase {
         this.updateLoginToastSetting();
         return true;
     }
+
+    getAccountUrl(): string | null {
+        const user = this.userStorage.get();
+        if (!user) return null;
+        return `https://myanimelist.net/profile/${user.name}`;
+    }
 }
 
 function generateCodeVerifier(length = 128): string {
