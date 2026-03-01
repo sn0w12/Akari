@@ -188,15 +188,20 @@ function ScoreGraph({
                     key={score}
                     className="flex-1 flex flex-col items-center justify-between"
                 >
-                    <p>{formatNumberShort(count)}</p>
-                    <div
-                        key={score}
-                        className={cn("bg-primary w-full h-full rounded", {
-                            "bg-accent-positive": userScore === parseInt(score),
-                        })}
-                        style={{ height: `${(count / maxCount) * 100}%` }}
-                    />
-                    <p>{score}</p>
+                    {formatNumberShort(count)}
+                    <div className="w-full flex-1 relative">
+                        <div
+                            className={cn(
+                                "bg-primary w-full rounded absolute bottom-0",
+                                {
+                                    "bg-accent-positive":
+                                        userScore === parseInt(score),
+                                },
+                            )}
+                            style={{ height: `${(count / maxCount) * 100}%` }}
+                        />
+                    </div>
+                    {score}
                 </div>
             ))}
         </div>
