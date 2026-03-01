@@ -19,8 +19,8 @@ import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { cn, formatNumberShort } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Star, StarHalf } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { StarHalf } from "lucide-react";
+import { memo, useMemo, useRef, useState } from "react";
 
 const RATINGS = [
     { label: "Remove Rating", value: -1 },
@@ -57,20 +57,24 @@ async function getUserScore(mangaId: string): Promise<number | null> {
     return data.data;
 }
 
+type HoverFill = "empty" | "half" | "full";
+
 export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     const { data: user } = useUser();
     const queryClient = useQueryClient();
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const [hoveredFill, setHoveredFill] = useState<0 | 0.5 | 1>(0);
+    const [hoverState, setHoverState] = useState<{
+        index: number;
+        fill: 0.5 | 1;
+    } | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedRating, setSelectedRating] = useState<number>(0);
     const [ratingLoading, setRatingLoading] = useState<boolean>(false);
-    const starRefs = useRef<(Element | null)[]>([]);
+    const starRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    const score = useMemo(() => {
-        const clampedScore = Math.max(0, Math.min(5, rating.average / 2));
-        return clampedScore;
-    }, [rating.average]);
+    const score = useMemo(
+        () => Math.max(0, Math.min(5, rating.average / 2)),
+        [rating.average],
+    );
 
     const { data: userScore } = useQuery({
         queryKey: ["user-score", mangaId],
@@ -82,45 +86,47 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
 
     const fullStars = Math.floor(score);
     const hasHalfStar = score % 1 >= 0.5;
-    const isAnyHovered = hoveredIndex !== null;
 
-    const starClasses = "size-6 md:size-7 xl:size-8";
+    const getFillFromEvent = (index: number, clientX: number): 0.5 | 1 => {
+        const rect = starRefs.current[index]?.getBoundingClientRect();
+        if (rect) {
+            return clientX < rect.left + rect.width / 2 ? 0.5 : 1;
+        }
+        return 1;
+    };
 
     const handleMouseMove = (
         index: number,
-        event: React.MouseEvent<Element>,
+        event: React.MouseEvent<HTMLDivElement>,
     ) => {
-        const rect = starRefs.current[index]?.getBoundingClientRect();
-        if (rect) {
-            const centerX = rect.left + rect.width / 2;
-            const isLeftHalf = event.clientX < centerX;
-            setHoveredFill(isLeftHalf ? 0.5 : 1);
-        }
+        const fill = getFillFromEvent(index, event.clientX);
+        // Only update if fill actually changed to avoid unnecessary re-renders
+        setHoverState((prev) =>
+            prev?.index === index && prev.fill === fill
+                ? prev
+                : { index, fill },
+        );
     };
 
     const handleMouseEnter = (
         index: number,
-        event: React.MouseEvent<Element>,
+        event: React.MouseEvent<HTMLDivElement>,
     ) => {
-        setHoveredIndex(index);
-        // Calculate initial fill based on mouse position
-        const rect = starRefs.current[index]?.getBoundingClientRect();
-        if (rect) {
-            const centerX = rect.left + rect.width / 2;
-            const isLeftHalf = event.clientX < centerX;
-            setHoveredFill(isLeftHalf ? 0.5 : 1);
-        } else {
-            setHoveredFill(1);
-        }
+        setHoverState({ index, fill: getFillFromEvent(index, event.clientX) });
+    };
+
+    // Compute the display fill for each star given current hover state
+    const getHoverFill = (index: number): HoverFill => {
+        if (!hoverState) return "empty";
+        if (index < hoverState.index) return "full";
+        if (index === hoverState.index)
+            return hoverState.fill === 0.5 ? "half" : "full";
+        return "empty";
     };
 
     async function handleRemoveRating() {
         const { error } = await client.DELETE("/v2/manga/{id}/rate", {
-            params: {
-                path: {
-                    id: mangaId,
-                },
-            },
+            params: { path: { id: mangaId } },
         });
 
         if (error) {
@@ -142,14 +148,8 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
         }
 
         const { error } = await client.POST("/v2/manga/{id}/rate", {
-            params: {
-                path: {
-                    id: mangaId,
-                },
-            },
-            body: {
-                rating: rating,
-            },
+            params: { path: { id: mangaId } },
+            body: { rating },
         });
         setRatingLoading(false);
 
@@ -163,105 +163,43 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     }
 
     return (
-        <div className="flex w-full h-full bg-primary/10 rounded-xl flex flex-col items-center justify-center p-2 xl:p-4">
+        <div className="flex w-full h-full bg-primary/10 rounded-xl flex-col items-center justify-center p-2 xl:p-4">
             <div className="flex flex-col items-center justify-center relative top-1 xl:top-2.5">
                 <div
                     className="flex items-center justify-center space-x-1"
-                    onMouseLeave={() => setHoveredIndex(null)}
+                    onMouseLeave={() => setHoverState(null)}
                 >
                     {[...Array(5)].map((_, index) => {
-                        const isHovered =
-                            hoveredIndex !== null && index <= hoveredIndex;
-                        const isCurrentHovered = hoveredIndex === index;
-                        const showHalf =
-                            isCurrentHovered && hoveredFill === 0.5;
-                        const showFull = isCurrentHovered && hoveredFill === 1;
+                        const hoverFill = getHoverFill(index);
+                        const isAnyHovered = hoverState !== null;
 
                         return (
                             <div
                                 key={index}
-                                className={cn("relative", starClasses)}
+                                className={
+                                    "relative cursor-pointer size-6 md:size-7 xl:size-8"
+                                }
                                 ref={(el) => {
                                     starRefs.current[index] = el;
                                 }}
                                 onMouseEnter={(e) => handleMouseEnter(index, e)}
                                 onMouseMove={(e) => handleMouseMove(index, e)}
                                 onClick={() => {
-                                    if (!user) return;
-
-                                    const rating =
-                                        hoveredIndex !== null
-                                            ? hoveredIndex + hoveredFill
-                                            : 0;
-                                    setSelectedRating(rating * 2); // Convert to 10-point scale
+                                    if (!user || !hoverState) return;
+                                    setSelectedRating(
+                                        (hoverState.index + hoverState.fill) *
+                                            2,
+                                    );
                                     setDialogOpen(true);
                                 }}
                             >
-                                {/* Background layer */}
-                                <Star
-                                    className={cn(
-                                        "absolute inset-0 z-10",
-                                        starClasses,
-                                        "text-primary/20",
-                                    )}
+                                <ScoreStars
+                                    index={index}
+                                    hoverFill={hoverFill}
+                                    isAnyHovered={isAnyHovered}
+                                    fullStars={fullStars}
+                                    hasHalfStar={hasHalfStar}
                                 />
-                                {/* Default score overlay */}
-                                <div
-                                    className={cn(
-                                        "absolute inset-0 z-20 transition-opacity duration-200",
-                                        isAnyHovered
-                                            ? "opacity-0"
-                                            : "opacity-100",
-                                    )}
-                                >
-                                    <Star
-                                        className={cn(
-                                            starClasses,
-                                            "absolute inset-0",
-                                            index < fullStars
-                                                ? "text-primary"
-                                                : "text-transparent",
-                                        )}
-                                    />
-                                    {index === fullStars && hasHalfStar && (
-                                        <StarHalf
-                                            className={cn(
-                                                starClasses,
-                                                "absolute inset-0 text-primary",
-                                            )}
-                                        />
-                                    )}
-                                </div>
-                                {/* Hover overlay */}
-                                <div className="absolute inset-0 z-30">
-                                    <Star
-                                        className={cn(
-                                            starClasses,
-                                            "absolute inset-0 text-accent-positive transition-opacity duration-200",
-                                            isHovered && !isCurrentHovered
-                                                ? "opacity-100"
-                                                : "opacity-0",
-                                        )}
-                                    />
-                                    <Star
-                                        className={cn(
-                                            starClasses,
-                                            "absolute inset-0 text-accent-positive transition-opacity duration-200",
-                                            showFull
-                                                ? "opacity-100"
-                                                : "opacity-0",
-                                        )}
-                                    />
-                                    <StarHalf
-                                        className={cn(
-                                            starClasses,
-                                            "absolute inset-0 text-accent-positive transition-opacity duration-200",
-                                            showHalf
-                                                ? "opacity-100"
-                                                : "opacity-0",
-                                        )}
-                                    />
-                                </div>
                             </div>
                         );
                     })}
@@ -327,6 +265,52 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
         </div>
     );
 }
+
+const starClasses = "size-6 md:size-7 xl:size-8 transition-colors duration-200";
+const ScoreStars = memo(function ScoreStars({
+    index,
+    hoverFill,
+    isAnyHovered,
+    fullStars,
+    hasHalfStar,
+}: {
+    index: number;
+    hoverFill: HoverFill;
+    isAnyHovered: boolean;
+    fullStars: number;
+    hasHalfStar: boolean;
+}) {
+    const isFirstVisible =
+        index < fullStars ||
+        (index === fullStars && hasHalfStar) ||
+        hoverFill === "half" ||
+        hoverFill === "full";
+    const isSecondVisible =
+        index < fullStars || (index === fullStars && hoverFill === "full");
+
+    return (
+        <>
+            <StarHalf
+                className={cn(starClasses, "absolute text-ring inset-0", {
+                    "text-primary": !isAnyHovered,
+                    "text-accent-positive": hoverFill !== "empty",
+                    "text-ring": !isFirstVisible,
+                })}
+            />
+            <StarHalf
+                className={cn(
+                    starClasses,
+                    "absolute inset-0 text-ring -scale-x-100",
+                    {
+                        "text-primary": !isAnyHovered,
+                        "text-accent-positive": hoverFill === "full",
+                        "text-ring": !isSecondVisible,
+                    },
+                )}
+            />
+        </>
+    );
+});
 
 function ScoreGraph({
     rating,
