@@ -67,6 +67,11 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     const [ratingLoading, setRatingLoading] = useState<boolean>(false);
     const starRefs = useRef<(Element | null)[]>([]);
 
+    const score = useMemo(() => {
+        const clampedScore = Math.max(0, Math.min(5, rating.average / 2));
+        return clampedScore;
+    }, [rating.average]);
+
     const { data: userScore } = useQuery({
         queryKey: ["user-score", mangaId],
         queryFn: () => getUserScore(mangaId),
@@ -75,9 +80,8 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
         staleTime: Infinity,
     });
 
-    const clampedScore = Math.max(0, Math.min(5, rating.average));
-    const fullStars = Math.floor(clampedScore);
-    const hasHalfStar = clampedScore % 1 >= 0.5;
+    const fullStars = Math.floor(score);
+    const hasHalfStar = score % 1 >= 0.5;
     const isAnyHovered = hoveredIndex !== null;
 
     const starClasses = "size-6 md:size-7 xl:size-8";
@@ -263,7 +267,7 @@ export default function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
                     })}
                 </div>
                 <p className="text-sm text-accent-foreground/70 h-5">
-                    {rating.average.toFixed(1)} / 5
+                    {score.toFixed(1)} / 5
                 </p>
             </div>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
