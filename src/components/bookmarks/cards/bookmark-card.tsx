@@ -98,46 +98,48 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
     const shouldReadLatest = bookmark.chaptersBehind === 1;
 
     return (
-        <div
-            className={cn("flex items-center gap-2 w-full", className)}
-            {...longPress}
-        >
-            {isCaughtUp ? (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 bg-transparent"
-                    disabled
-                >
-                    All caught up!
-                </Button>
-            ) : shouldReadLatest ? (
-                <ButtonLink
-                    href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.number}`}
-                    size="sm"
-                    className="flex-1"
-                >
-                    <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
-                    {bookmark.latestChapter.number}
-                </ButtonLink>
-            ) : (
-                <ButtonLink
-                    href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.number}`}
-                    variant="secondary"
-                    size="sm"
-                    className="flex-1 group"
-                    prefetch={false}
-                >
-                    <p className="hidden md:inline">Continue Reading • </p>
-                    Ch. {bookmark.nextChapter.number}
-                    <Badge
-                        variant="default"
-                        className="ml-1.5 text-xs group-hover:bg-primary/80"
+        <>
+            <div
+                className={cn("flex items-center gap-2 w-full", className)}
+                {...longPress}
+            >
+                {isCaughtUp ? (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent"
+                        disabled
                     >
-                        {bookmark.chaptersBehind} new
-                    </Badge>
-                </ButtonLink>
-            )}
+                        All caught up!
+                    </Button>
+                ) : shouldReadLatest ? (
+                    <ButtonLink
+                        href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.number}`}
+                        size="sm"
+                        className="flex-1"
+                    >
+                        <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
+                        {bookmark.latestChapter.number}
+                    </ButtonLink>
+                ) : (
+                    <ButtonLink
+                        href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.number}`}
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1 group"
+                        prefetch={false}
+                    >
+                        <p className="hidden md:inline">Continue Reading • </p>
+                        Ch. {bookmark.nextChapter.number}
+                        <Badge
+                            variant="default"
+                            className="ml-1.5 text-xs group-hover:bg-primary/80"
+                        >
+                            {bookmark.chaptersBehind} new
+                        </Badge>
+                    </ButtonLink>
+                )}
+            </div>
             <ChaptersPopup
                 open={open}
                 setOpen={setOpen}
@@ -146,7 +148,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 lastReadChapter={bookmark.lastReadChapter}
                 estimatedChapters={bookmark.latestChapter.number}
             />
-        </div>
+        </>
     );
 }
 
