@@ -30,6 +30,7 @@ export function useLongPress(
     onClick: MouseEventHandler;
     onClickCapture: MouseEventHandler;
     onContextMenu: MouseEventHandler;
+    style: React.CSSProperties;
 } {
     const { trigger } = useWebHaptics();
     const timerRef = useRef<number | null>(null);
@@ -47,24 +48,36 @@ export function useLongPress(
         return mainScroll >= windowScroll ? mainScroll : windowScroll;
     };
 
-    const start: MouseEventHandler & TouchEventHandler = useCallback(() => {
-        if (typeof window === "undefined") return; // Ensure we're in a browser environment
-        if (timerRef.current) return; // timer already running
-
-        isPressed.current = true;
-        initialScroll.current = getScrollPos();
-
-        timerRef.current = window.setTimeout(() => {
-            if (isPressed.current) {
-                callback(); // Execute the action after hold
-                if (hapticPreset) {
-                    trigger(hapticPreset);
-                }
-                longPressed.current = true;
+    const start: MouseEventHandler & TouchEventHandler = useCallback(
+        (e) => {
+            // preventDefault on touch events to stop Safari from showing the
+            // native link/menu callout when a long‑press happens.  We only need
+            // it for touch because mouse down on desktop doesn't trigger the
+            // same menu and calling preventDefault there can interfere with
+            // drag behavior.
+            if (e && "touches" in e && e.cancelable) {
+                e.preventDefault();
             }
-            timerRef.current = null;
-        }, delay);
-    }, [callback, delay, hapticPreset, trigger]);
+
+            if (typeof window === "undefined") return; // Ensure we're in a browser environment
+            if (timerRef.current) return; // timer already running
+
+            isPressed.current = true;
+            initialScroll.current = getScrollPos();
+
+            timerRef.current = window.setTimeout(() => {
+                if (isPressed.current) {
+                    callback(); // Execute the action after hold
+                    if (hapticPreset) {
+                        trigger(hapticPreset);
+                    }
+                    longPressed.current = true;
+                }
+                timerRef.current = null;
+            }, delay);
+        },
+        [callback, delay, hapticPreset, trigger],
+    );
 
     const stopTimer = useCallback(() => {
         isPressed.current = false;
@@ -74,9 +87,20 @@ export function useLongPress(
         }
     }, []);
 
-    const stop: MouseEventHandler & TouchEventHandler = useCallback(() => {
-        stopTimer();
-    }, [stopTimer]);
+    const stop: MouseEventHandler & TouchEventHandler = useCallback(
+        (e) => {
+            // also prevent default on touchend so the browser doesn't treat the
+            // gesture as a tap/click that might trigger the link immediately after
+            // our long‑press logic.  We still allow clicks to bubble normally in
+            // onClick/onClickCapture.
+            if (e && "touches" in e && e.cancelable) {
+                e.preventDefault();
+            }
+
+            stopTimer();
+        },
+        [stopTimer],
+    );
 
     const onClick: MouseEventHandler = useCallback((e) => {
         if (longPressed.current) {
@@ -125,5 +149,6 @@ export function useLongPress(
         onClick,
         onClickCapture: onClick,
         onContextMenu,
+        style: { touchAction: "manipulation", WebkitTouchCallout: "none" },
     };
 }
