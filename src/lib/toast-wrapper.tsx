@@ -1,10 +1,12 @@
 "use client";
 
 import { toast } from "sonner";
+import { useWebHaptics } from "web-haptics/react";
 import { getSetting } from "./settings";
 import { cn } from "./utils";
 
-import { CircleCheck, CircleXIcon, InfoIcon, CircleAlert } from "lucide-react";
+import { CircleAlert, CircleCheck, CircleXIcon, InfoIcon } from "lucide-react";
+import { useEffect } from "react";
 
 type ToastType = "success" | "error" | "info" | "warning";
 interface ToastOptions {
@@ -84,6 +86,12 @@ const ToastIcon = ({ type }: { type: ToastType }) => {
 };
 
 function ToastComponent({ message, type, description }: ToastProps) {
+    const { trigger } = useWebHaptics();
+
+    useEffect(() => {
+        trigger(type);
+    }, [trigger, type]);
+
     return (
         <div
             className={cn(
