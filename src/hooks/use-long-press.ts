@@ -149,6 +149,16 @@ export function useLongPress(
         onClick,
         onClickCapture: onClick,
         onContextMenu,
-        style: { touchAction: "manipulation", WebkitTouchCallout: "none" },
+        // style for any element that uses the hook.  disabling user selection
+        // stops Safari/iOS from highlighting text when you hold down, and the
+        // touch-callout has already been disabled earlier.
+        style: {
+            touchAction: "manipulation",
+            WebkitTouchCallout: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+        },
     };
 }
