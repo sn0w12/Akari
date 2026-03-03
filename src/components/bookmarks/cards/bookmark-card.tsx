@@ -98,16 +98,13 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
     const shouldReadLatest = bookmark.chaptersBehind === 1;
 
     return (
-        <>
-            <div
-                className={cn("flex items-center gap-2 w-full", className)}
-                {...longPress}
-            >
+        <div className={cn("flex items-center gap-2 w-full", className)}>
+            <div className="w-full" {...longPress}>
                 {isCaughtUp ? (
                     <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1 bg-transparent"
+                        className="flex-1 w-full bg-transparent"
                         disabled
                     >
                         All caught up!
@@ -116,7 +113,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     <ButtonLink
                         href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.number}`}
                         size="sm"
-                        className="flex-1"
+                        className="flex-1 w-full"
                     >
                         <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                         {bookmark.latestChapter.number}
@@ -126,7 +123,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.number}`}
                         variant="secondary"
                         size="sm"
-                        className="flex-1 group"
+                        className="flex-1 w-full group"
                         prefetch={false}
                     >
                         <p className="hidden md:inline">Continue Reading • </p>
@@ -148,7 +145,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 lastReadChapter={bookmark.lastReadChapter}
                 estimatedChapters={bookmark.latestChapter.number}
             />
-        </>
+        </div>
     );
 }
 
