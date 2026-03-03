@@ -1,10 +1,14 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
+import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
@@ -85,14 +89,19 @@ interface ActionButtonProps {
 }
 
 function ActionButton({ bookmark, className }: ActionButtonProps) {
+    const [open, setOpen] = useState(false);
+    const longPress = useLongPress(() => setOpen(true), 500);
+
     // Check if user is caught up (read the latest chapter)
     const isCaughtUp = bookmark.chaptersBehind === 0;
-
     // Check if user should just read the latest (read second-to-latest)
     const shouldReadLatest = bookmark.chaptersBehind === 1;
 
     return (
-        <div className={cn("flex items-center gap-2 w-full", className)}>
+        <div
+            className={cn("flex items-center gap-2 w-full", className)}
+            {...longPress}
+        >
             {isCaughtUp ? (
                 <Button
                     variant="outline"
@@ -130,6 +139,8 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 </ButtonLink>
             )}
             <ChaptersPopup
+                open={open}
+                setOpen={setOpen}
                 mangaId={bookmark.mangaId}
                 title={bookmark.title}
                 lastReadChapter={bookmark.lastReadChapter}

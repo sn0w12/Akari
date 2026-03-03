@@ -12,20 +12,22 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDownIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 interface ChaptersPopupProps {
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     mangaId: string;
     title: string;
     lastReadChapter: components["schemas"]["MangaChapter"];
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
+    open,
+    setOpen,
     mangaId,
     title,
     lastReadChapter,
 }) => {
-    const [open, setOpen] = useState(false);
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
         enabled: open,
@@ -54,7 +56,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
             <PopoverDrawerTrigger>
                 <Button
                     size="sm"
-                    className="size-8"
+                    className="size-8 hidden md:flex"
                     aria-label="Browse chapters"
                 >
                     <ChevronsUpDownIcon className="h-5 w-5" />
