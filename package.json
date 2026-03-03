@@ -70,7 +70,7 @@
         "web-haptics": "^0.0.6"
     },
     "devDependencies": {
-        "@eslint/eslintrc": "^3.3.3",
+        "@eslint/eslintrc": "^3.3.4",
         "@tailwindcss/postcss": "^4.2.0",
         "@tailwindcss/typography": "^0.5.19",
         "@types/js-cookie": "^3.0.6",
