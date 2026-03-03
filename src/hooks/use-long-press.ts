@@ -3,7 +3,7 @@ import type { MouseEventHandler, TouchEventHandler } from "react";
 import { useCallback, useRef } from "react";
 import { useWebHaptics } from "web-haptics/react";
 
-type DefaultHapticPresetName =
+export type DefaultHapticPresetName =
     | "success"
     | "warning"
     | "error"

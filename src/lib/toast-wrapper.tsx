@@ -5,6 +5,7 @@ import { useWebHaptics } from "web-haptics/react";
 import { getSetting } from "./settings";
 import { cn } from "./utils";
 
+import { DefaultHapticPresetName } from "@/hooks/use-long-press";
 import { CircleAlert, CircleCheck, CircleXIcon, InfoIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -85,11 +86,18 @@ const ToastIcon = ({ type }: { type: ToastType }) => {
     }
 };
 
+const toastTypeToTriggerMap: Record<ToastType, DefaultHapticPresetName> = {
+    success: "success",
+    error: "error",
+    info: "light",
+    warning: "warning",
+};
+
 function ToastComponent({ message, type, description }: ToastProps) {
     const { trigger } = useWebHaptics();
 
     useEffect(() => {
-        trigger(type);
+        trigger(toastTypeToTriggerMap[type]);
     }, [trigger, type]);
 
     return (
