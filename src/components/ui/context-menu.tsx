@@ -1,10 +1,9 @@
-import * as React from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
-import { ContextKeyboardShortcut } from "./keyboard-shortcut";
 import { useConfirm } from "@/contexts/confirm-context";
+import { cn } from "@/lib/utils";
 
 function ContextMenu({
     ...props
@@ -168,31 +167,6 @@ function ContextMenuItem({
     );
 }
 
-function ContextMenuShortcutItem({
-    children,
-    keys,
-    className,
-    onClick,
-    ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Item> & {
-    keys?: string[];
-}) {
-    return (
-        <ContextMenuPrimitive.Item
-            data-slot="context-menu-item"
-            className={cn(
-                "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-                className,
-            )}
-            onClick={onClick}
-            {...props}
-        >
-            <div className="flex flex-row items-center gap-2">{children}</div>
-            {keys && keys.length > 0 && <ContextKeyboardShortcut keys={keys} />}
-        </ContextMenuPrimitive.Item>
-    );
-}
-
 function ContextMenuCheckboxItem({
     className,
     children,
@@ -294,19 +268,18 @@ function ContextMenuShortcut({
 
 export {
     ContextMenu,
-    ContextMenuTrigger,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuShortcutItem,
     ContextMenuCheckboxItem,
-    ContextMenuRadioItem,
+    ContextMenuContent,
+    ContextMenuGroup,
+    ContextMenuItem,
     ContextMenuLabel,
+    ContextMenuPortal,
+    ContextMenuRadioGroup,
+    ContextMenuRadioItem,
     ContextMenuSeparator,
     ContextMenuShortcut,
-    ContextMenuGroup,
-    ContextMenuPortal,
     ContextMenuSub,
     ContextMenuSubContent,
     ContextMenuSubTrigger,
-    ContextMenuRadioGroup,
+    ContextMenuTrigger,
 };

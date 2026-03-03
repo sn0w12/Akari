@@ -35,6 +35,7 @@ import {
     getSettingValue,
 } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { formatForDisplay, useHotkeyRecorder } from "@tanstack/react-hotkeys";
 import { Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -275,44 +276,11 @@ function SettingInputRenderer({
                 </RadioGroup>
             );
         case "shortcut": {
-            const duplicates = findDuplicateShortcuts(settingsMap);
-            const isDuplicate = duplicates.has(
-                getSettingValue(setting) as string,
-            );
-
             return (
-                <Input
-                    id={settingKey}
-                    type="text"
-                    value={getSettingValue(setting) as string}
-                    className={`max-w-60 mb-0 ${
-                        isDuplicate
-                            ? "border-destructive bg-destructive/20 focus-visible:ring-destructive"
-                            : ""
-                    }`}
-                    onKeyDown={(e) => {
-                        e.preventDefault();
-                        const keys: string[] = [];
-                        if (e.ctrlKey) keys.push("Ctrl");
-                        if (e.shiftKey) keys.push("Shift");
-                        if (e.altKey) keys.push("Alt");
-
-                        if (e.key === " " || e.code === "Space") {
-                            keys.push("Space");
-                        } else if (
-                            e.key !== "Control" &&
-                            e.key !== "Shift" &&
-                            e.key !== "Alt"
-                        ) {
-                            keys.push(e.key.toUpperCase());
-                        }
-
-                        if (keys.length > 0) {
-                            setting.onChange?.(keys.join("+"));
-                        }
-                    }}
-                    readOnly
-                    placeholder={"Press a key combination..."}
+                <ShortcutSettingInput
+                    settingKey={settingKey}
+                    setting={setting as ShortcutSetting}
+                    settingsMap={settingsMap}
                 />
             );
         }
@@ -420,6 +388,45 @@ function SettingInputRenderer({
     }
 }
 
+function ShortcutSettingInput({
+    settingKey,
+    setting,
+    settingsMap,
+}: SettingsInputProps) {
+    const duplicates = findDuplicateShortcuts(settingsMap);
+    const isDuplicate = duplicates.has(getSettingValue(setting) as string);
+    const { isRecording, recordedHotkey, startRecording } = useHotkeyRecorder({
+        onRecord: (recordedHotkey) => {
+            setting.onChange?.(recordedHotkey);
+        },
+    });
+
+    // display value: either the value currently set or the recorder state
+    const displayValue = isRecording
+        ? "Recording…"
+        : recordedHotkey || (getSettingValue(setting) as string);
+
+    return (
+        <div className="flex items-center space-x-2">
+            <Input
+                id={settingKey}
+                type="text"
+                value={formatForDisplay(displayValue)}
+                className={cn("max-w-60 mb-0", {
+                    "border-destructive bg-destructive/20 focus-visible:ring-destructive":
+                        isDuplicate,
+                })}
+                readOnly
+                onClick={(e) => {
+                    if (e.button !== 0) return; // only respond to left click
+                    startRecording();
+                }}
+                placeholder={isRecording ? "…" : "Press a key combination..."}
+            />
+        </div>
+    );
+}
+
 function SettingsInputWrapper({
     settingKey,
     setting,
@@ -480,7 +487,7 @@ export function SettingsInput({
 
     return (
         <ContextMenu>
-            <ContextMenuTrigger asChild>
+            <ContextMenuTrigger>
                 <SettingsInputWrapper
                     settingKey={settingKey}
                     setting={setting}

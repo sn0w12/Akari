@@ -1,40 +1,16 @@
 import { useDevice } from "@/contexts/device-context";
-import { useKeyPressed } from "@/hooks/use-keys-pressed";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import {
+    formatForDisplay,
+    Hotkey,
+    RegisterableHotkey,
+    useHeldKeys,
+} from "@tanstack/react-hotkeys";
 
 interface KeyboardShortcutProps {
-    keys: string[] | string;
+    keys: RegisterableHotkey;
     className?: string;
-}
-
-const KEY_VISUALS: Record<string, string> = {
-    arrowup: "↑",
-    arrowdown: "↓",
-    arrowleft: "←",
-    arrowright: "→",
-    enter: "⏎",
-    escape: "⎋",
-    space: "␣",
-    tab: "⇥",
-    backspace: "⌫",
-    delete: "del",
-    control: "ctrl",
-    alt: "alt",
-    meta: "⌘",
-    capslock: "caps",
-};
-
-function ParseShortcutKeys(keys: string[] | string): string[] {
-    if (Array.isArray(keys)) {
-        return keys.map((key) => key.toLowerCase());
-    }
-    return keys.toLowerCase().split("+");
-}
-
-function getKeyVisual(key: string): string {
-    const normalized = key.trim().toLowerCase();
-    return KEY_VISUALS[normalized] ?? key;
 }
 
 function Kbd({
@@ -61,8 +37,11 @@ function Kbd({
 }
 
 function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
-    const parsedKeys = ParseShortcutKeys(keys);
-    const pressedKeys = useKeyPressed();
+    const pressedKeys = useHeldKeys();
+    const formattedPressedKeys = pressedKeys.map((key) => {
+        if (key === "Control") return "Ctrl";
+        return formatForDisplay(key);
+    });
     const { deviceType } = useDevice();
 
     const shouldShow = useSetting("showShortcuts");
@@ -75,14 +54,16 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
                 className,
             )}
         >
-            {parsedKeys.map((key, index) => (
-                <Kbd
-                    key={`${parsedKeys.join("-")}-${index}`}
-                    isPressed={pressedKeys.has(key.toLowerCase())}
-                >
-                    {getKeyVisual(key)}
-                </Kbd>
-            ))}
+            {formatForDisplay(keys as Hotkey)
+                .split("+")
+                .map((key, index) => (
+                    <Kbd
+                        key={`${keys}-${index}`}
+                        isPressed={formattedPressedKeys.includes(key)}
+                    >
+                        {key}
+                    </Kbd>
+                ))}
         </span>
     );
 }
@@ -91,8 +72,11 @@ function ContextKeyboardShortcut({
     keys,
     className = "",
 }: KeyboardShortcutProps) {
-    const parsedKeys = ParseShortcutKeys(keys);
-    const pressedKeys = useKeyPressed();
+    const pressedKeys = useHeldKeys();
+    const formattedPressedKeys = pressedKeys.map((key) => {
+        if (key === "Control") return "Ctrl";
+        return formatForDisplay(key);
+    });
     const { deviceType } = useDevice();
 
     const shouldShow = useSetting("showShortcuts");
@@ -105,14 +89,16 @@ function ContextKeyboardShortcut({
                 className,
             )}
         >
-            {parsedKeys.map((key, index) => (
-                <Kbd
-                    key={`${parsedKeys.join("-")}-${index}`}
-                    isPressed={pressedKeys.has(key.toLowerCase())}
-                >
-                    {getKeyVisual(key)}
-                </Kbd>
-            ))}
+            {formatForDisplay(keys as Hotkey)
+                .split("+")
+                .map((key, index) => (
+                    <Kbd
+                        key={`${keys}-${index}`}
+                        isPressed={formattedPressedKeys.includes(key)}
+                    >
+                        {key}
+                    </Kbd>
+                ))}
         </span>
     );
 }

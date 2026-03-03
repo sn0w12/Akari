@@ -3,7 +3,11 @@
 
 import { APP_SETTINGS } from "@/config";
 import { DeviceType } from "@/contexts/device-context";
-import { ShortcutOptions, useShortcut } from "@/hooks/use-shortcut";
+import {
+    RegisterableHotkey,
+    useHotkey,
+    UseHotkeyOptions,
+} from "@tanstack/react-hotkeys";
 import React from "react";
 
 type AppSettingsCategories = typeof APP_SETTINGS;
@@ -34,27 +38,29 @@ type SettingValueType<S> = S extends { type: "checkbox" }
     ? boolean
     : S extends { type: "checkbox-group" }
       ? string[]
-      : S extends { type: "select"; options: readonly { value: infer V }[] }
-        ? V
-        : S extends { type: "radio"; options: readonly { value: infer V }[] }
+      : S extends { type: "shortcut" }
+        ? RegisterableHotkey
+        : S extends { type: "select"; options: readonly { value: infer V }[] }
           ? V
-          : S extends {
-                  type:
-                      | "text"
-                      | "password"
-                      | "email"
-                      | "number"
-                      | "textarea"
-                      | "shortcut"
-                      | "slider"
-                      | "color";
-              }
-            ? string
-            : S extends { type: "button" }
+          : S extends { type: "radio"; options: readonly { value: infer V }[] }
+            ? V
+            : S extends {
+                    type:
+                        | "text"
+                        | "password"
+                        | "email"
+                        | "number"
+                        | "textarea"
+                        | "shortcut"
+                        | "slider"
+                        | "color";
+                }
               ? string
-              : S extends { type: "custom-render" }
-                ? never
-                : never;
+              : S extends { type: "button" }
+                ? string
+                : S extends { type: "custom-render" }
+                  ? never
+                  : never;
 
 // Map setting keys to their value types
 export type SettingsInterface = {
@@ -265,10 +271,10 @@ export function setSetting<K extends SettingKeys>(
 export function useShortcutSetting(
     key: ShortcutSettingKeys,
     callback: () => void,
-    options: ShortcutOptions = {},
+    options: UseHotkeyOptions = {},
 ) {
     const shortcut = useSetting(key);
-    useShortcut(shortcut, callback, options);
+    useHotkey(shortcut, callback, options);
 }
 
 /**
@@ -301,7 +307,7 @@ export const createSettingsMap = (
             ...setting,
             value: currentSettings[key as keyof SettingsInterface],
             onChange: createHandler,
-        };
+        } as Setting;
     }
 
     return returnSettings;
@@ -347,7 +353,12 @@ export function resetAllSettingsToDefault() {
     localStorage.setItem("settings", JSON.stringify(defaultSettings));
 }
 
-export type SettingValue = string | boolean | string[];
+export type SettingValue =
+    | string
+    | boolean
+    | string[]
+    | number
+    | RegisterableHotkey;
 export type SettingType =
     | "checkbox"
     | "checkbox-group"
@@ -463,8 +474,8 @@ export interface RadioSetting extends BaseSetting {
 
 export interface ShortcutSetting extends BaseSetting {
     type: "shortcut";
-    value?: SettingValue;
-    default: string | (() => string);
+    value?: RegisterableHotkey;
+    default: RegisterableHotkey | (() => RegisterableHotkey);
     allowOverlap?: string[];
 }
 

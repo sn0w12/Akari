@@ -21,8 +21,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useShortcut } from "@/hooks/use-shortcut";
-import { useSetting } from "@/lib/settings";
+import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Drawer, DrawerContent } from "./drawer";
@@ -155,8 +154,7 @@ function SidebarProvider({
             : setOpen((open) => !open);
     }, [isMobile, setOpen, setOpenMobile]);
 
-    const shortCut = useSetting("toggleSidebar");
-    useShortcut(shortCut, toggleSidebar);
+    useShortcutSetting("toggleSidebar", toggleSidebar);
 
     const state = open ? "expanded" : "collapsed";
 

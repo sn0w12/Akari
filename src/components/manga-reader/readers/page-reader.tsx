@@ -1,9 +1,8 @@
 "use client";
 
-import { useShortcut } from "@/hooks/use-shortcut";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
-import { useSetting } from "@/lib/settings";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -111,8 +110,8 @@ export default function PageReader({
         }
     }, [currentPage, setPageWithUrlUpdate]);
 
-    useShortcut(readingDir === "rtl" ? "ARROWLEFT" : "ARROWRIGHT", nextPage);
-    useShortcut(readingDir === "rtl" ? "ARROWRIGHT" : "ARROWLEFT", prevPage);
+    useShortcutSetting("nextPage", nextPage);
+    useShortcutSetting("previousPage", prevPage);
 
     const handleClick = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
