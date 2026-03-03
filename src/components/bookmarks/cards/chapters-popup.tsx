@@ -19,6 +19,7 @@ interface ChaptersPopupProps {
     mangaId: string;
     title: string;
     lastReadChapter: components["schemas"]["MangaChapter"];
+    estimatedChapters: number;
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
@@ -27,6 +28,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     mangaId,
     title,
     lastReadChapter,
+    estimatedChapters,
 }) => {
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
@@ -72,7 +74,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                 >
                     {isLoading ? (
                         <div className="space-y-2 py-2">
-                            {Array(5)
+                            {Array(estimatedChapters)
                                 .fill(0)
                                 .map((_, index) => (
                                     <div key={index} className="p-2">

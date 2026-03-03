@@ -144,6 +144,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 mangaId={bookmark.mangaId}
                 title={bookmark.title}
                 lastReadChapter={bookmark.lastReadChapter}
+                estimatedChapters={bookmark.latestChapter.number}
             />
         </div>
     );
