@@ -8,7 +8,7 @@ import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
@@ -90,7 +90,17 @@ interface ActionButtonProps {
 
 function ActionButton({ bookmark, className }: ActionButtonProps) {
     const [open, setOpen] = useState(false);
-    const longPress = useLongPress(() => setOpen(true), 500);
+    const { release, handlers, style } = useLongPress(
+        () => setOpen(true),
+        500,
+        {
+            controlledAfterPress: true,
+        },
+    );
+
+    useEffect(() => {
+        if (!open) release();
+    }, [open, release]);
 
     // Check if user is caught up (read the latest chapter)
     const isCaughtUp = bookmark.chaptersBehind === 0;
@@ -99,7 +109,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
 
     return (
         <div className={cn("flex items-center gap-2 w-full", className)}>
-            <div className="w-full" {...longPress}>
+            <div className="w-full" {...handlers} style={style}>
                 {isCaughtUp ? (
                     <Button
                         variant="outline"
