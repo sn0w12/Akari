@@ -19,16 +19,11 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export async function generateStaticParams() {
-    let limit = undefined;
     if (STATIC_GENERATION_DISABLED) {
-        limit = 1;
+        return [{ id: "737e7c9c-abac-4977-9c56-0a4ff26b295e" }];
     }
 
-    const mangaIds = await getAllMangaIds(limit);
-    if (STATIC_GENERATION_DISABLED) {
-        return [{ id: mangaIds[0] }];
-    }
-
+    const mangaIds = await getAllMangaIds();
     return mangaIds.map((id) => ({ id }));
 }
 

@@ -39,18 +39,16 @@ interface MangaReaderProps {
 }
 
 export async function generateStaticParams() {
-    const limit = 1;
-
-    const mangaIds = await getAllChapterIds(limit);
     if (STATIC_GENERATION_DISABLED) {
         return [
             {
-                id: mangaIds[0].mangaId,
-                subId: mangaIds[0].chapterIds[0].toString(),
+                id: "737e7c9c-abac-4977-9c56-0a4ff26b295e",
+                subId: "1",
             },
         ];
     }
 
+    const mangaIds = await getAllChapterIds();
     return mangaIds.flatMap(({ mangaId, chapterIds }) =>
         chapterIds.map((chapterId) => ({
             id: mangaId,
