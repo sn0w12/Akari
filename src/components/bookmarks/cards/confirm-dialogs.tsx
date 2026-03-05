@@ -1,33 +1,76 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ButtonConfirmDialog } from "@/components/ui/confirm";
+import { DrawerConfirm } from "@/components/ui/confirm";
+import {
+    DrawerContent,
+    DrawerNested,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+    PopoverDrawer,
+    PopoverDrawerContent,
+    PopoverDrawerTrigger,
+} from "@/components/ui/popover-drawer";
+import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { removeBookmark } from "@/lib/manga/bookmarks";
 import { syncAllServices } from "@/lib/manga/sync";
 import Toast from "@/lib/toast-wrapper";
-import { cn } from "@/lib/utils";
-import { Check, X } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
+import { useState } from "react";
 
 export function ConfirmDialogs({
     bookmark,
-    className,
 }: {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
-    className?: string;
 }) {
-    async function handleRemoveBookmark(mangaId: string) {
+    const { confirm } = useConfirm();
+
+    async function handleRemoveBookmark(mangaId: string, shouldConfirm = true) {
+        if (shouldConfirm) {
+            const confirmed = await confirm({
+                title: "Remove Bookmark",
+                description: "Are you sure you want to remove this bookmark?",
+                confirmText: "Yes, remove it",
+                cancelText: "No, keep it",
+                variant: "destructive",
+            });
+            if (!confirmed) {
+                return false;
+            }
+        }
+
         const data = await removeBookmark(mangaId);
 
         if (!data) {
             new Toast("Failed to remove bookmark", "error");
-            return;
+            return false;
         }
 
         new Toast("Bookmark removed successfully", "success");
+        return true;
     }
 
-    async function handleUpdateBookmark(id: string, subId: number | undefined) {
+    async function handleUpdateBookmark(
+        id: string,
+        subId: number,
+        shouldConfirm = true,
+    ) {
+        if (shouldConfirm) {
+            const confirmed = await confirm({
+                title: "Mark as Read",
+                description:
+                    "Are you sure you want to mark this manga as read?",
+                confirmText: "Yes, mark as read",
+                cancelText: "No, keep it",
+            });
+            if (!confirmed) {
+                return false;
+            }
+        }
+
         if (!subId) {
             return false;
         }
@@ -53,55 +96,115 @@ export function ConfirmDialogs({
         }
 
         new Toast("Bookmark updated successfully", "success");
+        return true;
     }
 
     return (
-        <div
-            className={cn(
-                "flex flex-row items-center gap-2 self-start",
-                className,
-            )}
-        >
-            <ButtonConfirmDialog
-                triggerButton={
+        <PopoverDrawer>
+            <PopoverDrawerTrigger>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="size-8 self-start"
+                >
+                    <EllipsisVertical />
+                </Button>
+            </PopoverDrawerTrigger>
+            <PopoverDrawerContent type="drawer">
+                <DrawerTitle className="mb-2.5 pb-1 border-b text-center">
+                    <h4 className="font-semibold">{bookmark.title}</h4>
+                </DrawerTitle>
+                <BookmarkDrawerContent
+                    bookmark={bookmark}
+                    updateBookmark={handleUpdateBookmark}
+                    removeBookmark={handleRemoveBookmark}
+                />
+            </PopoverDrawerContent>
+            <PopoverDrawerContent type="popover">
+                <div className="mb-2.5 pb-1 border-b">
+                    <h4 className="font-semibold">{bookmark.title}</h4>
+                </div>
+                <div className="flex flex-col gap-2">
                     <Button
+                        onClick={() =>
+                            handleUpdateBookmark(
+                                bookmark.mangaId,
+                                bookmark.latestChapter.number,
+                            )
+                        }
                         variant="ghost"
-                        size="sm"
-                        className="size-8 rounded-sm bg-negative border border-negative text-accent hover:text-negative focus:outline-none"
-                        aria-label="Remove bookmark"
+                        className="bg-accent-positive border border-accent-positive text-accent hover:text-accent-positive focus:outline-none"
                     >
-                        <X className="h-5 w-5" />
+                        Mark as Read
                     </Button>
-                }
-                title="Confirm Bookmark Removal"
-                description="Are you sure you want to remove this bookmark?"
-                confirmText="Remove"
-                cancelText="Cancel"
-                variant="destructive"
-                onConfirm={() => handleRemoveBookmark(bookmark.mangaId)}
-            />
-            <ButtonConfirmDialog
-                triggerButton={
                     <Button
+                        onClick={() => handleRemoveBookmark(bookmark.mangaId)}
                         variant="ghost"
-                        size="sm"
-                        className="size-8 rounded-sm bg-accent-positive border border-accent-positive text-accent hover:text-accent-positive focus:outline-none"
-                        aria-label="Mark as read"
+                        className="bg-destructive border border-negative text-accent hover:text-negative focus:outline-none"
                     >
-                        <Check className="h-5 w-5" />
+                        Remove Bookmark
                     </Button>
-                }
-                title="Mark as read"
-                description="Are you sure you want to mark the latest chapter as read?"
-                confirmText="Confirm"
-                cancelText="Cancel"
-                onConfirm={() =>
-                    handleUpdateBookmark(
-                        bookmark.mangaId,
-                        bookmark.latestChapter.number,
-                    )
-                }
-            />
+                </div>
+            </PopoverDrawerContent>
+        </PopoverDrawer>
+    );
+}
+
+function BookmarkDrawerContent({
+    bookmark,
+    updateBookmark,
+    removeBookmark,
+}: {
+    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    updateBookmark: (
+        id: string,
+        subId: number,
+        shouldConfirm?: boolean,
+    ) => Promise<boolean>;
+    removeBookmark: (id: string, shouldConfirm?: boolean) => Promise<boolean>;
+}) {
+    const [updateOpen, setUpdateOpen] = useState(false);
+    const [removeOpen, setRemoveOpen] = useState(false);
+
+    return (
+        <div className="flex flex-col gap-2">
+            <DrawerNested open={updateOpen} onOpenChange={setUpdateOpen}>
+                <DrawerTrigger asChild>
+                    <Button className="bg-accent-positive">Mark as Read</Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <DrawerConfirm
+                        title="Mark as Read"
+                        description="Are you sure?"
+                        onCancel={() => setUpdateOpen(false)}
+                        onConfirm={async () => {
+                            await updateBookmark(
+                                bookmark.mangaId,
+                                bookmark.latestChapter.number,
+                                false,
+                            );
+                            setUpdateOpen(false);
+                        }}
+                    />
+                </DrawerContent>
+            </DrawerNested>
+            <DrawerNested open={removeOpen} onOpenChange={setRemoveOpen}>
+                <DrawerTrigger asChild>
+                    <Button className="bg-destructive">Remove Bookmark</Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <DrawerConfirm
+                        title="Remove Bookmark"
+                        description="Are you sure?"
+                        variant="destructive"
+                        onCancel={() => setRemoveOpen(false)}
+                        onConfirm={async () => {
+                            await removeBookmark(bookmark.mangaId, false);
+                            setRemoveOpen(false);
+                        }}
+                    />
+                </DrawerContent>
+            </DrawerNested>
         </div>
     );
 }
