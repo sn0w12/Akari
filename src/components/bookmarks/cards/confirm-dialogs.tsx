@@ -120,10 +120,7 @@ export function ConfirmDialogs({
                     removeBookmark={handleRemoveBookmark}
                 />
             </PopoverDrawerContent>
-            <PopoverDrawerContent type="popover">
-                <div className="mb-2.5 pb-1 border-b">
-                    <h4 className="font-semibold">{bookmark.title}</h4>
-                </div>
+            <PopoverDrawerContent type="popover" popoverClassName="p-2">
                 <div className="flex flex-col gap-2">
                     <Button
                         onClick={() =>
