@@ -24,6 +24,9 @@ const config: NextConfig = {
             expire: 60 * 60, // 1 hour
         },
     },
+    experimental: {
+        viewTransition: true,
+    },
 };
 
 export default config;

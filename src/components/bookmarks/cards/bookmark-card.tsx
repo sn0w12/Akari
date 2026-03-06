@@ -8,7 +8,7 @@ import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ViewTransition } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
@@ -31,15 +31,19 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             tabIndex={-1}
                             aria-hidden="true"
                         >
-                            <Image
-                                src={bookmark.cover}
-                                alt={bookmark.title}
-                                height={180}
-                                width={120}
-                                className="w-full h-auto object-cover rounded-sm"
-                                quality={40}
-                                sizes="120px"
-                            />
+                            <ViewTransition
+                                name={`manga-cover-${bookmark.mangaId}`}
+                            >
+                                <Image
+                                    src={bookmark.cover}
+                                    alt={bookmark.title}
+                                    height={180}
+                                    width={120}
+                                    className="w-full h-auto object-cover rounded-sm"
+                                    quality={40}
+                                    sizes="120px"
+                                />
+                            </ViewTransition>
                         </Link>
                     </div>
 

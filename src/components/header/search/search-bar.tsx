@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, ViewTransition } from "react";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -140,17 +140,21 @@ export default function SearchBar() {
                                         }`}
                                         prefetch={true}
                                     >
-                                        <Image
-                                            src={result.cover}
-                                            alt={result.title}
-                                            className="max-h-24 w-auto rounded mr-2"
-                                            height={144}
-                                            width={96}
-                                            quality={40}
-                                            sizes={generateSizes({
-                                                default: "96px",
-                                            })}
-                                        />
+                                        <ViewTransition
+                                            name={`manga-cover-${result.id}`}
+                                        >
+                                            <Image
+                                                src={result.cover}
+                                                alt={result.title}
+                                                className="max-h-24 w-auto rounded mr-2"
+                                                height={144}
+                                                width={96}
+                                                quality={40}
+                                                sizes={generateSizes({
+                                                    default: "96px",
+                                                })}
+                                            />
+                                        </ViewTransition>
                                         {result.title}
                                     </Link>
                                 ))}

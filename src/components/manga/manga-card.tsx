@@ -6,7 +6,7 @@ import { useThrottledCallback } from "@tanstack/react-pacer";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -154,26 +154,28 @@ export function MangaCard({
                     className="relative block h-full w-full"
                     prefetch={false}
                 >
-                    <Image
-                        src={manga.cover}
-                        alt={manga.title}
-                        className="h-full w-full object-cover"
-                        width={200}
-                        height={300}
-                        quality={20}
-                        loading={priority ? "eager" : "lazy"}
-                        fetchPriority={priority ? "high" : "auto"}
-                        preload={priority}
-                        decoding="async"
-                        sizes={generateSizes({
-                            sm: "50vw",
-                            md: "33vw",
-                            lg: "25vw",
-                            xl: "20vw",
-                            "2xl": "17vw",
-                            default: "25vw",
-                        })}
-                    />
+                    <ViewTransition name={`manga-cover-${manga.id}`}>
+                        <Image
+                            src={manga.cover}
+                            alt={manga.title}
+                            className="h-full w-full object-cover"
+                            width={200}
+                            height={300}
+                            quality={20}
+                            loading={priority ? "eager" : "lazy"}
+                            fetchPriority={priority ? "high" : "auto"}
+                            preload={priority}
+                            decoding="async"
+                            sizes={generateSizes({
+                                sm: "50vw",
+                                md: "33vw",
+                                lg: "25vw",
+                                xl: "20vw",
+                                "2xl": "17vw",
+                                default: "25vw",
+                            })}
+                        />
+                    </ViewTransition>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
             </div>
