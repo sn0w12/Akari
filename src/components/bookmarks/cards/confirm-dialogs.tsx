@@ -5,7 +5,6 @@ import { DrawerConfirm } from "@/components/ui/confirm";
 import {
     DrawerContent,
     DrawerNested,
-    DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
@@ -110,10 +109,7 @@ export function ConfirmDialogs({
                     <EllipsisVertical />
                 </Button>
             </PopoverDrawerTrigger>
-            <PopoverDrawerContent type="drawer">
-                <DrawerTitle className="mb-2.5 pb-1 border-b text-center">
-                    <h4 className="font-semibold">{bookmark.title}</h4>
-                </DrawerTitle>
+            <PopoverDrawerContent type="drawer" drawerTitle={bookmark.title}>
                 <BookmarkDrawerContent
                     bookmark={bookmark}
                     updateBookmark={handleUpdateBookmark}

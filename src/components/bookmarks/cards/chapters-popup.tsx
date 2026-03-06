@@ -64,10 +64,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                     <ChevronsUpDownIcon className="h-5 w-5" />
                 </Button>
             </PopoverDrawerTrigger>
-            <PopoverDrawerContent popoverAlign="end">
-                <div className="flex items-center mb-1 pb-1 border-b gap-1 justify-center md:justify-start">
-                    <h4 className="font-semibold">{title}</h4>
-                </div>
+            <PopoverDrawerContent popoverAlign="end" drawerTitle={title}>
                 <div
                     className="max-h-96 md:max-h-64 overflow-y-auto"
                     data-scrollbar-custom

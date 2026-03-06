@@ -259,7 +259,10 @@ export function Filters({ filters, onChange }: FiltersProps) {
                     )}
                 </Button>
             </PopoverDrawerTrigger>
-            <PopoverDrawerContent popoverClassName="w-80 md:w-128">
+            <PopoverDrawerContent
+                popoverClassName="w-80 md:w-128"
+                drawerTitle="Search Filters"
+            >
                 <FiltersContent filters={filters} onChange={onChange} />
             </PopoverDrawerContent>
         </PopoverDrawer>
