@@ -75,7 +75,7 @@ export function BaseLayout({
             return;
         }
 
-        const waitForNetworkIdle = (timeout = 3000, idleMs = 120) =>
+        const waitForNetworkIdle = (timeout: number, idleMs: number) =>
             new Promise<void>((resolve) => {
                 const originalFetch = window.fetch.bind(window);
                 type Win = Window & { fetch: typeof fetch };
@@ -108,7 +108,10 @@ export function BaseLayout({
                             location.href,
                         );
                         // only track same-origin requests to avoid counting analytics/3rd-party
-                        return url.origin === location.origin;
+                        return (
+                            url.origin === location.origin &&
+                            url.search.includes("?_rsc")
+                        );
                     } catch {
                         return false;
                     }
@@ -126,6 +129,7 @@ export function BaseLayout({
 
                     p.finally(() => {
                         if (track) {
+                            console.debug("fetch finished:", input);
                             inFlight = Math.max(0, inFlight - 1);
                             if (inFlight === 0) {
                                 if (idleTimer) clearTimeout(idleTimer);
@@ -144,7 +148,7 @@ export function BaseLayout({
                 window.setTimeout(finish, timeout);
             });
 
-        const networkPromise = waitForNetworkIdle(3000, 120);
+        const networkPromise = waitForNetworkIdle(3000, 500);
         router.refresh();
         await networkPromise;
     };

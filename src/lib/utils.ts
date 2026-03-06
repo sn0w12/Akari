@@ -13,6 +13,30 @@ export function pluralize(word: string, count: number) {
     return count === 1 ? word : `${word}s`;
 }
 
+/**
+ * Converts a number to a readable string with suffixes (K, M, B).
+ * Examples: 1200 -> "1.2K", 1500000 -> "1.5M"
+ */
+export function formatNumberShort(
+    num: number,
+    decimalPlaces: number = 1,
+): string {
+    if (num < 1000) return num.toString();
+    const units = [
+        { value: 1e9, symbol: "B" },
+        { value: 1e6, symbol: "M" },
+        { value: 1e3, symbol: "K" },
+    ];
+    for (const unit of units) {
+        if (num >= unit.value) {
+            const formatted = (num / unit.value).toFixed(decimalPlaces);
+            // Remove trailing .0 if present
+            return `${parseFloat(formatted)}${unit.symbol}`;
+        }
+    }
+    return num.toString();
+}
+
 export type CookieConsent = {
     necessary: boolean;
     functional: boolean;
@@ -65,8 +89,9 @@ export function formatRelativeDate(dateString: string): string {
     }
 }
 
-const imageSizes = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
-export type SizesValue = `${number}vw` | `${(typeof imageSizes)[number]}px`;
+export type SizesValue =
+    | `${number}vw`
+    | `${48 | 96 | 128 | 240 | 320 | 400 | 640 | 1080 | 1920}px`;
 
 export function generateSizes(options: {
     default?: SizesValue;

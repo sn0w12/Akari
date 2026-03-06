@@ -22,16 +22,11 @@ export interface AuthorPageProps {
 }
 
 export async function generateStaticParams() {
-    let limit = undefined;
     if (STATIC_GENERATION_DISABLED) {
-        limit = 1;
+        return [{ id: "Jixksee" }];
     }
 
-    const authorIds = await getAllAuthors(limit);
-    if (STATIC_GENERATION_DISABLED) {
-        return [{ id: authorIds[0] }];
-    }
-
+    const authorIds = await getAllAuthors();
     return authorIds.map((id) => ({ id }));
 }
 

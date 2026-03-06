@@ -87,4 +87,10 @@ export class AniAccount extends SecondaryAccountBase {
         this.updateLoginToastSetting();
         return true;
     }
+
+    getAccountUrl(): string | null {
+        const user = this.userStorage.get();
+        if (!user) return null;
+        return `https://anilist.co/user/${user.name}`;
+    }
 }

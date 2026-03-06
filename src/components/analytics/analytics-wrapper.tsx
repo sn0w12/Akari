@@ -47,6 +47,8 @@ export function generalizePathname(pathname: string): string {
     return pathname; // Return original if no match
 }
 
+let analyticsInitialized = false;
+
 export function AnalyticsWrapper() {
     const { data: user, isLoading } = useUser();
     const allowAnalytics = useSetting("allowAnalytics");
@@ -57,6 +59,11 @@ export function AnalyticsWrapper() {
 
     useEffect(() => {
         const loadAndInit = async () => {
+            if (analyticsInitialized) {
+                // already done, nothing to do
+                return;
+            }
+
             if (!domain) {
                 console.warn("Plausible URL not set in environment variables.");
                 return;
@@ -73,16 +80,24 @@ export function AnalyticsWrapper() {
 
             const { init } = await import("@plausible-analytics/tracker");
 
-            init({
-                domain: domain,
-                endpoint: endpoint,
-                outboundLinks: true,
-                customProperties: {
-                    logged_in: (!!user).toString(),
-                    pwa: device.isPWA.toString(),
-                    general_path: generalizePathname(pathname),
-                },
-            });
+            try {
+                init({
+                    domain: domain,
+                    endpoint: endpoint,
+                    outboundLinks: true,
+                    customProperties: {
+                        logged_in: (!!user).toString(),
+                        pwa: device.isPWA.toString(),
+                        general_path: generalizePathname(pathname),
+                    },
+                });
+                analyticsInitialized = true;
+            } catch (error) {
+                console.error(
+                    "Failed to initialize Plausible analytics:",
+                    error,
+                );
+            }
         };
 
         loadAndInit();

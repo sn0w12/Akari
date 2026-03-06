@@ -65,14 +65,16 @@ Akari is a high-quality, open-source manga reader built with Next.js. It provide
 
 ### Shortcuts
 
-| Setting               | Default      | Description                           |
-| --------------------- | ------------ | ------------------------------------- |
-| Show Shortcuts        | Enabled      | Enable or disable keyboard shortcuts. |
-| Search Manga          | Ctrl+K       | Shortcut to search manga.             |
-| Toggle Sidebar        | Ctrl+B       | Shortcut to toggle the sidebar.       |
-| Open Settings         | Ctrl+,       | Shortcut to open settings.            |
-| Open Account          | Ctrl+.       | Shortcut to open account page.        |
-| Navigate to Bookmarks | Ctrl+Shift+B | Shortcut to navigate to bookmarks.    |
+| Setting               | Default     | Description                           |
+| --------------------- | ----------- | ------------------------------------- |
+| Show Shortcuts        | Enabled     | Enable or disable keyboard shortcuts. |
+| Search Manga          | Mod+K       | Shortcut to search manga.             |
+| Toggle Sidebar        | Mod+B       | Shortcut to toggle the sidebar.       |
+| Open Settings         | Mod+,       | Shortcut to open settings.            |
+| Open Account          | Mod+.       | Shortcut to open account page.        |
+| Navigate to Bookmarks | Mod+Shift+B | Shortcut to navigate to bookmarks.    |
+| Next Page             | ArrowRight  |                                       |
+| Previous Page         | ArrowLeft   |                                       |
 
 ## Getting Started
 

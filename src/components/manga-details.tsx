@@ -5,13 +5,13 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { generateSizes, pluralize } from "@/lib/utils";
+import { formatNumberShort, generateSizes, pluralize } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import Buttons from "./manga-details/buttons";
-import ScoreDisplay from "./manga-details/score";
+import { ScoreDisplay } from "./manga-details/score/score-display";
 import {
     MangaUpdatedAt,
     MangaUpdatedAtFallback,
@@ -42,20 +42,15 @@ const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     }
 };
 
-const getViewsColor = (views: number) => {
-    if (views < 100)
-        return { bg: "bg-[#ffc659] hover:bg-[#ffc659]", text: "text-black" };
-    else if (views < 1_000)
-        return { bg: "bg-[#ff8f70] hover:bg-[#ff8f70]", text: "text-black" };
+const getViewsColor = (views: number): string => {
+    if (views < 100) return "bg-[#ffc659] hover:bg-[#ffc659] text-black";
+    else if (views < 1_000) return "bg-[#ff8f70] hover:bg-[#ff8f70] text-black";
     else if (views < 10_000)
-        return { bg: "bg-[#ff609e] hover:bg-[#ff609e]", text: "text-white" };
+        return "bg-[#ff609e] hover:bg-[#ff609e] text-white";
     else if (views < 100_000)
-        return { bg: "bg-[#e255d0] hover:bg-[#e255d0]", text: "text-white" };
+        return "bg-[#e255d0] hover:bg-[#e255d0] text-white";
 
-    return {
-        bg: "bg-accent-positive hover:bg-accent-positive",
-        text: "text-white",
-    };
+    return "bg-accent-positive hover:bg-accent-positive text-white";
 };
 
 function ExternalLinks({
@@ -129,11 +124,14 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
     }
 
     const manga = data.data;
+    const alternativeTitles = (manga.alternativeTitles || []).filter(
+        (title) => title.toLowerCase() !== manga.title.toLowerCase(),
+    );
     const jsonLd = createJsonLd<ComicSeries>({
         "@type": "ComicSeries",
         url: `/manga/${manga.id}`,
         name: manga.title,
-        alternateName: manga.alternativeTitles?.join(", "),
+        alternateName: alternativeTitles.join(", "),
         image: manga.cover,
         description: manga.description,
         genre: manga.genres,
@@ -209,34 +207,33 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             <h1 className="text-2xl md:text-3xl font-bold lg:max-h-27 overflow-y-auto">
                                 {manga.title}
                             </h1>
-                            {manga.alternativeTitles &&
-                                manga.alternativeTitles.length > 0 && (
-                                    <Tooltip>
-                                        <TooltipTrigger
-                                            className="hidden lg:block"
-                                            aria-label="Alternative Names"
-                                        >
-                                            <InfoIcon className="w-5 h-5" />
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom">
-                                            <div className="flex flex-col gap-1 max-w-96 w-auto">
-                                                {manga.alternativeTitles.map(
-                                                    (
-                                                        mangaName: string,
-                                                        index: number,
-                                                    ) => (
-                                                        <p
-                                                            className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
-                                                            key={index}
-                                                        >
-                                                            {mangaName}
-                                                        </p>
-                                                    ),
-                                                )}
-                                            </div>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                )}
+                            {alternativeTitles.length > 0 && (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        className="hidden lg:block"
+                                        aria-label="Alternative Names"
+                                    >
+                                        <InfoIcon className="w-5 h-5" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom">
+                                        <div className="flex flex-col gap-1 max-w-96 w-auto">
+                                            {alternativeTitles.map(
+                                                (
+                                                    mangaName: string,
+                                                    index: number,
+                                                ) => (
+                                                    <p
+                                                        className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
+                                                        key={index}
+                                                    >
+                                                        {mangaName}
+                                                    </p>
+                                                ),
+                                            )}
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
                         </div>
                         <div
                             className={
@@ -251,7 +248,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow overflow-hidden">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                            <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>
                                     <div className="text-lg font-semibold">
                                         {pluralize(
@@ -313,11 +310,9 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         Views:
                                     </div>
                                     <Badge
-                                        className={`${
-                                            getViewsColor(manga.views).bg
-                                        } ${getViewsColor(manga.views).text}`}
+                                        className={getViewsColor(manga.views)}
                                     >
-                                        {manga.views}
+                                        {formatNumberShort(manga.views)}
                                     </Badge>
                                 </div>
                             </div>
@@ -350,7 +345,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                 <div className="my-2 flex-grow">
                                     <ScoreDisplay
                                         mangaId={manga.id}
-                                        score={manga.rating.average / 2}
+                                        rating={manga.rating}
                                     />
                                 </div>
                             </div>

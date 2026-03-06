@@ -12,20 +12,24 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDownIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 interface ChaptersPopupProps {
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     mangaId: string;
     title: string;
     lastReadChapter: components["schemas"]["MangaChapter"];
+    estimatedChapters: number;
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
+    open,
+    setOpen,
     mangaId,
     title,
     lastReadChapter,
+    estimatedChapters,
 }) => {
-    const [open, setOpen] = useState(false);
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
         enabled: open,
@@ -54,23 +58,24 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
             <PopoverDrawerTrigger>
                 <Button
                     size="sm"
-                    className="size-8"
+                    className="size-8 hidden md:flex"
                     aria-label="Browse chapters"
                 >
                     <ChevronsUpDownIcon className="h-5 w-5" />
                 </Button>
             </PopoverDrawerTrigger>
-            <PopoverDrawerContent popoverAlign="end">
-                <div className="flex items-center mb-1 pb-1 border-b gap-1 justify-center md:justify-start">
-                    <h4 className="font-semibold">{title}</h4>
-                </div>
+            <PopoverDrawerContent
+                popoverClassName="p-2"
+                popoverAlign="end"
+                drawerTitle={title}
+            >
                 <div
                     className="max-h-96 md:max-h-64 overflow-y-auto"
                     data-scrollbar-custom
                 >
                     {isLoading ? (
                         <div className="space-y-2 py-2">
-                            {Array(5)
+                            {Array(estimatedChapters)
                                 .fill(0)
                                 .map((_, index) => (
                                     <div key={index} className="p-2">

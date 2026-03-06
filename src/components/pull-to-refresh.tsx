@@ -14,6 +14,7 @@ import React, {
     useRef,
     useState,
 } from "react";
+import { useWebHaptics } from "web-haptics/react";
 import Spinner from "./ui/puff-loader";
 
 export interface PullToRefreshProps {
@@ -58,6 +59,7 @@ export function PullToRefresh({
     id,
 }: PullToRefreshProps) {
     const { isPWA, deviceType } = useDevice();
+    const { trigger } = useWebHaptics();
     const isEnabled: boolean = enabled ?? (isPWA && deviceType !== "desktop");
     const containerRef = useRef<HTMLElement | null>(null);
     const startRef = useRef<TouchPoint | null>(null);
@@ -116,6 +118,21 @@ export function PullToRefresh({
         [pullDistance, threshold],
     );
 
+    // make sure we only fire the haptic trigger once per pull session when the
+    // user crosses the release threshold.
+    const hasTriggeredRef = useRef<boolean>(false);
+
+    useEffect(() => {
+        if (progress >= 1 && !hasTriggeredRef.current && isDragging) {
+            hasTriggeredRef.current = true;
+            trigger("heavy");
+        }
+        // reset once the pull has released fully, allowing future triggers
+        if (progress === 0) {
+            hasTriggeredRef.current = false;
+        }
+    }, [progress, trigger, isDragging]);
+
     const contentStyle: CSSProperties = useMemo(
         () => ({
             ...style,
@@ -144,6 +161,7 @@ export function PullToRefresh({
 
             const touch = event.touches[0];
             startRef.current = { y: touch.clientY };
+            hasTriggeredRef.current = false;
             setIsDragging(true);
         },
         [isEnabled, isRefreshing, canPull, isAtTop],
@@ -172,13 +190,11 @@ export function PullToRefresh({
             const delta = touch.clientY - start.y;
 
             if (delta > 0) {
-                event.preventDefault();
                 // Apply non-linear damping to make pull feel more natural
                 const dampedDelta = Math.pow(delta, 0.8);
                 setPullDistance(Math.min(dampedDelta, maxPull));
             } else if (delta > -20) {
                 // Small tolerance for finger slips, keep current pull distance
-                event.preventDefault();
             } else {
                 // Significant upward drag, reset pull
                 setPullDistance(0);

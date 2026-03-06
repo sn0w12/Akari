@@ -22,7 +22,6 @@ function BookmarkCardSkeleton() {
                                 <Skeleton className="h-6 w-40" />
                                 <div className="flex flex-row items-center gap-2 self-start">
                                     <Skeleton className="size-8 rounded-sm" />
-                                    <Skeleton className="size-8 rounded-sm" />
                                 </div>
                             </div>
 
