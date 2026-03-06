@@ -1,8 +1,9 @@
 node_modules
 .next
 .git
-*.log
+.gitignore
 .DS_Store
+*.log
 *.tmp
 .cache
 dist
@@ -14,3 +15,8 @@ coverage
 *.swp
 *.swo
 *~
+npm-debug.log
+out
+**/test
+**/__tests__
+Dockerfile
