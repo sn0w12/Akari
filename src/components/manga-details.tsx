@@ -124,11 +124,14 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
     }
 
     const manga = data.data;
+    const alternativeTitles = (manga.alternativeTitles || []).filter(
+        (title) => title.toLowerCase() !== manga.title.toLowerCase(),
+    );
     const jsonLd = createJsonLd<ComicSeries>({
         "@type": "ComicSeries",
         url: `/manga/${manga.id}`,
         name: manga.title,
-        alternateName: manga.alternativeTitles?.join(", "),
+        alternateName: alternativeTitles.join(", "),
         image: manga.cover,
         description: manga.description,
         genre: manga.genres,
@@ -204,34 +207,33 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                             <h1 className="text-2xl md:text-3xl font-bold lg:max-h-27 overflow-y-auto">
                                 {manga.title}
                             </h1>
-                            {manga.alternativeTitles &&
-                                manga.alternativeTitles.length > 0 && (
-                                    <Tooltip>
-                                        <TooltipTrigger
-                                            className="hidden lg:block"
-                                            aria-label="Alternative Names"
-                                        >
-                                            <InfoIcon className="w-5 h-5" />
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom">
-                                            <div className="flex flex-col gap-1 max-w-96 w-auto">
-                                                {manga.alternativeTitles.map(
-                                                    (
-                                                        mangaName: string,
-                                                        index: number,
-                                                    ) => (
-                                                        <p
-                                                            className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
-                                                            key={index}
-                                                        >
-                                                            {mangaName}
-                                                        </p>
-                                                    ),
-                                                )}
-                                            </div>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                )}
+                            {alternativeTitles.length > 0 && (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        className="hidden lg:block"
+                                        aria-label="Alternative Names"
+                                    >
+                                        <InfoIcon className="w-5 h-5" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom">
+                                        <div className="flex flex-col gap-1 max-w-96 w-auto">
+                                            {alternativeTitles.map(
+                                                (
+                                                    mangaName: string,
+                                                    index: number,
+                                                ) => (
+                                                    <p
+                                                        className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
+                                                        key={index}
+                                                    >
+                                                        {mangaName}
+                                                    </p>
+                                                ),
+                                            )}
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
                         </div>
                         <div
                             className={
