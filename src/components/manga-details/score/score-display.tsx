@@ -147,14 +147,6 @@ const ScoreStars = memo(function ScoreStars({
         hoverFill === "full";
     const isSecondVisible =
         index < fullStars || (index === fullStars && hoverFill === "full");
-    console.log({
-        index,
-        fullStars,
-        hasHalfStar,
-        hoverFill,
-        isFirstVisible,
-        isSecondVisible,
-    });
 
     return (
         <>
