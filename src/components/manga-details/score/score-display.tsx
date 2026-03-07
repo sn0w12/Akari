@@ -147,14 +147,22 @@ const ScoreStars = memo(function ScoreStars({
         hoverFill === "full";
     const isSecondVisible =
         index < fullStars || (index === fullStars && hoverFill === "full");
+    console.log({
+        index,
+        fullStars,
+        hasHalfStar,
+        hoverFill,
+        isFirstVisible,
+        isSecondVisible,
+    });
 
     return (
         <>
             <StarHalf
                 className={cn(starClasses, "absolute text-ring inset-0", {
                     "text-primary": !isAnyHovered,
-                    "text-accent-positive": hoverFill !== "empty",
                     "text-ring": !isFirstVisible,
+                    "text-accent-positive": hoverFill !== "empty",
                 })}
             />
             <StarHalf
@@ -163,8 +171,8 @@ const ScoreStars = memo(function ScoreStars({
                     "absolute inset-0 text-ring -scale-x-100",
                     {
                         "text-primary": !isAnyHovered,
-                        "text-accent-positive": hoverFill === "full",
                         "text-ring": !isSecondVisible,
+                        "text-accent-positive": hoverFill === "full",
                     },
                 )}
             />
