@@ -18,7 +18,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, ViewTransition } from "react";
 
 interface ListCommandProps {
     listId: string;
@@ -121,17 +121,21 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                             disabled={isInList}
                                             className="flex items-center gap-3"
                                         >
-                                            <Image
-                                                src={result.cover}
-                                                alt={result.title}
-                                                className="rounded-sm"
-                                                height={72}
-                                                width={48}
-                                                quality={40}
-                                                sizes={generateSizes({
-                                                    default: "48px",
-                                                })}
-                                            />
+                                            <ViewTransition
+                                                name={`manga-cover-${result.id}`}
+                                            >
+                                                <Image
+                                                    src={result.cover}
+                                                    alt={result.title}
+                                                    className="rounded-sm"
+                                                    height={72}
+                                                    width={48}
+                                                    quality={40}
+                                                    sizes={generateSizes({
+                                                        default: "48px",
+                                                    })}
+                                                />
+                                            </ViewTransition>
                                             <div className="flex flex-1 items-center justify-between gap-2">
                                                 <span className="line-clamp-1">
                                                     {result.title}

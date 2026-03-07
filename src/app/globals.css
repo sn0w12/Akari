@@ -102,6 +102,8 @@ body {
     --visible-height: calc(
         100dvh - calc(var(--header-height) + var(--safe-top))
     );
+
+    --ease-snappy: cubic-bezier(0.2, 0.4, 0.1, 0.95);
 }
 
 .dark {
@@ -170,8 +172,8 @@ body {
 }
 
 .ease-snappy {
-    animation-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
-    transition-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
+    animation-timing-function: var(--ease-snappy);
+    transition-timing-function: var(--ease-snappy);
 }
 
 input:-webkit-autofill,
@@ -307,4 +309,12 @@ li {
 ::-moz-selection {
     background-color: var(--accent-color);
     color: oklch(0.985 0 0);
+}
+
+::view-transition-group(*),
+::view-transition-image-pair(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+    animation-duration: 0.25s;
+    animation-timing-function: var(--ease-snappy);
 }

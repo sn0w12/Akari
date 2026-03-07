@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { generateSizes } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 
 interface MangaReaderCommentsProps {
     params: Promise<{ id: string; subId: string }>;
@@ -55,17 +55,19 @@ async function MangaCommentsHeader({ params }: MangaReaderCommentsProps) {
     const manga = mangaData.data;
     return (
         <div className="flex flex-row gap-4 items-start bg-card rounded-lg p-4 border">
-            <Image
-                src={manga.cover}
-                alt={manga.title}
-                className="rounded-lg object-cover w-20 h-28 sm:w-24 sm:h-32 flex-shrink-0"
-                width={150}
-                height={200}
-                sizes={generateSizes({
-                    sm: "96px",
-                    default: "128px",
-                })}
-            />
+            <ViewTransition name={`manga-cover-${manga.id}`}>
+                <Image
+                    src={manga.cover}
+                    alt={manga.title}
+                    className="rounded-lg object-cover w-20 h-28 sm:w-24 sm:h-32 flex-shrink-0"
+                    width={150}
+                    height={200}
+                    sizes={generateSizes({
+                        sm: "96px",
+                        default: "128px",
+                    })}
+                />
+            </ViewTransition>
             <div className="flex flex-col min-w-0 flex-1">
                 <h1 className="text-lg sm:text-xl font-bold">{manga.title}</h1>
                 <p className="text-sm text-muted-foreground">
