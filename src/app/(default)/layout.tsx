@@ -12,7 +12,7 @@ import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { ConfirmProvider } from "@/contexts/confirm-context";
 import { DeviceProvider } from "@/contexts/device-context";
 import localFont from "next/font/local";
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 
 import type { Metadata, Viewport } from "next";
 
@@ -96,21 +96,23 @@ export default async function RootLayout({
                         >
                             <ConfirmProvider>
                                 <QueryProvider>
-                                        <BreadcrumbProvider>
-                                            <BorderColorProvider>
-                                                <BaseLayout gutter={true}>
-                                                    <Suspense fallback={null}>
-                                                        <AnalyticsWrapper />
-                                                    </Suspense>
+                                    <BreadcrumbProvider>
+                                        <BorderColorProvider>
+                                            <BaseLayout gutter={true}>
+                                                <Suspense fallback={null}>
+                                                    <AnalyticsWrapper />
+                                                </Suspense>
+                                                <ViewTransition>
                                                     {children}
-                                                    <Toaster
-                                                        position="top-right"
-                                                        visibleToasts={5}
-                                                    />
-                                                    <Footer />
-                                                </BaseLayout>
-                                            </BorderColorProvider>
-                                        </BreadcrumbProvider>
+                                                </ViewTransition>
+                                                <Toaster
+                                                    position="top-right"
+                                                    visibleToasts={5}
+                                                />
+                                                <Footer />
+                                            </BaseLayout>
+                                        </BorderColorProvider>
+                                    </BreadcrumbProvider>
                                 </QueryProvider>
                             </ConfirmProvider>
                         </SidebarProvider>

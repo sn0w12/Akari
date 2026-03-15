@@ -98,7 +98,7 @@ function wrapContent(
 
     return (
         <div
-            className={wrapperClassName}
+            className={isDrawer ? wrapperClassName : undefined}
             style={{
                 paddingBottom: isDrawer
                     ? "max(calc(calc(var(--spacing) * 2)), var(--safe-bottom))"

@@ -13,7 +13,7 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ViewTransition } from "react";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 export default function BookmarksHeader() {
@@ -173,17 +173,21 @@ export default function BookmarksHeader() {
                                 >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
-                                            <Image
-                                                src={result.cover}
-                                                alt={result.title}
-                                                width={48}
-                                                height={72}
-                                                className="w-12 h-18 rounded mr-2"
-                                                quality={40}
-                                                sizes={generateSizes({
-                                                    default: "48px",
-                                                })}
-                                            />
+                                            <ViewTransition
+                                                name={`manga-cover-${result.mangaId}`}
+                                            >
+                                                <Image
+                                                    src={result.cover}
+                                                    alt={result.title}
+                                                    width={48}
+                                                    height={72}
+                                                    className="w-12 h-18 rounded mr-2"
+                                                    quality={40}
+                                                    sizes={generateSizes({
+                                                        default: "48px",
+                                                    })}
+                                                />
+                                            </ViewTransition>
                                             {result.title}
                                         </div>
                                         <Link

@@ -53,7 +53,7 @@ export async function generateMetadata(
 
 export default async function MangaPage(props: MangaPageProps) {
     return (
-        <div className="mx-auto p-4">
+        <div className="w-full p-4">
             <MangaDetailsComponent params={props.params} />
             <MangaDetailsBody params={props.params} />
 
