@@ -1,6 +1,6 @@
 {
     "name": "akari",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "homepage": "https://github.com/sn0w12/Akari#readme",
     "engines": {
         "node": ">=20"
