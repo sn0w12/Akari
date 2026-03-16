@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
+import { CustomViewTransition } from "@/components/view-transition";
 import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, ViewTransition } from "react";
+import { useEffect, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
@@ -31,7 +32,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             tabIndex={-1}
                             aria-hidden="true"
                         >
-                            <ViewTransition
+                            <CustomViewTransition
                                 name={`manga-cover-${bookmark.mangaId}`}
                             >
                                 <Image
@@ -43,7 +44,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                     quality={40}
                                     sizes="120px"
                                 />
-                            </ViewTransition>
+                            </CustomViewTransition>
                         </Link>
                     </div>
 

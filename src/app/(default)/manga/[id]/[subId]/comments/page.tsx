@@ -2,10 +2,11 @@ import ErrorPage from "@/components/error-page";
 import { getManga } from "@/components/manga-details";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CustomViewTransition } from "@/components/view-transition";
 import { generateSizes } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense, ViewTransition } from "react";
+import { Suspense } from "react";
 
 interface MangaReaderCommentsProps {
     params: Promise<{ id: string; subId: string }>;
@@ -55,7 +56,7 @@ async function MangaCommentsHeader({ params }: MangaReaderCommentsProps) {
     const manga = mangaData.data;
     return (
         <div className="flex flex-row gap-4 items-start bg-card rounded-lg p-4 border">
-            <ViewTransition name={`manga-cover-${manga.id}`}>
+            <CustomViewTransition name={`manga-cover-${manga.id}`}>
                 <Image
                     src={manga.cover}
                     alt={manga.title}
@@ -67,7 +68,7 @@ async function MangaCommentsHeader({ params }: MangaReaderCommentsProps) {
                         default: "128px",
                     })}
                 />
-            </ViewTransition>
+            </CustomViewTransition>
             <div className="flex flex-col min-w-0 flex-1">
                 <h1 className="text-lg sm:text-xl font-bold">{manga.title}</h1>
                 <p className="text-sm text-muted-foreground">

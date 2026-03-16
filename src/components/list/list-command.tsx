@@ -18,7 +18,8 @@ import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState, ViewTransition } from "react";
+import { useMemo, useState } from "react";
+import { CustomViewTransition } from "../view-transition";
 
 interface ListCommandProps {
     listId: string;
@@ -121,7 +122,7 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                             disabled={isInList}
                                             className="flex items-center gap-3"
                                         >
-                                            <ViewTransition
+                                            <CustomViewTransition
                                                 name={`manga-cover-${result.id}`}
                                             >
                                                 <Image
@@ -135,7 +136,7 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                                         default: "48px",
                                                     })}
                                                 />
-                                            </ViewTransition>
+                                            </CustomViewTransition>
                                             <div className="flex flex-1 items-center justify-between gap-2">
                                                 <span className="line-clamp-1">
                                                     {result.title}

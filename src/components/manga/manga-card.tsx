@@ -6,7 +6,8 @@ import { useThrottledCallback } from "@tanstack/react-pacer";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, ViewTransition } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CustomViewTransition } from "../view-transition";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -154,7 +155,7 @@ export function MangaCard({
                     className="relative block h-full w-full"
                     prefetch={false}
                 >
-                    <ViewTransition name={`manga-cover-${manga.id}`}>
+                    <CustomViewTransition name={`manga-cover-${manga.id}`}>
                         <Image
                             src={manga.cover}
                             alt={manga.title}
@@ -175,7 +176,7 @@ export function MangaCard({
                                 default: "25vw",
                             })}
                         />
-                    </ViewTransition>
+                    </CustomViewTransition>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
             </div>

@@ -12,8 +12,9 @@ import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import { ConfirmProvider } from "@/contexts/confirm-context";
 import { DeviceProvider } from "@/contexts/device-context";
 import localFont from "next/font/local";
-import { Suspense, ViewTransition } from "react";
+import { Suspense } from "react";
 
+import { CustomViewTransition } from "@/components/view-transition";
 import type { Metadata, Viewport } from "next";
 
 const geistSans = localFont({
@@ -102,9 +103,9 @@ export default async function RootLayout({
                                                 <Suspense fallback={null}>
                                                     <AnalyticsWrapper />
                                                 </Suspense>
-                                                <ViewTransition>
+                                                <CustomViewTransition>
                                                     {children}
-                                                </ViewTransition>
+                                                </CustomViewTransition>
                                                 <Toaster
                                                     position="top-right"
                                                     visibleToasts={5}

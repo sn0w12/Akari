@@ -13,7 +13,8 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, ViewTransition } from "react";
+import { useEffect, useState } from "react";
+import { CustomViewTransition } from "../view-transition";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 export default function BookmarksHeader() {
@@ -173,7 +174,7 @@ export default function BookmarksHeader() {
                                 >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
-                                            <ViewTransition
+                                            <CustomViewTransition
                                                 name={`manga-cover-${result.mangaId}`}
                                             >
                                                 <Image
@@ -187,7 +188,7 @@ export default function BookmarksHeader() {
                                                         default: "48px",
                                                     })}
                                                 />
-                                            </ViewTransition>
+                                            </CustomViewTransition>
                                             {result.title}
                                         </div>
                                         <Link

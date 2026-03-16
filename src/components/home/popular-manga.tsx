@@ -4,7 +4,7 @@ import { cn, generateSizes } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, ViewTransition } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
@@ -14,6 +14,7 @@ import {
     useCarousel,
 } from "../ui/carousel";
 import { Skeleton } from "../ui/skeleton";
+import { CustomViewTransition } from "../view-transition";
 
 interface PopularMangaProps {
     manga: components["schemas"]["MangaResponse"][];
@@ -121,7 +122,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
             href={`/manga/${manga.id}`}
             className="flex flex-row h-full w-full rounded-lg border bg-card"
         >
-            <ViewTransition name={`manga-cover-${manga.id}`}>
+            <CustomViewTransition name={`manga-cover-${manga.id}`}>
                 <Image
                     src={manga.cover}
                     alt={manga.title}
@@ -138,7 +139,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                         sm: "240px",
                     })}
                 />
-            </ViewTransition>
+            </CustomViewTransition>
             <div className="space-y-2 py-2 px-4 w-full hidden sm:block">
                 <h2 className="line-clamp-2 text-3xl font-semibold leading-tight text-card-foreground border-b pb-1">
                     {manga.title}
