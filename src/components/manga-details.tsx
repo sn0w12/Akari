@@ -25,9 +25,10 @@ import { createJsonLd } from "@/lib/seo";
 import AniImage from "@/public/img/icons/AniList-logo.webp";
 import MalImage from "@/public/img/icons/MAL-logo.webp";
 import { cacheLife, cacheTag } from "next/cache";
-import { Suspense, ViewTransition } from "react";
+import { Suspense } from "react";
 import { ComicSeries, Person } from "schema-dts";
 import ErrorPage from "./error-page";
+import { CustomViewTransition } from "./view-transition";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -168,7 +169,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
             <div className="mb-2 flex h-auto flex-col justify-center gap-4 items-stretch lg:grid lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-y-0">
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
-                        <ViewTransition name={`manga-cover-${manga.id}`}>
+                        <CustomViewTransition name={`manga-cover-${manga.id}`}>
                             <EnhancedImage
                                 src={manga.cover}
                                 alt={manga.title}
@@ -184,7 +185,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                     lg: "400px",
                                 })}
                             />
-                        </ViewTransition>
+                        </CustomViewTransition>
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">

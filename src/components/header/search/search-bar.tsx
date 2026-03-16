@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import Spinner from "@/components/ui/puff-loader";
+import { CustomViewTransition } from "@/components/view-transition";
 import { getSearchResults } from "@/lib/api/search";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn, generateSizes } from "@/lib/utils";
@@ -12,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, ViewTransition } from "react";
+import { useRef, useState } from "react";
 
 export default function SearchBar() {
     const router = useRouter();
@@ -140,7 +141,7 @@ export default function SearchBar() {
                                         }`}
                                         prefetch={true}
                                     >
-                                        <ViewTransition
+                                        <CustomViewTransition
                                             name={`manga-cover-${result.id}`}
                                         >
                                             <Image
@@ -154,7 +155,7 @@ export default function SearchBar() {
                                                     default: "96px",
                                                 })}
                                             />
-                                        </ViewTransition>
+                                        </CustomViewTransition>
                                         {result.title}
                                     </Link>
                                 ))}
