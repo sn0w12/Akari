@@ -20,6 +20,7 @@ interface ChaptersPopupProps {
     title: string;
     lastReadChapter: components["schemas"]["MangaChapter"];
     estimatedChapters: number;
+    scanlatorId: number;
 }
 
 export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
@@ -29,6 +30,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     title,
     lastReadChapter,
     estimatedChapters,
+    scanlatorId,
 }) => {
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
@@ -86,9 +88,12 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                     </div>
                                 ))}
                         </div>
-                    ) : data && data.length > 0 ? (
+                    ) : data && data.chapters.length > 0 ? (
                         <ul className="space-y-1">
-                            {data.map((chapter) => {
+                            {data.chapters.map((chapter) => {
+                                if (chapter.scanlatorId !== scanlatorId)
+                                    return null;
+
                                 const isLastRead =
                                     chapter.id === lastReadChapter?.id;
                                 return (

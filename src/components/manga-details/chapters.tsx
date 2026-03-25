@@ -31,5 +31,16 @@ export async function ChaptersSectionServer({
         return <div className="text-center py-8">Failed to load chapters</div>;
     }
 
-    return <ChaptersSection mangaId={id} chapters={data.data} />;
+    const preferredScanlator =
+        data.data.preferredScanlatorId ??
+        data.data.chapters[0]?.scanlatorId ??
+        1;
+    return (
+        <ChaptersSection
+            mangaId={id}
+            chapters={data.data.chapters}
+            preferredScanlator={preferredScanlator}
+            scanlators={data.data.scanlators}
+        />
+    );
 }

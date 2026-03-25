@@ -2443,7 +2443,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MangaChapterListSuccessResponse"];
+                        "application/json": components["schemas"]["MangaChapterResponseSuccessResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -4305,19 +4305,6 @@ export interface components {
         BatchUploadRequest: {
             ids: string[];
         };
-        BookmarkChapter: {
-            /** Format: uuid */
-            id: string;
-            /** Format: float */
-            number: number;
-            title: string;
-            /** Format: int32 */
-            pages: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
         BookmarkListResponse: {
             items: components["schemas"]["BookmarkResponse"][];
             /** Format: int32 */
@@ -4365,9 +4352,9 @@ export interface components {
             mangaCreatedAt: string;
             /** Format: date-time */
             mangaUpdatedAt: string;
-            lastReadChapter: components["schemas"]["BookmarkChapter"];
-            latestChapter: components["schemas"]["BookmarkChapter"];
-            nextChapter: components["schemas"]["BookmarkChapter"];
+            lastReadChapter: components["schemas"]["MangaChapter"];
+            latestChapter: components["schemas"]["MangaChapter"];
+            nextChapter: components["schemas"]["MangaChapter"];
             /** Format: int32 */
             chaptersBehind: number;
         };
@@ -4555,6 +4542,8 @@ export interface components {
             title: string;
             /** Format: float */
             number: number;
+            /** Format: int32 */
+            scanlatorId: number;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -4680,6 +4669,8 @@ export interface components {
             number: number;
             /** Format: int32 */
             pages: number;
+            /** Format: int32 */
+            scanlatorId: number;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -4708,12 +4699,18 @@ export interface components {
             status: number;
             data: components["schemas"]["MangaChapterIdsResponse"];
         };
-        MangaChapterListSuccessResponse: {
+        MangaChapterResponse: {
+            scanlators: components["schemas"]["Scanlator"][];
+            chapters: components["schemas"]["MangaChapter"][];
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
+        };
+        MangaChapterResponseSuccessResponse: {
             /** @enum {string} */
             result: "Success";
             /** Format: int32 */
             status: number;
-            data: components["schemas"]["MangaChapter"][];
+            data: components["schemas"]["MangaChapterResponse"];
         };
         MangaDetailResponse: {
             /** Format: uuid */
@@ -4733,6 +4730,8 @@ export interface components {
             malId?: number | null;
             /** Format: int32 */
             aniId?: number | null;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -4831,6 +4830,8 @@ export interface components {
             malId?: number | null;
             /** Format: int32 */
             aniId?: number | null;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -4868,6 +4869,8 @@ export interface components {
             malId?: number | null;
             /** Format: int32 */
             aniId?: number | null;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -4924,6 +4927,11 @@ export interface components {
         };
         /** @enum {string} */
         ResultType: "Success" | "Error";
+        Scanlator: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+        };
         Session: {
             accessToken?: string | null;
             /** Format: int64 */

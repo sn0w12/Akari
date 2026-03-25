@@ -159,6 +159,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 title={bookmark.title}
                 lastReadChapter={bookmark.lastReadChapter}
                 estimatedChapters={Math.floor(bookmark.latestChapter.number)}
+                scanlatorId={bookmark.lastReadChapter.scanlatorId}
             />
         </div>
     );
