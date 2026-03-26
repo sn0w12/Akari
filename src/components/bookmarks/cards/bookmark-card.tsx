@@ -126,7 +126,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     </Button>
                 ) : shouldReadLatest ? (
                     <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.number}`}
+                        href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.scanlatorId}/${bookmark.latestChapter.number}`}
                         size="sm"
                         className="flex-1 w-full"
                     >
@@ -135,7 +135,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     </ButtonLink>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.number}`}
+                        href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.scanlatorId}/${bookmark.nextChapter.number}`}
                         variant="secondary"
                         size="sm"
                         className="flex-1 w-full group"

@@ -2057,7 +2057,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MalMangaListStatusSuccessResponse"];
+                        "application/json": components["schemas"]["MalListStatusSuccessResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -3132,7 +3132,10 @@ export interface paths {
         /** Get manga chapter */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Optional scanlator identifier to select a specific chapter release. */
+                    scanlatorId?: number;
+                };
                 header?: never;
                 path: {
                     /** @description The unique identifier of the manga. */
@@ -4567,6 +4570,13 @@ export interface components {
             score?: number;
             updatedAt?: string | null;
         };
+        MalListStatusSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["MalListStatus"];
+        };
         MalMainPicture: {
             medium: string;
             large: string;
@@ -4585,32 +4595,6 @@ export interface components {
             /** Format: int32 */
             status: number;
             data: components["schemas"]["MalMangaListResponse"];
-        };
-        MalMangaListStatus: {
-            status: string;
-            isRereading: boolean;
-            /** Format: int32 */
-            numVolumesRead: number;
-            /** Format: int32 */
-            numChaptersRead: number;
-            /** Format: int32 */
-            score: number;
-            updatedAt: string;
-            /** Format: int32 */
-            priority: number;
-            /** Format: int32 */
-            numTimesReread: number;
-            /** Format: int32 */
-            rereadValue: number;
-            tags: string[];
-            comments: string;
-        };
-        MalMangaListStatusSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MalMangaListStatus"];
         };
         MalMangaNode: {
             /** Format: int32 */

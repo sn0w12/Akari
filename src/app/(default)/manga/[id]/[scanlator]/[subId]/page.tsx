@@ -12,16 +12,19 @@ import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 import { ComicSeries, ComicStory } from "schema-dts";
 
-const getChapter = async (id: string, subId: number) => {
+const getChapter = async (id: string, subId: number, scanlator: number) => {
     "use cache";
     cacheLife("hours");
-    cacheTag("manga-chapter", `manga-chapter-${id}-${subId}`);
+    cacheTag("manga-chapter", `manga-chapter-${id}-${subId}-${scanlator}`);
 
     const { data, error } = await client.GET("/v2/manga/{id}/{subId}", {
         params: {
             path: {
                 id: id,
                 subId: subId,
+            },
+            query: {
+                scanlatorId: scanlator,
             },
         },
         headers: serverHeaders,
@@ -35,7 +38,7 @@ const getChapter = async (id: string, subId: number) => {
 };
 
 interface MangaReaderProps {
-    params: Promise<{ id: string; subId: string }>;
+    params: Promise<{ id: string; scanlator: string; subId: string }>;
 }
 
 export async function generateStaticParams() {
@@ -43,6 +46,7 @@ export async function generateStaticParams() {
         return [
             {
                 id: "737e7c9c-abac-4977-9c56-0a4ff26b295e",
+                scanlator: "1",
                 subId: "1",
             },
         ];
@@ -52,6 +56,7 @@ export async function generateStaticParams() {
     return mangaIds.flatMap(({ mangaId, chapterIds }) =>
         chapterIds.map((chapterId) => ({
             id: mangaId,
+            scanlator: "1",
             subId: chapterId.toString(),
         })),
     );
@@ -64,6 +69,7 @@ export async function generateMetadata({
     const { data, error } = await getChapter(
         mangaParams.id,
         Number(mangaParams.subId),
+        Number(mangaParams.scanlator),
     );
 
     if (error) {
@@ -81,7 +87,7 @@ export async function generateMetadata({
         title: title,
         description: description,
         image: createOgImage("manga", chapter.mangaId),
-        canonicalPath: `/manga/${mangaParams.id}`,
+        canonicalPath: `/manga/${mangaParams.id}/${mangaParams.scanlator}/${mangaParams.subId}`,
     });
 }
 
@@ -103,6 +109,7 @@ async function MangaReaderBody({ params }: MangaReaderProps) {
     const { data, error } = await getChapter(
         mangaParams.id,
         Number(mangaParams.subId),
+        Number(mangaParams.scanlator),
     );
 
     if (error) {
@@ -111,13 +118,13 @@ async function MangaReaderBody({ params }: MangaReaderProps) {
 
     const jsonLd = createJsonLd<ComicSeries>({
         "@type": "ComicSeries",
-        url: `/manga/${data.mangaId}/${data.number}`,
+        url: `/manga/${data.mangaId}/${mangaParams.scanlator}/${data.number}`,
         name: data.mangaTitle,
         image: createOgImage("manga", data.mangaId),
         hasPart: data.chapters.map((chapter) =>
             createJsonLd<ComicStory>({
                 "@type": "ComicStory",
-                url: `/manga/${data.mangaId}/${chapter.value}`,
+                url: `/manga/${data.mangaId}/${mangaParams.scanlator}/${chapter.value}`,
                 name: chapter.label,
             }),
         ),
