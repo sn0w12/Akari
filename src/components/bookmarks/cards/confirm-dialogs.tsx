@@ -55,6 +55,7 @@ export function ConfirmDialogs({
     async function handleUpdateBookmark(
         id: string,
         subId: number,
+        scanlator: number,
         shouldConfirm = true,
     ) {
         if (shouldConfirm) {
@@ -79,6 +80,9 @@ export function ConfirmDialogs({
                 path: {
                     id: id,
                     subId: subId,
+                },
+                query: {
+                    scanlatorId: scanlator,
                 },
             },
         });
@@ -123,6 +127,7 @@ export function ConfirmDialogs({
                             handleUpdateBookmark(
                                 bookmark.mangaId,
                                 bookmark.latestChapter.number,
+                                bookmark.latestChapter.scanlatorId,
                             )
                         }
                         variant="ghost"
@@ -152,6 +157,7 @@ function BookmarkDrawerContent({
     updateBookmark: (
         id: string,
         subId: number,
+        scanlatorId: number,
         shouldConfirm?: boolean,
     ) => Promise<boolean>;
     removeBookmark: (id: string, shouldConfirm?: boolean) => Promise<boolean>;
@@ -174,6 +180,7 @@ function BookmarkDrawerContent({
                             await updateBookmark(
                                 bookmark.mangaId,
                                 bookmark.latestChapter.number,
+                                bookmark.latestChapter.scanlatorId,
                                 false,
                             );
                             setUpdateOpen(false);

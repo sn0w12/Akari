@@ -232,7 +232,7 @@ export function ChaptersSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mb-4 pointer-events-auto">
                 {currentChapters?.map((chapter) => (
                     <Link
-                        href={`/manga/${mangaId}/${chapter.number}`}
+                        href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
                         key={chapter.id}
                         id={chapter.id}
                         prefetch={false}

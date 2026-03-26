@@ -99,7 +99,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                 return (
                                     <li key={chapter.id}>
                                         <Link
-                                            href={`/manga/${mangaId}/${chapter.number}`}
+                                            href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
                                             className={cn(
                                                 "block p-2 rounded text-sm transition-colors duration-100 hover:bg-accent",
                                                 {
