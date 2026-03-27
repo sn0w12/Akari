@@ -87,7 +87,7 @@ function ChaptersControls({
                     </Button>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${mangaId}/${firstChapterNumber}`}
+                        href={`/manga/${mangaId}/${scanlatorId}/${firstChapterNumber}`}
                         className="flex-1 md:w-40"
                     >
                         Go to First Chapter
