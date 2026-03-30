@@ -45,7 +45,7 @@
         "radix-ui": "^1.4.3",
         "react": "19.2.0",
         "react-colorful": "^5.6.1",
-        "react-dom": "19.2.0",
+        "react-dom": "19.2.4",
         "react-hook-form": "^7.65.0",
         "react-spinners": "^0.17.0",
         "schema-dts": "^1.1.5",
@@ -61,7 +61,7 @@
         "@types/js-cookie": "^3.0.6",
         "@types/node": "^25.3.0",
         "@types/react": "19.2.2",
-        "@types/react-dom": "19.2.2",
+        "@types/react-dom": "19.2.3",
         "eslint": "^9",
         "eslint-config-next": "16.2.1",
         "mjml": "5.0.0-alpha.11",
@@ -74,6 +74,6 @@
     },
     "overrides": {
         "@types/react": "19.2.2",
-        "@types/react-dom": "19.2.2"
+        "@types/react-dom": "19.2.3"
     }
 }
