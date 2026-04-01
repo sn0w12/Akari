@@ -102,7 +102,14 @@ interface MetadataOptions {
 
 function truncate(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength - 1).trimEnd() + "…";
+
+    const words = text.trim().split(" ");
+    let truncated = "";
+    for (const word of words) {
+        if ((truncated + word).length > maxLength) break;
+        truncated += `${word} `;
+    }
+    return truncated.trim() + "…";
 }
 
 export function createMetadata(options: MetadataOptions): Metadata {
