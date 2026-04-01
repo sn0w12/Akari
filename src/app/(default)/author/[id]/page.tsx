@@ -35,7 +35,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
     const { id, page } = await props.params;
     const name = id.replaceAll("-", " ");
-    const description = `View all manga by ${name} on Akari for free.`;
+    const description = `Browse the full manga catalog by ${name} on Akari.`;
 
     const { data } = await getAuthor(name, page ? parseInt(page) : 1);
 

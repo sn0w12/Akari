@@ -29,7 +29,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const { id, page } = await props.params;
     const name = id.replaceAll("-", " ");
-    const description = `View all ${name} manga`;
+    const description = `Browse manga in the ${name} genre and find your next read on Akari.`;
 
     const { data } = await getGenre(name, page ? parseInt(page) : 1);
 
