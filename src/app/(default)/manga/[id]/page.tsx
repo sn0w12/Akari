@@ -13,11 +13,6 @@ export interface MangaPageProps {
     params: Promise<{ id: string }>;
 }
 
-function truncate(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength - 1).trimEnd() + "…";
-}
-
 export async function generateStaticParams() {
     if (STATIC_GENERATION_DISABLED) {
         return [{ id: "737e7c9c-abac-4977-9c56-0a4ff26b295e" }];
@@ -41,11 +36,9 @@ export async function generateMetadata(
     }
 
     const manga = data.data;
-    const description = truncate(manga.description, 300);
-
     return createMetadata({
         title: manga.title,
-        description: description,
+        description: manga.description,
         image: createOgImage("manga", manga.id),
         canonicalPath: `/manga/${params.id}`,
     });

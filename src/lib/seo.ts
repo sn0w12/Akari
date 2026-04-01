@@ -37,7 +37,9 @@ export function getPreviousPage(
 ): string | undefined {
     if (!pagination) return undefined;
     const hasPreviousPage = pagination.currentPage > 1;
-    return hasPreviousPage ? `/${prefix}/${pagination.currentPage - 1}` : undefined;
+    return hasPreviousPage
+        ? `/${prefix}/${pagination.currentPage - 1}`
+        : undefined;
 }
 
 export function createOgImage(type: "manga" | "author" | "genre", id: string) {
@@ -98,9 +100,14 @@ interface MetadataOptions {
     };
 }
 
+function truncate(text: string, maxLength: number): string {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength - 1).trimEnd() + "…";
+}
+
 export function createMetadata(options: MetadataOptions): Metadata {
     const title = `${options.title} - Akari`;
-    const description = `Akari Manga - ${options.description}`;
+    const description = `Akari Manga - ${truncate(options.description, 145)}`;
     const canonicalPath = options.canonicalPath?.startsWith("/")
         ? options.canonicalPath.slice(1)
         : options.canonicalPath;

@@ -88,6 +88,10 @@ export async function generateMetadata({
         description: description,
         image: createOgImage("manga", chapter.mangaId),
         canonicalPath: `/manga/${mangaParams.id}/${mangaParams.scanlator}/${mangaParams.subId}`,
+        pagination: {
+            next: `/manga/${mangaParams.id}/${mangaParams.scanlator}/${chapter.nextChapter}`,
+            previous: `/manga/${mangaParams.id}/${mangaParams.scanlator}/${chapter.lastChapter}`,
+        },
     });
 }
 

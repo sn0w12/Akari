@@ -20,7 +20,7 @@ import { getPopularData } from "./popular/page";
 
 export const metadata: Metadata = createMetadata({
     title: "Akari Manga",
-    description: "Read manga for free on Akari.",
+    description: "Browse popular manga and the latest releases on Akari.",
     image: "/og/akari.webp",
     canonicalPath: "/",
     pagination: {

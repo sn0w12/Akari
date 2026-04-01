@@ -56,24 +56,26 @@ function ChaptersControls({
 
     return (
         <div className="flex gap-2 w-full flex-col md:flex-row md:w-auto pointer-events-auto">
-            <Select
-                onValueChange={(value) => setScanlatorId(Number(value))}
-                value={scanlatorId.toString()}
-            >
-                <SelectTrigger className="w-full md:w-auto">
-                    <SelectValue placeholder="Select Scanlator" />
-                </SelectTrigger>
-                <SelectContent align="center">
-                    {scanlatorOptions.map((option) => (
-                        <SelectItem
-                            key={option.id}
-                            value={option.id.toString()}
-                        >
-                            {option.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            {scanlatorOptions.length > 1 && (
+                <Select
+                    onValueChange={(value) => setScanlatorId(Number(value))}
+                    value={scanlatorId.toString()}
+                >
+                    <SelectTrigger className="w-full md:w-auto">
+                        <SelectValue placeholder="Select Scanlator" />
+                    </SelectTrigger>
+                    <SelectContent align="center">
+                        {scanlatorOptions.map((option) => (
+                            <SelectItem
+                                key={option.id}
+                                value={option.id.toString()}
+                            >
+                                {option.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
             <div className="flex gap-2 w-full">
                 {isLoading || isUserLoading ? (
                     <Button className="flex-1 md:w-40" disabled />
@@ -87,7 +89,7 @@ function ChaptersControls({
                     </Button>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${mangaId}/${firstChapterNumber}`}
+                        href={`/manga/${mangaId}/${scanlatorId}/${firstChapterNumber}`}
                         className="flex-1 md:w-40"
                     >
                         Go to First Chapter
