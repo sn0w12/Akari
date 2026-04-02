@@ -25,6 +25,7 @@ export function ConfirmDialogs({
 }: {
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
 }) {
+    const [open, setOpen] = useState(false);
     const { confirm } = useConfirm();
 
     async function handleRemoveBookmark(mangaId: string, shouldConfirm = true) {
@@ -42,6 +43,7 @@ export function ConfirmDialogs({
         }
 
         const data = await removeBookmark(mangaId);
+        setOpen(false);
 
         if (!data) {
             new Toast("Failed to remove bookmark", "error");
@@ -89,10 +91,12 @@ export function ConfirmDialogs({
 
         if (error) {
             new Toast("Failed to update bookmark", "error");
+            setOpen(false);
             return false;
         }
 
         const success = await syncAllServices(data.data);
+        setOpen(false);
         if (!success) {
             new Toast("Failed to sync manga services", "error");
             return false;
@@ -103,7 +107,7 @@ export function ConfirmDialogs({
     }
 
     return (
-        <PopoverDrawer>
+        <PopoverDrawer open={open} onOpenChange={setOpen}>
             <PopoverDrawerTrigger>
                 <Button
                     variant="outline"
