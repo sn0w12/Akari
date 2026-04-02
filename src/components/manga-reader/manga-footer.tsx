@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import BookmarkButton from "../manga-details/bookmark-button";
 import { Button } from "../ui/button";
 import { ButtonLink } from "../ui/button-link";
@@ -19,12 +20,13 @@ export default function MangaFooter({
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
-                        <a
+                        <Link
                             href={`/manga/${chapter.mangaId}`}
                             className="hover:underline"
+                            transitionTypes={["transition-backwards"]}
                         >
                             {chapter.mangaTitle}
-                        </a>
+                        </Link>
                     </h2>
                     <ChapterSelector
                         chapters={chapter.chapters}
