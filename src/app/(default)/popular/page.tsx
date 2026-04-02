@@ -5,6 +5,7 @@ import {
     GridSortSelectFallback,
 } from "@/components/grid/grid-sort";
 import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import {
@@ -80,20 +81,22 @@ export const getPopularData = async (page: number, days: number = 30) => {
 
 export default async function Popular(props: PageProps) {
     return (
-        <div className="flex-1 px-4 pt-2 pb-4">
-            <div className="flex gap-4">
-                <h2 className="text-3xl font-bold mb-2">Popular</h2>
-                <div className="ml-auto">
-                    <Suspense fallback={<GridSortSelectFallback />}>
-                        <PopularSorting {...props} />
-                    </Suspense>
+        <PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div className="flex gap-4">
+                    <h2 className="text-3xl font-bold mb-2">Popular</h2>
+                    <div className="ml-auto">
+                        <Suspense fallback={<GridSortSelectFallback />}>
+                            <PopularSorting {...props} />
+                        </Suspense>
+                    </div>
                 </div>
-            </div>
 
-            <Suspense fallback={<GridBodySkeleton />}>
-                <PopularBody {...props} />
-            </Suspense>
-        </div>
+                <Suspense fallback={<GridBodySkeleton />}>
+                    <PopularBody {...props} />
+                </Suspense>
+            </div>
+        </PageWrapper>
     );
 }
 

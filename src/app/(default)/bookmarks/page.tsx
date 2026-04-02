@@ -2,6 +2,7 @@ import BookmarksHeader from "@/components/bookmarks/bookmarks-header";
 import { BookmarkCard } from "@/components/bookmarks/cards/bookmark-card";
 import BookmarksSkeleton from "@/components/bookmarks/skeleton";
 import ErrorPage from "@/components/error-page";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client } from "@/lib/api";
@@ -23,12 +24,14 @@ export const metadata: Metadata = {
 
 export default async function Bookmarks(props: PageProps) {
     return (
-        <div className="flex-1 p-4">
-            <BookmarksHeader />
-            <Suspense fallback={<BookmarksSkeleton />}>
-                <BookmarksGrid {...props} />
-            </Suspense>
-        </div>
+        <PageWrapper>
+            <div className="flex-1 p-4">
+                <BookmarksHeader />
+                <Suspense fallback={<BookmarksSkeleton />}>
+                    <BookmarksGrid {...props} />
+                </Suspense>
+            </div>
+        </PageWrapper>
     );
 }
 
@@ -65,7 +68,11 @@ async function BookmarksGrid(props: PageProps) {
                 <p className="text-sm text-muted-foreground">
                     Start reading and bookmark your favorite series!
                 </p>
-                <ButtonLink href="/" className="mt-1.5">
+                <ButtonLink
+                    href="/"
+                    className="mt-1.5"
+                    transitionTypes={["transition-backwards"]}
+                >
                     Browse Series
                 </ButtonLink>
             </div>

@@ -32,7 +32,10 @@ export function UserProfile({
                     <Avatar name={user.username} size={64} />
 
                     <div>
-                        <Link href={`/user/${user.userId}`}>
+                        <Link
+                            href={`/user/${user.userId}`}
+                            transitionTypes={["transition-forwards"]}
+                        >
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}
                             </h2>

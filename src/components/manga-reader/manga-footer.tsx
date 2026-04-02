@@ -39,6 +39,7 @@ export default function MangaFooter({
                             className="w-full order-0 xl:order-3"
                             aria-label="Previous Chapter"
                             prefetch={false}
+                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -51,6 +52,7 @@ export default function MangaFooter({
                             className="w-full order-0 xl:order-3"
                             aria-label="Previous Chapter"
                             tabIndex={-1}
+                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -62,6 +64,7 @@ export default function MangaFooter({
                             className="w-full order-1 xl:order-4"
                             aria-label="Next Chapter"
                             prefetch={false}
+                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
@@ -74,6 +77,7 @@ export default function MangaFooter({
                             aria-label="Next Chapter"
                             aria-disabled="true"
                             tabIndex={-1}
+                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />

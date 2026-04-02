@@ -28,6 +28,7 @@ export function InfoContent({
                     <Link
                         href={`/manga/${chapter.mangaId}`}
                         className="text-foreground hover:text-primary transition-colors"
+                        transitionTypes={["transition-backwards"]}
                     >
                         {chapter.mangaTitle}
                     </Link>
@@ -52,6 +53,7 @@ export function InfoContent({
                             aria-label="Previous Chapter"
                             prefetch={false}
                             disabled={!lastChapterExists}
+                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="mr-2 h-4 w-4" />
                             Previous
@@ -63,6 +65,7 @@ export function InfoContent({
                             aria-label="Next Chapter"
                             prefetch={false}
                             disabled={!nextChapterExists}
+                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="ml-2 h-4 w-4" />

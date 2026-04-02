@@ -1,8 +1,8 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
 import { VariantProps, cva } from "class-variance-authority";
 import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Drawer, DrawerContent } from "./drawer";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -680,7 +681,7 @@ function SidebarMenuLink({
     labelClassName,
     prefetch,
     ...props
-}: React.ComponentProps<"a"> & {
+}: React.ComponentProps<typeof Link> & {
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href: string;
@@ -922,6 +923,7 @@ function SidebarSection({
     isItemActive,
 }: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
+    const path = usePathname();
     const { setOpen, state } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
 
@@ -980,6 +982,11 @@ function SidebarSection({
                             size="sm"
                             className="relative z-10 px-3 text-base md:text-sm hover:bg-accent"
                             onClick={handleLinkClick}
+                            transitionTypes={
+                                path.includes("manga")
+                                    ? ["transition-backwards"]
+                                    : ["transition-forwards"]
+                            }
                         >
                             <div className="flex max-w-[150px] items-center gap-1.5">
                                 <span className="truncate">{item.name}</span>

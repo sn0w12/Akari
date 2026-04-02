@@ -49,7 +49,11 @@ async function UserCard({
     user: components["schemas"]["UserProfileDetailsResponse"];
 }) {
     return (
-        <Link href={`./user/${user.userId}`} prefetch={false}>
+        <Link
+            href={`./user/${user.userId}`}
+            prefetch={false}
+            transitionTypes={["transition-forwards"]}
+        >
             <Card className="gap-0 py-4 hover:bg-accent transition-colors">
                 <CardHeader className="flex flex-row items-center gap-1 px-4">
                     <Avatar name={user.username} size={24} />

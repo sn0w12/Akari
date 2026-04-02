@@ -22,6 +22,7 @@ export default async function Footer() {
                                 }
                                 className="hover:text-foreground/70"
                                 prefetch={false}
+                                transitionTypes={["transition-forwards"]}
                             >
                                 AGPL-3.0.
                             </Link>
@@ -33,6 +34,7 @@ export default async function Footer() {
                                 href="/about"
                                 className="hover:text-foreground/70"
                                 prefetch={false}
+                                transitionTypes={["transition-forwards"]}
                             >
                                 About
                             </Link>
@@ -40,6 +42,7 @@ export default async function Footer() {
                                 href="/privacy"
                                 className="hover:text-foreground/70"
                                 prefetch={false}
+                                transitionTypes={["transition-forwards"]}
                             >
                                 Privacy Policy
                             </Link>
@@ -47,6 +50,7 @@ export default async function Footer() {
                                 href="/terms"
                                 className="hover:text-foreground/70"
                                 prefetch={false}
+                                transitionTypes={["transition-forwards"]}
                             >
                                 Terms
                             </Link>

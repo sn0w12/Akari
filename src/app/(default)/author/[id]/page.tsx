@@ -1,5 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import {
@@ -78,12 +79,14 @@ export async function getAuthor(name: string, page: number) {
 
 export default async function AuthorPage(props: AuthorPageProps) {
     return (
-        <div className="flex-1 px-4 pt-2 pb-4">
-            <div className="flex gap-4">
-                <AuthorHeader params={props.params} />
+        <PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div className="flex gap-4">
+                    <AuthorHeader params={props.params} />
+                </div>
+                <AuthorBody params={props.params} />
             </div>
-            <AuthorBody params={props.params} />
-        </div>
+        </PageWrapper>
     );
 }
 

@@ -1,6 +1,7 @@
-import * as React from "react";
-import { Slot as SlotPrimitive } from "radix-ui";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import { Slot as SlotPrimitive } from "radix-ui";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -35,10 +36,10 @@ function BreadcrumbLink({
     asChild,
     className,
     ...props
-}: React.ComponentProps<"a"> & {
+}: React.ComponentProps<typeof Link> & {
     asChild?: boolean;
 }) {
-    const Comp = asChild ? SlotPrimitive.Slot : "a";
+    const Comp = asChild ? SlotPrimitive.Slot : Link;
 
     return (
         <Comp
@@ -100,10 +101,10 @@ function BreadcrumbEllipsis({
 
 export {
     Breadcrumb,
-    BreadcrumbList,
+    BreadcrumbEllipsis,
     BreadcrumbItem,
     BreadcrumbLink,
+    BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-    BreadcrumbEllipsis,
 };

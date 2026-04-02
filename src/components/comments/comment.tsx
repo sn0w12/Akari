@@ -214,6 +214,7 @@ export function Comment({
                         <Link
                             href={`/user/${comment.userProfile.id}`}
                             className="font-medium text-foreground hover:underline"
+                            transitionTypes={["transition-forwards"]}
                         >
                             {comment.userProfile.displayName}
                         </Link>

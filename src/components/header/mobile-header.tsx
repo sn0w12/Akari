@@ -41,6 +41,11 @@ export function MobileHeader() {
                     prefetch={true}
                     active={pathname === "/popular"}
                     className={borderClass}
+                    transitionTypes={
+                        pathname === "/"
+                            ? ["transition-forwards"]
+                            : ["transition-backwards"]
+                    }
                 >
                     <TrendingUp className="size-6" />
                 </TabBarTrigger>
@@ -50,6 +55,7 @@ export function MobileHeader() {
                     prefetch={true}
                     active={pathname === "/" || pathname.startsWith("/latest")}
                     className={borderClass}
+                    transitionTypes={["transition-backwards"]}
                 >
                     <HomeIcon className="size-6" />
                 </TabBarTrigger>
@@ -59,6 +65,11 @@ export function MobileHeader() {
                     prefetch={true}
                     active={pathname === "/search"}
                     className={borderClass}
+                    transitionTypes={
+                        pathname === "/"
+                            ? ["transition-forwards"]
+                            : ["transition-backwards"]
+                    }
                 >
                     <SearchIcon className="size-6" />
                 </TabBarTrigger>
@@ -69,6 +80,11 @@ export function MobileHeader() {
                         active={pathname === "/bookmarks"}
                         className={borderClass}
                         prefetch={false}
+                        transitionTypes={
+                            pathname === "/"
+                                ? ["transition-forwards"]
+                                : ["transition-backwards"]
+                        }
                     >
                         <BookmarkIcon className="size-6" />
                     </TabBarTrigger>

@@ -49,7 +49,11 @@ export default function EndOfManga({
             <CardFooter className="flex flex-col space-y-4">
                 <div className="grid grid-cols-1 gap-4 w-full">
                     <Button variant="outline" asChild onClick={handleClick}>
-                        <Link href="/bookmarks" prefetch={false}>
+                        <Link
+                            href="/bookmarks"
+                            prefetch={false}
+                            transitionTypes={["transition-backwards"]}
+                        >
                             <Bookmark className="mr-2 h-4 w-4" />
                             Bookmarks
                         </Link>
@@ -57,13 +61,21 @@ export default function EndOfManga({
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full">
                     <Button variant="outline" asChild onClick={handleClick}>
-                        <Link href="/" prefetch={false}>
+                        <Link
+                            href="/"
+                            prefetch={false}
+                            transitionTypes={["transition-backwards"]}
+                        >
                             <Home className="mr-2 h-4 w-4" />
                             Homepage
                         </Link>
                     </Button>
                     <Button variant="outline" asChild onClick={handleClick}>
-                        <Link href={`/manga/${identifier}`} prefetch={false}>
+                        <Link
+                            href={`/manga/${identifier}`}
+                            prefetch={false}
+                            transitionTypes={["transition-backwards"]}
+                        >
                             <List className="mr-2 h-4 w-4" />
                             Manga Page
                         </Link>

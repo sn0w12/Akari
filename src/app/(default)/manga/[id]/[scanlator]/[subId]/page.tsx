@@ -1,6 +1,7 @@
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
+import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
 import {
     getAllChapterIds,
@@ -142,7 +143,9 @@ async function MangaReaderBody({ params }: MangaReaderProps) {
                     __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
                 }}
             />
-            <Reader chapter={data} />
+            <PageWrapper>
+                <Reader chapter={data} />
+            </PageWrapper>
         </>
     );
 }

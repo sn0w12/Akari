@@ -41,10 +41,7 @@ function TabBarList({
 }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
-            className={cn(
-                "flex h-14 items-center justify-around",
-                className,
-            )}
+            className={cn("flex h-14 items-center justify-around", className)}
             {...props}
         />
     );
@@ -57,6 +54,7 @@ export interface TabBarTriggerProps
     href?: string;
     prefetch?: boolean | "auto" | null;
     active?: boolean;
+    transitionTypes?: string[] | undefined;
 }
 
 function TabBarTrigger({
@@ -66,6 +64,7 @@ function TabBarTrigger({
     prefetch,
     active,
     children,
+    transitionTypes,
     ...props
 }: TabBarTriggerProps) {
     const isActive = active ?? false;
@@ -79,6 +78,7 @@ function TabBarTrigger({
                     tabBarTriggerVariants({ variant, active: isActive }),
                     className,
                 )}
+                transitionTypes={transitionTypes}
             >
                 {children}
             </Link>

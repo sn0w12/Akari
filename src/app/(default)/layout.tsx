@@ -14,7 +14,6 @@ import { DeviceProvider } from "@/contexts/device-context";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 
-import { CustomViewTransition } from "@/components/view-transition";
 import type { Metadata, Viewport } from "next";
 
 const geistSans = localFont({
@@ -103,9 +102,7 @@ export default async function RootLayout({
                                                 <Suspense fallback={null}>
                                                     <AnalyticsWrapper />
                                                 </Suspense>
-                                                <CustomViewTransition>
-                                                    {children}
-                                                </CustomViewTransition>
+                                                {children}
                                                 <Toaster
                                                     position="top-right"
                                                     visibleToasts={5}

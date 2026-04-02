@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CustomViewTransition } from "../view-transition";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -153,30 +152,29 @@ export function MangaCard({
                 <Link
                     href={`/manga/${manga.id}`}
                     className="relative block h-full w-full"
+                    transitionTypes={["transition-forwards"]}
                     prefetch={false}
                 >
-                    <CustomViewTransition name={`manga-cover-${manga.id}`}>
-                        <Image
-                            src={manga.cover}
-                            alt={manga.title}
-                            className="h-full w-full object-cover"
-                            width={200}
-                            height={300}
-                            quality={20}
-                            loading={priority ? "eager" : "lazy"}
-                            fetchPriority={priority ? "high" : "auto"}
-                            preload={priority}
-                            decoding="async"
-                            sizes={generateSizes({
-                                sm: "50vw",
-                                md: "33vw",
-                                lg: "25vw",
-                                xl: "20vw",
-                                "2xl": "17vw",
-                                default: "25vw",
-                            })}
-                        />
-                    </CustomViewTransition>
+                    <Image
+                        src={manga.cover}
+                        alt={manga.title}
+                        className="h-full w-full object-cover"
+                        width={200}
+                        height={300}
+                        quality={20}
+                        loading={priority ? "eager" : "lazy"}
+                        fetchPriority={priority ? "high" : "auto"}
+                        preload={priority}
+                        decoding="async"
+                        sizes={generateSizes({
+                            sm: "50vw",
+                            md: "33vw",
+                            lg: "25vw",
+                            xl: "20vw",
+                            "2xl": "17vw",
+                            default: "25vw",
+                        })}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>
             </div>

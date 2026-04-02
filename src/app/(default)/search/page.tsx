@@ -1,3 +1,4 @@
+import { PageWrapper } from "@/components/page-wrapper";
 import SearchPage from "@/components/search";
 import SearchPageSkeleton from "@/components/search/skeleton";
 import { robots } from "@/lib/seo";
@@ -35,10 +36,12 @@ export const metadata: Metadata = {
 
 export default async function Search() {
     return (
-        <div className="flex-1">
-            <Suspense fallback={<SearchPageSkeleton />}>
-                <SearchPage />
-            </Suspense>
-        </div>
+        <PageWrapper>
+            <div className="flex-1">
+                <Suspense fallback={<SearchPageSkeleton />}>
+                    <SearchPage />
+                </Suspense>
+            </div>
+        </PageWrapper>
     );
 }

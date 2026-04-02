@@ -1,5 +1,10 @@
+import { PageWrapper } from "@/components/page-wrapper";
 import SettingsPage from "@/components/settings";
 
 export default function Page() {
-    return <SettingsPage />;
+    return (
+        <PageWrapper>
+            <SettingsPage />
+        </PageWrapper>
+    );
 }

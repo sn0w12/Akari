@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
-import { CustomViewTransition } from "@/components/view-transition";
 import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import Image from "next/image";
@@ -31,20 +30,17 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             prefetch={false}
                             tabIndex={-1}
                             aria-hidden="true"
+                            transitionTypes={["transition-forwards"]}
                         >
-                            <CustomViewTransition
-                                name={`manga-cover-${bookmark.mangaId}`}
-                            >
-                                <Image
-                                    src={bookmark.cover}
-                                    alt={bookmark.title}
-                                    height={180}
-                                    width={120}
-                                    className="w-full h-auto object-cover rounded-sm"
-                                    quality={40}
-                                    sizes="120px"
-                                />
-                            </CustomViewTransition>
+                            <Image
+                                src={bookmark.cover}
+                                alt={bookmark.title}
+                                height={180}
+                                width={120}
+                                className="w-full h-auto object-cover rounded-sm"
+                                quality={40}
+                                sizes="120px"
+                            />
                         </Link>
                     </div>
 
@@ -57,6 +53,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                     className="hover:underline"
                                     href={`/manga/${bookmark.mangaId}`}
                                     prefetch={false}
+                                    transitionTypes={["transition-forwards"]}
                                 >
                                     <h3 className="line-clamp-2 flex-1 text-lg font-semibold leading-snug">
                                         {bookmark.title}
@@ -129,6 +126,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.scanlatorId}/${bookmark.latestChapter.number}`}
                         size="sm"
                         className="flex-1 w-full"
+                        transitionTypes={["transition-forwards"]}
                     >
                         <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                         {bookmark.latestChapter.number}
@@ -140,6 +138,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         size="sm"
                         className="flex-1 w-full group"
                         prefetch={false}
+                        transitionTypes={["transition-forwards"]}
                     >
                         <p className="hidden md:inline">Continue Reading • </p>
                         Ch. {bookmark.nextChapter.number}

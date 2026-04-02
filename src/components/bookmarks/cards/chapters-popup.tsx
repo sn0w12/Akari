@@ -113,6 +113,9 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                                             } ${
                                                 isLastRead ? "(Last Read)" : ""
                                             }`}
+                                            transitionTypes={[
+                                                "transition-forwards",
+                                            ]}
                                         >
                                             <div className="flex justify-between items-center">
                                                 <span>{chapter.title}</span>

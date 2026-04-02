@@ -38,6 +38,7 @@ export function CommentsButton({
                     size="icon"
                     href={`./${chapterNumber}/comments`}
                     className="h-7.5 md:h-9"
+                    transitionTypes={["transition-forwards"]}
                 >
                     <MessageCircle className="h-4 w-4" />
                 </ButtonLink>

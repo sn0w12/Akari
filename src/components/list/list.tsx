@@ -96,7 +96,11 @@ function Entry({
                     {dragHandle}
                 </div>
             )}
-            <Link href={`/manga/${entry.mangaId}`} className="shrink-0">
+            <Link
+                href={`/manga/${entry.mangaId}`}
+                className="shrink-0"
+                transitionTypes={["transition-forwards"]}
+            >
                 <Image
                     src={entry.mangaCover}
                     alt={entry.mangaTitle}
@@ -110,7 +114,10 @@ function Entry({
                 />
             </Link>
             <div className="flex-1 min-w-0">
-                <Link href={`/manga/${entry.mangaId}`}>
+                <Link
+                    href={`/manga/${entry.mangaId}`}
+                    transitionTypes={["transition-forwards"]}
+                >
                     <h3 className="font-semibold truncate hover:underline">
                         {entry.mangaTitle}
                     </h3>
@@ -333,6 +340,7 @@ export function ListComponent({ id }: { id: string }) {
                         <Link
                             href={`/user/${data.user.userId}`}
                             className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
+                            transitionTypes={["transition-backwards"]}
                         >
                             <Avatar name={data.user.username} size={32} />
                             {data.user.displayName}
