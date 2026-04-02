@@ -98,14 +98,16 @@ export async function generateMetadata({
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
     return (
-        <div className="bg-background text-foreground">
-            <MangaReaderBody params={params} />
-            <div className="p-4">
-                <Suspense fallback={null}>
-                    <MangaComments params={params} target="chapter" />
-                </Suspense>
+        <PageWrapper>
+            <div className="bg-background text-foreground">
+                <MangaReaderBody params={params} />
+                <div className="p-4">
+                    <Suspense fallback={null}>
+                        <MangaComments params={params} target="chapter" />
+                    </Suspense>
+                </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 }
 
@@ -143,9 +145,7 @@ async function MangaReaderBody({ params }: MangaReaderProps) {
                     __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
                 }}
             />
-            <PageWrapper>
-                <Reader chapter={data} />
-            </PageWrapper>
+            <Reader chapter={data} />
         </>
     );
 }
