@@ -27,7 +27,7 @@ function TabBar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-sidebar",
+                "fixed bottom-0 left-0 right-0 z-50 bg-sidebar tabbar",
                 className,
             )}
             {...props}

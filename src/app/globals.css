@@ -387,3 +387,18 @@ li {
         filter: blur(3px);
     }
 }
+
+.tabbar {
+    view-transition-name: tabbar;
+    z-index: 100;
+}
+::view-transition-group(tabbar) {
+    z-index: 100;
+}
+::view-transition-old(tabbar),
+::view-transition-new(tabbar) {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    right: 0;
+}
