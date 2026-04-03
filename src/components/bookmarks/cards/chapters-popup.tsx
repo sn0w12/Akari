@@ -1,4 +1,5 @@
 "use client";
+"use no memo";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,8 +35,6 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     estimatedChapters,
     scanlatorId,
 }) => {
-    "use no memo";
-
     const { data, isLoading } = useQuery({
         queryKey: ["chapters", mangaId],
         enabled: open,
@@ -59,19 +58,10 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
         },
     });
 
-    const parentRef = useRef<HTMLDivElement | null>(null);
-
     const filteredChapters = useMemo(() => {
         if (!data?.chapters) return [];
         return data.chapters.filter((c) => c.scanlatorId === scanlatorId);
     }, [data, scanlatorId]);
-
-    const rowVirtualizer = useVirtualizer({
-        count: filteredChapters.length,
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 36,
-        overscan: 6,
-    });
 
     return (
         <PopoverDrawer open={open} onOpenChange={setOpen}>
@@ -89,100 +79,126 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                 popoverAlign="end"
                 drawerTitle={title}
             >
-                <div
-                    ref={parentRef}
-                    className="max-h-96 md:max-h-64 overflow-y-auto"
-                    data-scrollbar-custom
-                >
-                    {isLoading ? (
-                        <div className="space-y-2 py-2">
-                            {Array(
-                                estimatedChapters < 10 ? estimatedChapters : 10,
-                            )
-                                .fill(0)
-                                .map((_, index) => (
-                                    <div key={index} className="p-2">
-                                        <div className="flex justify-between items-center">
-                                            <Skeleton className="h-4 w-28" />
-                                            <Skeleton className="h-3 w-16" />
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    ) : filteredChapters.length > 0 ? (
-                        <div
-                            className="relative w-full"
-                            style={{ height: rowVirtualizer.getTotalSize() }}
-                        >
-                            {rowVirtualizer
-                                .getVirtualItems()
-                                .map((virtualRow) => {
-                                    const chapter =
-                                        filteredChapters[virtualRow.index];
-                                    const isLastRead =
-                                        chapter.id === lastReadChapter?.id;
-
-                                    return (
-                                        <div
-                                            key={chapter.id}
-                                            ref={rowVirtualizer.measureElement}
-                                            data-index={virtualRow.index}
-                                            style={{
-                                                position: "absolute",
-                                                top: 0,
-                                                left: 0,
-                                                width: "100%",
-                                                transform: `translateY(${virtualRow.start}px)`,
-                                            }}
-                                        >
-                                            <Link
-                                                href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
-                                                className={cn(
-                                                    "block p-2 rounded text-sm transition-colors duration-100 hover:bg-accent",
-                                                    {
-                                                        "bg-accent-positive hover:bg-accent-positive/90 text-white":
-                                                            isLastRead,
-                                                    },
-                                                )}
-                                                prefetch={false}
-                                                aria-label={`Read ${chapter.title} ${
-                                                    isLastRead
-                                                        ? "(Last Read)"
-                                                        : ""
-                                                }`}
-                                                transitionTypes={[
-                                                    "transition-forwards",
-                                                ]}
-                                            >
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <span className="min-w-0 flex-1 break-words">
-                                                        {chapter.title}
-                                                    </span>
-                                                    <span
-                                                        className={cn(
-                                                            "shrink-0 text-xs",
-                                                            isLastRead
-                                                                ? "text-white"
-                                                                : "text-muted-foreground",
-                                                        )}
-                                                    >
-                                                        {formatRelativeDate(
-                                                            chapter.createdAt,
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            </Link>
-                                        </div>
-                                    );
-                                })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-4 text-muted-foreground">
-                            No chapters available
-                        </div>
-                    )}
-                </div>
+                {open ? (
+                    <ChaptersList
+                        isLoading={isLoading}
+                        chapters={filteredChapters}
+                        estimatedChapters={estimatedChapters}
+                        mangaId={mangaId}
+                        lastReadChapter={lastReadChapter}
+                    />
+                ) : null}
             </PopoverDrawerContent>
         </PopoverDrawer>
     );
 };
+
+interface ChaptersListProps {
+    isLoading: boolean;
+    chapters: components["schemas"]["MangaChapter"][];
+    estimatedChapters: number;
+    mangaId: string;
+    lastReadChapter: components["schemas"]["MangaChapter"];
+}
+
+function ChaptersList({
+    isLoading,
+    chapters,
+    estimatedChapters,
+    mangaId,
+    lastReadChapter,
+}: ChaptersListProps): React.JSX.Element {
+    const parentRef = useRef<HTMLDivElement | null>(null);
+    const rowVirtualizer = useVirtualizer({
+        count: chapters.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 36,
+        overscan: 6,
+    });
+
+    return (
+        <div
+            ref={parentRef}
+            className="h-96 overflow-y-auto md:h-64"
+            data-scrollbar-custom
+        >
+            {isLoading ? (
+                <div className="space-y-2 py-2">
+                    {Array(estimatedChapters < 10 ? estimatedChapters : 10)
+                        .fill(0)
+                        .map((_, index) => (
+                            <div key={index} className="p-2">
+                                <div className="flex items-center justify-between">
+                                    <Skeleton className="h-4 w-28" />
+                                    <Skeleton className="h-3 w-16" />
+                                </div>
+                            </div>
+                        ))}
+                </div>
+            ) : chapters.length > 0 ? (
+                <div
+                    className="relative w-full"
+                    style={{ height: rowVirtualizer.getTotalSize() }}
+                >
+                    {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const chapter = chapters[virtualRow.index];
+                        const isLastRead = chapter.id === lastReadChapter?.id;
+
+                        return (
+                            <div
+                                key={chapter.id}
+                                data-index={virtualRow.index}
+                                ref={rowVirtualizer.measureElement}
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    transform: `translateY(${virtualRow.start}px)`,
+                                }}
+                            >
+                                <Link
+                                    href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
+                                    className={cn(
+                                        "block rounded p-2 text-sm transition-colors duration-100 hover:bg-accent",
+                                        {
+                                            "bg-accent-positive hover:bg-accent-positive/90 text-white":
+                                                isLastRead,
+                                        },
+                                    )}
+                                    prefetch={false}
+                                    aria-label={`Read ${chapter.title} ${
+                                        isLastRead ? "(Last Read)" : ""
+                                    }`}
+                                    transitionTypes={["transition-forwards"]}
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <span className="min-w-0 flex-1 break-words">
+                                            {chapter.title}
+                                        </span>
+                                        <span
+                                            className={cn(
+                                                "shrink-0 text-xs",
+                                                isLastRead
+                                                    ? "text-white"
+                                                    : "text-muted-foreground",
+                                            )}
+                                        >
+                                            {formatRelativeDate(
+                                                chapter.createdAt,
+                                            )}
+                                        </span>
+                                    </div>
+                                </Link>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="py-4 text-center text-muted-foreground">
+                    No chapters available
+                </div>
+            )}
+        </div>
+    );
+}
