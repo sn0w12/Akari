@@ -402,3 +402,17 @@ li {
     left: 0;
     right: 0;
 }
+
+header {
+    view-transition-name: header;
+    z-index: 50;
+}
+::view-transition-group(header) {
+    z-index: 50;
+}
+::view-transition-old(header),
+::view-transition-new(header) {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0;
+}
