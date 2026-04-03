@@ -111,13 +111,15 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
 
     return (
         <div className={cn("flex items-center gap-2 w-full", className)}>
-            <div className="w-full" {...handlers} style={style}>
+            <div className="w-full">
                 {isCaughtUp ? (
                     <Button
                         variant="outline"
                         size="sm"
                         className="flex-1 w-full bg-transparent"
                         disabled
+                        {...handlers}
+                        style={style}
                     >
                         All caught up!
                     </Button>
@@ -127,6 +129,8 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         size="sm"
                         className="flex-1 w-full"
                         transitionTypes={["transition-forwards"]}
+                        {...handlers}
+                        style={style}
                     >
                         <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                         {bookmark.latestChapter.number}
@@ -139,6 +143,8 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         className="flex-1 w-full group"
                         prefetch={false}
                         transitionTypes={["transition-forwards"]}
+                        {...handlers}
+                        style={style}
                     >
                         <p className="hidden md:inline">Continue Reading • </p>
                         Ch. {bookmark.nextChapter.number}
