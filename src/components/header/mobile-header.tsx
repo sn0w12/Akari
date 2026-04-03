@@ -41,11 +41,7 @@ export function MobileHeader() {
                     prefetch={true}
                     active={pathname === "/popular"}
                     className={borderClass}
-                    transitionTypes={
-                        pathname === "/"
-                            ? ["transition-forwards"]
-                            : ["transition-backwards"]
-                    }
+                    transitionTypes={["transition-backwards"]}
                 >
                     <TrendingUp className="size-6" />
                 </TabBarTrigger>
