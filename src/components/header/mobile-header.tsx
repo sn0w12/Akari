@@ -51,7 +51,11 @@ export function MobileHeader() {
                     prefetch={true}
                     active={pathname === "/" || pathname.startsWith("/latest")}
                     className={borderClass}
-                    transitionTypes={["transition-backwards"]}
+                    transitionTypes={
+                        pathname.startsWith("/popular")
+                            ? ["transition-forwards"]
+                            : ["transition-backwards"]
+                    }
                 >
                     <HomeIcon className="size-6" />
                 </TabBarTrigger>
