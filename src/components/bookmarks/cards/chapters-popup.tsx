@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronsUpDownIcon } from "lucide-react";
 import Link from "next/link";
-import React, { useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef } from "react";
 
 interface ChaptersPopupProps {
     open: boolean;
@@ -142,7 +142,6 @@ function ChaptersList({
                 >
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                         const chapter = chapters[virtualRow.index];
-                        const isLastRead = chapter.id === lastReadChapter?.id;
 
                         return (
                             <div
@@ -157,39 +156,11 @@ function ChaptersList({
                                     transform: `translateY(${virtualRow.start}px)`,
                                 }}
                             >
-                                <Link
-                                    href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
-                                    className={cn(
-                                        "block rounded p-2 text-sm transition-colors duration-100 hover:bg-accent",
-                                        {
-                                            "bg-accent-positive hover:bg-accent-positive/90 text-white":
-                                                isLastRead,
-                                        },
-                                    )}
-                                    prefetch={false}
-                                    aria-label={`Read ${chapter.title} ${
-                                        isLastRead ? "(Last Read)" : ""
-                                    }`}
-                                    transitionTypes={["transition-forwards"]}
-                                >
-                                    <div className="flex items-start justify-between gap-3">
-                                        <span className="min-w-0 flex-1 break-words">
-                                            {chapter.title}
-                                        </span>
-                                        <span
-                                            className={cn(
-                                                "shrink-0 text-xs",
-                                                isLastRead
-                                                    ? "text-white"
-                                                    : "text-muted-foreground",
-                                            )}
-                                        >
-                                            {formatRelativeDate(
-                                                chapter.createdAt,
-                                            )}
-                                        </span>
-                                    </div>
-                                </Link>
+                                <ChapterRow
+                                    chapter={chapter}
+                                    mangaId={mangaId}
+                                    isLastRead={chapter.id === lastReadChapter?.id}
+                                />
                             </div>
                         );
                     })}
@@ -202,3 +173,43 @@ function ChaptersList({
         </div>
     );
 }
+
+interface ChapterRowProps {
+    chapter: components["schemas"]["MangaChapter"];
+    mangaId: string;
+    isLastRead: boolean;
+}
+
+const ChapterRow = memo(function ChapterRow({
+    chapter,
+    mangaId,
+    isLastRead,
+}: ChapterRowProps): React.JSX.Element {
+    return (
+        <Link
+            href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
+            className={cn(
+                "block rounded p-2 text-sm transition-colors duration-100 hover:bg-accent",
+                {
+                    "bg-accent-positive hover:bg-accent-positive/90 text-white":
+                        isLastRead,
+                },
+            )}
+            prefetch={false}
+            aria-label={`Read ${chapter.title} ${isLastRead ? "(Last Read)" : ""}`}
+            transitionTypes={["transition-forwards"]}
+        >
+            <div className="flex items-start justify-between gap-3">
+                <span className="min-w-0 flex-1 break-words">{chapter.title}</span>
+                <span
+                    className={cn(
+                        "shrink-0 text-xs",
+                        isLastRead ? "text-white" : "text-muted-foreground",
+                    )}
+                >
+                    {formatRelativeDate(chapter.createdAt)}
+                </span>
+            </div>
+        </Link>
+    );
+});
