@@ -390,10 +390,10 @@ li {
 
 .tabbar {
     view-transition-name: tabbar;
-    z-index: 100;
+    z-index: 50;
 }
 ::view-transition-group(tabbar) {
-    z-index: 100;
+    z-index: 50;
 }
 ::view-transition-old(tabbar),
 ::view-transition-new(tabbar) {
