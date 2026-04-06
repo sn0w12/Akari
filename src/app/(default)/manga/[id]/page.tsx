@@ -1,6 +1,7 @@
 import { getManga, MangaDetailsComponent } from "@/components/manga-details";
 import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
+import { PageWrapper } from "@/components/page-wrapper";
 import {
     getAllMangaIds,
     STATIC_GENERATION_DISABLED,
@@ -46,13 +47,15 @@ export async function generateMetadata(
 
 export default async function MangaPage(props: MangaPageProps) {
     return (
-        <div className="w-full p-4">
-            <MangaDetailsComponent params={props.params} />
-            <MangaDetailsBody params={props.params} />
+        <PageWrapper>
+            <div className="w-full p-4">
+                <MangaDetailsComponent params={props.params} />
+                <MangaDetailsBody params={props.params} />
 
-            <Suspense fallback={null}>
-                <MangaComments params={props.params} target="manga" />
-            </Suspense>
-        </div>
+                <Suspense fallback={null}>
+                    <MangaComments params={props.params} target="manga" />
+                </Suspense>
+            </div>
+        </PageWrapper>
     );
 }

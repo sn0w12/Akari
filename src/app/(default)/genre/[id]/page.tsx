@@ -1,5 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { STATIC_GENERATION_DISABLED } from "@/lib/api/pre-render";
@@ -75,13 +76,15 @@ export async function getGenre(
 
 export default async function GenrePage(props: PageProps) {
     return (
-        <div className="flex-1 px-4 pt-2 pb-4">
-            <div className="flex gap-4">
-                <GenreHeader {...props} />
-            </div>
+        <PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div className="flex gap-4">
+                    <GenreHeader {...props} />
+                </div>
 
-            <GenreBody {...props} />
-        </div>
+                <GenreBody {...props} />
+            </div>
+        </PageWrapper>
     );
 }
 

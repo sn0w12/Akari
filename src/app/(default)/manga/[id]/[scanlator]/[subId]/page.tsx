@@ -1,6 +1,7 @@
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
+import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
 import {
     getAllChapterIds,
@@ -97,14 +98,16 @@ export async function generateMetadata({
 
 export default async function MangaReaderPage({ params }: MangaReaderProps) {
     return (
-        <div className="bg-background text-foreground">
-            <MangaReaderBody params={params} />
-            <div className="p-4">
-                <Suspense fallback={null}>
-                    <MangaComments params={params} target="chapter" />
-                </Suspense>
+        <PageWrapper>
+            <div className="bg-background text-foreground">
+                <MangaReaderBody params={params} />
+                <div className="p-4">
+                    <Suspense fallback={null}>
+                        <MangaComments params={params} target="chapter" />
+                    </Suspense>
+                </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 }
 

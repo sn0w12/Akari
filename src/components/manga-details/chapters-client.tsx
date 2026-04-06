@@ -238,6 +238,7 @@ export function ChaptersSection({
                         key={chapter.id}
                         id={chapter.id}
                         prefetch={false}
+                        transitionTypes={["transition-forwards"]}
                     >
                         <Card
                             className={`h-full transition-colors p-0 ${

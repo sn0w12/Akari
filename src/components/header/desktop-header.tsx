@@ -11,12 +11,12 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { inPreview } from "@/config";
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
 import SearchBar from "./search/search-bar";
-import { useUser } from "@/hooks/use-user";
 
 interface HeaderProps {
     notification: string;
@@ -138,6 +138,9 @@ export function DesktopHeader({ notification }: HeaderProps) {
                                                     9999,
                                                 )}
                                                 tabIndex={-1}
+                                                transitionTypes={[
+                                                    "transition-backwards",
+                                                ]}
                                             >
                                                 {getSegmentDisplayName(
                                                     segment,

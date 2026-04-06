@@ -38,6 +38,13 @@ export const APP_SETTINGS = {
                 default: true,
                 groups: ["UI"],
             },
+            viewTransitions: {
+                label: "View Transitions",
+                description: "Enable view transitions for supported browsers.",
+                type: "checkbox",
+                default: true,
+                groups: ["UI"],
+            },
             useToast: {
                 label: "Show Toasts",
                 description: "Show toast notifications for various actions.",

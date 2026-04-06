@@ -1,5 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import {
@@ -54,13 +55,15 @@ export const getLatestData = async (currentPage: number) => {
 
 export default async function Latest(props: PageProps) {
     return (
-        <div className="flex-1 px-4 pt-2 pb-4">
-            <div className="flex gap-4">
-                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-            </div>
+        <PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div className="flex gap-4">
+                    <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                </div>
 
-            <LatestBody {...props} />
-        </div>
+                <LatestBody {...props} />
+            </div>
+        </PageWrapper>
     );
 }
 

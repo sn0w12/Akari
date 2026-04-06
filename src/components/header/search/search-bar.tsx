@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import Spinner from "@/components/ui/puff-loader";
-import { CustomViewTransition } from "@/components/view-transition";
 import { getSearchResults } from "@/lib/api/search";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn, generateSizes } from "@/lib/utils";
@@ -140,22 +139,21 @@ export default function SearchBar() {
                                                 : ""
                                         }`}
                                         prefetch={true}
+                                        transitionTypes={[
+                                            "transition-forwards",
+                                        ]}
                                     >
-                                        <CustomViewTransition
-                                            name={`manga-cover-${result.id}`}
-                                        >
-                                            <Image
-                                                src={result.cover}
-                                                alt={result.title}
-                                                className="max-h-24 w-auto rounded mr-2"
-                                                height={144}
-                                                width={96}
-                                                quality={40}
-                                                sizes={generateSizes({
-                                                    default: "96px",
-                                                })}
-                                            />
-                                        </CustomViewTransition>
+                                        <Image
+                                            src={result.cover}
+                                            alt={result.title}
+                                            className="max-h-24 w-auto rounded mr-2"
+                                            height={144}
+                                            width={96}
+                                            quality={40}
+                                            sizes={generateSizes({
+                                                default: "96px",
+                                            })}
+                                        />
                                         {result.title}
                                     </Link>
                                 ))}
@@ -177,6 +175,7 @@ export default function SearchBar() {
                                 shouldCloseRef.current = false;
                             }}
                             prefetch={false}
+                            transitionTypes={["transition-forwards"]}
                         >
                             {hasSearchText
                                 ? "View all results"

@@ -82,9 +82,10 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
                         return (
                             <div
                                 key={index}
-                                className={
-                                    "relative cursor-pointer size-6 md:size-7 xl:size-8"
-                                }
+                                className={cn(
+                                    "relative size-6 md:size-7 xl:size-8",
+                                    user ? "cursor-pointer" : "cursor-default",
+                                )}
                                 ref={(el) => {
                                     starRefs.current[index] = el;
                                 }}

@@ -28,7 +28,6 @@ import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 import { ComicSeries, Person } from "schema-dts";
 import ErrorPage from "./error-page";
-import { CustomViewTransition } from "./view-transition";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -169,23 +168,21 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
             <div className="mb-2 flex h-auto flex-col justify-center gap-4 items-stretch lg:grid lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-y-0">
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
-                        <CustomViewTransition name={`manga-cover-${manga.id}`}>
-                            <EnhancedImage
-                                src={manga.cover}
-                                alt={manga.title}
-                                className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
-                                hoverEffect="dynamic-tilt"
-                                width={400}
-                                height={600}
-                                preload={true}
-                                fetchPriority="high"
-                                quality={60}
-                                sizes={generateSizes({
-                                    sm: "128px",
-                                    lg: "400px",
-                                })}
-                            />
-                        </CustomViewTransition>
+                        <EnhancedImage
+                            src={manga.cover}
+                            alt={manga.title}
+                            className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
+                            hoverEffect="dynamic-tilt"
+                            width={400}
+                            height={600}
+                            preload={true}
+                            fetchPriority="high"
+                            quality={60}
+                            sizes={generateSizes({
+                                sm: "128px",
+                                lg: "400px",
+                            })}
+                        />
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
@@ -253,6 +250,9 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                                     )}`}
                                                     key={index}
                                                     prefetch={false}
+                                                    transitionTypes={[
+                                                        "transition-backwards",
+                                                    ]}
                                                 >
                                                     <Badge
                                                         withShadow={true}
@@ -313,6 +313,9 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                                     genre.replaceAll(" ", "-"),
                                                 )}`}
                                                 prefetch={false}
+                                                transitionTypes={[
+                                                    "transition-backwards",
+                                                ]}
                                             >
                                                 <Badge
                                                     variant="secondary"

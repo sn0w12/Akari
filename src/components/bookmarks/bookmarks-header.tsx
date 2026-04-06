@@ -14,7 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CustomViewTransition } from "../view-transition";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 export default function BookmarksHeader() {
@@ -171,28 +170,28 @@ export default function BookmarksHeader() {
                                               ? ""
                                               : "hover:bg-accent"
                                     } flex items-center rounded-lg`}
+                                    transitionTypes={["transition-forwards"]}
                                 >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
-                                            <CustomViewTransition
-                                                name={`manga-cover-${result.mangaId}`}
-                                            >
-                                                <Image
-                                                    src={result.cover}
-                                                    alt={result.title}
-                                                    width={48}
-                                                    height={72}
-                                                    className="w-12 h-18 rounded mr-2"
-                                                    quality={40}
-                                                    sizes={generateSizes({
-                                                        default: "48px",
-                                                    })}
-                                                />
-                                            </CustomViewTransition>
+                                            <Image
+                                                src={result.cover}
+                                                alt={result.title}
+                                                width={48}
+                                                height={72}
+                                                className="w-12 h-18 rounded mr-2"
+                                                quality={40}
+                                                sizes={generateSizes({
+                                                    default: "48px",
+                                                })}
+                                            />
                                             {result.title}
                                         </div>
                                         <Link
                                             href={`/manga/${result.mangaId}/${result.nextChapter.scanlatorId}/${result.nextChapter.number}`}
+                                            transitionTypes={[
+                                                "transition-forwards",
+                                            ]}
                                         >
                                             <Button
                                                 className="z-20"

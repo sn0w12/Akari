@@ -46,7 +46,11 @@ export function ListItem({ list, onDelete }: ListItemProps) {
     }
 
     return (
-        <Link href={`/lists/${list.id}`} className="block">
+        <Link
+            href={`/lists/${list.id}`}
+            className="block"
+            transitionTypes={["transition-forwards"]}
+        >
             <Card className="relative p-0 hover:bg-accent transition-colors">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between">

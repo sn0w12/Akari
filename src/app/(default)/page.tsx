@@ -6,6 +6,7 @@ import { RemotePrompts } from "@/components/home/remote-prompts";
 import { MangaCard } from "@/components/manga/manga-card";
 import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
@@ -115,39 +116,43 @@ export default async function Home() {
                     ),
                 }}
             />
-            <div className="flex-1 px-4 pt-2 pb-4">
-                <div>
-                    <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
-                    <HomePopular />
+            <PageWrapper>
+                <div className="flex-1 px-4 pt-2 pb-4">
+                    <div>
+                        <h2 className="text-3xl font-bold mb-2">
+                            Popular Manga
+                        </h2>
+                        <HomePopular />
+                    </div>
+
+                    <Suspense
+                        fallback={
+                            <>
+                                <h2 className="text-3xl font-bold mb-2">
+                                    Recently Viewed
+                                </h2>
+                                <div className={GRID_CLASS}>
+                                    {[...Array(8)].map((_, index) => (
+                                        <MangaCardSkeleton
+                                            key={`recent-skeleton-${index}`}
+                                            className={
+                                                index > 5
+                                                    ? "block sm:hidden lg:block 2xl:hidden"
+                                                    : ""
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        }
+                    >
+                        <HomeRecent />
+                    </Suspense>
+
+                    <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                    <HomeLatest />
                 </div>
-
-                <Suspense
-                    fallback={
-                        <>
-                            <h2 className="text-3xl font-bold mb-2">
-                                Recently Viewed
-                            </h2>
-                            <div className={GRID_CLASS}>
-                                {[...Array(8)].map((_, index) => (
-                                    <MangaCardSkeleton
-                                        key={`recent-skeleton-${index}`}
-                                        className={
-                                            index > 5
-                                                ? "block sm:hidden lg:block 2xl:hidden"
-                                                : ""
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    }
-                >
-                    <HomeRecent />
-                </Suspense>
-
-                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-                <HomeLatest />
-            </div>
+            </PageWrapper>
             <PromptStack>
                 <InstallPrompt />
                 <NotificationPrompt />

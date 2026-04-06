@@ -7,7 +7,7 @@ import { buttonVariants } from "./button";
 
 export interface ButtonLinkProps
     extends
-        React.AnchorHTMLAttributes<HTMLAnchorElement>,
+        React.ComponentProps<typeof Link>,
         VariantProps<typeof buttonVariants> {
     href: string;
     prefetch?: boolean;

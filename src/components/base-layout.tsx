@@ -1,51 +1,18 @@
 "use client";
 
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarMenu,
-    SidebarMenuItem,
-    SidebarMenuLink,
-    SidebarSection,
-    useSidebar,
-} from "@/components/ui/sidebar";
+import { Sidebar } from "@/components/ui/sidebar";
 import { useBorderColor } from "@/contexts/border-color-context";
 import { ErrorProvider } from "@/contexts/error-context";
 import { useUser } from "@/hooks/use-user";
-import { GENRE_CATEGORIES } from "@/lib/api/search";
 import { fetchNotification } from "@/lib/manga/bookmarks";
-import { useSetting, useShortcutSetting } from "@/lib/settings";
+import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-    BadgeAlert,
-    Bookmark,
-    BookType,
-    FolderIcon,
-    HomeIcon,
-    Mountain,
-    Search,
-    SettingsIcon,
-    Theater,
-    TrendingUp,
-    Users,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
-import { AccountButton } from "./account/account-button";
+import { BaseSidebarContent } from "./base/sidebar-content";
 import { HeaderComponent } from "./header";
 import { PullToRefresh } from "./pull-to-refresh";
-import { KeyboardShortcut } from "./ui/keyboard-shortcut";
-import { Separator } from "./ui/separator";
-
-const categoryIcons: Record<string, React.ReactNode> = {
-    Demographics: <Users />,
-    Format: <BookType />,
-    Genres: <Theater />,
-    Themes: <Mountain />,
-    Mature: <BadgeAlert />,
-};
 
 export function BaseLayout({
     children,
@@ -56,9 +23,7 @@ export function BaseLayout({
 }) {
     const router = useRouter();
     const { data: user } = useUser();
-    const { state: sidebarState } = useSidebar();
     const { borderClass } = useBorderColor();
-    const isSidebarCollapsed = sidebarState === "collapsed";
 
     const { data: notification = "" } = useQuery({
         queryKey: ["notification"],
@@ -177,108 +142,9 @@ export function BaseLayout({
             </Suspense>
             <div className="bg-background md:bg-sidebar flex flex-1 h-full">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
-                    <SidebarContent
-                        data-scrollbar-custom="true"
-                        className="mt-[var(--safe-top)] md:mt-0"
-                    >
-                        <SidebarMenu className="p-2 pt-3 gap-0.5">
-                            <Separator className="hidden md:block" />
-
-                            <SidebarMenuItem className="hidden md:block">
-                                <SidebarMenuLink tooltip="Home" href="/">
-                                    <HomeIcon />
-                                    <span>Home</span>
-                                </SidebarMenuLink>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="hidden md:block">
-                                <SidebarMenuLink
-                                    tooltip={`Bookmarks${
-                                        notification ? " •" : ""
-                                    } ${notification}`}
-                                    href="/bookmarks"
-                                    aria-label={`${notification} Unread Bookmarks`}
-                                    prefetch={false}
-                                >
-                                    <Bookmark />
-                                    <span>Bookmarks</span>
-                                    <KeyboardShortcut
-                                        keys={useSetting("navigateBookmarks")}
-                                        className={`transition-opacity ease-snappy ${
-                                            isSidebarCollapsed
-                                                ? "opacity-0"
-                                                : "opacity-100"
-                                        }`}
-                                    />
-                                </SidebarMenuLink>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="hidden md:block">
-                                <SidebarMenuLink
-                                    tooltip="Popular"
-                                    href="/popular"
-                                >
-                                    <TrendingUp />
-                                    <span>Popular</span>
-                                </SidebarMenuLink>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="hidden md:block">
-                                <SidebarMenuLink
-                                    tooltip="Search"
-                                    href="/search"
-                                >
-                                    <Search />
-                                    <span>Search</span>
-                                </SidebarMenuLink>
-                            </SidebarMenuItem>
-
-                            <Separator className="hidden md:block" />
-
-                            {Object.entries(GENRE_CATEGORIES).map(
-                                ([category, genres]) => (
-                                    <SidebarSection
-                                        key={category}
-                                        title={category}
-                                        icon={
-                                            categoryIcons[category] || (
-                                                <FolderIcon />
-                                            )
-                                        }
-                                        items={genres.map((genre) => ({
-                                            name: genre,
-                                            id: genre,
-                                        }))}
-                                        basePath="/genre"
-                                        isActive={false}
-                                        isItemActive={(): boolean => false}
-                                    />
-                                ),
-                            )}
-                        </SidebarMenu>
-                    </SidebarContent>
-                    <SidebarFooter className="mb-[var(--safe-bottom)] md:mb-0">
-                        <Separator />
-                        <SidebarMenuItem>
-                            <SidebarMenuLink
-                                tooltip="Settings"
-                                href="/settings"
-                            >
-                                <SettingsIcon />
-                                <span>Settings</span>
-                                <KeyboardShortcut
-                                    keys={useSetting("openSettings")}
-                                    className={`transition-opacity ease-snappy ${
-                                        isSidebarCollapsed
-                                            ? "opacity-0"
-                                            : "opacity-100"
-                                    }`}
-                                />
-                            </SidebarMenuLink>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <AccountButton
-                                sidebarCollapsed={isSidebarCollapsed}
-                            />
-                        </SidebarMenuItem>
-                    </SidebarFooter>
+                    <Suspense fallback={<div className="w-4" />}>
+                        <BaseSidebarContent notification={notification} />
+                    </Suspense>
                 </Sidebar>
                 <PullToRefresh
                     as="main"

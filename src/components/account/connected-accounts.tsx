@@ -127,6 +127,9 @@ export function ConnectedAccounts() {
                                             href={`/sync/${account.id}`}
                                             variant="default"
                                             className="gap-2 flex-1 sm:flex-initial"
+                                            transitionTypes={[
+                                                "transition-forwards",
+                                            ]}
                                         >
                                             <Download className="h-4 w-4" />
                                             Import Manga
