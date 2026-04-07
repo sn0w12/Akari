@@ -8,6 +8,7 @@ import { MangaGrid } from "@/components/manga/manga-grid";
 import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
+import { Genre } from "@/lib/api/search";
 import {
     createJsonLd,
     createMetadata,
@@ -60,7 +61,7 @@ const CACHE_TIMES: Record<
     "365": { stale: 14400, revalidate: 86400, expire: 604800 }, // 4 hours stale, 1 day revalidate, 1 week expire
 };
 
-export const getPopularData = async (page: number, days: number = 30) => {
+export const getPopularData = async (page: number, days: number = 30, excludedGenres: Genre[] = []) => {
     "use cache";
     cacheLife(CACHE_TIMES[days.toString()]);
     cacheTag("popular");
@@ -71,6 +72,7 @@ export const getPopularData = async (page: number, days: number = 30) => {
                 page: page,
                 pageSize: 24,
                 days: days,
+                excludedGenres: excludedGenres
             },
         },
         headers: serverHeaders,

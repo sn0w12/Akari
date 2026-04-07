@@ -2264,6 +2264,10 @@ export interface paths {
                 query?: {
                     /** @description The number of days to look back for views. */
                     days?: number;
+                    /** @description Filter by genres. */
+                    genres?: string[];
+                    /** @description Exclude by genres. */
+                    excludedGenres?: string[];
                     /** @description The page number. */
                     page?: number;
                     /** @description The number of items per page. */
