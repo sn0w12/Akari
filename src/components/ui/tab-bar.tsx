@@ -38,9 +38,9 @@ function TabBar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 function TabBarList({
     className,
     ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLElement>) {
     return (
-        <div
+        <nav
             className={cn("flex h-14 items-center justify-around", className)}
             {...props}
         />

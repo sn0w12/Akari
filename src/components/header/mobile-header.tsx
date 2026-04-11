@@ -21,7 +21,7 @@ export function MobileHeader() {
     const pathname = usePathname();
 
     return (
-        <TabBar className="md:hidden">
+        <TabBar>
             <TabBarList className="mb-[var(--safe-bottom)]">
                 <TabBarTrigger
                     aria-label="Open Sidebar"

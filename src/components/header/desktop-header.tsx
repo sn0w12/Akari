@@ -82,7 +82,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
     return (
         <header
             className={cn(
-                `hidden md:block top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
+                `hidden top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
                 borderClass,
             )}
         >
