@@ -165,7 +165,7 @@ export default async function Home() {
 }
 
 async function HomePopular() {
-    const { data, error } = await getPopularData(1, 7);
+    const { data, error } = await getPopularData(1, 7, ["Hentai", "Adult"]);
 
     if (error || !data) {
         return null;

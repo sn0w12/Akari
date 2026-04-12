@@ -21,7 +21,9 @@
         "paths": {
             "@/public/*": ["./public/*"],
             "@/*": ["./src/*"]
-        }
+        },
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
     },
     "include": [
         "next-env.d.ts",

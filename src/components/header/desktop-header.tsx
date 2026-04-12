@@ -62,12 +62,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
         });
     }, [pathname, overrides]);
 
-    const getSegmentDisplayName = (
-        segment: string,
-        index: number,
-        segments: string[],
-        maxLength: number = 35,
-    ) => {
+    const getSegmentDisplayName = (segment: string, maxLength: number = 35) => {
         segment = segment.replace(/-s-/g, "'s ");
         segment = segment.replace(/-/g, " ");
 
@@ -82,7 +77,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
     return (
         <header
             className={cn(
-                `hidden md:block top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
+                `hidden top-0 left-0 z-50 bg-sidebar border-b sticky md:border-b-0 h-12 md:h-10`,
                 borderClass,
             )}
         >
@@ -133,8 +128,6 @@ export function DesktopHeader({ notification }: HeaderProps) {
                                                     .join("/")}`}
                                                 title={getSegmentDisplayName(
                                                     segment,
-                                                    index,
-                                                    segments,
                                                     9999,
                                                 )}
                                                 tabIndex={-1}
@@ -142,19 +135,11 @@ export function DesktopHeader({ notification }: HeaderProps) {
                                                     "transition-backwards",
                                                 ]}
                                             >
-                                                {getSegmentDisplayName(
-                                                    segment,
-                                                    index,
-                                                    segments,
-                                                )}
+                                                {getSegmentDisplayName(segment)}
                                             </BreadcrumbLink>
                                         ) : (
                                             <span>
-                                                {getSegmentDisplayName(
-                                                    segment,
-                                                    index,
-                                                    segments,
-                                                )}
+                                                {getSegmentDisplayName(segment)}
                                             </span>
                                         )}
                                     </BreadcrumbItem>
