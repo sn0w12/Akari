@@ -78,7 +78,7 @@ export class MalAccount extends SecondaryAccountBase {
 
     async handleCallback(
         params: Record<string, string>,
-        hash: string,
+        _hash: string,
         origin: string,
     ): Promise<boolean> {
         const code = params.code;

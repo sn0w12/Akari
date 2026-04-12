@@ -60,7 +60,7 @@ export class AniAccount extends SecondaryAccountBase {
     }
 
     async handleCallback(
-        params: Record<string, string>,
+        _params: Record<string, string>,
         hash: string,
     ): Promise<boolean> {
         const hashParams = new URLSearchParams(hash);

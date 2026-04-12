@@ -48,7 +48,7 @@ export type CookieCategory = keyof CookieConsent;
 export const setCookie = (
     name: string,
     value: string,
-    category: CookieCategory,
+    _category: CookieCategory,
     maxAge = 31536000,
 ) => {
     if (typeof window === "undefined") return false;
