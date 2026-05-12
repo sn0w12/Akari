@@ -1,3 +1,4 @@
+import { Image } from "@/components/image";
 import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -5,10 +6,13 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatNumberShort, generateSizes, pluralize } from "@/lib/utils";
+import { createJsonLd } from "@/lib/seo";
+import { formatNumberShort, pluralize } from "@/lib/utils";
+import type { components } from "@/types/api";
+import { Link } from "@tanstack/react-router";
 import { InfoIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { Suspense } from "react";
+import { ComicSeries, Person } from "schema-dts";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import Buttons from "./manga-details/buttons";
 import { ScoreDisplay } from "./manga-details/score/score-display";
@@ -17,17 +21,6 @@ import {
     MangaUpdatedAtFallback,
 } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
-import EnhancedImage from "./ui/enhanced-image";
-
-import { MangaPageProps } from "@/app/(default)/manga/[id]/page";
-import { client, serverHeaders } from "@/lib/api";
-import { createJsonLd } from "@/lib/seo";
-import AniImage from "@/public/img/icons/AniList-logo.webp";
-import MalImage from "@/public/img/icons/MAL-logo.webp";
-import { cacheLife, cacheTag } from "next/cache";
-import { Suspense } from "react";
-import { ComicSeries, Person } from "schema-dts";
-import ErrorPage from "./error-page";
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -61,69 +54,44 @@ function ExternalLinks({
     return (
         <>
             {manga.aniId && (
-                <Link
+                <a
                     href={`https://anilist.co/manga/${manga.aniId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
-                    prefetch={false}
                 >
                     <Image
-                        src={AniImage}
+                        src="/img/icons/AniList-logo.webp"
                         alt="AniList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        width={40}
-                        height={40}
+                        sizes={{ default: "40px" }}
                     />
-                </Link>
+                </a>
             )}
             {manga.malId && (
-                <Link
+                <a
                     href={`https://myanimelist.net/manga/${manga.malId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
-                    prefetch={false}
                 >
                     <Image
-                        src={MalImage}
+                        src="/img/icons/MAL-logo.webp"
                         alt="MyAnimeList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        width={40}
-                        height={40}
+                        sizes={{ default: "40px" }}
                     />
-                </Link>
+                </a>
             )}
         </>
     );
 }
 
-export async function getManga(id: string) {
-    "use cache";
-    cacheLife("days");
-    cacheTag("manga", `manga-${id}`);
-
-    const { data, error } = await client.GET("/v2/manga/{id}", {
-        params: {
-            path: {
-                id,
-            },
-        },
-        headers: serverHeaders,
-    });
-
-    return { data, error };
-}
-
-export async function MangaDetailsComponent({ params }: MangaPageProps) {
-    const id = (await params).id;
-    const { data, error } = await getManga(id);
-
-    if (error || !data) {
-        return <ErrorPage error={error} />;
-    }
-
-    const manga = data.data;
+export function MangaDetailsComponent({
+    manga,
+}: {
+    manga: components["schemas"]["MangaResponse"];
+}) {
     const alternativeTitles = (manga.alternativeTitles || []).filter(
         (title) => title.toLowerCase() !== manga.title.toLowerCase(),
     );
@@ -168,20 +136,19 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
             <div className="mb-2 flex h-auto flex-col justify-center gap-4 items-stretch lg:grid lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-y-0">
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
-                        <EnhancedImage
+                        <Image
                             src={manga.cover}
                             alt={manga.title}
                             className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
-                            hoverEffect="dynamic-tilt"
                             width={400}
                             height={600}
-                            preload={true}
-                            fetchPriority="high"
+                            loading="eager"
                             quality={60}
-                            sizes={generateSizes({
-                                sm: "128px",
-                                lg: "400px",
-                            })}
+                            sizes={{
+                                default: "200px",
+                                sm: 128,
+                                lg: 400,
+                            }}
                         />
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
@@ -242,17 +209,16 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         {manga.authors.map(
                                             (author: string, index: number) => (
                                                 <Link
-                                                    href={`/author/${encodeURIComponent(
-                                                        author.replaceAll(
-                                                            " ",
-                                                            "-",
+                                                    to="/author/$id"
+                                                    params={{
+                                                        id: encodeURIComponent(
+                                                            author.replaceAll(
+                                                                " ",
+                                                                "-",
+                                                            ),
                                                         ),
-                                                    )}`}
+                                                    }}
                                                     key={index}
-                                                    prefetch={false}
-                                                    transitionTypes={[
-                                                        "transition-backwards",
-                                                    ]}
                                                 >
                                                     <Badge
                                                         withShadow={true}
@@ -309,13 +275,15 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         {manga.genres.map((genre: string) => (
                                             <Link
                                                 key={genre}
-                                                href={`/genre/${encodeURIComponent(
-                                                    genre.replaceAll(" ", "-"),
-                                                )}`}
-                                                prefetch={false}
-                                                transitionTypes={[
-                                                    "transition-backwards",
-                                                ]}
+                                                to="/genre/$id"
+                                                params={{
+                                                    id: encodeURIComponent(
+                                                        genre.replaceAll(
+                                                            " ",
+                                                            "-",
+                                                        ),
+                                                    ),
+                                                }}
                                             >
                                                 <Badge
                                                     variant="secondary"

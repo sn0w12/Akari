@@ -1,5 +1,6 @@
 import { client } from "@/lib/api";
 import { getBaseUrl } from "@/lib/api/base-url";
+import { env } from "@/lib/env";
 import { setCookie } from "@/lib/utils";
 import Cookies from "js-cookie";
 import { SecondaryAccountBase } from "./general";
@@ -12,7 +13,7 @@ export class MalAccount extends SecondaryAccountBase {
     getAuthUrl(): string {
         const codeVerifier = generateCodeVerifier();
         const codeChallenge = generateCodeChallenge(codeVerifier);
-        const clientId = process.env.NEXT_PUBLIC_MAL_CLIENT_ID!;
+        const clientId = env("VITE_MAL_CLIENT_ID")!;
 
         setCookie("pkce_code_verifier", codeVerifier, "necessary");
 

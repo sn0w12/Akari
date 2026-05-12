@@ -7,7 +7,6 @@ import React, {
     type JSX,
     useEffect,
 } from "react";
-import Image, { ImageProps } from "next/image";
 import { useSetting } from "@/lib/settings";
 
 type HoverEffect =
@@ -23,7 +22,7 @@ type HoverEffect =
     | "neon"
     | "dynamic-tilt";
 
-interface EnhancedImageProps extends Omit<ImageProps, "className"> {
+interface EnhancedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "className"> {
     hoverEffect: HoverEffect;
     className?: string;
 }
@@ -215,30 +214,16 @@ export default function EnhancedImage({
             onMouseMove={handleMouseMove}
             style={containerStyle}
         >
-            <Image className={imageClassName} alt={alt} {...props} />
+            <img className={imageClassName} alt={alt} {...props} />
             {hoverEffect === "glitch" && fancyAnimationsEnabled && (
-                <style jsx global>{`
-                    @keyframes glitch {
-                        0% {
-                            transform: translate(0);
-                        }
-                        20% {
-                            transform: translate(-5px, 5px);
-                        }
-                        40% {
-                            transform: translate(-5px, -5px);
-                        }
-                        60% {
-                            transform: translate(5px, 5px);
-                        }
-                        80% {
-                            transform: translate(5px, -5px);
-                        }
-                        100% {
-                            transform: translate(0);
-                        }
-                    }
-                `}</style>
+                <style>{`@keyframes glitch {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-5px, 5px); }
+                    40% { transform: translate(-5px, -5px); }
+                    60% { transform: translate(5px, 5px); }
+                    80% { transform: translate(5px, -5px); }
+                    100% { transform: translate(0); }
+                }`}</style>
             )}
         </div>
     );

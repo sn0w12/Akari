@@ -56,7 +56,7 @@ export function BasePagination({
                 <ButtonLink
                     variant="outline"
                     size="sm"
-                    href={url}
+                    to={url}
                     onMouseOver={() => onPrefetch?.(url)}
                     disabled={disabled}
                     className={className}

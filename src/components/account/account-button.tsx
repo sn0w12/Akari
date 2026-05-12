@@ -3,8 +3,7 @@
 import { useUser } from "@/hooks/use-user";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { User } from "lucide-react";
-import { usePathname } from "next/navigation";
-import router from "next/router";
+import { useRouter } from "@tanstack/react-router";
 import { Avatar } from "../ui/avatar";
 import { KeyboardShortcut } from "../ui/keyboard-shortcut";
 import { SidebarMenuLink } from "../ui/sidebar";
@@ -14,10 +13,10 @@ export function AccountButton({
 }: {
     isSidebarCollapsed: boolean;
 }) {
-    const path = usePathname();
     const { data: user } = useUser();
     const openAccount = useSetting("openAccount");
-    useShortcutSetting("openAccount", () => router.push("/account"), {
+    const router = useRouter();
+    useShortcutSetting("openAccount", () => router.navigate({ to: "/account" }), {
         preventDefault: true,
     });
 
@@ -26,12 +25,7 @@ export function AccountButton({
             {user ? (
                 <SidebarMenuLink
                     tooltip="Account"
-                    href="/account"
-                    transitionTypes={
-                        path === "/"
-                            ? ["transition-forwards"]
-                            : ["transition-backwards"]
-                    }
+                    to="/account"
                 >
                     <Avatar name={user.username} size={24} />
                     <span>Account</span>
@@ -43,7 +37,7 @@ export function AccountButton({
                     />
                 </SidebarMenuLink>
             ) : (
-                <SidebarMenuLink tooltip="Login" href="/auth/login">
+                <SidebarMenuLink tooltip="Login" to="/auth/login">
                     <User />
                     <span>Login</span>
                     <KeyboardShortcut

@@ -1,0 +1,115 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import ErrorPage from "@/components/error-page";
+import { MangaGrid } from "@/components/manga/manga-grid";
+import { PageWrapper } from "@/components/page-wrapper";
+import { ServerPagination } from "@/components/ui/pagination/server-pagination";
+import { client, serverHeaders } from "@/lib/api";
+import { createJsonLd, createMetadata } from "@/lib/seo";
+import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
+
+const getLatestData = createServerFn({ method: "GET" })
+    .inputValidator((d: { page: number }) => d)
+    .handler(async ({ data }) => {
+        const { data: result, error } = await client.GET("/v2/manga/list", {
+            params: { query: { page: data.page, pageSize: 24 } },
+            headers: serverHeaders,
+        });
+        return { data: result, error };
+    });
+
+export const Route = createFileRoute("/_default/latest/")({
+    loader: async () => getLatestData({ data: { page: 1 } }),
+    head: ({ loaderData }) => {
+        const paginationData = loaderData?.data?.data;
+        return createMetadata({
+            title: "Latest Releases",
+            description: "Read the latest manga releases for free on Akari.",
+            canonicalPath: "/latest",
+            image: "/og/akari.webp",
+            pagination:
+                paginationData && paginationData.totalPages > 1
+                    ? { next: "/latest/2" }
+                    : undefined,
+        });
+    },
+    component: Latest,
+});
+
+function Latest() {
+    const { data, error } = Route.useLoaderData();
+
+    if (error || !data) {
+        return (
+            <PageWrapper>
+                <div className="flex-1 px-4 pt-2 pb-4">
+                    <ErrorPage error={error} />
+                </div>
+            </PageWrapper>
+        );
+    }
+
+    const currentPage = 1;
+    const jsonLd = createJsonLd<CollectionPage>({
+        "@type": "CollectionPage",
+        url: `/latest/${currentPage}`,
+        name: "Latest Releases",
+        image: "/og/akari.webp",
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: data.data.items.map((item, index) =>
+                createJsonLd<ListItem>({
+                    "@type": "ListItem",
+                    position: (currentPage - 1) * data.data.pageSize + index + 1,
+                    url: `/manga/${item.id}`,
+                    item: createJsonLd<ComicSeries>({
+                        "@type": "ComicSeries",
+                        url: `/manga/${item.id}`,
+                        name: item.title,
+                        description: item.description,
+                        image: item.cover,
+                        genre: item.genres,
+                        author: item.authors.map((author) => ({
+                            "@type": "Person",
+                            name: author,
+                        })),
+                        aggregateRating:
+                            item.rating.average > 0
+                                ? {
+                                      "@type": "AggregateRating",
+                                      ratingValue: item.rating.average,
+                                      ratingCount: item.rating.total,
+                                      bestRating: 10,
+                                      worstRating: 0,
+                                  }
+                                : undefined,
+                    }),
+                }),
+            ),
+        },
+    });
+
+    return (
+        <PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div className="flex gap-4">
+                    <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                </div>
+
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                    }}
+                />
+                <MangaGrid mangaList={data.data.items} priority={4} />
+                <ServerPagination
+                    currentPage={data.data.currentPage}
+                    totalPages={data.data.totalPages}
+                    className="mt-4"
+                    href="/latest"
+                />
+            </div>
+        </PageWrapper>
+    );
+}

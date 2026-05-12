@@ -8,7 +8,7 @@ import Toast from "@/lib/toast-wrapper";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
@@ -89,7 +89,8 @@ function ChaptersControls({
                     </Button>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${mangaId}/${scanlatorId}/${firstChapterNumber}`}
+                        to="/manga/$id/$scanlator/$subId"
+                        params={{ id: mangaId, scanlator: String(scanlatorId), subId: String(firstChapterNumber) }}
                         className="flex-1 md:w-40"
                     >
                         Go to First Chapter
@@ -234,11 +235,10 @@ export function ChaptersSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mb-4 pointer-events-auto">
                 {currentChapters?.map((chapter) => (
                     <Link
-                        href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
+                        to="/manga/$id/$scanlator/$subId"
+                        params={{ id: mangaId, scanlator: String(chapter.scanlatorId), subId: String(chapter.number) }}
                         key={chapter.id}
                         id={chapter.id}
-                        prefetch={false}
-                        transitionTypes={["transition-forwards"]}
                     >
                         <Card
                             className={`h-full transition-colors p-0 ${

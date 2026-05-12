@@ -1,5 +1,6 @@
 import { ChevronRight, MoreHorizontal } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
+import type { LinkProps } from "@tanstack/react-router";
 import { Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
 
@@ -36,7 +37,7 @@ function BreadcrumbLink({
     asChild,
     className,
     ...props
-}: React.ComponentProps<typeof Link> & {
+}: LinkProps & {
     asChild?: boolean;
 }) {
     const Comp = asChild ? SlotPrimitive.Slot : Link;
@@ -45,7 +46,7 @@ function BreadcrumbLink({
         <Comp
             data-slot="breadcrumb-link"
             className={cn("hover:text-foreground transition-colors", className)}
-            {...props}
+            {...(props as LinkProps)}
         />
     );
 }

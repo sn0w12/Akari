@@ -1,18 +1,16 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Spinner from "@/components/ui/puff-loader";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
-import { generateSizes } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
@@ -114,7 +112,9 @@ export default function BookmarksHeader() {
             setSelectedIndex((prev) => Math.max(prev - 1, -1));
         } else if (e.key === "Enter" && selectedIndex >= 0) {
             e.preventDefault();
-            router.push(`/manga/${searchResults[selectedIndex].mangaId}`);
+            router.navigate({
+                to: `/manga/${searchResults[selectedIndex].mangaId}`,
+            });
         }
     };
 
@@ -161,7 +161,8 @@ export default function BookmarksHeader() {
                         ) : (
                             searchResults.map((result, index) => (
                                 <Link
-                                    href={`/manga/${result.mangaId}`}
+                                    to="/manga/$id"
+                                    params={{ id: result.mangaId }}
                                     key={result.mangaId}
                                     className={`block p-2 ${
                                         index === selectedIndex
@@ -170,7 +171,6 @@ export default function BookmarksHeader() {
                                               ? ""
                                               : "hover:bg-accent"
                                     } flex items-center rounded-lg`}
-                                    transitionTypes={["transition-forwards"]}
                                 >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
@@ -180,18 +180,23 @@ export default function BookmarksHeader() {
                                                 width={48}
                                                 height={72}
                                                 className="w-12 h-18 rounded mr-2"
+                                                sizes={{ default: "48px" }}
                                                 quality={40}
-                                                sizes={generateSizes({
-                                                    default: "48px",
-                                                })}
                                             />
                                             {result.title}
                                         </div>
                                         <Link
-                                            href={`/manga/${result.mangaId}/${result.nextChapter.scanlatorId}/${result.nextChapter.number}`}
-                                            transitionTypes={[
-                                                "transition-forwards",
-                                            ]}
+                                            to="/manga/$id/$scanlator/$subId"
+                                            params={{
+                                                id: result.mangaId,
+                                                scanlator: String(
+                                                    result.nextChapter
+                                                        .scanlatorId,
+                                                ),
+                                                subId: String(
+                                                    result.nextChapter.number,
+                                                ),
+                                            }}
                                         >
                                             <Button
                                                 className="z-20"

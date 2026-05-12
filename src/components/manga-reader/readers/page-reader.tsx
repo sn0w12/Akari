@@ -2,10 +2,10 @@
 
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
+import { Image } from "@/components/image";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
 import EndOfManga from "../end-of-manga";
@@ -14,22 +14,23 @@ import PageProgress from "../page-progress";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     scrollMetrics: { pixels: number; percentage: number };
     toggleReaderMode: () => void;
     isInactive: boolean;
     setBookmarkState: (state: boolean | null) => void;
 }
 
-const pageHeightStyle = "calc(100dvh - var(--reader-offset))";
 export default function PageReader({
     chapter,
+    scanlator,
     scrollMetrics,
     toggleReaderMode,
     isInactive,
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = new URLSearchParams(useRouterState({ select: (s) => s.location.search }));
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
     const windowWidth = useWindowWidth();
@@ -44,6 +45,7 @@ export default function PageReader({
             ? 0
             : pageNumber - 1;
     });
+    const pageHeightStyle = "var(--visible-height)";
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
@@ -68,7 +70,6 @@ export default function PageReader({
             );
 
             if (currentPage >= threshold) {
-                router.prefetch(`./${chapter.nextChapter}`);
                 hasPrefetchedRef.current = true;
             }
         }
@@ -88,7 +89,7 @@ export default function PageReader({
             chapter.nextChapter &&
             continueAfterChapter
         ) {
-            router.push(`./${chapter.nextChapter}`);
+            router.navigate({ to: `./${chapter.nextChapter}` });
             return;
         }
 
@@ -141,6 +142,7 @@ export default function PageReader({
         <>
             <ChapterInfo
                 chapter={chapter}
+                scanlator={scanlator}
                 hidden={scrollMetrics.pixels >= 50}
             />
             <div
@@ -167,12 +169,10 @@ export default function PageReader({
                                 style={{
                                     maxHeight: pageHeightStyle,
                                 }}
-                                loading="eager"
                                 width={720}
                                 height={1500}
-                                unoptimized={true}
-                                preload={true}
                                 fetchPriority="high"
+                                sizes={{ default: "100vw" }}
                             />
                         )}
                         <EndOfManga
@@ -197,10 +197,9 @@ export default function PageReader({
                             style={{
                                 maxHeight: pageHeightStyle,
                             }}
-                            loading="eager"
                             width={720}
                             height={1500}
-                            unoptimized={true}
+                            sizes={{ default: "100vw" }}
                         />
                     )}
                 </div>
@@ -226,6 +225,7 @@ export default function PageReader({
             </div>
             <MangaFooter
                 chapter={chapter}
+                scanlator={scanlator}
                 toggleReaderMode={toggleReaderMode}
             />
         </>

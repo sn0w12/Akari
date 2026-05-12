@@ -1,5 +1,6 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import {
     CommandDialog,
@@ -13,11 +14,9 @@ import Spinner from "@/components/ui/puff-loader";
 import { client } from "@/lib/api";
 import { getSearchResults } from "@/lib/api/search";
 import Toast from "@/lib/toast-wrapper";
-import { generateSizes } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import Image from "next/image";
 import { useMemo, useState } from "react";
 
 interface ListCommandProps {
@@ -127,10 +126,8 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                                 className="rounded-sm"
                                                 height={72}
                                                 width={48}
+                                                sizes={{ default: "48px" }}
                                                 quality={40}
-                                                sizes={generateSizes({
-                                                    default: "48px",
-                                                })}
                                             />
                                             <div className="flex flex-1 items-center justify-between gap-2">
                                                 <span className="line-clamp-1">

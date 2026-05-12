@@ -1,8 +1,7 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { StorageManager } from "@/lib/storage";
-import { generateSizes } from "@/lib/utils";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import {
@@ -76,10 +75,8 @@ export function CommentAttachment({
                         className="max-w-64 h-auto rounded-md border transition-transform group-hover:scale-[1.01]"
                         height={160}
                         width={160}
+                        sizes={{ default: "256px" }}
                         quality={60}
-                        sizes={generateSizes({
-                            default: "240px",
-                        })}
                     />
                     <button
                         onClick={toggleFavorite}
@@ -109,9 +106,8 @@ export function CommentAttachment({
                     className="h-auto max-h-[85vh] w-auto max-w-[85vw] rounded-md"
                     height={1200}
                     width={1200}
-                    sizes={generateSizes({
-                        default: "90vw",
-                    })}
+                    sizes={{ default: "90vw" }}
+                    quality={60}
                 />
             </DialogContent>
         </Dialog>

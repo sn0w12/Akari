@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Bookmark, Home, List } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { CSSProperties, MouseEvent } from "react";
 
 interface EndOfMangaProps {
@@ -50,9 +50,7 @@ export default function EndOfManga({
                 <div className="grid grid-cols-1 gap-4 w-full">
                     <Button variant="outline" asChild onClick={handleClick}>
                         <Link
-                            href="/bookmarks"
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
+                            to="/bookmarks"
                         >
                             <Bookmark className="mr-2 h-4 w-4" />
                             Bookmarks
@@ -62,9 +60,7 @@ export default function EndOfManga({
                 <div className="grid grid-cols-2 gap-4 w-full">
                     <Button variant="outline" asChild onClick={handleClick}>
                         <Link
-                            href="/"
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
+                            to="/"
                         >
                             <Home className="mr-2 h-4 w-4" />
                             Homepage
@@ -72,9 +68,8 @@ export default function EndOfManga({
                     </Button>
                     <Button variant="outline" asChild onClick={handleClick}>
                         <Link
-                            href={`/manga/${identifier}`}
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
+                            to="/manga/$id"
+                            params={{ id: identifier }}
                         >
                             <List className="mr-2 h-4 w-4" />
                             Manga Page

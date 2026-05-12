@@ -14,7 +14,7 @@ import {
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { CommentAttachment } from "./attachment";
@@ -212,9 +212,9 @@ export function Comment({
                 <div className="flex-1 min-w-0 mb-2">
                     <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
                         <Link
-                            href={`/user/${comment.userProfile.id}`}
+                            to="/user/$id"
+                            params={{ id: comment.userProfile.id }}
                             className="font-medium text-foreground hover:underline"
-                            transitionTypes={["transition-forwards"]}
                         >
                             {comment.userProfile.displayName}
                         </Link>

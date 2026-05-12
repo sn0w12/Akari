@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUpDown } from "lucide-react";
 
-export async function ChaptersSkeleton() {
+export function ChaptersSkeleton() {
     return (
         <>
             <div className="flex gap-2 w-full md:hidden mb-2">

@@ -14,7 +14,7 @@ import {
     ServerCrash,
     ShieldAlert,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 interface ValidationError {
@@ -218,14 +218,14 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
                 </span>
                 {info.suggestion} If the issue persists, please consider
                 reporting it on{" "}
-                <Link
+                <a
                     className="text-foreground hover:underline"
                     href="https://github.com/sn0w12/akari/issues"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     GitHub
-                </Link>
+                </a>
                 .
             </p>
 
@@ -251,7 +251,7 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
                     Go Back
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
-                    <Link href="/">
+                    <Link to="/">
                         <Home className="size-4" />
                         Home
                     </Link>

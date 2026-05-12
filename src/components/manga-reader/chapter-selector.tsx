@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 
 interface ChapterSelectorProps {
@@ -44,7 +44,7 @@ export function ChapterSelector({
     }, [chapters, value]);
 
     const onChange = (value: string) => {
-        router.push(`./${value}`);
+        router.navigate({ to: `./${value}` });
         setOpen(false);
     };
 

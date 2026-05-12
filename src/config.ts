@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { Setting, SettingVisibility } from "./lib/settings";
 import { createDynamicKey, createField } from "./lib/storage-helpers";
 import { StorageSchemas } from "./types/storage";
@@ -5,12 +6,12 @@ import { StorageSchemas } from "./types/storage";
 /**
  * Determines if the application is running in development mode.
  */
-export const inDevelopment = process.env.NODE_ENV === "development";
+export const inDevelopment = env("NODE_ENV") === "development";
 
 /**
  * Determines if the application is running in preview mode.
  */
-export const inPreview = process.env.NEXT_PUBLIC_AKARI_PREVIEW === "1";
+export const inPreview = env("VITE_AKARI_PREVIEW") === "1";
 
 /**
  * Application settings configuration with categorized groups

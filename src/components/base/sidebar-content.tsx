@@ -24,7 +24,6 @@ import {
     TrendingUp,
     Users,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { AccountButton } from "../account/account-button";
 import { KeyboardShortcut } from "../ui/keyboard-shortcut";
 import { Separator } from "../ui/separator";
@@ -38,7 +37,6 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 export function BaseSidebarContent({ notification }: { notification: string }) {
-    const path = usePathname();
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = sidebarState === "collapsed";
 
@@ -54,8 +52,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <SidebarMenuItem className="hidden md:block">
                         <SidebarMenuLink
                             tooltip="Home"
-                            href="/"
-                            transitionTypes={["transition-backwards"]}
+                            to="/"
                         >
                             <HomeIcon />
                             <span>Home</span>
@@ -64,14 +61,8 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <SidebarMenuItem className="hidden md:block">
                         <SidebarMenuLink
                             tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
-                            href="/bookmarks"
+                            to="/bookmarks"
                             aria-label={`${notification} Unread Bookmarks`}
-                            prefetch={false}
-                            transitionTypes={
-                                path === "/"
-                                    ? ["transition-forwards"]
-                                    : ["transition-backwards"]
-                            }
                         >
                             <Bookmark />
                             <span>Bookmarks</span>
@@ -88,12 +79,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <SidebarMenuItem className="hidden md:block">
                         <SidebarMenuLink
                             tooltip="Popular"
-                            href="/popular"
-                            transitionTypes={
-                                path === "/"
-                                    ? ["transition-forwards"]
-                                    : ["transition-backwards"]
-                            }
+                            to="/popular"
                         >
                             <TrendingUp />
                             <span>Popular</span>
@@ -102,12 +88,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <SidebarMenuItem className="hidden md:block">
                         <SidebarMenuLink
                             tooltip="Search"
-                            href="/search"
-                            transitionTypes={
-                                path === "/"
-                                    ? ["transition-forwards"]
-                                    : ["transition-backwards"]
-                            }
+                            to="/search"
                         >
                             <Search />
                             <span>Search</span>
@@ -139,12 +120,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                 <SidebarMenuItem>
                     <SidebarMenuLink
                         tooltip="Settings"
-                        href="/settings"
-                        transitionTypes={
-                            path === "/"
-                                ? ["transition-forwards"]
-                                : ["transition-backwards"]
-                        }
+                        to="/settings"
                     >
                         <SettingsIcon />
                         <span>Settings</span>

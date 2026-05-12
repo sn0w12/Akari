@@ -12,8 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Providers } from "./auth/oauth";
 
@@ -55,7 +54,7 @@ export function SignUpForm({
                 },
             });
             if (error) throw error;
-            router.push("/auth/sign-up-success");
+            router.navigate({ to: "/auth/sign-up-success" });
         } catch (error: unknown) {
             setError(
                 error instanceof Error ? error.message : "An error occurred",
@@ -161,7 +160,7 @@ export function SignUpForm({
                         <div className="mt-4 text-center text-sm">
                             Already have an account?{" "}
                             <Link
-                                href="/auth/login"
+                                to="/auth/login"
                                 className="underline underline-offset-4"
                             >
                                 Login

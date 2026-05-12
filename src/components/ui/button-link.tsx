@@ -1,21 +1,38 @@
+import type { LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { type VariantProps } from "class-variance-authority";
-import Link from "next/link";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./button";
 
 export interface ButtonLinkProps
-    extends
-        React.ComponentProps<typeof Link>,
+    extends Omit<LinkProps, "children" | "className">,
         VariantProps<typeof buttonVariants> {
-    href: string;
-    prefetch?: boolean;
+    href?: string;
     disabled?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
 }
 
 const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
-    ({ className, variant, size, href, prefetch, disabled, ...props }, ref) => {
+    (
+        {
+            className,
+            variant,
+            size,
+            disabled,
+            children,
+            href,
+            to: toProp,
+            style,
+            ...props
+        },
+        ref,
+    ) => {
+        const to = (href ?? toProp) as LinkProps["to"];
+
         if (disabled) {
             return (
                 <span
@@ -25,21 +42,23 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
                     )}
                     aria-disabled={true}
                     ref={ref as React.Ref<HTMLSpanElement>}
-                    {...props}
+                    style={style}
                 >
-                    {props.children}
+                    {children}
                 </span>
             );
         }
 
         return (
             <Link
-                href={href}
-                prefetch={prefetch}
                 className={cn(buttonVariants({ variant, size, className }))}
                 ref={ref}
-                {...props}
-            />
+                to={to}
+                style={style}
+                {...(props as LinkProps)}
+            >
+                {children}
+            </Link>
         );
     },
 );

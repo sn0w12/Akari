@@ -8,7 +8,7 @@ import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
 import { X } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 
 interface ListItemProps {
     list: components["schemas"]["UserMangaListResponse"];
@@ -47,9 +47,9 @@ export function ListItem({ list, onDelete }: ListItemProps) {
 
     return (
         <Link
-            href={`/lists/${list.id}`}
+            to="/lists/$id"
+            params={{ id: list.id }}
             className="block"
-            transitionTypes={["transition-forwards"]}
         >
             <Card className="relative p-0 hover:bg-accent transition-colors">
                 <CardContent className="p-4">

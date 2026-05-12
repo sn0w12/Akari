@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import {
     Select,
     SelectContent,
@@ -33,7 +33,7 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
         );
         if (!item || isSeparator(item)) return;
 
-        router.push(`?${item.key}=${item.value}`);
+        router.navigate({ to: `?${item.key}=${item.value}` });
     };
 
     return (

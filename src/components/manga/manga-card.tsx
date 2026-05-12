@@ -1,11 +1,10 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn, generateSizes } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useThrottledCallback } from "@tanstack/react-pacer";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 interface MangaCardProps {
@@ -33,7 +32,6 @@ export function MangaCard({
     const cardRef = useRef<HTMLDivElement>(null);
     const innerCardRef = useRef<HTMLDivElement>(null);
     const isMobile = useIsMobile();
-    const router = useRouter();
 
     const updateDirectionCallback = () => {
         const rect = cardRef.current?.getBoundingClientRect();
@@ -91,7 +89,6 @@ export function MangaCard({
         setUseFixedHeight(true);
         expandTimeoutRef.current = setTimeout(() => {
             setShouldExpand(true);
-            router.prefetch(`/manga/${manga.id}`);
         }, 300);
     };
 
@@ -150,10 +147,9 @@ export function MangaCard({
                 }}
             >
                 <Link
-                    href={`/manga/${manga.id}`}
+                    to="/manga/$id"
+                    params={{ id: manga.id }}
                     className="relative block h-full w-full"
-                    transitionTypes={["transition-forwards"]}
-                    prefetch={false}
                 >
                     <Image
                         src={manga.cover}
@@ -161,19 +157,14 @@ export function MangaCard({
                         className="h-full w-full object-cover"
                         width={200}
                         height={300}
-                        quality={20}
-                        loading={priority ? "eager" : "lazy"}
                         fetchPriority={priority ? "high" : "auto"}
-                        preload={priority}
                         decoding="async"
-                        sizes={generateSizes({
-                            sm: "50vw",
-                            md: "33vw",
-                            lg: "25vw",
-                            xl: "20vw",
-                            "2xl": "17vw",
-                            default: "25vw",
-                        })}
+                        sizes={{
+                            default: "128px",
+                            sm: 96,
+                            lg: 240,
+                        }}
+                        quality={20}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>

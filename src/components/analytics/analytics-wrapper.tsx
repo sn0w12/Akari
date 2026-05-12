@@ -2,8 +2,9 @@
 
 import { useDevice } from "@/contexts/device-context";
 import { useUser } from "@/hooks/use-user";
+import { env } from "@/lib/env";
 import { useSetting } from "@/lib/settings";
-import { usePathname } from "next/navigation";
+import { useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 type PathPattern = {
@@ -52,10 +53,10 @@ let analyticsInitialized = false;
 export function AnalyticsWrapper() {
     const { data: user, isLoading } = useUser();
     const allowAnalytics = useSetting("allowAnalytics");
-    const pathname = usePathname();
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
     const device = useDevice();
-    const domain = process.env.NEXT_PUBLIC_HOST;
-    const endpoint = process.env.NEXT_PUBLIC_PLAUSIBLE_ENDPOINT;
+    const domain = env("VITE_HOST");
+    const endpoint = env("VITE_PLAUSIBLE_ENDPOINT");
 
     useEffect(() => {
         const loadAndInit = async () => {

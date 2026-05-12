@@ -7,8 +7,7 @@ import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@tanstack/react-router";
 import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
@@ -22,7 +21,7 @@ export function UserProfile({
     const handleLogout = async () => {
         await logOut(SECONDARY_ACCOUNTS);
         queryClient.invalidateQueries({ queryKey: ["user"] });
-        router.push("/");
+        router.navigate({ to: "/" });
     };
 
     return (
@@ -33,8 +32,8 @@ export function UserProfile({
 
                     <div>
                         <Link
-                            href={`/user/${user.userId}`}
-                            transitionTypes={["transition-forwards"]}
+                            to="/user/$id"
+                            params={{ id: user.userId }}
                         >
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}

@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 
 import BookmarkButton from "@/components/manga-details/bookmark-button";
 import { Button } from "../../ui/button";
@@ -15,8 +15,10 @@ import { ChapterSelector } from "../chapter-selector";
 
 export function InfoContent({
     chapter,
+    scanlator,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
     const nextChapterExists = chapter.nextChapter !== null;
@@ -26,9 +28,9 @@ export function InfoContent({
             <div className="space-y-2">
                 <h2 className="text-lg font-bold leading-tight text-center md:text-left">
                     <Link
-                        href={`/manga/${chapter.mangaId}`}
+                        to="/manga/$id"
+                        params={{ id: chapter.mangaId }}
                         className="text-foreground hover:text-primary transition-colors"
-                        transitionTypes={["transition-backwards"]}
                     >
                         {chapter.mangaTitle}
                     </Link>
@@ -47,25 +49,21 @@ export function InfoContent({
                     </div>
                     <div className="flex items-center gap-2">
                         <ButtonLink
-                            href={`./${chapter.lastChapter}`}
+                            to={lastChapterExists ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}` : "#"}
                             variant="outline"
                             className="flex-1"
                             aria-label="Previous Chapter"
-                            prefetch={false}
                             disabled={!lastChapterExists}
-                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="mr-2 h-4 w-4" />
                             Previous
                         </ButtonLink>
                         <ButtonLink
-                            href={`./${chapter.nextChapter}`}
+                            to={nextChapterExists ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}` : "#"}
                             variant="outline"
                             className="flex-1"
                             aria-label="Next Chapter"
-                            prefetch={false}
                             disabled={!nextChapterExists}
-                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="ml-2 h-4 w-4" />
@@ -79,9 +77,11 @@ export function InfoContent({
 
 export function InfoPopover({
     chapter,
+    scanlator,
     orientation,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     orientation: "vertical" | "horizontal";
 }) {
     return (
@@ -96,7 +96,7 @@ export function InfoPopover({
                 popoverAlign="start"
                 popoverClassName="w-auto sm:w-96 max-h-96 overflow-y-auto"
             >
-                <InfoContent chapter={chapter} />
+                <InfoContent chapter={chapter} scanlator={scanlator} />
             </PopoverDrawerContent>
         </PopoverDrawer>
     );

@@ -1,5 +1,5 @@
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import BookmarkButton from "../manga-details/bookmark-button";
 import { Button } from "../ui/button";
 import { ButtonLink } from "../ui/button-link";
@@ -7,9 +7,11 @@ import { ChapterSelector } from "./chapter-selector";
 
 export default function MangaFooter({
     chapter,
+    scanlator,
     toggleReaderMode,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     toggleReaderMode: () => void;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
@@ -21,9 +23,9 @@ export default function MangaFooter({
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
                         <Link
-                            href={`/manga/${chapter.mangaId}`}
+                            to="/manga/$id"
+                            params={{ id: chapter.mangaId }}
                             className="hover:underline"
-                            transitionTypes={["transition-backwards"]}
                         >
                             {chapter.mangaTitle}
                         </Link>
@@ -36,25 +38,21 @@ export default function MangaFooter({
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">
                     {lastChapterExists ? (
                         <ButtonLink
-                            href={`./${chapter.lastChapter}`}
+                            to={`/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}`}
                             variant="outline"
                             className="w-full order-0 xl:order-3"
                             aria-label="Previous Chapter"
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
                         </ButtonLink>
                     ) : (
                         <ButtonLink
-                            href=""
+                            to="#"
                             disabled
                             variant="outline"
                             className="w-full order-0 xl:order-3"
                             aria-label="Previous Chapter"
-                            tabIndex={-1}
-                            transitionTypes={["transition-backwards"]}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -62,24 +60,20 @@ export default function MangaFooter({
                     )}
                     {nextChapterExists ? (
                         <ButtonLink
-                            href={`./${chapter.nextChapter}`}
+                            to={`/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}`}
                             className="w-full order-1 xl:order-4"
                             aria-label="Next Chapter"
-                            prefetch={false}
-                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
                         </ButtonLink>
                     ) : (
                         <ButtonLink
-                            href=""
+                            to="#"
                             disabled
                             className="w-full order-1 xl:order-4"
                             aria-label="Next Chapter"
                             aria-disabled="true"
-                            tabIndex={-1}
-                            transitionTypes={["transition-forwards"]}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { ErrorComponent } from "@/components/error-page";
-import { usePathname } from "next/navigation";
+import { useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 
 interface ValidationError {
@@ -57,7 +57,7 @@ function getErrorDetails(error: ErrorResponse): ErrorData {
 
 export function ErrorProvider({ children }: { children: React.ReactNode }) {
     const [errorState, setErrorState] = React.useState<ErrorData | null>(null);
-    const pathname = usePathname();
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
     const prevPathname = React.useRef(pathname);
 
     React.useEffect(() => {

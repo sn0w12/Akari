@@ -9,9 +9,11 @@ import { SettingsPopover } from "./info-popovers/settings";
 
 export function ChapterInfo({
     chapter,
+    scanlator,
     hidden,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     hidden: boolean;
 }) {
     const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
@@ -58,12 +60,13 @@ export function ChapterInfo({
                     <>
                         <InfoPopover
                             chapter={chapter}
+                            scanlator={scanlator}
                             orientation={orientation}
                         />
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoPopover chapter={chapter} orientation={orientation} />
+                    <InfoPopover chapter={chapter} scanlator={scanlator} orientation={orientation} />
                 )}
                 <CommentsButton
                     chapterNumber={chapter.number}
