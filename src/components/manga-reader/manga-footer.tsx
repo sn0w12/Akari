@@ -38,7 +38,12 @@ export default function MangaFooter({
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">
                     {lastChapterExists ? (
                         <ButtonLink
-                            to={`/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}`}
+                            to="/manga/$id/$scanlator/$subId"
+                            params={{
+                                id: chapter.mangaId,
+                                scanlator,
+                                subId: chapter.lastChapter!.toString(),
+                            }}
                             variant="outline"
                             className="w-full order-0 xl:order-3"
                             aria-label="Previous Chapter"
@@ -48,7 +53,6 @@ export default function MangaFooter({
                         </ButtonLink>
                     ) : (
                         <ButtonLink
-                            to="#"
                             disabled
                             variant="outline"
                             className="w-full order-0 xl:order-3"
@@ -60,7 +64,12 @@ export default function MangaFooter({
                     )}
                     {nextChapterExists ? (
                         <ButtonLink
-                            to={`/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}`}
+                            to="/manga/$id/$scanlator/$subId"
+                            params={{
+                                id: chapter.mangaId,
+                                scanlator,
+                                subId: chapter.nextChapter!.toString(),
+                            }}
                             className="w-full order-1 xl:order-4"
                             aria-label="Next Chapter"
                         >
@@ -69,7 +78,6 @@ export default function MangaFooter({
                         </ButtonLink>
                     ) : (
                         <ButtonLink
-                            to="#"
                             disabled
                             className="w-full order-1 xl:order-4"
                             aria-label="Next Chapter"
