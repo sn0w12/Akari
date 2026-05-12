@@ -1,8 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { createClient } from "@/lib/auth/server";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/_auth/auth/confirm")({
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
+    }),
     server: {
         handlers: {
             GET: async ({ request }) => {

@@ -19,18 +19,29 @@ const getLatestData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/latest/")({
-    loader: async () => getLatestData({ data: { page: 1 } }),
+    validateSearch: (search: Record<string, string | undefined>) => ({
+        page: Number(search.page) || 1,
+    }),
+    loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
+    loader: async ({ deps }) => getLatestData({ data: { page: deps.page } }),
     head: ({ loaderData }) => {
         const paginationData = loaderData?.data?.data;
+        const page = paginationData?.currentPage ?? 1;
+        const title = page === 1 ? "Latest Releases" : `Latest Releases - Page ${page}`;
+        const canonicalPath = page === 1 ? "/latest" : `/latest?page=${page}`;
+        const pagination: { previous?: string; next?: string } = {};
+        if (page > 1) {
+            pagination.previous = page === 2 ? "/latest" : `/latest?page=${page - 1}`;
+        }
+        if (paginationData && paginationData.totalPages > page) {
+            pagination.next = `/latest?page=${page + 1}`;
+        }
         return createMetadata({
-            title: "Latest Releases",
+            title,
             description: "Read the latest manga releases for free on Akari.",
-            canonicalPath: "/latest",
+            canonicalPath,
             image: "/og/akari.webp",
-            pagination:
-                paginationData && paginationData.totalPages > 1
-                    ? { next: "/latest/2" }
-                    : undefined,
+            pagination: Object.keys(pagination).length > 0 ? pagination : undefined,
         });
     },
     component: Latest,
@@ -38,6 +49,7 @@ export const Route = createFileRoute("/_default/latest/")({
 
 function Latest() {
     const { data, error } = Route.useLoaderData();
+    const { page: currentPage } = Route.useSearch();
 
     if (error || !data) {
         return (
@@ -49,10 +61,9 @@ function Latest() {
         );
     }
 
-    const currentPage = 1;
     const jsonLd = createJsonLd<CollectionPage>({
         "@type": "CollectionPage",
-        url: `/latest/${currentPage}`,
+        url: currentPage === 1 ? "/latest" : `/latest?page=${currentPage}`,
         name: "Latest Releases",
         image: "/og/akari.webp",
         mainEntity: {

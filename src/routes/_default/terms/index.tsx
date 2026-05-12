@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/page-wrapper";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createMetadata } from "@/lib/seo";
 
 export const Route = createFileRoute("/_default/terms/")({
@@ -12,6 +13,13 @@ export const Route = createFileRoute("/_default/terms/")({
         return { meta, links };
     },
     component: TermsPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ hours: 1 })
+            .staleWhileRevalidate({ days: 1 })
+            .public()
+            .build(),
+    }),
 });
 
 function TermsPage() {

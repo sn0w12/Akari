@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@/lib/auth/server";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_auth/auth/oauth")({
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
+    }),
     server: {
         handlers: {
             GET: async ({ request }) => {

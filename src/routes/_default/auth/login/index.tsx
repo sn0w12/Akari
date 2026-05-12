@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LoginForm } from "@/components/login-form";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 
 export const Route = createFileRoute("/_default/auth/login/")({
     component: LoginPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
+    }),
 });
 
 function LoginPage() {

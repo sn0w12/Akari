@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import ErrorPage from "@/components/error-page";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { client, serverHeaders } from "@/lib/api";
@@ -36,6 +37,13 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/comm
         });
     },
     component: MangaReaderComments,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ minutes: 2 })
+            .staleWhileRevalidate({ minutes: 10 })
+            .public()
+            .build(),
+    }),
 });
 
 function MangaReaderComments() {

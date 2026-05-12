@@ -1,5 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import ErrorPage from "@/components/error-page";
 import { GridSortSelect } from "@/components/grid/grid-sort";
 import { MangaGrid } from "@/components/manga/manga-grid";
@@ -7,42 +5,64 @@ import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 const getPopularData = createServerFn({ method: "GET" })
-    .inputValidator((d: { page: number; days: number; excludedGenres?: string[] }) => d)
+    .inputValidator(
+        (d: { page: number; days: number; excludedGenres?: string[] }) => d,
+    )
     .handler(async ({ data }) => {
-        const { data: result, error } = await client.GET("/v2/manga/list/popular", {
-            params: {
-                query: {
-                    page: data.page,
-                    pageSize: 24,
-                    days: data.days,
-                    excludedGenres: data.excludedGenres ?? [],
+        const { data: result, error } = await client.GET(
+            "/v2/manga/list/popular",
+            {
+                params: {
+                    query: {
+                        page: data.page,
+                        pageSize: 24,
+                        days: data.days,
+                        excludedGenres: data.excludedGenres ?? [],
+                    },
                 },
+                headers: serverHeaders,
             },
-            headers: serverHeaders,
-        });
+        );
         return { data: result, error };
     });
 
 export const Route = createFileRoute("/_default/popular/")({
     validateSearch: (search: Record<string, string | undefined>) => ({
         days: search.days ?? "30",
+        page: Number(search.page) || 1,
     }),
-    loaderDeps: ({ search }) => ({ days: Number(search.days) || 30 }),
-    loader: async ({ deps }) => getPopularData({ data: { page: 1, days: deps.days } }),
+    loaderDeps: ({ search }) => ({
+        days: Number(search.days) || 30,
+        page: Number(search.page) || 1,
+    }),
+    loader: async ({ deps }) =>
+        getPopularData({ data: { page: deps.page, days: deps.days } }),
     head: ({ loaderData }) => {
         const paginationData = loaderData?.data?.data;
+        const page = paginationData?.currentPage ?? 1;
+        const title =
+            page === 1 ? "Popular Manga" : `Popular Manga - Page ${page}`;
+        const canonicalPath = page === 1 ? "/popular" : `/popular?page=${page}`;
+        const pagination: { previous?: string; next?: string } = {};
+        if (page > 1) {
+            pagination.previous =
+                page === 2 ? "/popular" : `/popular?page=${page - 1}`;
+        }
+        if (paginationData && paginationData.totalPages > page) {
+            pagination.next = `/popular?page=${page + 1}`;
+        }
         return createMetadata({
-            title: "Popular Manga",
+            title,
             description: "Read the most popular manga for free on Akari.",
-            canonicalPath: "/popular",
+            canonicalPath,
             image: "/og/popular.webp",
             pagination:
-                paginationData && paginationData.totalPages > 1
-                    ? { next: "/popular/2" }
-                    : undefined,
+                Object.keys(pagination).length > 0 ? pagination : undefined,
         });
     },
     component: Popular,
@@ -50,8 +70,7 @@ export const Route = createFileRoute("/_default/popular/")({
 
 function Popular() {
     const { data, error } = Route.useLoaderData();
-    const { days } = Route.useSearch();
-    const currentPage = 1;
+    const { days, page: currentPage } = Route.useSearch();
 
     const sorting = {
         currentSort: { key: "days", value: days ?? "30" },
@@ -81,7 +100,7 @@ function Popular() {
 
     const jsonLd = createJsonLd<CollectionPage>({
         "@type": "CollectionPage",
-        url: `/popular/${currentPage}`,
+        url: currentPage === 1 ? "/popular" : `/popular?page=${currentPage}`,
         name: "Popular",
         image: "/og/akari.webp",
         mainEntity: {
@@ -89,7 +108,8 @@ function Popular() {
             itemListElement: data.data.items.map((item, index) =>
                 createJsonLd<ListItem>({
                     "@type": "ListItem",
-                    position: (currentPage - 1) * data.data.pageSize + index + 1,
+                    position:
+                        (currentPage - 1) * data.data.pageSize + index + 1,
                     url: `/manga/${item.id}`,
                     item: createJsonLd<ComicSeries>({
                         "@type": "ComicSeries",

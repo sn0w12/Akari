@@ -33,13 +33,10 @@ import { Route as AuthAuthCallbackRouteImport } from './routes/_auth/auth/callba
 import { Route as DefaultUserIdIndexRouteImport } from './routes/_default/user/$id/index'
 import { Route as DefaultSyncMalIndexRouteImport } from './routes/_default/sync/mal/index'
 import { Route as DefaultSyncAniIndexRouteImport } from './routes/_default/sync/ani/index'
-import { Route as DefaultPopularPageIndexRouteImport } from './routes/_default/popular/$page/index'
 import { Route as DefaultMangaIdIndexRouteImport } from './routes/_default/manga/$id/index'
 import { Route as DefaultListsIdIndexRouteImport } from './routes/_default/lists/$id/index'
-import { Route as DefaultLatestPageIndexRouteImport } from './routes/_default/latest/$page/index'
 import { Route as DefaultGenreIdIndexRouteImport } from './routes/_default/genre/$id/index'
 import { Route as DefaultDevToastIndexRouteImport } from './routes/_default/dev/toast/index'
-import { Route as DefaultBookmarksPageIndexRouteImport } from './routes/_default/bookmarks/$page/index'
 import { Route as DefaultAuthorIdIndexRouteImport } from './routes/_default/author/$id/index'
 import { Route as DefaultAuthUpdatePasswordIndexRouteImport } from './routes/_default/auth/update-password/index'
 import { Route as DefaultAuthSignUpIndexRouteImport } from './routes/_default/auth/sign-up/index'
@@ -48,8 +45,6 @@ import { Route as DefaultAuthLoginIndexRouteImport } from './routes/_default/aut
 import { Route as DefaultAuthForgotPasswordIndexRouteImport } from './routes/_default/auth/forgot-password/index'
 import { Route as DefaultAuthErrorIndexRouteImport } from './routes/_default/auth/error/index'
 import { Route as DefaultAccountSetupIndexRouteImport } from './routes/_default/account/setup/index'
-import { Route as DefaultGenreIdPageIndexRouteImport } from './routes/_default/genre/$id/$page/index'
-import { Route as DefaultAuthorIdPageIndexRouteImport } from './routes/_default/author/$id/$page/index'
 import { Route as DefaultMangaIdScanlatorSubIdIndexRouteImport } from './routes/_default/manga/$id/$scanlator/$subId/index'
 import { Route as DefaultMangaIdScanlatorSubIdCommentsIndexRouteImport } from './routes/_default/manga/$id/$scanlator/$subId/comments/index'
 
@@ -171,11 +166,6 @@ const DefaultSyncAniIndexRoute = DefaultSyncAniIndexRouteImport.update({
   path: '/sync/ani/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultPopularPageIndexRoute = DefaultPopularPageIndexRouteImport.update({
-  id: '/popular/$page/',
-  path: '/popular/$page/',
-  getParentRoute: () => DefaultRoute,
-} as any)
 const DefaultMangaIdIndexRoute = DefaultMangaIdIndexRouteImport.update({
   id: '/manga/$id/',
   path: '/manga/$id/',
@@ -184,11 +174,6 @@ const DefaultMangaIdIndexRoute = DefaultMangaIdIndexRouteImport.update({
 const DefaultListsIdIndexRoute = DefaultListsIdIndexRouteImport.update({
   id: '/lists/$id/',
   path: '/lists/$id/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultLatestPageIndexRoute = DefaultLatestPageIndexRouteImport.update({
-  id: '/latest/$page/',
-  path: '/latest/$page/',
   getParentRoute: () => DefaultRoute,
 } as any)
 const DefaultGenreIdIndexRoute = DefaultGenreIdIndexRouteImport.update({
@@ -201,12 +186,6 @@ const DefaultDevToastIndexRoute = DefaultDevToastIndexRouteImport.update({
   path: '/dev/toast/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultBookmarksPageIndexRoute =
-  DefaultBookmarksPageIndexRouteImport.update({
-    id: '/bookmarks/$page/',
-    path: '/bookmarks/$page/',
-    getParentRoute: () => DefaultRoute,
-  } as any)
 const DefaultAuthorIdIndexRoute = DefaultAuthorIdIndexRouteImport.update({
   id: '/author/$id/',
   path: '/author/$id/',
@@ -251,17 +230,6 @@ const DefaultAccountSetupIndexRoute =
     path: '/account/setup/',
     getParentRoute: () => DefaultRoute,
   } as any)
-const DefaultGenreIdPageIndexRoute = DefaultGenreIdPageIndexRouteImport.update({
-  id: '/genre/$id/$page/',
-  path: '/genre/$id/$page/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultAuthorIdPageIndexRoute =
-  DefaultAuthorIdPageIndexRouteImport.update({
-    id: '/author/$id/$page/',
-    path: '/author/$id/$page/',
-    getParentRoute: () => DefaultRoute,
-  } as any)
 const DefaultMangaIdScanlatorSubIdIndexRoute =
   DefaultMangaIdScanlatorSubIdIndexRouteImport.update({
     id: '/manga/$id/$scanlator/$subId/',
@@ -303,18 +271,13 @@ export interface FileRoutesByFullPath {
   '/auth/sign-up/': typeof DefaultAuthSignUpIndexRoute
   '/auth/update-password/': typeof DefaultAuthUpdatePasswordIndexRoute
   '/author/$id/': typeof DefaultAuthorIdIndexRoute
-  '/bookmarks/$page/': typeof DefaultBookmarksPageIndexRoute
   '/dev/toast/': typeof DefaultDevToastIndexRoute
   '/genre/$id/': typeof DefaultGenreIdIndexRoute
-  '/latest/$page/': typeof DefaultLatestPageIndexRoute
   '/lists/$id/': typeof DefaultListsIdIndexRoute
   '/manga/$id/': typeof DefaultMangaIdIndexRoute
-  '/popular/$page/': typeof DefaultPopularPageIndexRoute
   '/sync/ani/': typeof DefaultSyncAniIndexRoute
   '/sync/mal/': typeof DefaultSyncMalIndexRoute
   '/user/$id/': typeof DefaultUserIdIndexRoute
-  '/author/$id/$page/': typeof DefaultAuthorIdPageIndexRoute
-  '/genre/$id/$page/': typeof DefaultGenreIdPageIndexRoute
   '/manga/$id/$scanlator/$subId/': typeof DefaultMangaIdScanlatorSubIdIndexRoute
   '/manga/$id/$scanlator/$subId/comments/': typeof DefaultMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -346,18 +309,13 @@ export interface FileRoutesByTo {
   '/auth/sign-up': typeof DefaultAuthSignUpIndexRoute
   '/auth/update-password': typeof DefaultAuthUpdatePasswordIndexRoute
   '/author/$id': typeof DefaultAuthorIdIndexRoute
-  '/bookmarks/$page': typeof DefaultBookmarksPageIndexRoute
   '/dev/toast': typeof DefaultDevToastIndexRoute
   '/genre/$id': typeof DefaultGenreIdIndexRoute
-  '/latest/$page': typeof DefaultLatestPageIndexRoute
   '/lists/$id': typeof DefaultListsIdIndexRoute
   '/manga/$id': typeof DefaultMangaIdIndexRoute
-  '/popular/$page': typeof DefaultPopularPageIndexRoute
   '/sync/ani': typeof DefaultSyncAniIndexRoute
   '/sync/mal': typeof DefaultSyncMalIndexRoute
   '/user/$id': typeof DefaultUserIdIndexRoute
-  '/author/$id/$page': typeof DefaultAuthorIdPageIndexRoute
-  '/genre/$id/$page': typeof DefaultGenreIdPageIndexRoute
   '/manga/$id/$scanlator/$subId': typeof DefaultMangaIdScanlatorSubIdIndexRoute
   '/manga/$id/$scanlator/$subId/comments': typeof DefaultMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -392,18 +350,13 @@ export interface FileRoutesById {
   '/_default/auth/sign-up/': typeof DefaultAuthSignUpIndexRoute
   '/_default/auth/update-password/': typeof DefaultAuthUpdatePasswordIndexRoute
   '/_default/author/$id/': typeof DefaultAuthorIdIndexRoute
-  '/_default/bookmarks/$page/': typeof DefaultBookmarksPageIndexRoute
   '/_default/dev/toast/': typeof DefaultDevToastIndexRoute
   '/_default/genre/$id/': typeof DefaultGenreIdIndexRoute
-  '/_default/latest/$page/': typeof DefaultLatestPageIndexRoute
   '/_default/lists/$id/': typeof DefaultListsIdIndexRoute
   '/_default/manga/$id/': typeof DefaultMangaIdIndexRoute
-  '/_default/popular/$page/': typeof DefaultPopularPageIndexRoute
   '/_default/sync/ani/': typeof DefaultSyncAniIndexRoute
   '/_default/sync/mal/': typeof DefaultSyncMalIndexRoute
   '/_default/user/$id/': typeof DefaultUserIdIndexRoute
-  '/_default/author/$id/$page/': typeof DefaultAuthorIdPageIndexRoute
-  '/_default/genre/$id/$page/': typeof DefaultGenreIdPageIndexRoute
   '/_default/manga/$id/$scanlator/$subId/': typeof DefaultMangaIdScanlatorSubIdIndexRoute
   '/_default/manga/$id/$scanlator/$subId/comments/': typeof DefaultMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -437,18 +390,13 @@ export interface FileRouteTypes {
     | '/auth/sign-up/'
     | '/auth/update-password/'
     | '/author/$id/'
-    | '/bookmarks/$page/'
     | '/dev/toast/'
     | '/genre/$id/'
-    | '/latest/$page/'
     | '/lists/$id/'
     | '/manga/$id/'
-    | '/popular/$page/'
     | '/sync/ani/'
     | '/sync/mal/'
     | '/user/$id/'
-    | '/author/$id/$page/'
-    | '/genre/$id/$page/'
     | '/manga/$id/$scanlator/$subId/'
     | '/manga/$id/$scanlator/$subId/comments/'
   fileRoutesByTo: FileRoutesByTo
@@ -480,18 +428,13 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/auth/update-password'
     | '/author/$id'
-    | '/bookmarks/$page'
     | '/dev/toast'
     | '/genre/$id'
-    | '/latest/$page'
     | '/lists/$id'
     | '/manga/$id'
-    | '/popular/$page'
     | '/sync/ani'
     | '/sync/mal'
     | '/user/$id'
-    | '/author/$id/$page'
-    | '/genre/$id/$page'
     | '/manga/$id/$scanlator/$subId'
     | '/manga/$id/$scanlator/$subId/comments'
   id:
@@ -525,18 +468,13 @@ export interface FileRouteTypes {
     | '/_default/auth/sign-up/'
     | '/_default/auth/update-password/'
     | '/_default/author/$id/'
-    | '/_default/bookmarks/$page/'
     | '/_default/dev/toast/'
     | '/_default/genre/$id/'
-    | '/_default/latest/$page/'
     | '/_default/lists/$id/'
     | '/_default/manga/$id/'
-    | '/_default/popular/$page/'
     | '/_default/sync/ani/'
     | '/_default/sync/mal/'
     | '/_default/user/$id/'
-    | '/_default/author/$id/$page/'
-    | '/_default/genre/$id/$page/'
     | '/_default/manga/$id/$scanlator/$subId/'
     | '/_default/manga/$id/$scanlator/$subId/comments/'
   fileRoutesById: FileRoutesById
@@ -720,13 +658,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultSyncAniIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/popular/$page/': {
-      id: '/_default/popular/$page/'
-      path: '/popular/$page'
-      fullPath: '/popular/$page/'
-      preLoaderRoute: typeof DefaultPopularPageIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
     '/_default/manga/$id/': {
       id: '/_default/manga/$id/'
       path: '/manga/$id'
@@ -741,13 +672,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultListsIdIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/latest/$page/': {
-      id: '/_default/latest/$page/'
-      path: '/latest/$page'
-      fullPath: '/latest/$page/'
-      preLoaderRoute: typeof DefaultLatestPageIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
     '/_default/genre/$id/': {
       id: '/_default/genre/$id/'
       path: '/genre/$id'
@@ -760,13 +684,6 @@ declare module '@tanstack/react-router' {
       path: '/dev/toast'
       fullPath: '/dev/toast/'
       preLoaderRoute: typeof DefaultDevToastIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/bookmarks/$page/': {
-      id: '/_default/bookmarks/$page/'
-      path: '/bookmarks/$page'
-      fullPath: '/bookmarks/$page/'
-      preLoaderRoute: typeof DefaultBookmarksPageIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
     '/_default/author/$id/': {
@@ -825,20 +742,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultAccountSetupIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/genre/$id/$page/': {
-      id: '/_default/genre/$id/$page/'
-      path: '/genre/$id/$page'
-      fullPath: '/genre/$id/$page/'
-      preLoaderRoute: typeof DefaultGenreIdPageIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/author/$id/$page/': {
-      id: '/_default/author/$id/$page/'
-      path: '/author/$id/$page'
-      fullPath: '/author/$id/$page/'
-      preLoaderRoute: typeof DefaultAuthorIdPageIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
     '/_default/manga/$id/$scanlator/$subId/': {
       id: '/_default/manga/$id/$scanlator/$subId/'
       path: '/manga/$id/$scanlator/$subId'
@@ -891,18 +794,13 @@ interface DefaultRouteChildren {
   DefaultAuthSignUpIndexRoute: typeof DefaultAuthSignUpIndexRoute
   DefaultAuthUpdatePasswordIndexRoute: typeof DefaultAuthUpdatePasswordIndexRoute
   DefaultAuthorIdIndexRoute: typeof DefaultAuthorIdIndexRoute
-  DefaultBookmarksPageIndexRoute: typeof DefaultBookmarksPageIndexRoute
   DefaultDevToastIndexRoute: typeof DefaultDevToastIndexRoute
   DefaultGenreIdIndexRoute: typeof DefaultGenreIdIndexRoute
-  DefaultLatestPageIndexRoute: typeof DefaultLatestPageIndexRoute
   DefaultListsIdIndexRoute: typeof DefaultListsIdIndexRoute
   DefaultMangaIdIndexRoute: typeof DefaultMangaIdIndexRoute
-  DefaultPopularPageIndexRoute: typeof DefaultPopularPageIndexRoute
   DefaultSyncAniIndexRoute: typeof DefaultSyncAniIndexRoute
   DefaultSyncMalIndexRoute: typeof DefaultSyncMalIndexRoute
   DefaultUserIdIndexRoute: typeof DefaultUserIdIndexRoute
-  DefaultAuthorIdPageIndexRoute: typeof DefaultAuthorIdPageIndexRoute
-  DefaultGenreIdPageIndexRoute: typeof DefaultGenreIdPageIndexRoute
   DefaultMangaIdScanlatorSubIdIndexRoute: typeof DefaultMangaIdScanlatorSubIdIndexRoute
   DefaultMangaIdScanlatorSubIdCommentsIndexRoute: typeof DefaultMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -928,18 +826,13 @@ const DefaultRouteChildren: DefaultRouteChildren = {
   DefaultAuthSignUpIndexRoute: DefaultAuthSignUpIndexRoute,
   DefaultAuthUpdatePasswordIndexRoute: DefaultAuthUpdatePasswordIndexRoute,
   DefaultAuthorIdIndexRoute: DefaultAuthorIdIndexRoute,
-  DefaultBookmarksPageIndexRoute: DefaultBookmarksPageIndexRoute,
   DefaultDevToastIndexRoute: DefaultDevToastIndexRoute,
   DefaultGenreIdIndexRoute: DefaultGenreIdIndexRoute,
-  DefaultLatestPageIndexRoute: DefaultLatestPageIndexRoute,
   DefaultListsIdIndexRoute: DefaultListsIdIndexRoute,
   DefaultMangaIdIndexRoute: DefaultMangaIdIndexRoute,
-  DefaultPopularPageIndexRoute: DefaultPopularPageIndexRoute,
   DefaultSyncAniIndexRoute: DefaultSyncAniIndexRoute,
   DefaultSyncMalIndexRoute: DefaultSyncMalIndexRoute,
   DefaultUserIdIndexRoute: DefaultUserIdIndexRoute,
-  DefaultAuthorIdPageIndexRoute: DefaultAuthorIdPageIndexRoute,
-  DefaultGenreIdPageIndexRoute: DefaultGenreIdPageIndexRoute,
   DefaultMangaIdScanlatorSubIdIndexRoute:
     DefaultMangaIdScanlatorSubIdIndexRoute,
   DefaultMangaIdScanlatorSubIdCommentsIndexRoute:

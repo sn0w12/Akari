@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { UpdatePasswordForm } from "@/components/update-password-form";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 
 export const Route = createFileRoute("/_default/auth/update-password/")({
     component: UpdatePasswordPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
+    }),
 });
 
 function UpdatePasswordPage() {

@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/page-wrapper";
 import SearchPage from "@/components/search";
 import SearchPageSkeleton from "@/components/search/skeleton";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createMetadata } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
 export const Route = createFileRoute("/_default/search/")({
@@ -15,6 +16,11 @@ export const Route = createFileRoute("/_default/search/")({
         return { meta, links };
     },
     component: Search,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .noCache()
+            .build(),
+    }),
 });
 
 function Search() {

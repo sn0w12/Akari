@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SyncBody } from "@/components/sync/sync-body";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useConfirm } from "@/contexts/confirm-context";
@@ -12,6 +13,12 @@ const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
 
 export const Route = createFileRoute("/_default/sync/mal/")({
     component: SyncMalPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .noCache()
+            .private()
+            .build(),
+    }),
 });
 
 function SyncMalPage() {

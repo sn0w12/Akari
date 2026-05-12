@@ -9,6 +9,7 @@ import { MangaGrid } from "@/components/manga/manga-grid";
 import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { client, serverHeaders } from "@/lib/api";
 import { env } from "@/lib/env";
 import { createMetadata } from "@/lib/seo";
@@ -59,6 +60,13 @@ export const Route = createFileRoute("/_default/")({
             image: "/og/akari.webp",
         }),
     component: Home,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ minutes: 5 })
+            .staleWhileRevalidate({ minutes: 15 })
+            .public()
+            .build(),
+    }),
 });
 
 function Home() {
@@ -168,7 +176,7 @@ function Home() {
                             <MangaGrid mangaList={latest.items} priority={2} />
                             <ServerPagination
                                 currentPage={1}
-                                href="./latest"
+                                href="/latest"
                                 totalPages={latest.totalPages}
                                 className="mt-4"
                             />

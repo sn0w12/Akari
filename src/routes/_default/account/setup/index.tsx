@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SetupAccountForm } from "@/components/auth/setup";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 
 export const Route = createFileRoute("/_default/account/setup/")({
     component: Setup,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .noCache()
+            .private()
+            .build(),
+    }),
 });
 
 function Setup() {

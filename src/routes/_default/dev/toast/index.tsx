@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import Toast from "@/lib/toast-wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,9 @@ type ToastType = "success" | "error" | "info" | "warning";
 
 export const Route = createFileRoute("/_default/dev/toast/")({
     component: ToastTestPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
+    }),
 });
 
 function ToastTestPage() {

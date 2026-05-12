@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AccountBody } from "@/components/account/account-body";
 import { PageWrapper } from "@/components/page-wrapper";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 
 export const Route = createFileRoute("/_default/account/")({
     component: AccountPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .noCache()
+            .private()
+            .build(),
+    }),
 });
 
 function AccountPage() {

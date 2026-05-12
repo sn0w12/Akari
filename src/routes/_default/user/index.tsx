@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ROLE_VARIANT_MAP } from "@/components/user/users-header";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { client, serverHeaders } from "@/lib/api";
 import { capitalize } from "@/lib/utils";
 
@@ -19,6 +20,13 @@ const getUsers = createServerFn({ method: "GET" }).handler(async () => {
 export const Route = createFileRoute("/_default/user/")({
     loader: () => getUsers(),
     component: UsersPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ minutes: 10 })
+            .staleWhileRevalidate({ minutes: 30 })
+            .public()
+            .build(),
+    }),
 });
 
 function UsersPage() {

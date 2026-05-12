@@ -10,15 +10,19 @@ import { client } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_default/bookmarks/")({
+    validateSearch: (search: Record<string, string | undefined>) => ({
+        page: Number(search.page) || 1,
+    }),
     component: Bookmarks,
 });
 
 function Bookmarks() {
+    const { page } = Route.useSearch();
     const { data, error, isLoading } = useQuery({
-        queryKey: ["bookmarks", 1],
+        queryKey: ["bookmarks", page],
         queryFn: async () => {
             const { data: result, error: err } = await client.GET("/v2/bookmarks", {
-                params: { query: { page: 1 } },
+                params: { query: { page } },
             });
             if (err) throw err;
             return result.data;
@@ -49,7 +53,7 @@ function Bookmarks() {
                             ))}
                         </div>
                         <ServerPagination
-                            currentPage={1}
+                            currentPage={page}
                             totalPages={Number(data.totalPages)}
                             className="mt-4 mb-0"
                             href="/bookmarks"

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SyncBody } from "@/components/sync/sync-body";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useConfirm } from "@/contexts/confirm-context";
@@ -11,6 +12,12 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_default/sync/ani/")({
     component: SyncAniPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .noCache()
+            .private()
+            .build(),
+    }),
 });
 
 function SyncAniPage() {

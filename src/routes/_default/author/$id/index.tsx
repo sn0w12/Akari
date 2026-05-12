@@ -23,22 +23,33 @@ const getAuthorData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/author/$id/")({
-    loader: async ({ params }) => {
+    validateSearch: (search: Record<string, string | undefined>) => ({
+        page: Number(search.page) || 1,
+    }),
+    loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
+    loader: async ({ params, deps }) => {
         const name = decodeURIComponent(params.id).replaceAll("-", " ");
-        return getAuthorData({ data: { name, page: 1 } });
+        return getAuthorData({ data: { name, page: deps.page } });
     },
     head: ({ loaderData, params }) => {
         const name = decodeURIComponent(params.id).replaceAll("-", " ");
         const paginationData = loaderData?.data?.data;
+        const page = paginationData?.currentPage ?? 1;
+        const totalPages = paginationData?.totalPages;
+        const canonicalPath = page === 1 ? `/author/${params.id}` : `/author/${params.id}?page=${page}`;
+        const pagination: { previous?: string; next?: string } = {};
+        if (page > 1) {
+            pagination.previous = page === 2 ? `/author/${params.id}` : `/author/${params.id}?page=${page - 1}`;
+        }
+        if (totalPages && totalPages > page) {
+            pagination.next = `/author/${params.id}?page=${page + 1}`;
+        }
         return createMetadata({
-            title: name,
+            title: page === 1 ? name : `${name} - Page ${page}`,
             description: `Browse the full manga catalog by ${name} on Akari.`,
-            canonicalPath: `/author/${params.id}`,
+            canonicalPath,
             image: createOgImage("author", params.id),
-            pagination:
-                paginationData && paginationData.totalPages > 1
-                    ? { next: `/author/${params.id}/2` }
-                    : undefined,
+            pagination: Object.keys(pagination).length > 0 ? pagination : undefined,
         });
     },
     component: AuthorPage,

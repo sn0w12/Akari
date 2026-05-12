@@ -1,12 +1,6 @@
 import ErrorPage from "@/components/error-page";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { UserLists } from "@/components/user/user-lists";
-import { UserListsSkeleton } from "@/components/user/user-lists-skeleton";
-import { ROLE_VARIANT_MAP } from "@/components/user/users-header";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { client, serverHeaders } from "@/lib/api";
-import { getAuthToken } from "@/lib/auth/server";
 import { capitalize } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -43,6 +37,13 @@ const loadUserPage = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/_default/user/$id/")({
     loader: async ({ params }) => loadUserPage({ data: params.id }),
     component: UserPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ minutes: 5 })
+            .staleWhileRevalidate({ minutes: 30 })
+            .public()
+            .build(),
+    }),
 });
 
 function UserPage() {
