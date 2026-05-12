@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import { MangaDetailsComponent } from "@/components/manga-details";
 import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createMetadata, createOgImage } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
 
 const loadMangaPage = createServerFn({ method: "GET" })
@@ -49,6 +50,13 @@ export const Route = createFileRoute("/_default/manga/$id/")({
         });
     },
     component: MangaPage,
+    headers: () => ({
+        "Cache-Control": new ResponseCacheControlBuilder()
+            .maxAge({ minutes: 10 })
+            .staleWhileRevalidate({ minutes: 30 })
+            .public()
+            .build(),
+    }),
 });
 
 function MangaPage() {
@@ -67,7 +75,9 @@ function MangaPage() {
         <PageWrapper>
             <div className="w-full p-4">
                 {manga?.data && <MangaDetailsComponent manga={manga.data} />}
-                {chapters?.data && <MangaDetailsBody chapters={chapters.data} mangaId={id} />}
+                {chapters?.data && (
+                    <MangaDetailsBody chapters={chapters.data} mangaId={id} />
+                )}
 
                 <Suspense fallback={null}>
                     <MangaComments id={id} target="manga" />
