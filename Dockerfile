@@ -1,4 +1,4 @@
-FROM node:25-slim AS base
+FROM node:25-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm install && npm cache clean --force
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -18,7 +18,7 @@ COPY . .
 RUN npm run build
 
 # Production image, copy all the files and run the server
-FROM node:25-slim AS runner
+FROM node:25-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -29,7 +29,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Copy production dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --no-optional && npm cache clean --force
 
 # Copy built server output and bootstrap entry
 COPY --from=builder /app/dist ./dist

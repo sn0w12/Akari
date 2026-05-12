@@ -1,5 +1,4 @@
 node_modules
-.next
 .git
 .gitignore
 .DS_Store
@@ -20,3 +19,4 @@ out
 **/test
 **/__tests__
 Dockerfile
+.tanstack
