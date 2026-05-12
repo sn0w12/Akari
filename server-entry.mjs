@@ -1,11 +1,13 @@
-import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
+import { createServer } from "node:http";
+import { dirname, extname, join } from "node:path";
 import { Readable } from "node:stream";
-import { extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const clientDir = join(__dirname, "dist", "client");
+const dirs = {
+    client: join(__dirname, "dist", "client"),
+};
 
 const MIME = {
     ".js": "application/javascript",
@@ -26,32 +28,43 @@ const MIME = {
 
 const { default: app } = await import("./dist/server/server.js");
 
+async function tryServeStatic(res, filePath, contentType) {
+    try {
+        const content = await readFile(filePath);
+        res.writeHead(200, { "Content-Type": contentType });
+        res.end(content);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 const server = createServer(async (req, res) => {
     try {
-        const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+        const url = new URL(
+            req.url,
+            `http://${req.headers.host || "localhost"}`,
+        );
 
-        // Serve static files from dist/client/
         const ext = extname(url.pathname);
         if (ext && ext !== ".html") {
-            const filePath = join(clientDir, url.pathname === "/" ? "index.html" : url.pathname);
-            try {
-                const content = await readFile(filePath);
-                res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
-                res.end(content);
+            const path =
+                url.pathname === "/" ? "index.html" : url.pathname.slice(1);
+            const contentType = MIME[ext] || "application/octet-stream";
+
+            if (await tryServeStatic(res, join(dirs.client, path), contentType))
                 return;
-            } catch {
-                // Not a static file, fall through
-            }
         }
 
         // Forward to TanStack Start handler
-        const body = req.method !== "GET" && req.method !== "HEAD"
-            ? await new Promise((resolve) => {
-                  const chunks = [];
-                  req.on("data", (chunk) => chunks.push(chunk));
-                  req.on("end", () => resolve(Buffer.concat(chunks)));
-              })
-            : undefined;
+        const body =
+            req.method !== "GET" && req.method !== "HEAD"
+                ? await new Promise((resolve) => {
+                      const chunks = [];
+                      req.on("data", (chunk) => chunks.push(chunk));
+                      req.on("end", () => resolve(Buffer.concat(chunks)));
+                  })
+                : undefined;
 
         const request = new Request(url, {
             method: req.method,
