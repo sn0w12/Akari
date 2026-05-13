@@ -1,8 +1,8 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";
-import { Image } from "@/components/image";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -99,7 +99,11 @@ export default function StripReader({
 
     return (
         <>
-            <ChapterInfo chapter={chapter} scanlator={scanlator} hidden={progress === 1} />
+            <ChapterInfo
+                chapter={chapter}
+                scanlator={scanlator}
+                hidden={progress === 1}
+            />
             <div>
                 <div
                     id="reader"
@@ -134,6 +138,7 @@ export default function StripReader({
                             fetchPriority={index === 0 ? "high" : "auto"}
                             onLoad={() => setImagesLoaded((prev) => prev + 1)}
                             sizes={{ default: "100vw" }}
+                            quality={100}
                         />
                     ))}
                 </div>

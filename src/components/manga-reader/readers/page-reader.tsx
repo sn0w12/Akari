@@ -1,8 +1,8 @@
 "use client";
 
+import { Image } from "@/components/image";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
-import { Image } from "@/components/image";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useRouter, useRouterState } from "@tanstack/react-router";
@@ -30,7 +30,9 @@ export default function PageReader({
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
-    const searchParams = new URLSearchParams(useRouterState({ select: (s) => s.location.search }));
+    const searchParams = new URLSearchParams(
+        useRouterState({ select: (s) => s.location.search }),
+    );
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
     const windowWidth = useWindowWidth();
@@ -171,6 +173,7 @@ export default function PageReader({
                                 }}
                                 width={720}
                                 height={1500}
+                                quality={100}
                                 fetchPriority="high"
                                 sizes={{ default: "100vw" }}
                             />
