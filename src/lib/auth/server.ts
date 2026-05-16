@@ -14,8 +14,8 @@ export async function createClient() {
                     );
                 },
                 setAll(cookies) {
-                    cookies.forEach((cookie) => {
-                        setCookie(cookie.name, cookie.value);
+                    cookies.forEach(({ name, value, options }) => {
+                        setCookie(name, value, options);
                     });
                 },
             },
