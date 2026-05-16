@@ -66,12 +66,13 @@ export function ChapterInfo({
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoPopover chapter={chapter} scanlator={scanlator} orientation={orientation} />
+                    <InfoPopover
+                        chapter={chapter}
+                        scanlator={scanlator}
+                        orientation={orientation}
+                    />
                 )}
-                <CommentsButton
-                    chapterNumber={chapter.number}
-                    mangaType={chapter.type}
-                />
+                <CommentsButton mangaType={chapter.type} />
             </ButtonGroup>
         </div>
     );
