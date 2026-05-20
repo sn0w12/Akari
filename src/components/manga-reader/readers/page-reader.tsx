@@ -202,6 +202,7 @@ export default function PageReader({
                             }}
                             width={720}
                             height={1500}
+                            quality={100}
                             sizes={{ default: "100vw" }}
                         />
                     )}
