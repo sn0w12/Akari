@@ -226,9 +226,9 @@ export function createImagePreloadLink({
     return {
         rel: "preload",
         as: "image",
-        fetchpriority: "high",
+        fetchPriority: "high",
         href: buildImageUrlWithQuality(src, quality),
-        imagesrcset: buildSrcSet(src, quality),
-        imagesizes: buildSizes(sizes),
+        imageSrcSet: buildSrcSet(src, quality),
+        imageSizes: buildSizes(sizes),
     };
 }
