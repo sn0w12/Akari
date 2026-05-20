@@ -1,6 +1,5 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/hooks/use-user";
 import {
     bookmarkManga,
     checkIfBookmarked,
@@ -14,7 +13,6 @@ import { Bookmark } from "lucide-react";
 import React, { useState } from "react";
 import { ButtonConfirmDialog } from "../ui/confirm";
 import Spinner from "../ui/puff-loader";
-import { useUser } from "@/hooks/use-user";
 
 interface BookmarkButtonProps {
     mangaId: string;

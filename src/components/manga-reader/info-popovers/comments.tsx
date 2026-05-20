@@ -1,5 +1,3 @@
-"use client";
-
 import { ButtonLink } from "@/components/ui/button-link";
 import { MessageCircle } from "lucide-react";
 import { Button } from "../../ui/button";
@@ -38,7 +36,7 @@ export function CommentsButton({
                     size="icon"
                     href={`./${chapterNumber}/comments`}
                     className="h-7.5 md:h-9"
->
+                >
                     <MessageCircle className="h-4 w-4" />
                 </ButtonLink>
             )}

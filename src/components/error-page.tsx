@@ -1,7 +1,6 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ErrorData, useError } from "@/contexts/error-context";
+import { Link } from "@tanstack/react-router";
 import {
     AlertCircle,
     ArrowLeft,
@@ -14,7 +13,6 @@ import {
     ServerCrash,
     ShieldAlert,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 interface ValidationError {

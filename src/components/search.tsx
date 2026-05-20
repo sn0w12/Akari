@@ -1,5 +1,3 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
 import { client } from "@/lib/api";
 import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
@@ -14,7 +12,9 @@ import { Filters, SearchFilters } from "./search/filters";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
-    const searchParams = new URLSearchParams(useRouterState({ select: (s) => s.location.search }));
+    const searchParams = new URLSearchParams(
+        useRouterState({ select: (s) => s.location.search }),
+    );
     const router = useRouter();
 
     const query = searchParams.get("q") || "";

@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

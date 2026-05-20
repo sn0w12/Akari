@@ -1,7 +1,5 @@
-"use client";
-
-import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 
 import BookmarkButton from "@/components/manga-details/bookmark-button";
 import { Button } from "../../ui/button";
@@ -49,7 +47,11 @@ export function InfoContent({
                     </div>
                     <div className="flex items-center gap-2">
                         <ButtonLink
-                            to={lastChapterExists ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}` : "#"}
+                            to={
+                                lastChapterExists
+                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}`
+                                    : "#"
+                            }
                             variant="outline"
                             className="flex-1"
                             aria-label="Previous Chapter"
@@ -59,7 +61,11 @@ export function InfoContent({
                             Previous
                         </ButtonLink>
                         <ButtonLink
-                            to={nextChapterExists ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}` : "#"}
+                            to={
+                                nextChapterExists
+                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}`
+                                    : "#"
+                            }
                             variant="outline"
                             className="flex-1"
                             aria-label="Next Chapter"

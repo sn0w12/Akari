@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
@@ -66,7 +64,11 @@ export function ChapterInfo({
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoPopover chapter={chapter} scanlator={scanlator} orientation={orientation} />
+                    <InfoPopover
+                        chapter={chapter}
+                        scanlator={scanlator}
+                        orientation={orientation}
+                    />
                 )}
                 <CommentsButton
                     chapterNumber={chapter.number}

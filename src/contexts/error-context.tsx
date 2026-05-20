@@ -1,5 +1,3 @@
-"use client";
-
 import { ErrorComponent } from "@/components/error-page";
 import { useRouterState } from "@tanstack/react-router";
 import * as React from "react";

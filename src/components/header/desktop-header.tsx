@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -118,9 +116,11 @@ export function DesktopHeader({ notification }: HeaderProps) {
                                     <BreadcrumbItem>
                                         {index != 0 ? (
                                             <BreadcrumbLink
-                                                to={`/${originalSegments
-                                                    .slice(0, index + 1)
-                                                    .join("/")}` as any}
+                                                to={
+                                                    `/${originalSegments
+                                                        .slice(0, index + 1)
+                                                        .join("/")}` as any
+                                                }
                                             >
                                                 {getSegmentDisplayName(segment)}
                                             </BreadcrumbLink>

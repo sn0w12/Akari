@@ -1,5 +1,3 @@
-"use client";
-
 import { useRouterState } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { BasePagination } from "./base-pagination";
@@ -44,7 +42,9 @@ function ServerPaginationContent({
     className,
     href,
 }: PaginationElementProps) {
-    const searchParams = new URLSearchParams(useRouterState({ select: (s) => s.location.search }));
+    const searchParams = new URLSearchParams(
+        useRouterState({ select: (s) => s.location.search }),
+    );
 
     const createPageUrl = (page: number) => {
         const params = new URLSearchParams();

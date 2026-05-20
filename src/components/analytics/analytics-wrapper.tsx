@@ -1,5 +1,3 @@
-"use client";
-
 import { useDevice } from "@/contexts/device-context";
 import { useUser } from "@/hooks/use-user";
 import { env } from "@/lib/env";

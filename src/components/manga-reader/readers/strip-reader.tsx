@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";

@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";

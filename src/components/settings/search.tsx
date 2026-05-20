@@ -1,11 +1,9 @@
-"use client";
-
 import { useSettings } from "@/hooks/use-settings";
 import { createAllSettingsMaps, Setting } from "@/lib/settings";
-import { SettingsInput } from "./settings-input";
 import React from "react";
-import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { SettingsInput } from "./settings-input";
 
 export function SettingsSearch() {
     const { settings, setSettings } = useSettings();

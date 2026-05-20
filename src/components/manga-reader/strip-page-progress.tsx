@@ -1,5 +1,3 @@
-"use client";
-
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";

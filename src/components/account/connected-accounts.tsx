@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -123,7 +121,11 @@ export function ConnectedAccounts() {
                                 {isValid ? (
                                     <>
                                         <ButtonLink
-                                            to={`/sync/${account.id}` as '/sync/ani' | '/sync/mal'}
+                                            to={
+                                                `/sync/${account.id}` as
+                                                    | "/sync/ani"
+                                                    | "/sync/mal"
+                                            }
                                             variant="default"
                                             className="gap-2 flex-1 sm:flex-initial"
                                         >
@@ -154,7 +156,10 @@ export function ConnectedAccounts() {
                                     <a
                                         href={account.getAuthUrl()}
                                         className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
-                                        style={{ backgroundColor: "var(--color)", color: "var(--text-color)" }}
+                                        style={{
+                                            backgroundColor: "var(--color)",
+                                            color: "var(--text-color)",
+                                        }}
                                     >
                                         <LogIn className="h-4 w-4" />
                                         Connect {account.name}

@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";

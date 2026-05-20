@@ -1,21 +1,19 @@
-"use client";
-
-import { client } from "@/lib/api";
-import { Button } from "../ui/button";
-import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { useState } from "react";
+import { Button } from "../ui/button";
 import { ListItem } from "./list-item";
 
 interface UserMangaListsProps {

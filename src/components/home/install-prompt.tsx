@@ -1,5 +1,3 @@
-"use client";
-
 import { useDevice } from "@/contexts/device-context";
 import { useStorage } from "@/lib/storage";
 import { MoreHorizontal, Plus, Share } from "lucide-react";
