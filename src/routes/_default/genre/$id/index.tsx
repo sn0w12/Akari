@@ -32,18 +32,24 @@ const getGenreData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/genre/$id/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        page: Number(search.page) || 1,
-        sort: (search.sort ?? "latest") as
-            | "search"
-            | "latest"
-            | "popular"
-            | "newest"
-            | undefined,
-    }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): {
+        page?: number;
+        sort?: "search" | "latest" | "popular" | "newest";
+    } => {
+        const page = Number(search.page);
+        const sort = search.sort;
+        return {
+            ...(Number.isFinite(page) && page > 0 ? { page } : {}),
+            ...(sort && ["search", "latest", "popular", "newest"].includes(sort)
+                ? { sort: sort as "search" | "latest" | "popular" | "newest" }
+                : {}),
+        };
+    },
     loaderDeps: ({ search }) => ({
-        page: Number(search.page) || 1,
-        sort: search.sort ?? ("latest" as string),
+        page: search.page ?? 1,
+        sort: search.sort ?? "latest",
     }),
     loader: async ({ params, deps }) => {
         const name = decodeURIComponent(params.id).replaceAll("-", " ");
@@ -90,7 +96,7 @@ export const Route = createFileRoute("/_default/genre/$id/")({
 function GenrePage() {
     const { data, error } = Route.useLoaderData();
     const { id } = Route.useParams();
-    const { page: currentPage } = Route.useSearch();
+    const { page: currentPage = 1 } = Route.useSearch();
     const name = decodeURIComponent(id).replaceAll("-", " ");
 
     if (error || !data) {

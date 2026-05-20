@@ -9,14 +9,17 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_default/bookmarks/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        page: Number(search.page) || 1,
-    }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { page?: number } => {
+        const page = Number(search.page);
+        return Number.isFinite(page) && page > 0 ? { page } : {};
+    },
     component: Bookmarks,
 });
 
 function Bookmarks() {
-    const { page } = Route.useSearch();
+    const { page = 1 } = Route.useSearch();
     const { data, error, isLoading } = useQuery({
         queryKey: ["bookmarks", page],
         queryFn: async () => {

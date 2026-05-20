@@ -31,13 +31,18 @@ const getPopularData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/popular/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        days: search.days ?? "30",
-        page: Number(search.page) || 1,
-    }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { days?: string; page?: number } => {
+        const page = Number(search.page);
+        return {
+            ...(search.days ? { days: search.days } : {}),
+            ...(Number.isFinite(page) && page > 0 ? { page } : {}),
+        };
+    },
     loaderDeps: ({ search }) => ({
         days: Number(search.days) || 30,
-        page: Number(search.page) || 1,
+        page: search.page ?? 1,
     }),
     loader: async ({ deps }) =>
         getPopularData({ data: { page: deps.page, days: deps.days } }),
@@ -69,7 +74,7 @@ export const Route = createFileRoute("/_default/popular/")({
 
 function Popular() {
     const { data, error } = Route.useLoaderData();
-    const { days, page: currentPage } = Route.useSearch();
+    const { days = "30", page: currentPage = 1 } = Route.useSearch();
 
     const sorting = {
         currentSort: { key: "days", value: days ?? "30" },

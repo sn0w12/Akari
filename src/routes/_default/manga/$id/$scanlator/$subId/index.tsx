@@ -32,13 +32,14 @@ const loadChapter = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        page: Number.isInteger(Number(search.page))
-            ? Number(search.page)
-            : typeof search.page === "string"
-              ? search.page
-              : undefined,
-    }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { page?: string | number } => {
+        const page = search.page;
+        return typeof page === "string" || typeof page === "number"
+            ? { page }
+            : {};
+    },
     loader: async ({ params }) =>
         loadChapter({
             data: {

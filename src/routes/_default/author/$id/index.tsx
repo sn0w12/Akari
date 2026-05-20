@@ -22,10 +22,13 @@ const getAuthorData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/author/$id/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        page: Number(search.page) || 1,
-    }),
-    loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { page?: number } => {
+        const page = Number(search.page);
+        return Number.isFinite(page) && page > 0 ? { page } : {};
+    },
+    loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
     loader: async ({ params, deps }) => {
         const name = decodeURIComponent(params.id).replaceAll("-", " ");
         return getAuthorData({ data: { name, page: deps.page } });

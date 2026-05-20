@@ -18,10 +18,13 @@ const getLatestData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/latest/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        page: Number(search.page) || 1,
-    }),
-    loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { page?: number } => {
+        const page = Number(search.page);
+        return Number.isFinite(page) && page > 0 ? { page } : {};
+    },
+    loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
     loader: async ({ deps }) => getLatestData({ data: { page: deps.page } }),
     head: ({ loaderData }) => {
         const paginationData = loaderData?.data?.data;
@@ -51,7 +54,7 @@ export const Route = createFileRoute("/_default/latest/")({
 
 function Latest() {
     const { data, error } = Route.useLoaderData();
-    const { page: currentPage } = Route.useSearch();
+    const { page: currentPage = 1 } = Route.useSearch();
 
     if (error || !data) {
         return (
