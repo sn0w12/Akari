@@ -1,7 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
-import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import {
@@ -107,20 +106,18 @@ function MangaReaderPage() {
     const { id, scanlator, subId } = Route.useParams();
 
     return (
-        <PageWrapper>
-            <div className="bg-background text-foreground">
-                <MangaReaderBody
-                    data={data}
-                    error={error}
-                    params={{ id, scanlator, subId }}
-                />
-                <div className="p-4">
-                    <Suspense fallback={null}>
-                        <MangaComments id={id} target="chapter" />
-                    </Suspense>
-                </div>
+        <div className="bg-background text-foreground">
+            <MangaReaderBody
+                data={data}
+                error={error}
+                params={{ id, scanlator, subId }}
+            />
+            <div className="p-4">
+                <Suspense fallback={null}>
+                    <MangaComments id={id} target="chapter" />
+                </Suspense>
             </div>
-        </PageWrapper>
+        </div>
     );
 }
 

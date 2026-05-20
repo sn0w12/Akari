@@ -4,7 +4,6 @@ import {
 } from "@/components/manga-details";
 import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
-import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import {
@@ -82,25 +81,19 @@ function MangaPage() {
     const { id } = Route.useParams();
 
     if (mangaError) {
-        return (
-            <PageWrapper>
-                <div className="w-full p-4">Failed to load manga.</div>
-            </PageWrapper>
-        );
+        return <div className="w-full p-4">Failed to load manga.</div>;
     }
 
     return (
-        <PageWrapper>
-            <div className="w-full p-4">
-                {manga?.data && <MangaDetailsComponent manga={manga.data} />}
-                {chapters?.data && (
-                    <MangaDetailsBody chapters={chapters.data} mangaId={id} />
-                )}
+        <div className="w-full p-4">
+            {manga?.data && <MangaDetailsComponent manga={manga.data} />}
+            {chapters?.data && (
+                <MangaDetailsBody chapters={chapters.data} mangaId={id} />
+            )}
 
-                <Suspense fallback={null}>
-                    <MangaComments id={id} target="manga" />
-                </Suspense>
-            </div>
-        </PageWrapper>
+            <Suspense fallback={null}>
+                <MangaComments id={id} target="manga" />
+            </Suspense>
+        </div>
     );
 }

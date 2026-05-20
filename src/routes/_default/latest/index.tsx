@@ -1,11 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
-import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 const getLatestData = createServerFn({ method: "GET" })
@@ -27,11 +26,13 @@ export const Route = createFileRoute("/_default/latest/")({
     head: ({ loaderData }) => {
         const paginationData = loaderData?.data?.data;
         const page = paginationData?.currentPage ?? 1;
-        const title = page === 1 ? "Latest Releases" : `Latest Releases - Page ${page}`;
+        const title =
+            page === 1 ? "Latest Releases" : `Latest Releases - Page ${page}`;
         const canonicalPath = page === 1 ? "/latest" : `/latest?page=${page}`;
         const pagination: { previous?: string; next?: string } = {};
         if (page > 1) {
-            pagination.previous = page === 2 ? "/latest" : `/latest?page=${page - 1}`;
+            pagination.previous =
+                page === 2 ? "/latest" : `/latest?page=${page - 1}`;
         }
         if (paginationData && paginationData.totalPages > page) {
             pagination.next = `/latest?page=${page + 1}`;
@@ -41,7 +42,8 @@ export const Route = createFileRoute("/_default/latest/")({
             description: "Read the latest manga releases for free on Akari.",
             canonicalPath,
             image: "/og/akari.webp",
-            pagination: Object.keys(pagination).length > 0 ? pagination : undefined,
+            pagination:
+                Object.keys(pagination).length > 0 ? pagination : undefined,
         });
     },
     component: Latest,
@@ -53,11 +55,9 @@ function Latest() {
 
     if (error || !data) {
         return (
-            <PageWrapper>
-                <div className="flex-1 px-4 pt-2 pb-4">
-                    <ErrorPage error={error} />
-                </div>
-            </PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <ErrorPage error={error} />
+            </div>
         );
     }
 
@@ -71,7 +71,8 @@ function Latest() {
             itemListElement: data.data.items.map((item, index) =>
                 createJsonLd<ListItem>({
                     "@type": "ListItem",
-                    position: (currentPage - 1) * data.data.pageSize + index + 1,
+                    position:
+                        (currentPage - 1) * data.data.pageSize + index + 1,
                     url: `/manga/${item.id}`,
                     item: createJsonLd<ComicSeries>({
                         "@type": "ComicSeries",
@@ -101,26 +102,24 @@ function Latest() {
     });
 
     return (
-        <PageWrapper>
-            <div className="flex-1 px-4 pt-2 pb-4">
-                <div className="flex gap-4">
-                    <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-                </div>
-
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                    }}
-                />
-                <MangaGrid mangaList={data.data.items} priority={4} />
-                <ServerPagination
-                    currentPage={data.data.currentPage}
-                    totalPages={data.data.totalPages}
-                    className="mt-4"
-                    href="/latest"
-                />
+        <div className="flex-1 px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
             </div>
-        </PageWrapper>
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+                href="/latest"
+            />
+        </div>
     );
 }

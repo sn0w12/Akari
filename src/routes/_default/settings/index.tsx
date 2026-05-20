@@ -1,8 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PageWrapper } from "@/components/page-wrapper";
 import SettingsPage from "@/components/settings";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createMetadata } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_default/settings/")({
     head: () => {
@@ -23,9 +22,5 @@ export const Route = createFileRoute("/_default/settings/")({
 });
 
 function Settings() {
-    return (
-        <PageWrapper>
-            <SettingsPage />
-        </PageWrapper>
-    );
+    return <SettingsPage />;
 }

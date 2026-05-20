@@ -1,11 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import ErrorPage from "@/components/error-page";
 import { MangaGrid } from "@/components/manga/manga-grid";
-import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { Person } from "schema-dts";
 
 const getAuthorData = createServerFn({ method: "GET" })
@@ -36,10 +35,16 @@ export const Route = createFileRoute("/_default/author/$id/")({
         const paginationData = loaderData?.data?.data;
         const page = paginationData?.currentPage ?? 1;
         const totalPages = paginationData?.totalPages;
-        const canonicalPath = page === 1 ? `/author/${params.id}` : `/author/${params.id}?page=${page}`;
+        const canonicalPath =
+            page === 1
+                ? `/author/${params.id}`
+                : `/author/${params.id}?page=${page}`;
         const pagination: { previous?: string; next?: string } = {};
         if (page > 1) {
-            pagination.previous = page === 2 ? `/author/${params.id}` : `/author/${params.id}?page=${page - 1}`;
+            pagination.previous =
+                page === 2
+                    ? `/author/${params.id}`
+                    : `/author/${params.id}?page=${page - 1}`;
         }
         if (totalPages && totalPages > page) {
             pagination.next = `/author/${params.id}?page=${page + 1}`;
@@ -49,7 +54,8 @@ export const Route = createFileRoute("/_default/author/$id/")({
             description: `Browse the full manga catalog by ${name} on Akari.`,
             canonicalPath,
             image: createOgImage("author", params.id),
-            pagination: Object.keys(pagination).length > 0 ? pagination : undefined,
+            pagination:
+                Object.keys(pagination).length > 0 ? pagination : undefined,
         });
     },
     component: AuthorPage,
@@ -62,11 +68,9 @@ function AuthorPage() {
 
     if (error || !data) {
         return (
-            <PageWrapper>
-                <div className="flex-1 px-4 pt-2 pb-4">
-                    <ErrorPage error={error} />
-                </div>
-            </PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <ErrorPage error={error} />
+            </div>
         );
     }
 
@@ -79,26 +83,24 @@ function AuthorPage() {
     });
 
     return (
-        <PageWrapper>
-            <div className="flex-1 px-4 pt-2 pb-4">
-                <div className="flex gap-4">
-                    <h2 className="text-3xl font-bold mb-2">{title}</h2>
-                </div>
-
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                    }}
-                />
-                <MangaGrid mangaList={data.data.items} priority={4} />
-                <ServerPagination
-                    currentPage={data.data.currentPage}
-                    totalPages={data.data.totalPages}
-                    className="mt-4"
-                    href={`/author/${id}`}
-                />
+        <div className="flex-1 px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">{title}</h2>
             </div>
-        </PageWrapper>
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+                href={`/author/${id}`}
+            />
+        </div>
     );
 }
