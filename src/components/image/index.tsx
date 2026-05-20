@@ -9,8 +9,10 @@ export interface SizesConfig {
     "2xl"?: ImageWidths;
 }
 
-export interface ImageProps
-    extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet" | "sizes"> {
+export interface ImageProps extends Omit<
+    ImgHTMLAttributes<HTMLImageElement>,
+    "src" | "srcSet" | "sizes"
+> {
     src: string;
     sizes: SizesConfig;
     quality?: number;
@@ -31,13 +33,13 @@ function buildImageUrl(src: string, width: number, quality = 80) {
     return `${src}?width=${width}&quality=${quality}`;
 }
 
-function buildSrcSet(src: string, quality?: number) {
+export function buildSrcSet(src: string, quality?: number) {
     return DEFAULT_WIDTHS.map(
         (width) => `${buildImageUrl(src, width, quality)} ${width}w`,
     ).join(", ");
 }
 
-function buildSizes(sizes: SizesConfig) {
+export function buildSizes(sizes: SizesConfig) {
     const suppliedBreakpoints = breakpoints.filter((bp) => sizes[bp.key]);
 
     const responsiveSizes = breakpoints
@@ -55,6 +57,13 @@ function buildSizes(sizes: SizesConfig) {
         : (sizes.default ?? "100vw");
 
     return [...responsiveSizes, fallbackSize].join(", ");
+}
+
+export function buildImageUrlWithQuality(
+    src: string,
+    quality?: number,
+): string {
+    return buildImageUrl(src, 1920, quality);
 }
 
 export function Image({

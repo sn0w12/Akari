@@ -1,4 +1,4 @@
-import { Image } from "@/components/image";
+import { Image, type SizesConfig } from "@/components/image";
 import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -21,6 +21,12 @@ import {
     MangaUpdatedAtFallback,
 } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
+
+export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
+    default: "200px",
+    sm: 128,
+    lg: 400,
+} satisfies SizesConfig;
 
 const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -144,11 +150,7 @@ export function MangaDetailsComponent({
                             height={600}
                             loading="eager"
                             quality={60}
-                            sizes={{
-                                default: "200px",
-                                sm: 128,
-                                lg: 400,
-                            }}
+                            sizes={MANGA_DETAILS_COVER_IMAGE_SIZES}
                         />
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
