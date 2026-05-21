@@ -1,29 +1,27 @@
 import { client } from "@/lib/api";
-import { cacheLife, cacheTag } from "next/cache";
 import { RemotePrompt } from "./remote-prompt";
+import { useQuery } from "@tanstack/react-query";
 
-async function fetchRemotePrompts() {
-    "use cache";
-    cacheLife("hours");
-    cacheTag("users");
-
-    const { data, error } = await client.GET("/v2/notifications/website");
-    if (error) {
-        return { data: null, error };
-    }
-    return { data, error: null };
+function fetchRemotePrompts() {
+    return client.GET("/v2/notifications/website");
 }
 
-export async function RemotePrompts() {
-    const { data, error } = await fetchRemotePrompts();
+export function RemotePrompts() {
+    const { data, error } = useQuery({
+        queryKey: ["remote-prompts"],
+        queryFn: async () => {
+            const { data, error } = await fetchRemotePrompts();
+            if (error) throw error;
+            return data.data;
+        },
+    });
 
-    if (error || !data) {
-        return null;
-    }
+    if (error) return null;
+    if (!data) return null;
 
     return (
         <>
-            {data.data.map((prompt) => (
+            {data.map((prompt) => (
                 <RemotePrompt
                     key={prompt.id}
                     id={prompt.id}

@@ -9,9 +9,9 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# tanstack
+/.tanstack/
+/dist/
 
 # production
 /build

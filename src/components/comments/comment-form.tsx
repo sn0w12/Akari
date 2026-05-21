@@ -1,13 +1,10 @@
-"use client";
-
 import type React from "react";
 
+import { Image } from "@/components/image";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { generateSizes } from "@/lib/utils";
 import { X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { AttachmentPopover } from "./attachment-popover";
@@ -77,10 +74,8 @@ export function CommentForm({
                             className="h-10 w-10 object-cover rounded"
                             height={40}
                             width={40}
+                            sizes={{ default: "40px" }}
                             quality={60}
-                            sizes={generateSizes({
-                                default: "48px",
-                            })}
                         />
                         <span className="text-sm text-muted-foreground flex-1">
                             Attached image

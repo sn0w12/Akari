@@ -1,17 +1,14 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import Spinner from "@/components/ui/puff-loader";
 import { getSearchResults } from "@/lib/api/search";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
-import { cn, generateSizes } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 
 export default function SearchBar() {
@@ -53,10 +50,12 @@ export default function SearchBar() {
         if (e.key === "Enter") {
             if (focusedIndex >= 0 && focusedIndex < searchResults.length) {
                 // Navigate to the selected result
-                router.push(`/manga/${searchResults[focusedIndex]!.id}`);
+                router.navigate({
+                    to: `/manga/${searchResults[focusedIndex]!.id}`,
+                });
             } else {
                 // Navigate to search page if no result selected
-                router.push(`/search?q=${encodeURIComponent(searchText)}`);
+                router.navigate({ to: "/search", search: { q: searchText } });
             }
             inputRef.current?.blur();
         } else if (e.key === "ArrowDown") {
@@ -127,7 +126,8 @@ export default function SearchBar() {
                             <>
                                 {searchResults.map((result, index) => (
                                     <Link
-                                        href={`/manga/${result.id}`}
+                                        to="/manga/$id"
+                                        params={{ id: result.id }}
                                         key={result.id}
                                         id={`search-result-${index}`}
                                         onMouseDown={() => {
@@ -138,10 +138,6 @@ export default function SearchBar() {
                                                 ? "bg-accent"
                                                 : ""
                                         }`}
-                                        prefetch={true}
-                                        transitionTypes={[
-                                            "transition-forwards",
-                                        ]}
                                     >
                                         <Image
                                             src={result.cover}
@@ -149,10 +145,8 @@ export default function SearchBar() {
                                             className="max-h-24 w-auto rounded mr-2"
                                             height={144}
                                             width={96}
+                                            sizes={{ default: "96px" }}
                                             quality={40}
-                                            sizes={generateSizes({
-                                                default: "96px",
-                                            })}
                                         />
                                         {result.title}
                                     </Link>
@@ -164,7 +158,8 @@ export default function SearchBar() {
                             </div>
                         ) : null}
                         <Link
-                            href={`/search?q=${encodeURIComponent(searchText)}`}
+                            to="/search"
+                            search={{ q: searchText }}
                             className={cn(
                                 "block text-center text-primary hover:text-primary/80",
                                 {
@@ -174,8 +169,6 @@ export default function SearchBar() {
                             onMouseDown={() => {
                                 shouldCloseRef.current = false;
                             }}
-                            prefetch={false}
-                            transitionTypes={["transition-forwards"]}
                         >
                             {hasSearchText
                                 ? "View all results"

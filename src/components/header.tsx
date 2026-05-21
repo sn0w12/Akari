@@ -1,14 +1,12 @@
-"use client";
-
+import { useUser } from "@/hooks/use-user";
 import { useWindowWidth } from "@/hooks/use-window-width";
+import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
+import { useSetting, useSettingsChange } from "@/lib/settings";
+import Toast from "@/lib/toast-wrapper";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 import { DesktopHeader } from "./header/desktop-header";
 import { MobileHeader } from "./header/mobile-header";
-import { useTheme } from "next-themes";
-import { useSetting, useSettingsChange } from "@/lib/settings";
-import { useEffect } from "react";
-import Toast from "@/lib/toast-wrapper";
-import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import { useUser } from "@/hooks/use-user";
 
 interface HeaderProps {
     notification: string;

@@ -1,9 +1,8 @@
-"use client";
-
-import { cn, generateSizes } from "@/lib/utils";
+import { Image } from "@/components/image";
+import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -118,8 +117,8 @@ interface PopularMangaCardProps {
 function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
     return (
         <Link
-            href={`/manga/${manga.id}`}
-            transitionTypes={["transition-forwards"]}
+            to="/manga/$id"
+            params={{ id: manga.id }}
             className="flex flex-row h-full w-full rounded-lg border bg-card"
         >
             <Image
@@ -128,15 +127,13 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
                 width={160}
                 height={240}
-                quality={40}
-                loading={priority ? "eager" : "lazy"}
                 fetchPriority={priority ? "high" : "auto"}
-                preload={priority}
                 decoding="async"
-                sizes={generateSizes({
-                    default: "20vw",
-                    sm: "240px",
-                })}
+                sizes={{
+                    default: "50vw",
+                    sm: 240,
+                }}
+                quality={40}
             />
             <div className="space-y-2 py-2 px-4 w-full hidden sm:block">
                 <h2 className="line-clamp-2 text-3xl font-semibold leading-tight text-card-foreground border-b pb-1">

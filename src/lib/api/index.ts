@@ -1,11 +1,12 @@
 import { inPreview } from "@/config";
+import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
 import pkg from "../../../package.json";
 
 const apiUrl =
-    process.env.NEXT_PRIVATE_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
+    env("NEXT_PRIVATE_API_URL") ||
+    env("VITE_API_URL") ||
     "http://localhost:5188/";
 
 export function getAuthCookie() {
@@ -75,7 +76,7 @@ export const client = createClient<paths>({
 });
 
 export const serverHeaders = {
-    "X-API-Key": process.env.API_KEY || "",
+    "X-API-Key": env("API_KEY") || "",
     "user-agent": `AkariWebsite/${pkg.version}/${
         inPreview ? "preview" : "production"
     }`,

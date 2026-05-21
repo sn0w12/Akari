@@ -1,12 +1,18 @@
-"use client";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+    type ReactNode,
+} from "react";
 
-import { createContext, useContext, useState, ReactNode, useMemo } from "react";
-
-type borderColor = `border-${string}` | undefined;
+type BorderColor = `border-${string}`;
 
 interface BorderColorContextType {
     borderClass: string;
-    flashColor: (color: borderColor) => void;
+    flashColor: (color: BorderColor) => void;
 }
 
 const BorderColorContext = createContext<BorderColorContextType | undefined>(
@@ -20,17 +26,33 @@ export function BorderColorProvider({
     children: ReactNode;
     duration?: number;
 }) {
-    const [currentColor, setCurrentColor] = useState<borderColor>(undefined);
-    const borderClass = useMemo(() => {
-        return `${currentColor} transition-colors duration-[${duration}ms] ease-in-out`;
-    }, [currentColor, duration]);
+    const [currentColor, setCurrentColor] = useState<BorderColor | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const borderClass = currentColor
+        ? `${currentColor} transition-colors duration-[${duration}ms] ease-in-out`
+        : `transition-colors duration-[${duration}ms] ease-in-out`;
 
-    function flashColor(color: borderColor) {
-        setCurrentColor(color);
-        setTimeout(() => {
-            setCurrentColor(undefined);
-        }, duration);
-    }
+    const flashColor = useCallback(
+        (color: BorderColor) => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+            setCurrentColor(color);
+            timeoutRef.current = setTimeout(() => {
+                setCurrentColor(null);
+                timeoutRef.current = null;
+            }, duration);
+        },
+        [duration],
+    );
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
 
     return (
         <BorderColorContext.Provider value={{ borderClass, flashColor }}>

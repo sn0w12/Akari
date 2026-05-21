@@ -1,5 +1,3 @@
-"use client";
-
 import { client } from "@/lib/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";

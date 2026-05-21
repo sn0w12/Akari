@@ -1,10 +1,8 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import pkg from "../../package.json";
 import { Separator } from "./ui/separator";
 
-export default async function Footer() {
-    "use cache";
-
+export default function Footer() {
     const version = pkg.version;
     return (
         <footer className="flex flex-col justify-center border-t h-30 md:h-23 flex-shrink-0">
@@ -16,65 +14,53 @@ export default async function Footer() {
                             <span className="h-4 border-r border-gray-400"></span>
                             <span>v{version}</span>
                             <span className="h-4 border-r border-gray-400"></span>
-                            <Link
-                                href={
-                                    "https://www.gnu.org/licenses/agpl-3.0.html"
-                                }
+                            <a
+                                href="https://www.gnu.org/licenses/agpl-3.0.html"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
-                                transitionTypes={["transition-forwards"]}
                             >
                                 AGPL-3.0.
-                            </Link>
+                            </a>
                         </p>
                     </div>
                     <div className="flex justify-center flex-col">
                         <div className="flex flex-row w-full justify-between gap-6">
                             <Link
-                                href="/about"
+                                to="/about"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
-                                transitionTypes={["transition-forwards"]}
                             >
                                 About
                             </Link>
                             <Link
-                                href="/privacy"
+                                to="/privacy"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
-                                transitionTypes={["transition-forwards"]}
                             >
                                 Privacy Policy
                             </Link>
                             <Link
-                                href="/terms"
+                                to="/terms"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
-                                transitionTypes={["transition-forwards"]}
                             >
                                 Terms
                             </Link>
                         </div>
                         <Separator className="hidden md:block" />
                         <div className="flex flex-row w-full justify-between gap-6">
-                            <Link
+                            <a
                                 href="https://github.com/sn0w12/akari"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
                             >
                                 <span>GitHub</span>
-                            </Link>
-                            <Link
+                            </a>
+                            <a
                                 href="https://github.com/sn0w12/akari/issues"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-foreground/70"
-                                prefetch={false}
                             >
                                 <span>Report issues</span>
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,4 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { Input } from "@/components/ui/input";
 import {
     PopoverDrawer,
@@ -12,12 +11,10 @@ import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
 import Toast from "@/lib/toast-wrapper";
-import { generateSizes } from "@/lib/utils";
 import type { components } from "@/types/api";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageIcon, Star, X } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 
@@ -77,10 +74,12 @@ function ImageGrid({
                                     className="w-full h-full object-contain"
                                     height={96}
                                     width={96}
-                                    quality={60}
-                                    sizes={generateSizes({
-                                        default: "128px",
-                                    })}
+                                    sizes={{
+                                        default: "50vw",
+                                        sm: 240,
+                                        md: 240,
+                                    }}
+                                    quality={40}
                                 />
                             </button>
                             {onToggleFavorite && (
@@ -405,6 +404,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                             className="max-h-20 mx-auto rounded"
                                             height={80}
                                             width={80}
+                                            sizes={{ default: "80px" }}
                                         />
                                         <p>{file.name}</p>
                                     </div>

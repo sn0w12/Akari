@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -10,9 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
 import { client } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 
 export function SetupAccountForm() {
     const [userName, setUserName] = useState("");
@@ -37,7 +35,7 @@ export function SetupAccountForm() {
                 return;
             }
 
-            router.push("/account");
+            router.navigate({ to: "/account" });
         } catch (error) {
             setError(
                 error instanceof Error ? error.message : "An error occurred",

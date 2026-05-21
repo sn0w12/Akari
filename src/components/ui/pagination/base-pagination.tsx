@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { cn } from "@/lib/utils";
@@ -56,7 +54,7 @@ export function BasePagination({
                 <ButtonLink
                     variant="outline"
                     size="sm"
-                    href={url}
+                    to={url}
                     onMouseOver={() => onPrefetch?.(url)}
                     disabled={disabled}
                     className={className}

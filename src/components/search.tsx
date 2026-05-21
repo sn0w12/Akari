@@ -1,11 +1,9 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
 import { client } from "@/lib/api";
 import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { GRID_CLASS } from "./grid-page";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
@@ -14,7 +12,9 @@ import { Filters, SearchFilters } from "./search/filters";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
-    const searchParams = useSearchParams();
+    const searchParams = new URLSearchParams(
+        useRouterState({ select: (s) => s.location.search }),
+    );
     const router = useRouter();
 
     const query = searchParams.get("q") || "";

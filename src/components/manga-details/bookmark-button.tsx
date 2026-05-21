@@ -1,6 +1,5 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/hooks/use-user";
 import {
     bookmarkManga,
     checkIfBookmarked,
@@ -9,12 +8,11 @@ import {
 import { useSetting } from "@/lib/settings";
 import Toast from "@/lib/toast-wrapper";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
 import React, { useState } from "react";
 import { ButtonConfirmDialog } from "../ui/confirm";
 import Spinner from "../ui/puff-loader";
-import { useUser } from "@/hooks/use-user";
 
 interface BookmarkButtonProps {
     mangaId: string;
@@ -25,6 +23,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     mangaId,
     className,
 }) => {
+    const queryClient = useQueryClient();
     const [hovered, setHovered] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
@@ -50,6 +49,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
                 throw new Error("Failed to bookmark manga");
             }
             await refetch();
+            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
             new Toast("Manga bookmarked", "success");
         } catch (error) {
             console.error("Failed to bookmark:", error);
@@ -66,6 +66,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             const result = await removeBookmark(mangaId);
             if (!result) return;
             await refetch();
+            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
         } catch (error) {
             console.error("Failed to remove bookmark:", error);
         } finally {

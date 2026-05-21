@@ -1,16 +1,12 @@
-"use client";
-
 import { ButtonLink } from "@/components/ui/button-link";
 import { MessageCircle } from "lucide-react";
 import { Button } from "../../ui/button";
 
 interface CommentsButtonProps {
-    chapterNumber: number;
     mangaType: components["schemas"]["MangaType"];
 }
 
 export function CommentsButton({
-    chapterNumber,
     mangaType,
 }: CommentsButtonProps) {
     const handleToggleComments = () => {
@@ -36,9 +32,8 @@ export function CommentsButton({
                 <ButtonLink
                     variant="outline"
                     size="icon"
-                    href={`./${chapterNumber}/comments`}
+                    href={`./comments`}
                     className="h-7.5 md:h-9"
-                    transitionTypes={["transition-forwards"]}
                 >
                     <MessageCircle className="h-4 w-4" />
                 </ButtonLink>

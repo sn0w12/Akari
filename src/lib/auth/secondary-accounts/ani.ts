@@ -1,4 +1,5 @@
 import { client } from "@/lib/api";
+import { env } from "@/lib/env";
 import { SecondaryAccountBase } from "./general";
 
 export class AniAccount extends SecondaryAccountBase {
@@ -7,7 +8,7 @@ export class AniAccount extends SecondaryAccountBase {
     readonly color = "#1f232c";
 
     getAuthUrl(): string {
-        const clientId = process.env.NEXT_PUBLIC_ANI_CLIENT_ID!;
+        const clientId = env("VITE_ANI_CLIENT_ID")!;
 
         const url = new URL("https://anilist.co/api/v2/oauth/authorize");
         url.searchParams.append("response_type", "token");

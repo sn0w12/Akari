@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,8 +5,8 @@ import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import Toast from "@/lib/toast-wrapper";
+import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
-import Link from "next/link";
 
 interface ListItemProps {
     list: components["schemas"]["UserMangaListResponse"];
@@ -46,11 +44,7 @@ export function ListItem({ list, onDelete }: ListItemProps) {
     }
 
     return (
-        <Link
-            href={`/lists/${list.id}`}
-            className="block"
-            transitionTypes={["transition-forwards"]}
-        >
+        <Link to="/lists/$id" params={{ id: list.id }} className="block">
             <Card className="relative p-0 hover:bg-accent transition-colors">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between">

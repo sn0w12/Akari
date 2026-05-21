@@ -13,7 +13,7 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronsUpDownIcon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import React, { memo, useMemo, useRef } from "react";
 
 interface ChaptersPopupProps {
@@ -187,7 +187,8 @@ const ChapterRow = memo(function ChapterRow({
 }: ChapterRowProps): React.JSX.Element {
     return (
         <Link
-            href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
+            to="/manga/$id/$scanlator/$subId"
+            params={{ id: mangaId, scanlator: String(chapter.scanlatorId), subId: String(chapter.number) }}
             className={cn(
                 "block rounded p-2 text-sm transition-colors duration-100 hover:bg-accent",
                 {
@@ -195,9 +196,7 @@ const ChapterRow = memo(function ChapterRow({
                         isLastRead,
                 },
             )}
-            prefetch={false}
             aria-label={`Read ${chapter.title} ${isLastRead ? "(Last Read)" : ""}`}
-            transitionTypes={["transition-forwards"]}
         >
             <div className="flex items-start justify-between gap-3">
                 <span className="min-w-0 flex-1 break-words">{chapter.title}</span>

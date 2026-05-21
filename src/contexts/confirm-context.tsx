@@ -1,5 +1,3 @@
-"use client";
-
 import { ConfirmDialog } from "@/components/ui/confirm";
 import * as React from "react";
 

@@ -1,7 +1,3 @@
-"use client";
-
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -12,7 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
+import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
 export function UpdatePasswordForm({
@@ -33,7 +31,7 @@ export function UpdatePasswordForm({
         try {
             const { error } = await supabase.auth.updateUser({ password });
             if (error) throw error;
-            router.push("/account");
+            router.navigate({ to: "/account" });
         } catch (error: unknown) {
             setError(
                 error instanceof Error ? error.message : "An error occurred",

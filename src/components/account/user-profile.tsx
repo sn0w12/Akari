@@ -1,14 +1,11 @@
-"use client";
-
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
@@ -22,7 +19,7 @@ export function UserProfile({
     const handleLogout = async () => {
         await logOut(SECONDARY_ACCOUNTS);
         queryClient.invalidateQueries({ queryKey: ["user"] });
-        router.push("/");
+        router.navigate({ to: "/" });
     };
 
     return (
@@ -32,10 +29,7 @@ export function UserProfile({
                     <Avatar name={user.username} size={64} />
 
                     <div>
-                        <Link
-                            href={`/user/${user.userId}`}
-                            transitionTypes={["transition-forwards"]}
-                        >
+                        <Link to="/user/$id" params={{ id: user.userId }}>
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}
                             </h2>

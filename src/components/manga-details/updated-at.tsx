@@ -1,5 +1,3 @@
-"use client";
-
 import { formatRelativeDate } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 

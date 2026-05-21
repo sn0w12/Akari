@@ -1,6 +1,6 @@
 import { Skeleton } from "../ui/skeleton";
 
-export async function ListSkeleton() {
+export function ListSkeleton() {
     return (
         <div className="space-y-2 px-4 pb-4 pt-2">
             <Skeleton className="h-8 w-40" />

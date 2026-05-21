@@ -1,22 +1,14 @@
-"use client";
-
-import React from "react";
-import PuffLoader from "react-spinners/PuffLoader";
+import type { FC } from "react";
 
 interface SpinnerProps {
     size?: number;
 }
 
-const getForegroundColor = (): string => {
-    if (typeof window === "undefined") return "#000000";
-    const rootStyles = getComputedStyle(document.documentElement);
-    const foregroundColor = rootStyles.getPropertyValue("--foreground").trim();
-    return foregroundColor || "#000000";
-};
-
-const Spinner: React.FC<SpinnerProps> = ({ size = 60 }) => {
-    const spinnerColor = getForegroundColor();
-    return <PuffLoader color={spinnerColor} size={size} />;
-};
+const Spinner: FC<SpinnerProps> = ({ size = 60 }) => (
+    <span
+        className="animate-spin rounded-full border-[3px] border-foreground border-t-transparent inline-block"
+        style={{ width: size, height: size }}
+    />
+);
 
 export default Spinner;

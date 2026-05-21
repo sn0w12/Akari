@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -13,8 +11,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Providers } from "./auth/oauth";
 
@@ -42,7 +39,7 @@ export function LoginForm({
             });
             if (error) throw error;
             queryClient.invalidateQueries({ queryKey: ["user"] });
-            router.push("/account");
+            router.navigate({ to: "/account" });
         } catch (error: unknown) {
             setError(
                 error instanceof Error ? error.message : "An error occurred",
@@ -79,7 +76,7 @@ export function LoginForm({
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
                                     <Link
-                                        href="/auth/forgot-password"
+                                        to="/auth/forgot-password"
                                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                                     >
                                         Forgot your password?
@@ -110,7 +107,7 @@ export function LoginForm({
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
                             <Link
-                                href="/auth/sign-up"
+                                to="/auth/sign-up"
                                 className="underline underline-offset-4"
                             >
                                 Sign up

@@ -1,9 +1,7 @@
-"use client";
-
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/auth/client";
 import { Provider } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const providers = [
     {

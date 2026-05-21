@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,7 +9,6 @@ import {
 } from "@/lib/auth/secondary-accounts";
 import { cn } from "@/lib/utils";
 import { Download, LogIn, LogOut } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import { ButtonConfirmDialog } from "../ui/confirm";
@@ -95,13 +92,13 @@ export function ConnectedAccounts() {
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-medium text-foreground">
                                             {accountUrl ? (
-                                                <Link
+                                                <a
                                                     href={accountUrl}
                                                     target="_blank"
                                                     className="hover:underline"
                                                 >
                                                     {account.name}
-                                                </Link>
+                                                </a>
                                             ) : (
                                                 account.name
                                             )}
@@ -124,12 +121,13 @@ export function ConnectedAccounts() {
                                 {isValid ? (
                                     <>
                                         <ButtonLink
-                                            href={`/sync/${account.id}`}
+                                            to={
+                                                `/sync/${account.id}` as
+                                                    | "/sync/ani"
+                                                    | "/sync/mal"
+                                            }
                                             variant="default"
                                             className="gap-2 flex-1 sm:flex-initial"
-                                            transitionTypes={[
-                                                "transition-forwards",
-                                            ]}
                                         >
                                             <Download className="h-4 w-4" />
                                             Import Manga
@@ -155,14 +153,17 @@ export function ConnectedAccounts() {
                                         />
                                     </>
                                 ) : (
-                                    <ButtonLink
+                                    <a
                                         href={account.getAuthUrl()}
-                                        size="sm"
-                                        className="gap-2 flex-1 sm:flex-initial bg-[var(--color)] hover:bg-[var(--color)]/80 text-[var(--text-color)]"
+                                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
+                                        style={{
+                                            backgroundColor: "var(--color)",
+                                            color: "var(--text-color)",
+                                        }}
                                     >
                                         <LogIn className="h-4 w-4" />
                                         Connect {account.name}
-                                    </ButtonLink>
+                                    </a>
                                 )}
                             </div>
                         </div>

@@ -1,13 +1,11 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
@@ -24,13 +22,12 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                     {/* Cover Image */}
                     <div className="w-20 lg:w-30 h-full mb-0 shrink-0">
                         <Link
-                            href={`/manga/${bookmark.mangaId}`}
+                            to="/manga/$id"
+                            params={{ id: bookmark.mangaId }}
                             rel="noopener noreferrer"
                             className="block"
-                            prefetch={false}
                             tabIndex={-1}
                             aria-hidden="true"
-                            transitionTypes={["transition-forwards"]}
                         >
                             <Image
                                 src={bookmark.cover}
@@ -38,8 +35,8 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                 height={180}
                                 width={120}
                                 className="w-full h-auto object-cover rounded-sm"
+                                sizes={{ default: "120px" }}
                                 quality={40}
-                                sizes="120px"
                             />
                         </Link>
                     </div>
@@ -51,9 +48,8 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             <div className="flex items-center gap-2 justify-between">
                                 <Link
                                     className="hover:underline"
-                                    href={`/manga/${bookmark.mangaId}`}
-                                    prefetch={false}
-                                    transitionTypes={["transition-forwards"]}
+                                    to="/manga/$id"
+                                    params={{ id: bookmark.mangaId }}
                                 >
                                     <h3 className="line-clamp-2 flex-1 text-lg font-semibold leading-snug">
                                         {bookmark.title}
@@ -125,26 +121,33 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     </Button>
                 ) : shouldReadLatest ? (
                     <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${bookmark.latestChapter.scanlatorId}/${bookmark.latestChapter.number}`}
+                        to="/manga/$id/$scanlator/$subId"
+                        params={{
+                            id: bookmark.mangaId,
+                            scanlator: String(
+                                bookmark.latestChapter.scanlatorId,
+                            ),
+                            subId: String(bookmark.latestChapter.number),
+                        }}
                         size="sm"
                         className="flex-1 w-full"
-                        transitionTypes={["transition-forwards"]}
                         {...handlers}
-                        style={style}
                     >
                         <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                         {bookmark.latestChapter.number}
                     </ButtonLink>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${bookmark.mangaId}/${bookmark.nextChapter.scanlatorId}/${bookmark.nextChapter.number}`}
+                        to="/manga/$id/$scanlator/$subId"
+                        params={{
+                            id: bookmark.mangaId,
+                            scanlator: String(bookmark.nextChapter.scanlatorId),
+                            subId: String(bookmark.nextChapter.number),
+                        }}
                         variant="secondary"
                         size="sm"
                         className="flex-1 w-full group"
-                        prefetch={false}
-                        transitionTypes={["transition-forwards"]}
                         {...handlers}
-                        style={style}
                     >
                         <p className="hidden md:inline">Continue Reading • </p>
                         Ch. {bookmark.nextChapter.number}

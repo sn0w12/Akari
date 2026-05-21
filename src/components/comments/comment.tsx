@@ -1,5 +1,3 @@
-"use client";
-
 import { CommentForm } from "@/components/comments/comment-form";
 import { CommentMenu } from "@/components/comments/comment-menu";
 import { ReportCommentDialog } from "@/components/comments/report";
@@ -8,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useConfirm } from "@/contexts/confirm-context";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import {
     ChevronDown,
     ChevronUp,
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { CommentAttachment } from "./attachment";
@@ -212,9 +210,9 @@ export function Comment({
                 <div className="flex-1 min-w-0 mb-2">
                     <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
                         <Link
-                            href={`/user/${comment.userProfile.id}`}
+                            to="/user/$id"
+                            params={{ id: comment.userProfile.id }}
                             className="font-medium text-foreground hover:underline"
-                            transitionTypes={["transition-forwards"]}
                         >
                             {comment.userProfile.displayName}
                         </Link>

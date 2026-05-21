@@ -1,5 +1,3 @@
-"use client";
-
 import { useStorage } from "@/lib/storage";
 import { useState } from "react";
 import {

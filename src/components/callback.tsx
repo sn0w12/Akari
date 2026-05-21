@@ -1,18 +1,17 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import {
     getSecondaryAccountById,
     SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
 import { StorageManager } from "@/lib/storage";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import ErrorComponent from "./error-page";
 
 const CallbackPage = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const location = useRouterState({ select: (s) => s.location });
+    const searchParams = new URLSearchParams(location.search);
     const [error, setError] = useState<
         components["schemas"]["ErrorResponse"] | undefined
     >(undefined);
@@ -80,7 +79,7 @@ const CallbackPage = () => {
                     { accountId: provider },
                 );
                 cacheStorage.set({ valid: true });
-                router.push("/account");
+                router.navigate({ to: "/account" });
             } catch (error) {
                 setError({
                     result: "Error",
@@ -94,7 +93,7 @@ const CallbackPage = () => {
                 });
             } finally {
                 setTimeout(() => {
-                    router.push("/account");
+                    router.navigate({ to: "/account" });
                 }, 5000);
             }
         };

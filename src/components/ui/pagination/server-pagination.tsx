@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouterState } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { BasePagination } from "./base-pagination";
 
@@ -44,11 +42,11 @@ function ServerPaginationContent({
     className,
     href,
 }: PaginationElementProps) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = new URLSearchParams(
+        useRouterState({ select: (s) => s.location.search }),
+    );
 
     const createPageUrl = (page: number) => {
-        // Get all current search params except 'page'
         const params = new URLSearchParams();
         searchParams.forEach((value, key) => {
             if (key !== "page" && value) {
@@ -56,17 +54,12 @@ function ServerPaginationContent({
             }
         });
 
-        const paramsString = params.toString();
-
-        let url = href;
         if (page > 1) {
-            url += `/${page}`;
-        }
-        if (paramsString) {
-            url += `?${paramsString}`;
+            params.set("page", String(page));
         }
 
-        return url;
+        const paramsString = params.toString();
+        return paramsString ? `${href}?${paramsString}` : href;
     };
 
     return (
@@ -75,7 +68,7 @@ function ServerPaginationContent({
             totalPages={totalPages}
             className={className}
             getPageUrl={createPageUrl}
-            onPrefetch={(url) => router.prefetch(url)}
+            onPrefetch={() => {}}
         />
     );
 }

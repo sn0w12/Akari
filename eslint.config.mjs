@@ -1,39 +1,48 @@
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
 import { defineConfig, globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
 
 import noLocalStorage from "./eslint-rules/no-localstorage.mjs";
 
 const eslintConfig = defineConfig([
-    ...nextVitals,
-    ...nextTs,
+    ...tseslint.configs.recommended,
     {
-        rules: {
-            "custom/no-localstorage": "warn",
-        },
+        files: ["src/**/*.{ts,tsx,js,jsx,mjs,cjs}"],
         plugins: {
+            "react-hooks": reactHooks,
             custom: {
                 rules: {
                     "no-localstorage": noLocalStorage,
                 },
             },
         },
+        rules: {
+            ...reactHooks.configs.recommended.rules,
+            "react-hooks/set-state-in-effect": "warn",
+            "react-hooks/incompatible-library": "warn",
+            "custom/no-localstorage": "warn",
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                { argsIgnorePattern: "^_" },
+            ],
+            "@typescript-eslint/no-explicit-any": "warn",
+        },
     },
     {
-        // Disable the rule in storage.ts to avoid false positives
         files: ["src/lib/storage.ts"],
         rules: {
             "custom/no-localstorage": "off",
         },
     },
-    // Override default ignores of eslint-config-next.
     globalIgnores([
-        // Default ignores of eslint-config-next:
         ".next/**",
         "out/**",
         "build/**",
         "next-env.d.ts",
         "public/**",
+        ".output/**",
+        "dist/**",
+        "node_modules/**",
     ]),
 ]);
 

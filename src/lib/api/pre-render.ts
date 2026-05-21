@@ -1,9 +1,10 @@
+import { env } from "@/lib/env";
 import { client } from "@/lib/api";
 import { serverHeaders } from "@/lib/api";
 import type { GetPaths, PaginatedResponse } from "@/types/api-utils";
 
 export const STATIC_GENERATION_DISABLED =
-    !process.env.API_KEY || process.env.DISABLE_STATIC_GENERATION === "1";
+    !env("API_KEY") || process.env.DISABLE_STATIC_GENERATION === "1";
 
 export async function getAllPaginated<T>(
     path: GetPaths,

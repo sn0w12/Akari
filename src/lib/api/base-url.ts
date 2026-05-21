@@ -1,5 +1,7 @@
+import { env } from "@/lib/env";
+
 export function getBaseUrl() {
-    const host = process.env.NEXT_PUBLIC_HOST;
+    const host = env("VITE_HOST");
     if (host) {
         if (host.includes("localhost") || host.includes("127.0.0.1")) {
             return `http://${host}`;
@@ -22,7 +24,7 @@ export function getBaseUrl() {
 }
 
 export function getProductionUrl() {
-    const host = process.env.NEXT_PUBLIC_HOST;
+    const host = env("VITE_HOST");
     if (host) {
         return `https://${host}`;
     }

@@ -1,5 +1,3 @@
-"use client";
-
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { StarHalf } from "lucide-react";

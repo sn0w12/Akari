@@ -1,11 +1,8 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
 import MangaFooter from "../manga-footer";
@@ -13,6 +10,7 @@ import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     scrollMetrics: {
         pixels: number;
         percentage: number;
@@ -24,11 +22,11 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
+    scanlator,
     scrollMetrics,
     toggleReaderMode,
     setBookmarkState,
 }: StripReaderProps) {
-    const router = useRouter();
     const stripWidth = useSetting("stripWidth");
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
@@ -93,14 +91,17 @@ export default function StripReader({
         }
 
         if (prefetch && chapter.nextChapter && !hasPrefetchedRef.current) {
-            router.prefetch(`/manga/${chapter.nextChapter}`);
             hasPrefetchedRef.current = true;
         }
-    }, [progress, chapter, router, setBookmarkState, queryClient]);
+    }, [progress, chapter, setBookmarkState, queryClient]);
 
     return (
         <>
-            <ChapterInfo chapter={chapter} hidden={progress === 1} />
+            <ChapterInfo
+                chapter={chapter}
+                scanlator={scanlator}
+                hidden={progress === 1}
+            />
             <div>
                 <div
                     id="reader"
@@ -132,11 +133,10 @@ export default function StripReader({
                             style={{
                                 width: `calc(var(--spacing) * ${stripWidth})`,
                             }}
-                            loading={"eager"}
-                            preload={index === 0}
                             fetchPriority={index === 0 ? "high" : "auto"}
-                            unoptimized={true}
                             onLoad={() => setImagesLoaded((prev) => prev + 1)}
+                            sizes={{ default: "100vw" }}
+                            quality={100}
                         />
                     ))}
                 </div>
@@ -148,6 +148,7 @@ export default function StripReader({
                 </div>
                 <MangaFooter
                     chapter={chapter}
+                    scanlator={scanlator}
                     toggleReaderMode={toggleReaderMode}
                 />
             </div>

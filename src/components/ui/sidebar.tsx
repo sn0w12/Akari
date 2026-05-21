@@ -1,5 +1,3 @@
-"use client";
-
 import { VariantProps, cva } from "class-variance-authority";
 import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
@@ -23,8 +21,8 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import type { LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Drawer, DrawerContent } from "./drawer";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -677,16 +675,12 @@ function SidebarMenuLink({
     tooltip,
     className,
     children,
-    href,
     labelClassName,
-    prefetch,
     ...props
-}: React.ComponentProps<typeof Link> & {
+}: LinkProps & {
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-    href: string;
     labelClassName?: string;
-    prefetch?: boolean;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const {
         isMobile,
@@ -715,7 +709,6 @@ function SidebarMenuLink({
             data-sidebar="menu-button"
             data-size={size}
             data-active={isActive}
-            href={href}
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
@@ -727,8 +720,7 @@ function SidebarMenuLink({
             }}
             onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
             onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
-            prefetch={prefetch || true}
-            {...props}
+            {...(props as LinkProps)}
         >
             {wrappedChildren}
         </Link>
@@ -923,7 +915,6 @@ function SidebarSection({
     isItemActive,
 }: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
-    const path = usePathname();
     const { setOpen, state } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
 
@@ -976,17 +967,12 @@ function SidebarSection({
                     {items.map((item) => (
                         <SidebarMenuLink
                             key={item.id}
-                            href={`${basePath}/${item.id}`}
+                            to={`${basePath}/${item.id}`}
                             isActive={isItemActive(item.id)}
                             tooltip={item.name}
                             size="sm"
                             className="relative z-10 px-3 text-base md:text-sm hover:bg-accent"
                             onClick={handleLinkClick}
-                            transitionTypes={
-                                path.includes("manga")
-                                    ? ["transition-backwards"]
-                                    : ["transition-forwards"]
-                            }
                         >
                             <div className="flex max-w-[150px] items-center gap-1.5">
                                 <span className="truncate">{item.name}</span>

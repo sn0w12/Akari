@@ -1,63 +1,55 @@
-import { client, serverHeaders } from "@/lib/api";
-import { getAuthToken } from "@/lib/auth/server";
+import ErrorPage from "@/components/error-page";
+import { client, getAuthCookie, serverHeaders } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 import { ConnectedAccounts } from "./connected-accounts";
 import { UserMangaLists } from "./lists";
 import { UserProfile } from "./user-profile";
-import { redirect } from "next/navigation";
-import ErrorPage from "@/components/error-page";
 
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
+export function AccountBody() {
+    const { data, error, isLoading } = useQuery({
+        queryKey: ["account"],
+        queryFn: async () => {
+            const session = getAuthCookie();
+            if (!session?.access_token) throw new Error("Not authenticated");
 
-async function getAccountData(accessToken: string) {
-    const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        ...serverHeaders,
-    };
+            const headers = {
+                Authorization: `Bearer ${session.access_token}`,
+                ...serverHeaders,
+            };
 
-    const [userRes, listsRes] = await Promise.all([
-        client.GET("/v2/user/me", { headers }),
-        client.GET("/v2/lists/user/me", {
-            params: {
-                query: {
-                    pageSize: 100,
-                },
-            },
-            headers,
-        }),
-    ]);
+            const [userRes, listsRes] = await Promise.all([
+                client.GET("/v2/user/me", { headers }),
+                client.GET("/v2/lists/user/me", {
+                    params: { query: { pageSize: 100 } },
+                    headers,
+                }),
+            ]);
 
-    return { userRes, listsRes };
-}
+            if (userRes.error) throw userRes.error;
+            return {
+                user: userRes.data.data,
+                lists: listsRes.data?.data?.items || [],
+            };
+        },
+        retry: false,
+    });
 
-export async function AccountBody() {
-    const token = await getAuthToken();
-    if (!token) {
-        redirect("/auth/login");
-    }
-
-    const { userRes, listsRes } = await getAccountData(token);
-
-    if (userRes.error) {
-        if (userRes.error.status === 401) {
-            redirect("/auth/login");
-        }
-
-        return <ErrorPage error={userRes.error} />;
-    }
-
-    const lists = listsRes.error ? [] : listsRes.data?.data?.items || [];
+    if (isLoading) return <AccountBodySkeleton />;
+    if (error) return <ErrorPage error={error as unknown as components["schemas"]["ErrorResponse"]} />;
+    if (!data) return null;
 
     return (
         <div className="space-y-4">
-            <UserProfile user={userRes.data.data} />
+            <UserProfile user={data.user} />
             <ConnectedAccounts />
-            <UserMangaLists initialLists={lists} />
+            <UserMangaLists initialLists={data.lists} />
         </div>
     );
 }
 
-export async function AccountBodySkeleton() {
+export function AccountBodySkeleton() {
     return (
         <div className="space-y-4">
             <Skeleton className="h-24 w-full rounded-xl" />

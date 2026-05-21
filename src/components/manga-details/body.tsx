@@ -3,12 +3,9 @@ import { GridBodySkeleton } from "../grid-page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ChaptersSectionServer } from "./chapters";
 import { MangaRecommendations } from "./recommended";
+import type { components } from "@/types/api";
 
-export function MangaDetailsBody({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
+export function MangaDetailsBody({ chapters, mangaId }: { chapters: components["schemas"]["MangaChapterResponse"]; mangaId: string }) {
     return (
         <Tabs defaultValue="chapters" className="w-full">
             <TabsList className="bg-background p-0 gap-2">
@@ -27,12 +24,12 @@ export function MangaDetailsBody({
             </TabsList>
 
             <TabsContent value="chapters">
-                <ChaptersSectionServer params={params} />
+                <ChaptersSectionServer chapters={chapters} mangaId={mangaId} />
             </TabsContent>
 
             <TabsContent value="recommendations" className="mb-2">
                 <Suspense fallback={<GridBodySkeleton pageSize={12} />}>
-                    <MangaRecommendations params={params} />
+                    <MangaRecommendations id={mangaId} />
                 </Suspense>
             </TabsContent>
         </Tabs>
