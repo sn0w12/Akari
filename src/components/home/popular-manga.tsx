@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";

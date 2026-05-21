@@ -1,10 +1,14 @@
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
-import { PageWrapper } from "@/components/page-wrapper";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
-import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
+import {
+    createImagePreloadLink,
+    createJsonLd,
+    createMetadata,
+    createOgImage,
+} from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
@@ -28,6 +32,14 @@ const loadChapter = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { page?: string | number } => {
+        const page = search.page;
+        return typeof page === "string" || typeof page === "number"
+            ? { page }
+            : {};
+    },
     loader: async ({ params }) =>
         loadChapter({
             data: {
@@ -45,7 +57,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
                 canonicalPath: `/manga/${params.id}/${params.scanlator}/${params.subId}`,
             });
         }
-        return createMetadata({
+        const metadata = createMetadata({
             title: `${chapter.mangaTitle} - ${chapter.title}`,
             description: `Read ${chapter.mangaTitle} ${chapter.title}.`,
             canonicalPath: `/manga/${chapter.mangaId}/${params.scanlator}/${params.subId}`,
@@ -64,6 +76,21 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
                     : {}),
             },
         });
+        return {
+            ...metadata,
+            links: [
+                ...(metadata.links ?? []),
+                ...(chapter.images[0]
+                    ? [
+                          createImagePreloadLink({
+                              src: chapter.images[0],
+                              sizes: { default: "100vw" },
+                              quality: 100,
+                          }),
+                      ]
+                    : []),
+            ],
+        };
     },
     component: MangaReaderPage,
     headers: () => ({
@@ -80,20 +107,18 @@ function MangaReaderPage() {
     const { id, scanlator, subId } = Route.useParams();
 
     return (
-        <PageWrapper>
-            <div className="bg-background text-foreground">
-                <MangaReaderBody
-                    data={data}
-                    error={error}
-                    params={{ id, scanlator, subId }}
-                />
-                <div className="p-4">
-                    <Suspense fallback={null}>
-                        <MangaComments id={id} target="chapter" />
-                    </Suspense>
-                </div>
+        <div className="bg-background text-foreground">
+            <MangaReaderBody
+                data={data}
+                error={error}
+                params={{ id, scanlator, subId }}
+            />
+            <div className="p-4">
+                <Suspense fallback={null}>
+                    <MangaComments id={id} target="chapter" />
+                </Suspense>
             </div>
-        </PageWrapper>
+        </div>
     );
 }
 

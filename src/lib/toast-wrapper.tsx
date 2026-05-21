@@ -1,5 +1,3 @@
-"use client";
-
 import { toast } from "sonner";
 import { useWebHaptics } from "web-haptics/react";
 import { getSetting } from "./settings";

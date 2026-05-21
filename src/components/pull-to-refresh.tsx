@@ -1,5 +1,3 @@
-"use client";
-
 import { useDevice } from "@/contexts/device-context";
 import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { cn } from "@/lib/utils";

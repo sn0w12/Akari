@@ -1,3 +1,9 @@
+import {
+    buildImageUrlWithQuality,
+    buildSizes,
+    buildSrcSet,
+    type SizesConfig,
+} from "@/components/image";
 import { inDevelopment, inPreview } from "@/config";
 import { env } from "@/lib/env";
 
@@ -90,6 +96,12 @@ type OpenGraphType =
 export interface HeadData {
     meta: Record<string, string>[];
     links?: Record<string, string>[];
+}
+
+interface ImagePreloadOptions {
+    src: string;
+    sizes: SizesConfig;
+    quality?: number;
 }
 
 interface MetadataOptions {
@@ -204,4 +216,19 @@ export function createMetadata(options: MetadataOptions): HeadData {
     }
 
     return { meta, links };
+}
+
+export function createImagePreloadLink({
+    src,
+    sizes,
+    quality,
+}: ImagePreloadOptions): Record<string, string> {
+    return {
+        rel: "preload",
+        as: "image",
+        fetchPriority: "high",
+        href: buildImageUrlWithQuality(src, quality),
+        imageSrcSet: buildSrcSet(src, quality),
+        imageSizes: buildSizes(sizes),
+    };
 }

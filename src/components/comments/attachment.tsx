@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { StorageManager } from "@/lib/storage";
 import { useEffect, useState } from "react";

@@ -1,7 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { GridSortSelect } from "@/components/grid/grid-sort";
 import { MangaGrid } from "@/components/manga/manga-grid";
-import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
@@ -32,13 +31,18 @@ const getPopularData = createServerFn({ method: "GET" })
     });
 
 export const Route = createFileRoute("/_default/popular/")({
-    validateSearch: (search: Record<string, string | undefined>) => ({
-        days: search.days ?? "30",
-        page: Number(search.page) || 1,
-    }),
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): { days?: string; page?: number } => {
+        const page = Number(search.page);
+        return {
+            ...(search.days ? { days: search.days } : {}),
+            ...(Number.isFinite(page) && page > 0 ? { page } : {}),
+        };
+    },
     loaderDeps: ({ search }) => ({
         days: Number(search.days) || 30,
-        page: Number(search.page) || 1,
+        page: search.page ?? 1,
     }),
     loader: async ({ deps }) =>
         getPopularData({ data: { page: deps.page, days: deps.days } }),
@@ -70,7 +74,7 @@ export const Route = createFileRoute("/_default/popular/")({
 
 function Popular() {
     const { data, error } = Route.useLoaderData();
-    const { days, page: currentPage } = Route.useSearch();
+    const { days = "30", page: currentPage = 1 } = Route.useSearch();
 
     const sorting = {
         currentSort: { key: "days", value: days ?? "30" },
@@ -90,11 +94,9 @@ function Popular() {
 
     if (error || !data) {
         return (
-            <PageWrapper>
-                <div className="flex-1 px-4 pt-2 pb-4">
-                    <ErrorPage error={error} />
-                </div>
-            </PageWrapper>
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <ErrorPage error={error} />
+            </div>
         );
     }
 
@@ -139,29 +141,27 @@ function Popular() {
     });
 
     return (
-        <PageWrapper>
-            <div className="flex-1 px-4 pt-2 pb-4">
-                <div className="flex gap-4">
-                    <h2 className="text-3xl font-bold mb-2">Popular</h2>
-                    <div className="ml-auto">
-                        <GridSortSelect sorting={sorting} />
-                    </div>
+        <div className="flex-1 px-4 pt-2 pb-4">
+            <div className="flex gap-4">
+                <h2 className="text-3xl font-bold mb-2">Popular</h2>
+                <div className="ml-auto">
+                    <GridSortSelect sorting={sorting} />
                 </div>
-
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                    }}
-                />
-                <MangaGrid mangaList={data.data.items} priority={4} />
-                <ServerPagination
-                    currentPage={data.data.currentPage}
-                    totalPages={data.data.totalPages}
-                    className="mt-4"
-                    href="/popular"
-                />
             </div>
-        </PageWrapper>
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+                }}
+            />
+            <MangaGrid mangaList={data.data.items} priority={4} />
+            <ServerPagination
+                currentPage={data.data.currentPage}
+                totalPages={data.data.totalPages}
+                className="mt-4"
+                href="/popular"
+            />
+        </div>
     );
 }

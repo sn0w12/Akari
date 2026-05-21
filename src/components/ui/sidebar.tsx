@@ -1,5 +1,3 @@
-"use client";
-
 import { VariantProps, cva } from "class-variance-authority";
 import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
@@ -23,8 +21,8 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Drawer, DrawerContent } from "./drawer";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";

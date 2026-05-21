@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@/components/image";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
@@ -30,22 +28,22 @@ export default function PageReader({
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
-    const searchParams = new URLSearchParams(
-        useRouterState({ select: (s) => s.location.search }),
-    );
+    const searchParams = useRouterState({ select: (s) => s.location.search });
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
     const windowWidth = useWindowWidth();
     const [currentPage, setCurrentPage] = useState(() => {
-        const pageParam = searchParams.get("page");
+        const pageParam = searchParams.page;
         if (!chapter) return 0;
+        if (!pageParam) return 0;
         if (pageParam === "last") return chapter.images.length - 1;
-        const pageNumber = parseInt(pageParam || "1", 10);
-        return isNaN(pageNumber) ||
-            pageNumber < 1 ||
-            pageNumber > chapter.images.length
+        if (typeof pageParam === "string") return 0;
+
+        return isNaN(pageParam) ||
+            pageParam < 1 ||
+            pageParam > chapter.images.length
             ? 0
-            : pageNumber - 1;
+            : pageParam - 1;
     });
     const pageHeightStyle = "var(--visible-height)";
     const bookmarkUpdatedRef = useRef(false);
@@ -202,6 +200,7 @@ export default function PageReader({
                             }}
                             width={720}
                             height={1500}
+                            quality={100}
                             sizes={{ default: "100vw" }}
                         />
                     )}

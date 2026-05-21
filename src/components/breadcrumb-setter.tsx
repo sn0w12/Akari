@@ -1,7 +1,5 @@
-"use client";
-
-import { useEffect } from "react";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useEffect } from "react";
 
 interface BreadcrumbSetterProps {
     orig: string;

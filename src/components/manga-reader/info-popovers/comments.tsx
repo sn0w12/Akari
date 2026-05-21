@@ -1,5 +1,3 @@
-"use client";
-
 import { ButtonLink } from "@/components/ui/button-link";
 import { MessageCircle } from "lucide-react";
 import { Button } from "../../ui/button";

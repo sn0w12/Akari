@@ -1,5 +1,3 @@
-"use client";
-
 import type { CommentData, VoteType } from "@/components/comments/comment";
 import { CommentList } from "@/components/comments/comment-list";
 import { useUser } from "@/hooks/use-user";

@@ -1,6 +1,4 @@
 /* eslint-disable custom/no-localstorage */
-"use client";
-
 import { APP_SETTINGS } from "@/config";
 import { DeviceType } from "@/contexts/device-context";
 import {

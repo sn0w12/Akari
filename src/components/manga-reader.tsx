@@ -1,5 +1,3 @@
-"use client";
-
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";

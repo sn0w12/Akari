@@ -1,5 +1,3 @@
-"use client";
-
 import { ListSelector } from "../list/list-selector";
 import BookmarkButton from "./bookmark-button";
 

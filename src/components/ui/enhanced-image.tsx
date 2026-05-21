@@ -1,13 +1,11 @@
-"use client";
-
+import { useSetting } from "@/lib/settings";
 import React, {
-    useState,
-    useRef,
     CSSProperties,
     type JSX,
     useEffect,
+    useRef,
+    useState,
 } from "react";
-import { useSetting } from "@/lib/settings";
 
 type HoverEffect =
     | "none"
@@ -22,7 +20,10 @@ type HoverEffect =
     | "neon"
     | "dynamic-tilt";
 
-interface EnhancedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "className"> {
+interface EnhancedImageProps extends Omit<
+    React.ImgHTMLAttributes<HTMLImageElement>,
+    "className"
+> {
     hoverEffect: HoverEffect;
     className?: string;
 }

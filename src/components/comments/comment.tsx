@@ -1,5 +1,3 @@
-"use client";
-
 import { CommentForm } from "@/components/comments/comment-form";
 import { CommentMenu } from "@/components/comments/comment-menu";
 import { ReportCommentDialog } from "@/components/comments/report";
@@ -8,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useConfirm } from "@/contexts/confirm-context";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import {
     ChevronDown,
     ChevronUp,
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { CommentAttachment } from "./attachment";

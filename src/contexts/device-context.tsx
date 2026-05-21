@@ -1,12 +1,10 @@
-"use client";
-
 import { parseUserAgent } from "@/lib/ua";
 import {
     createContext,
+    ReactNode,
     useContext,
     useEffect,
     useState,
-    ReactNode,
 } from "react";
 
 export type DeviceType = "mobile" | "tablet" | "desktop" | undefined;

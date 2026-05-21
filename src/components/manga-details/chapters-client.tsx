@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/hooks/use-user";
@@ -7,8 +5,8 @@ import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import Toast from "@/lib/toast-wrapper";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpDown } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { ArrowUpDown } from "lucide-react";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
@@ -90,7 +88,11 @@ function ChaptersControls({
                 ) : (
                     <ButtonLink
                         to="/manga/$id/$scanlator/$subId"
-                        params={{ id: mangaId, scanlator: String(scanlatorId), subId: String(firstChapterNumber) }}
+                        params={{
+                            id: mangaId,
+                            scanlator: String(scanlatorId),
+                            subId: String(firstChapterNumber),
+                        }}
                         className="flex-1 md:w-40"
                     >
                         Go to First Chapter
@@ -236,7 +238,11 @@ export function ChaptersSection({
                 {currentChapters?.map((chapter) => (
                     <Link
                         to="/manga/$id/$scanlator/$subId"
-                        params={{ id: mangaId, scanlator: String(chapter.scanlatorId), subId: String(chapter.number) }}
+                        params={{
+                            id: mangaId,
+                            scanlator: String(chapter.scanlatorId),
+                            subId: String(chapter.number),
+                        }}
                         key={chapter.id}
                         id={chapter.id}
                     >

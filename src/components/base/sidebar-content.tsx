@@ -1,5 +1,3 @@
-"use client";
-
 import {
     SidebarContent,
     SidebarFooter,
@@ -50,10 +48,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <Separator className="hidden md:block" />
 
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink
-                            tooltip="Home"
-                            to="/"
-                        >
+                        <SidebarMenuLink tooltip="Home" to="/">
                             <HomeIcon />
                             <span>Home</span>
                         </SidebarMenuLink>
@@ -77,19 +72,13 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                         </SidebarMenuLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink
-                            tooltip="Popular"
-                            to="/popular"
-                        >
+                        <SidebarMenuLink tooltip="Popular" to="/popular">
                             <TrendingUp />
                             <span>Popular</span>
                         </SidebarMenuLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink
-                            tooltip="Search"
-                            to="/search"
-                        >
+                        <SidebarMenuLink tooltip="Search" to="/search">
                             <Search />
                             <span>Search</span>
                         </SidebarMenuLink>
@@ -118,10 +107,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
             <SidebarFooter className="mb-[var(--safe-bottom)] md:mb-0">
                 <Separator />
                 <SidebarMenuItem>
-                    <SidebarMenuLink
-                        tooltip="Settings"
-                        to="/settings"
-                    >
+                    <SidebarMenuLink tooltip="Settings" to="/settings">
                         <SettingsIcon />
                         <span>Settings</span>
                         <KeyboardShortcut

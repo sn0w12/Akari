@@ -1,13 +1,11 @@
-"use client";
-
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut } from "lucide-react";
 import { Link, useRouter } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
@@ -31,10 +29,7 @@ export function UserProfile({
                     <Avatar name={user.username} size={64} />
 
                     <div>
-                        <Link
-                            to="/user/$id"
-                            params={{ id: user.userId }}
-                        >
+                        <Link to="/user/$id" params={{ id: user.userId }}>
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}
                             </h2>

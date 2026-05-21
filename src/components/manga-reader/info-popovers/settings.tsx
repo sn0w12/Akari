@@ -1,5 +1,3 @@
-"use client";
-
 import { useSettings } from "@/hooks/use-settings";
 import { createSettingsMap } from "@/lib/settings";
 import { Settings } from "lucide-react";

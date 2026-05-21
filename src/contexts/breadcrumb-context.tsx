@@ -1,6 +1,4 @@
-"use client";
-
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 interface BreadcrumbContextType {
     overrides: Record<string, string>;

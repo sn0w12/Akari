@@ -6,11 +6,10 @@ import { RemotePrompts } from "@/components/home/remote-prompts";
 import { MangaCard } from "@/components/manga/manga-card";
 import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
-import { PageWrapper } from "@/components/page-wrapper";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
-import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { client, serverHeaders } from "@/lib/api";
+import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { env } from "@/lib/env";
 import { createMetadata } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
@@ -142,48 +141,44 @@ function Home() {
                     }).replace(/</g, "\\u003c"),
                 }}
             />
-            <PageWrapper>
-                <div className="flex-1 px-4 pt-2 pb-4">
-                    <div>
-                        <h2 className="text-3xl font-bold mb-2">
-                            Popular Manga
-                        </h2>
-                        {popular ? <PopularManga manga={popular} /> : null}
-                    </div>
-
-                    <Suspense
-                        fallback={
-                            <>
-                                <h2 className="text-3xl font-bold mb-2">
-                                    Recently Viewed
-                                </h2>
-                                <div className={GRID_CLASS}>
-                                    {[...Array(8)].map((_, index) => (
-                                        <MangaCardSkeleton
-                                            key={`recent-skeleton-${index}`}
-                                        />
-                                    ))}
-                                </div>
-                            </>
-                        }
-                    >
-                        <HomeRecent />
-                    </Suspense>
-
-                    <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-                    {latest ? (
-                        <>
-                            <MangaGrid mangaList={latest.items} priority={2} />
-                            <ServerPagination
-                                currentPage={1}
-                                href="/latest"
-                                totalPages={latest.totalPages}
-                                className="mt-4"
-                            />
-                        </>
-                    ) : null}
+            <div className="flex-1 px-4 pt-2 pb-4">
+                <div>
+                    <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
+                    {popular ? <PopularManga manga={popular} /> : null}
                 </div>
-            </PageWrapper>
+
+                <Suspense
+                    fallback={
+                        <>
+                            <h2 className="text-3xl font-bold mb-2">
+                                Recently Viewed
+                            </h2>
+                            <div className={GRID_CLASS}>
+                                {[...Array(8)].map((_, index) => (
+                                    <MangaCardSkeleton
+                                        key={`recent-skeleton-${index}`}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    }
+                >
+                    <HomeRecent />
+                </Suspense>
+
+                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                {latest ? (
+                    <>
+                        <MangaGrid mangaList={latest.items} priority={2} />
+                        <ServerPagination
+                            currentPage={1}
+                            href="/latest"
+                            totalPages={latest.totalPages}
+                            className="mt-4"
+                        />
+                    </>
+                ) : null}
+            </div>
             <PromptStack>
                 <InstallPrompt />
                 <NotificationPrompt />

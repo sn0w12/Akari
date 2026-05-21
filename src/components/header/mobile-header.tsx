@@ -1,7 +1,6 @@
-"use client";
-
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useUser } from "@/hooks/use-user";
+import { useRouterState } from "@tanstack/react-router";
 import {
     BookmarkIcon,
     HomeIcon,
@@ -10,7 +9,6 @@ import {
     TrendingUp,
     User,
 } from "lucide-react";
-import { useRouterState } from "@tanstack/react-router";
 import { useSidebar } from "../ui/sidebar";
 import { TabBar, TabBarList, TabBarTrigger } from "../ui/tab-bar";
 

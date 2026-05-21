@@ -1,4 +1,3 @@
-import { PageWrapper } from "@/components/page-wrapper";
 import SearchPage from "@/components/search";
 import SearchPageSkeleton from "@/components/search/skeleton";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
@@ -17,20 +16,16 @@ export const Route = createFileRoute("/_default/search/")({
     },
     component: Search,
     headers: () => ({
-        "Cache-Control": new ResponseCacheControlBuilder()
-            .noCache()
-            .build(),
+        "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
     }),
 });
 
 function Search() {
     return (
-        <PageWrapper>
-            <div className="flex-1">
-                <Suspense fallback={<SearchPageSkeleton />}>
-                    <SearchPage />
-                </Suspense>
-            </div>
-        </PageWrapper>
+        <div className="flex-1">
+            <Suspense fallback={<SearchPageSkeleton />}>
+                <SearchPage />
+            </Suspense>
+        </div>
     );
 }
