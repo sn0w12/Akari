@@ -6,7 +6,7 @@ import {
     removeBookmark,
 } from "@/lib/manga/bookmarks";
 import { useSetting } from "@/lib/settings";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
@@ -50,7 +50,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             }
             await refetch();
             queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-            new Toast("Manga bookmarked", "success");
+            toastManager.add({ title: "Manga bookmarked", type: "success" });
         } catch (error) {
             console.error("Failed to bookmark:", error);
         } finally {
@@ -73,7 +73,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             setIsLoading(false);
         }
 
-        new Toast("Bookmark removed", "success");
+        toastManager.add({ title: "Bookmark removed", type: "success" });
         return true;
     };
 
@@ -126,10 +126,10 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         );
 
     const buttonClass = cn(
-        `w-full xl:flex-1 relative overflow-hidden text-primary ${
+        `w-full xl:flex-1 relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
             isBookmarked
                 ? "bg-accent-positive hover:bg-negative"
-                : "bg-background border hover:border-accent-positive hover:bg-accent-positive"
+                : "bg-background hover:bg-accent-positive"
         }`,
         className,
     );
@@ -137,7 +137,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const button = (
         <Button
             aria-label={isBookmarked ? "Remove Bookmark" : "Bookmark"}
-            variant={"default"}
+            variant={"ghost"}
             size="lg"
             className={buttonClass}
             disabled={!user || isBookmarked === undefined}

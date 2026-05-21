@@ -1,20 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { DrawerConfirm } from "@/components/ui/confirm";
+import { Drawer, DrawerPopup, DrawerTrigger } from "@/components/ui/drawer";
 import {
-    DrawerContent,
-    DrawerNested,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
-import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "@/components/ui/popover-drawer";
+    ResponsiveModal,
+    ResponsiveModalDialogOnly,
+    ResponsiveModalDrawerOnly,
+    ResponsiveModalHeader,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+    ResponsiveModalTrigger,
+} from "@/components/ui/responsive-modal";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { removeBookmark } from "@/lib/manga/bookmarks";
 import { syncAllServices } from "@/lib/manga/sync";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 
@@ -44,11 +45,11 @@ export function ConfirmDialogs({
         setOpen(false);
 
         if (!data) {
-            new Toast("Failed to remove bookmark", "error");
+            toastManager.add({ title: "Failed to remove bookmark", type: "error" });
             return false;
         }
 
-        new Toast("Bookmark removed successfully", "success");
+        toastManager.add({ title: "Bookmark removed successfully", type: "success" });
         return true;
     }
 
@@ -88,7 +89,7 @@ export function ConfirmDialogs({
         });
 
         if (error) {
-            new Toast("Failed to update bookmark", "error");
+            toastManager.add({ title: "Failed to update bookmark", type: "error" });
             setOpen(false);
             return false;
         }
@@ -96,57 +97,68 @@ export function ConfirmDialogs({
         const success = await syncAllServices(data.data);
         setOpen(false);
         if (!success) {
-            new Toast("Failed to sync manga services", "error");
+            toastManager.add({ title: "Failed to sync manga services", type: "error" });
             return false;
         }
 
-        new Toast("Bookmark updated successfully", "success");
+        toastManager.add({ title: "Bookmark updated successfully", type: "success" });
         return true;
     }
 
     return (
-        <PopoverDrawer open={open} onOpenChange={setOpen}>
-            <PopoverDrawerTrigger>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="size-8 self-start"
-                >
-                    <EllipsisVertical />
-                </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent type="drawer" drawerTitle={bookmark.title}>
-                <BookmarkDrawerContent
-                    bookmark={bookmark}
-                    updateBookmark={handleUpdateBookmark}
-                    removeBookmark={handleRemoveBookmark}
-                />
-            </PopoverDrawerContent>
-            <PopoverDrawerContent type="popover" popoverClassName="p-2">
-                <div className="flex flex-col gap-2">
+        <ResponsiveModal desktop="popover" open={open} onOpenChange={setOpen}>
+            <ResponsiveModalTrigger
+                render={
                     <Button
-                        onClick={() =>
-                            handleUpdateBookmark(
-                                bookmark.mangaId,
-                                bookmark.latestChapter.number,
-                                bookmark.latestChapter.scanlatorId,
-                            )
-                        }
-                        variant="ghost"
-                        className="bg-accent-positive border border-accent-positive text-accent hover:text-accent-positive focus:outline-none"
+                        variant="outline"
+                        size="icon-sm"
+                        className="size-8 self-start"
                     >
-                        Mark as Read
+                        <EllipsisVertical />
                     </Button>
-                    <Button
-                        onClick={() => handleRemoveBookmark(bookmark.mangaId)}
-                        variant="ghost"
-                        className="bg-destructive border border-negative text-accent hover:text-negative focus:outline-none"
-                    >
-                        Remove Bookmark
-                    </Button>
-                </div>
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+                }
+            />
+            <ResponsiveModalPopup align="end">
+                <ResponsiveModalDrawerOnly>
+                    <ResponsiveModalHeader>
+                        <ResponsiveModalTitle>
+                            {bookmark.title}
+                        </ResponsiveModalTitle>
+                    </ResponsiveModalHeader>
+                    <ResponsiveModalPanel>
+                        <BookmarkDrawerContent
+                            bookmark={bookmark}
+                            updateBookmark={handleUpdateBookmark}
+                            removeBookmark={handleRemoveBookmark}
+                        />
+                    </ResponsiveModalPanel>
+                </ResponsiveModalDrawerOnly>
+                <ResponsiveModalDialogOnly>
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            onClick={() =>
+                                handleUpdateBookmark(
+                                    bookmark.mangaId,
+                                    bookmark.latestChapter.number,
+                                    bookmark.latestChapter.scanlatorId,
+                                )
+                            }
+                            variant="success"
+                        >
+                            Mark as Read
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                handleRemoveBookmark(bookmark.mangaId)
+                            }
+                            variant="destructive"
+                        >
+                            Remove Bookmark
+                        </Button>
+                    </div>
+                </ResponsiveModalDialogOnly>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }
 
@@ -169,11 +181,11 @@ function BookmarkDrawerContent({
 
     return (
         <div className="flex flex-col gap-2">
-            <DrawerNested open={updateOpen} onOpenChange={setUpdateOpen}>
-                <DrawerTrigger asChild>
-                    <Button className="bg-accent-positive">Mark as Read</Button>
+            <Drawer open={updateOpen} onOpenChange={setUpdateOpen}>
+                <DrawerTrigger render={<Button variant="success" />}>
+                    Mark as Read
                 </DrawerTrigger>
-                <DrawerContent>
+                <DrawerPopup>
                     <DrawerConfirm
                         title="Mark as Read"
                         description="Are you sure?"
@@ -188,13 +200,13 @@ function BookmarkDrawerContent({
                             setUpdateOpen(false);
                         }}
                     />
-                </DrawerContent>
-            </DrawerNested>
-            <DrawerNested open={removeOpen} onOpenChange={setRemoveOpen}>
-                <DrawerTrigger asChild>
-                    <Button className="bg-destructive">Remove Bookmark</Button>
+                </DrawerPopup>
+            </Drawer>
+            <Drawer open={removeOpen} onOpenChange={setRemoveOpen}>
+                <DrawerTrigger render={<Button variant="destructive" />}>
+                    Remove Bookmark
                 </DrawerTrigger>
-                <DrawerContent>
+                <DrawerPopup>
                     <DrawerConfirm
                         title="Remove Bookmark"
                         description="Are you sure?"
@@ -205,8 +217,8 @@ function BookmarkDrawerContent({
                             setRemoveOpen(false);
                         }}
                     />
-                </DrawerContent>
-            </DrawerNested>
+                </DrawerPopup>
+            </Drawer>
         </div>
     );
 }

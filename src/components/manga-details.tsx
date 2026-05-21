@@ -1,45 +1,33 @@
 import { Image, type SizesConfig } from "@/components/image";
-import { Badge, BadgeVariantProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
+    Popover,
+    PopoverContent,
+    PopoverTitle,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { createJsonLd } from "@/lib/seo";
 import { formatNumberShort, pluralize } from "@/lib/utils";
 import type { components } from "@/types/api";
 import { Link } from "@tanstack/react-router";
-import { InfoIcon } from "lucide-react";
-import { Suspense } from "react";
+import { LanguagesIcon } from "lucide-react";
 import { ComicSeries, Person } from "schema-dts";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
+import { GenreBadge } from "./manga-details/badges/genre";
+import { StatusBadge } from "./manga-details/badges/status";
 import Buttons from "./manga-details/buttons";
 import { ScoreDisplay } from "./manga-details/score/score-display";
-import {
-    MangaUpdatedAt,
-    MangaUpdatedAtFallback,
-} from "./manga-details/updated-at";
+import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
+import { Separator } from "./ui/separator";
 
 export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
     default: "200px",
     sm: 128,
     lg: 400,
 } satisfies SizesConfig;
-
-const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
-    switch (status.toLowerCase()) {
-        case "ongoing":
-            return "positive";
-        case "completed":
-            return "info";
-        case "hiatus":
-            return "warning";
-        default:
-            return "default";
-    }
-};
 
 const getViewsColor = (views: number): string => {
     if (views < 100) return "bg-[#ffc659] hover:bg-[#ffc659] text-black";
@@ -159,31 +147,49 @@ export function MangaDetailsComponent({
                                 {manga.title}
                             </h1>
                             {alternativeTitles.length > 0 && (
-                                <Tooltip>
-                                    <TooltipTrigger
-                                        className="hidden lg:block"
-                                        aria-label="Alternative Names"
+                                <Popover>
+                                    <PopoverTrigger
+                                        render={
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                aria-label={`Alternative titles (${alternativeTitles.length})`}
+                                                className="relative shrink-0"
+                                            >
+                                                <LanguagesIcon className="w-4 h-4" />
+                                                <Badge
+                                                    size="sm"
+                                                    className="absolute -top-1 -right-1"
+                                                >
+                                                    {alternativeTitles.length}
+                                                </Badge>
+                                            </Button>
+                                        }
+                                    />
+                                    <PopoverContent
+                                        side="bottom"
+                                        align="start"
+                                        className="w-auto max-w-80"
                                     >
-                                        <InfoIcon className="w-5 h-5" />
-                                    </TooltipTrigger>
-                                    <TooltipContent side="bottom">
-                                        <div className="flex flex-col gap-1 max-w-96 w-auto">
-                                            {alternativeTitles.map(
-                                                (
-                                                    mangaName: string,
-                                                    index: number,
-                                                ) => (
-                                                    <p
-                                                        className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
-                                                        key={index}
-                                                    >
-                                                        {mangaName}
-                                                    </p>
-                                                ),
-                                            )}
-                                        </div>
-                                    </TooltipContent>
-                                </Tooltip>
+                                        <PopoverTitle>
+                                            Also known as
+                                        </PopoverTitle>
+                                        <Separator className="mt-1" />
+                                        {alternativeTitles.map(
+                                            (
+                                                mangaName: string,
+                                                index: number,
+                                            ) => (
+                                                <p
+                                                    className="text-sm text-muted-foreground py-0.5"
+                                                    key={`alt-title-${index}-${mangaName}`}
+                                                >
+                                                    {mangaName}
+                                                </p>
+                                            ),
+                                        )}
+                                    </PopoverContent>
+                                </Popover>
                             )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row lg:gap-0">
@@ -210,26 +216,25 @@ export function MangaDetailsComponent({
                                     <div className="flex flex-wrap gap-2">
                                         {manga.authors.map(
                                             (author: string, index: number) => (
-                                                <Link
-                                                    to="/author/$id"
-                                                    params={{
-                                                        id: encodeURIComponent(
-                                                            author.replaceAll(
-                                                                " ",
-                                                                "-",
-                                                            ),
-                                                        ),
-                                                    }}
-                                                    key={index}
+                                                <Badge
+                                                    variant="default"
+                                                    render={
+                                                        <Link
+                                                            to="/author/$id"
+                                                            params={{
+                                                                id: encodeURIComponent(
+                                                                    author.replaceAll(
+                                                                        " ",
+                                                                        "-",
+                                                                    ),
+                                                                ),
+                                                            }}
+                                                            key={`author-${index}-${author}`}
+                                                        />
+                                                    }
                                                 >
-                                                    <Badge
-                                                        withShadow={true}
-                                                        className="bg-primary text-secondary hover:bg-gray-300 hover:text-primary dark:hover:text-secondary"
-                                                        shadowClassName="mt-[4px]"
-                                                    >
-                                                        {author}
-                                                    </Badge>
-                                                </Link>
+                                                    {author}
+                                                </Badge>
                                             ),
                                         )}
                                     </div>
@@ -238,24 +243,15 @@ export function MangaDetailsComponent({
                                     <div className="text-lg font-semibold">
                                         Status:
                                     </div>
-                                    <Badge
-                                        variant={getStatusVariant(manga.status)}
-                                    >
-                                        {manga.status.charAt(0).toUpperCase() +
-                                            manga.status.slice(1)}
-                                    </Badge>
+                                    <StatusBadge status={manga.status} />
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
                                         Updated:
                                     </div>
-                                    <Suspense
-                                        fallback={<MangaUpdatedAtFallback />}
-                                    >
-                                        <MangaUpdatedAt
-                                            updatedAt={manga.updatedAt}
-                                        />
-                                    </Suspense>
+                                    <MangaUpdatedAt
+                                        updatedAt={manga.updatedAt}
+                                    />
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
@@ -275,27 +271,10 @@ export function MangaDetailsComponent({
                                     </h2>
                                     <div className="flex flex-wrap gap-2 overflow-y-visible md:max-h-24 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
                                         {manga.genres.map((genre: string) => (
-                                            <Link
+                                            <GenreBadge
                                                 key={genre}
-                                                to="/genre/$id"
-                                                params={{
-                                                    id: encodeURIComponent(
-                                                        genre.replaceAll(
-                                                            " ",
-                                                            "-",
-                                                        ),
-                                                    ),
-                                                }}
-                                            >
-                                                <Badge
-                                                    variant="secondary"
-                                                    withShadow={true}
-                                                    className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
-                                                    shadowClassName="mt-[3px]"
-                                                >
-                                                    {genre}
-                                                </Badge>
-                                            </Link>
+                                                genre={genre}
+                                            />
                                         ))}
                                     </div>
                                 </div>

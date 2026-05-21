@@ -6,8 +6,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@tanstack/react-router";
@@ -17,13 +18,12 @@ export function UpdatePasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
-    const handleForgotPassword = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleUpdatePassword = async (values: Record<string, unknown>) => {
+        const password = values.password as string;
         const supabase = createClient();
         setIsLoading(true);
         setError(null);
@@ -53,21 +53,17 @@ export function UpdatePasswordForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleForgotPassword}>
+                    <Form onFormSubmit={handleUpdatePassword}>
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
+                            <Field name="password">
+                                <FieldLabel>New password</FieldLabel>
                                 <Input
-                                    id="password"
                                     type="password"
                                     placeholder="New password"
                                     required
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
                                 />
-                            </div>
+                                <FieldError />
+                            </Field>
                             {error && (
                                 <p className="text-sm text-red-500">{error}</p>
                             )}
@@ -79,7 +75,7 @@ export function UpdatePasswordForm({
                                 {isLoading ? "Saving..." : "Save new password"}
                             </Button>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

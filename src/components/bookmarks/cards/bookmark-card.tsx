@@ -2,7 +2,8 @@ import { Image } from "@/components/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-import { Card } from "@/components/ui/card";
+import { Card, CardPanel } from "@/components/ui/card";
+import { ButtonGroup } from "@/components/ui/group";
 import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -16,8 +17,8 @@ interface BookmarkCardProps {
 
 export function BookmarkCard({ bookmark }: BookmarkCardProps) {
     return (
-        <Card className="overflow-hidden p-0 rounded-lg">
-            <div className="flex flex-col gap-2 p-4">
+        <Card>
+            <CardPanel className="flex flex-col gap-2">
                 <div className="flex gap-2">
                     {/* Cover Image */}
                     <div className="w-20 lg:w-30 h-full mb-0 shrink-0">
@@ -34,7 +35,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                                 alt={bookmark.title}
                                 height={180}
                                 width={120}
-                                className="w-full h-auto object-cover rounded-sm"
+                                className="w-full h-auto object-cover rounded-lg"
                                 sizes={{ default: "120px" }}
                                 quality={40}
                             />
@@ -76,7 +77,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                     </div>
                 </div>
                 <ActionButton bookmark={bookmark} className="md:hidden" />
-            </div>
+            </CardPanel>
         </Card>
     );
 }
@@ -106,60 +107,58 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
     const shouldReadLatest = bookmark.chaptersBehind === 1;
 
     return (
-        <div className={cn("flex items-center gap-2 w-full", className)}>
-            <div className="w-full">
-                {isCaughtUp ? (
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 w-full bg-transparent"
-                        disabled
-                        {...handlers}
-                        style={style}
+        <ButtonGroup className={cn("w-full", className)}>
+            {isCaughtUp ? (
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1 w-full"
+                    disabled
+                    {...handlers}
+                    style={style}
+                >
+                    All caught up!
+                </Button>
+            ) : shouldReadLatest ? (
+                <ButtonLink
+                    to="/manga/$id/$scanlator/$subId"
+                    params={{
+                        // @ts-expect-error - Thinks id is invalid for unknown reason
+                        id: bookmark.mangaId,
+                        scanlator: String(bookmark.latestChapter.scanlatorId),
+                        subId: String(bookmark.latestChapter.number),
+                    }}
+                    size="sm"
+                    className="flex-1 w-full"
+                    {...handlers}
+                >
+                    <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
+                    {bookmark.latestChapter.number}
+                </ButtonLink>
+            ) : (
+                <ButtonLink
+                    to="/manga/$id/$scanlator/$subId"
+                    params={{
+                        // @ts-expect-error - Thinks id is invalid for unknown reason
+                        id: bookmark.mangaId,
+                        scanlator: String(bookmark.nextChapter.scanlatorId),
+                        subId: String(bookmark.nextChapter.number),
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 w-full group"
+                    {...handlers}
+                >
+                    <p className="hidden md:inline">Continue Reading • </p>
+                    Ch. {bookmark.nextChapter.number}
+                    <Badge
+                        variant="default"
+                        className="ml-1.5 text-xs group-hover:bg-primary/80"
                     >
-                        All caught up!
-                    </Button>
-                ) : shouldReadLatest ? (
-                    <ButtonLink
-                        to="/manga/$id/$scanlator/$subId"
-                        params={{
-                            id: bookmark.mangaId,
-                            scanlator: String(
-                                bookmark.latestChapter.scanlatorId,
-                            ),
-                            subId: String(bookmark.latestChapter.number),
-                        }}
-                        size="sm"
-                        className="flex-1 w-full"
-                        {...handlers}
-                    >
-                        <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
-                        {bookmark.latestChapter.number}
-                    </ButtonLink>
-                ) : (
-                    <ButtonLink
-                        to="/manga/$id/$scanlator/$subId"
-                        params={{
-                            id: bookmark.mangaId,
-                            scanlator: String(bookmark.nextChapter.scanlatorId),
-                            subId: String(bookmark.nextChapter.number),
-                        }}
-                        variant="secondary"
-                        size="sm"
-                        className="flex-1 w-full group"
-                        {...handlers}
-                    >
-                        <p className="hidden md:inline">Continue Reading • </p>
-                        Ch. {bookmark.nextChapter.number}
-                        <Badge
-                            variant="default"
-                            className="ml-1.5 text-xs group-hover:bg-primary/80"
-                        >
-                            {bookmark.chaptersBehind} new
-                        </Badge>
-                    </ButtonLink>
-                )}
-            </div>
+                        {bookmark.chaptersBehind} new
+                    </Badge>
+                </ButtonLink>
+            )}
             <ChaptersPopup
                 open={open}
                 setOpen={setOpen}
@@ -169,7 +168,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 estimatedChapters={Math.floor(bookmark.latestChapter.number)}
                 scanlatorId={bookmark.lastReadChapter.scanlatorId}
             />
-        </div>
+        </ButtonGroup>
     );
 }
 

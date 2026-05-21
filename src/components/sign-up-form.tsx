@@ -6,8 +6,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Fieldset } from "@/components/ui/fieldset";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -18,26 +20,25 @@ export function SignUpForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const [email, setEmail] = useState("");
-    const [userName, setUserName] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [password, setPassword] = useState("");
-    const [repeatPassword, setRepeatPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
-    const handleSignUp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+    const handleSignUp = async (values: Record<string, unknown>) => {
+        const email = values.email as string;
+        const userName = (values.username as string).toLowerCase();
+        const displayName = values.displayName as string;
+        const password = values.password as string;
+        const repeatPassword = values.repeatPassword as string;
 
         if (password !== repeatPassword) {
             setError("Passwords do not match");
-            setIsLoading(false);
             return;
         }
+
+        const supabase = createClient();
+        setIsLoading(true);
+        setError(null);
 
         try {
             const { error } = await supabase.auth.signUp({
@@ -46,7 +47,7 @@ export function SignUpForm({
                 options: {
                     emailRedirectTo: `${window.location.origin}/account`,
                     data: {
-                        username: userName.toLowerCase(),
+                        username: userName,
                         display_name: displayName,
                     },
                 },
@@ -70,77 +71,41 @@ export function SignUpForm({
                     <CardDescription>Create a new account</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSignUp}>
+                    <Form onFormSubmit={handleSignUp}>
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                            <Field name="email">
+                                <FieldLabel>Email</FieldLabel>
                                 <Input
-                                    id="email"
                                     type="email"
                                     placeholder="m@example.com"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
                                 />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    placeholder="username"
-                                    required
-                                    value={userName}
-                                    onChange={(e) =>
-                                        setUserName(
-                                            e.target.value.toLowerCase(),
-                                        )
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="display-name">
-                                    Display Name
-                                </Label>
-                                <Input
-                                    id="display-name"
-                                    placeholder="Display Name"
-                                    required
-                                    value={displayName}
-                                    onChange={(e) =>
-                                        setDisplayName(e.target.value)
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                <FieldError />
+                            </Field>
+                            <Field name="username">
+                                <FieldLabel>Username</FieldLabel>
+                                <Input placeholder="username" required />
+                                <FieldError />
+                            </Field>
+                            <Field name="displayName">
+                                <FieldLabel>Display Name</FieldLabel>
+                                <Input placeholder="Display Name" required />
+                                <FieldError />
+                            </Field>
+                            <Fieldset>
+                                <div className="flex flex-col gap-4">
+                                    <Field name="password">
+                                        <FieldLabel>Password</FieldLabel>
+                                        <Input type="password" required />
+                                        <FieldError />
+                                    </Field>
+                                    <Field name="repeatPassword">
+                                        <FieldLabel>Repeat Password</FieldLabel>
+                                        <Input type="password" required />
+                                        <FieldError />
+                                    </Field>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="repeat-password">
-                                        Repeat Password
-                                    </Label>
-                                </div>
-                                <Input
-                                    id="repeat-password"
-                                    type="password"
-                                    required
-                                    value={repeatPassword}
-                                    onChange={(e) =>
-                                        setRepeatPassword(e.target.value)
-                                    }
-                                />
-                            </div>
+                            </Fieldset>
                             {error && (
                                 <p className="text-sm text-red-500">{error}</p>
                             )}
@@ -164,7 +129,7 @@ export function SignUpForm({
                                 Login
                             </Link>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

@@ -1,10 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function useBodyScrollListener(
     callback: (element: HTMLElement) => void,
     options: AddEventListenerOptions = { passive: true },
     enabled: boolean = true,
 ) {
+    const callbackRef = useRef(callback);
+    callbackRef.current = callback;
+
+    const optionsRef = useRef(options);
+    optionsRef.current = options;
+
     useEffect(() => {
         if (!enabled) return;
         if (typeof window === "undefined") return;
@@ -21,7 +27,7 @@ export function useBodyScrollListener(
             initialMainScroll >= initialWindowScroll
                 ? mainElement
                 : document.documentElement;
-        callback(initialElement);
+        callbackRef.current(initialElement);
 
         const controller = new AbortController();
         const signal = controller.signal;
@@ -32,20 +38,20 @@ export function useBodyScrollListener(
                 mainScroll >= windowScroll
                     ? mainElement
                     : document.documentElement;
-            callback(element);
+            callbackRef.current(element);
         };
 
         mainElement.addEventListener("scroll", wrappedCallback, {
-            ...options,
+            ...optionsRef.current,
             signal,
         });
         window.addEventListener("scroll", wrappedCallback, {
-            ...options,
+            ...optionsRef.current,
             signal,
         });
 
         return () => {
             controller.abort();
         };
-    }, [callback, options, enabled]);
+    }, [enabled]);
 }

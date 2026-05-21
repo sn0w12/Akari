@@ -150,7 +150,7 @@ export function ButtonConfirmDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+            <DialogTrigger render={triggerButton as React.ReactElement} />
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>

@@ -167,16 +167,19 @@ export function useSettingsChange(
     callback: (event: CustomEvent<SettingsChangeEvent>) => void,
     watchKey?: keyof SettingsInterface,
 ) {
+    const callbackRef = React.useRef(callback);
+    callbackRef.current = callback;
+
     React.useEffect(() => {
         const handler = (event: Event) => {
             const settingsEvent = event as CustomEvent<SettingsChangeEvent>;
             if (!watchKey || settingsEvent.detail.key === watchKey) {
-                callback(settingsEvent);
+                callbackRef.current(settingsEvent);
             }
         };
         window.addEventListener(SETTINGS_CHANGE_EVENT, handler);
         return () => window.removeEventListener(SETTINGS_CHANGE_EVENT, handler);
-    }, [callback, watchKey]);
+    }, [watchKey]);
 }
 
 /**

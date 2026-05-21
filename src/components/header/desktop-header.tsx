@@ -74,17 +74,14 @@ export function DesktopHeader({ notification }: HeaderProps) {
 
     return (
         <header className={cn(`z-50 bg-sidebar border-b-0 h-10`, borderClass)}>
-            <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
+            <div className="py-1 pr-4 md:pr-6.5 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
                     <Badge
-                        variant="positive"
-                        className={cn(
-                            "text-xs font-bold px-2 h-5 dark:text-sidebar",
-                            {
-                                "ml-1": isSidebarCollapsed,
-                            },
-                        )}
+                        variant="success"
+                        className={cn("text-xs font-bold px-2 h-5", {
+                            "ml-1": isSidebarCollapsed,
+                        })}
                     >
                         {notification}
                     </Badge>
@@ -116,11 +113,9 @@ export function DesktopHeader({ notification }: HeaderProps) {
                                     <BreadcrumbItem>
                                         {index != 0 ? (
                                             <BreadcrumbLink
-                                                to={
-                                                    `/${originalSegments
-                                                        .slice(0, index + 1)
-                                                        .join("/")}` as any
-                                                }
+                                                to={`/${originalSegments
+                                                    .slice(0, index + 1)
+                                                    .join("/")}`}
                                             >
                                                 {getSegmentDisplayName(segment)}
                                             </BreadcrumbLink>

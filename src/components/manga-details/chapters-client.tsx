@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/hooks/use-user";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -12,8 +12,8 @@ import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
 import {
     Select,
-    SelectContent,
     SelectItem,
+    SelectPopup,
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
@@ -31,7 +31,7 @@ interface ChaptersControlsProps {
     sortOrder: "asc" | "desc";
     onSortChange: (order: "asc" | "desc") => void;
     scanlatorId: number;
-    scanlatorOptions: { id: number; name: string }[];
+    scanlatorOptions: { value: number; label: string }[];
     setScanlatorId: (id: number) => void;
     isLoading: boolean;
     latestData: components["schemas"]["LastReadResponse"] | undefined | null;
@@ -56,22 +56,20 @@ function ChaptersControls({
         <div className="flex gap-2 w-full flex-col md:flex-row md:w-auto pointer-events-auto">
             {scanlatorOptions.length > 1 && (
                 <Select
+                    items={scanlatorOptions}
                     onValueChange={(value) => setScanlatorId(Number(value))}
-                    value={scanlatorId.toString()}
+                    value={scanlatorId}
                 >
                     <SelectTrigger className="w-full md:w-auto">
                         <SelectValue placeholder="Select Scanlator" />
                     </SelectTrigger>
-                    <SelectContent align="center">
-                        {scanlatorOptions.map((option) => (
-                            <SelectItem
-                                key={option.id}
-                                value={option.id.toString()}
-                            >
-                                {option.name}
+                    <SelectPopup align="center">
+                        {scanlatorOptions.map(({ label, value }) => (
+                            <SelectItem key={value} value={value}>
+                                {label}
                             </SelectItem>
                         ))}
-                    </SelectContent>
+                    </SelectPopup>
                 </Select>
             )}
             <div className="flex gap-2 w-full">
@@ -89,6 +87,7 @@ function ChaptersControls({
                     <ButtonLink
                         to="/manga/$id/$scanlator/$subId"
                         params={{
+                            // @ts-expect-error - Thinks id is invalid for unknown reason
                             id: mangaId,
                             scanlator: String(scanlatorId),
                             subId: String(firstChapterNumber),
@@ -162,7 +161,7 @@ export function ChaptersSection({
 
     const navigateToLastRead = () => {
         if (!lastRead || !mangaId) {
-            new Toast("No previous reading history found", "error");
+            toastManager.add({ title: "No previous reading history found", type: "error" });
             return;
         }
         const chapterIndex = getSortedChapters(data.scanlatorId).findIndex(
@@ -170,7 +169,7 @@ export function ChaptersSection({
         );
 
         if (chapterIndex === -1 || chapterIndex === undefined) {
-            new Toast("Last read chapter not found", "error");
+            toastManager.add({ title: "Last read chapter not found", type: "error" });
             return;
         }
 
@@ -211,8 +210,8 @@ export function ChaptersSection({
             }
         });
         return Array.from(uniqueScanlators.entries()).map(([id, name]) => ({
-            id,
-            name,
+            value: id,
+            label: name,
         }));
     }, [scanlators]);
 

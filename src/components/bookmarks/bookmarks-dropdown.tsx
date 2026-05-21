@@ -14,14 +14,16 @@ interface BookmarksDropdownProps {
 export function BookmarksDropdown({ exportBookmarks }: BookmarksDropdownProps) {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="flex size-9 md:hidden"
-                >
-                    <MoreVertical className="h-4 w-4" />
-                </Button>
+            <DropdownMenuTrigger
+                render={
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="flex size-9 md:hidden"
+                    />
+                }
+            >
+                <MoreVertical className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={exportBookmarks}>

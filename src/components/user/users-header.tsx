@@ -27,11 +27,13 @@ interface UserStatProps {
 function UserStat({ icon, label, value }: UserStatProps) {
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <div className="flex flex-row items-center gap-0.5 pr-1 pl-0.5">
-                    {icon}
-                    <span>{value}</span>
-                </div>
+            <TooltipTrigger
+                render={
+                    <div className="flex flex-row items-center gap-0.5 pr-1 pl-0.5" />
+                }
+            >
+                {icon}
+                <span>{value}</span>
             </TooltipTrigger>
             <TooltipContent side="bottom">
                 <p>{label}</p>

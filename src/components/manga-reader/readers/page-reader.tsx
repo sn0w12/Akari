@@ -49,31 +49,33 @@ export default function PageReader({
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
+    const chapterRef = useRef(chapter);
+    chapterRef.current = chapter;
+    const imagesLength = chapter.images.length;
+    const nextChapter = chapter.nextChapter;
     useEffect(() => {
-        if (!chapter) return;
+        if (!chapterRef.current) return;
 
-        // Handle bookmark update
         const isHalfwayThrough =
-            currentPage >= Math.floor(chapter.images.length / 2);
+            currentPage >= Math.floor(imagesLength / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
             bookmarkUpdatedRef.current = true;
-            syncAllServices(chapter).then((success) => {
+            syncAllServices(chapterRef.current).then((success) => {
                 setBookmarkState(success);
             });
         }
 
-        // Handle prefetching next chapter
-        if (chapter.nextChapter && !hasPrefetchedRef.current) {
+        if (nextChapter && !hasPrefetchedRef.current) {
             const threshold = Math.min(
-                Math.floor(chapter.images.length * 0.75),
-                chapter.images.length - 3,
+                Math.floor(imagesLength * 0.75),
+                imagesLength - 3,
             );
 
             if (currentPage >= threshold) {
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [chapter, currentPage, router, setBookmarkState]);
+    }, [currentPage, imagesLength, nextChapter, router, setBookmarkState]);
 
     const setPageWithUrlUpdate = useCallback((newPage: number) => {
         setCurrentPage(newPage);

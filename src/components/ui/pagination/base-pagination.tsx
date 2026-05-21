@@ -27,7 +27,7 @@ export function BasePagination({
     onPrefetch,
 }: BasePaginationProps) {
     const router = useRouter();
-    const [jumpToPage, setJumpToPage] = useState(currentPage.toString());
+    const [jumpToPage, setJumpToPage] = useState(currentPage);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const visiblePages = getVisiblePages(currentPage, totalPages);
 

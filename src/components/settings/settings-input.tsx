@@ -8,7 +8,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Input, NumberInput } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -35,6 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatForDisplay, useHotkeyRecorder } from "@tanstack/react-hotkeys";
 import { Info, RotateCcw } from "lucide-react";
+import { NumberField } from "../ui/number-field";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface SettingsInputProps {
@@ -159,14 +160,13 @@ function SettingInputRenderer({
             );
         case "number": {
             return (
-                <NumberInput
+                <NumberField
                     id={settingKey}
-                    type={setting.type}
-                    value={getSettingValue(setting) as string}
-                    onChange={(e) => {
-                        setting.onChange?.(e.target.value);
+                    value={getSettingValue(setting) as number}
+                    onValueChange={(value) => {
+                        setting.onChange?.(value ?? 0);
                     }}
-                    wrapperClassName="max-w-xs mb-0"
+                    className="max-w-xs mb-0"
                 />
             );
         }
@@ -192,17 +192,19 @@ function SettingInputRenderer({
                 <Select
                     value={getSettingValue(setting) as string}
                     onValueChange={(value) => {
-                        setting.onChange?.(value);
+                        setting.onChange?.(value ?? "");
                     }}
                 >
                     <ContextMenu>
-                        <ContextMenuTrigger asChild>
-                            <SelectTrigger
-                                id={settingKey}
-                                className="w-48 mb-0"
-                            >
-                                <SelectValue placeholder={"Select an option"} />
-                            </SelectTrigger>
+                        <ContextMenuTrigger
+                            render={
+                                <SelectTrigger
+                                    id={settingKey}
+                                    className="w-48 mb-0"
+                                />
+                            }
+                        >
+                            <SelectValue placeholder={"Select an option"} />
                         </ContextMenuTrigger>
                         <ContextMenuContent>
                             <ContextMenuItem
@@ -338,7 +340,11 @@ function SettingInputRenderer({
                         step={sliderSetting.step}
                         value={[value]}
                         onValueChange={(values) => {
-                            setting.onChange?.(values[0].toString());
+                            setting.onChange?.(
+                                typeof values === "number"
+                                    ? values.toString()
+                                    : values[0].toString(),
+                            );
                         }}
                     />
                 </div>
@@ -446,9 +452,7 @@ function SettingsInputWrapper({
                 </div>
                 {setting.tooltip && (
                     <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Info className="size-4" />
-                        </TooltipTrigger>
+                        <TooltipTrigger render={<Info className="size-4" />} />
                         <TooltipContent>{setting.tooltip}</TooltipContent>
                     </Tooltip>
                 )}

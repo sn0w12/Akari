@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 
@@ -36,9 +36,9 @@ export function ListItem({ list, onDelete }: ListItemProps) {
             },
         });
         if (error) {
-            new Toast("Failed to delete list", "error");
+            toastManager.add({ title: "Failed to delete list", type: "error" });
         } else {
-            new Toast("List deleted successfully", "success");
+            toastManager.add({ title: "List deleted successfully", type: "success" });
             onDelete(listId);
         }
     }

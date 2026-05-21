@@ -6,8 +6,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -17,13 +18,12 @@ export function ForgotPasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const [email, setEmail] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleForgotPassword = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleForgotPassword = async (values: Record<string, unknown>) => {
+        const email = values.email as string;
         const supabase = createClient();
         setIsLoading(true);
         setError(null);
@@ -75,21 +75,17 @@ export function ForgotPasswordForm({
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleForgotPassword}>
+                        <Form onFormSubmit={handleForgotPassword}>
                             <div className="flex flex-col gap-6">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
+                                <Field name="email">
+                                    <FieldLabel>Email</FieldLabel>
                                     <Input
-                                        id="email"
                                         type="email"
                                         placeholder="m@example.com"
                                         required
-                                        value={email}
-                                        onChange={(e) =>
-                                            setEmail(e.target.value)
-                                        }
                                     />
-                                </div>
+                                    <FieldError />
+                                </Field>
                                 {error && (
                                     <p className="text-sm text-red-500">
                                         {error}
@@ -114,7 +110,7 @@ export function ForgotPasswordForm({
                                     Login
                                 </Link>
                             </div>
-                        </form>
+                        </Form>
                     </CardContent>
                 </Card>
             )}

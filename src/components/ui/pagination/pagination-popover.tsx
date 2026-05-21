@@ -1,19 +1,24 @@
-import type React from "react";
-
 import { Button } from "@/components/ui/button";
-import { NumberInput } from "@/components/ui/input";
 import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "../popover-drawer";
+    NumberField,
+    NumberFieldDecrement,
+    NumberFieldGroup,
+    NumberFieldIncrement,
+    NumberFieldInput,
+} from "../number-field";
+import {
+    ResponsiveModal,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTrigger,
+} from "../responsive-modal";
 
 interface JumpToPagePopoverProps {
     currentPage: number;
     totalPages: number;
     handlePageChange: (page: number) => void;
-    jumpToPage: string;
-    setJumpToPage: (value: string) => void;
+    jumpToPage: number;
+    setJumpToPage: (value: number) => void;
     isPopoverOpen: boolean;
     setIsPopoverOpen: (open: boolean) => void;
 }
@@ -28,23 +33,21 @@ export function JumpToPagePopover({
     setIsPopoverOpen,
 }: JumpToPagePopoverProps) {
     const handleJumpToPage = () => {
-        const page = Number.parseInt(jumpToPage);
+        const page = jumpToPage;
         if (page >= 1 && page <= totalPages) {
             handlePageChange(page);
             setIsPopoverOpen(false);
-            setJumpToPage(page.toString());
-        }
-    };
-
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-            handleJumpToPage();
+            setJumpToPage(page);
         }
     };
 
     return (
-        <PopoverDrawer open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverDrawerTrigger>
+        <ResponsiveModal
+            desktop="popover"
+            open={isPopoverOpen}
+            onOpenChange={setIsPopoverOpen}
+        >
+            <ResponsiveModalTrigger>
                 <Button
                     variant="default"
                     size="sm"
@@ -54,44 +57,41 @@ export function JumpToPagePopover({
                 >
                     {currentPage}
                 </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent
-                popoverClassName="w-42 p-2"
-                popoverAlign="center"
-                popoverSide="top"
-            >
-                <div className="space-y-2">
+            </ResponsiveModalTrigger>
+            <ResponsiveModalPopup dialogClassName="w-42">
+                <ResponsiveModalPanel>
                     <p className="text-xs text-muted-foreground text-center">
                         Jump to page
                     </p>
-                    <div className="flex">
-                        <NumberInput
-                            type="number"
-                            min="1"
+                    <div className="flex flex-col gap-1">
+                        <NumberField
+                            min={1}
                             max={totalPages}
                             value={jumpToPage}
-                            onChange={(e) => setJumpToPage(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            placeholder="Page"
-                            className="h-7 md:text-xs rounded-r-none"
-                            wrapperClassName="flex-1"
-                            autoFocus
-                        />
+                            onValueChange={(value) => setJumpToPage(value || 1)}
+                            size="sm"
+                            className="md:text-xs"
+                        >
+                            <NumberFieldGroup>
+                                <NumberFieldDecrement />
+                                <NumberFieldInput autoFocus />
+                                <NumberFieldIncrement />
+                            </NumberFieldGroup>
+                        </NumberField>
                         <Button
                             size="sm"
                             onClick={handleJumpToPage}
                             disabled={
                                 !jumpToPage ||
-                                Number.parseInt(jumpToPage) < 1 ||
-                                Number.parseInt(jumpToPage) > totalPages
+                                jumpToPage < 1 ||
+                                jumpToPage > totalPages
                             }
-                            className="h-7 px-2 text-xs rounded-l-none"
                         >
                             Go
                         </Button>
                     </div>
-                </div>
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+                </ResponsiveModalPanel>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }

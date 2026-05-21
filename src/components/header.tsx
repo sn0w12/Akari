@@ -2,7 +2,7 @@ import { useUser } from "@/hooks/use-user";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
 import { useSetting, useSettingsChange } from "@/lib/settings";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { DesktopHeader } from "./header/desktop-header";
@@ -29,10 +29,7 @@ export function HeaderComponent({ notification }: HeaderProps) {
             const validated = await validateSecondaryAccounts();
             for (const account of validated) {
                 if (validNotifs.includes(account.id) && !account.valid) {
-                    new Toast(`${account.name} session has expired.`, "error", {
-                        description:
-                            "You can disable this notification in settings.",
-                    });
+                    toastManager.add({ title: `${account.name} session has expired.`, type: "error", description: "You can disable this notification in settings." });
                 }
             }
         }

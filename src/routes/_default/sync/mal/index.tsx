@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -44,7 +44,7 @@ function SyncMalPage() {
             case "dropped":
                 return "destructive";
             case "plan_to_read":
-                return "shadow";
+                return "warning";
             default:
                 return "outline";
         }
@@ -150,7 +150,7 @@ function SyncMalPage() {
 
     async function syncMalToBookmarks() {
         if (malData.length === 0) {
-            new Toast("No MAL data to sync", "warning");
+            toastManager.add({ title: "No MAL data to sync", type: "warning" });
             return;
         }
 
@@ -169,19 +169,12 @@ function SyncMalPage() {
         );
 
         if (malDataToSync.length === 0) {
-            new Toast("All manga already synced", "info", {
-                description: "No new manga to sync from your MAL list",
-            });
+            toastManager.add({ title: "All manga already synced", type: "info", description: "No new manga to sync from your MAL list" });
             return;
         }
 
         const alreadySynced = malData.length - malDataToSync.length;
-        new Toast(`Starting sync of ${malDataToSync.length} manga`, "info", {
-            description:
-                alreadySynced > 0
-                    ? `Skipping ${alreadySynced} already synced manga`
-                    : undefined,
-        });
+        toastManager.add({ title: `Starting sync of ${malDataToSync.length} manga`, type: "info", description: alreadySynced > 0 ? `Skipping ${alreadySynced} already synced manga` : undefined });
 
         const batchSize = 50;
         const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
@@ -249,9 +242,7 @@ function SyncMalPage() {
         }
 
         if (updateItems.length === 0) {
-            new Toast("Sync failed", "error", {
-                description: "Could not find matching manga in database",
-            });
+            toastManager.add({ title: "Sync failed", type: "error", description: "Could not find matching manga in database" });
             return;
         }
 
@@ -274,13 +265,9 @@ function SyncMalPage() {
         }
 
         if (bookmarkErrorCount > 0 || errorCount > 0) {
-            new Toast("Sync completed with errors", "warning", {
-                description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred`,
-            });
+            toastManager.add({ title: "Sync completed with errors", type: "warning", description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred` });
         } else {
-            new Toast("Sync completed successfully", "success", {
-                description: `Successfully synced ${updateItems.length} manga to bookmarks`,
-            });
+            toastManager.add({ title: "Sync completed successfully", type: "success", description: `Successfully synced ${updateItems.length} manga to bookmarks` });
         }
     }
 

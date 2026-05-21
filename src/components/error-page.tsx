@@ -43,8 +43,7 @@ export default function ErrorPage({ error }: CustomErrorProps) {
                 },
             },
         );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [error, setError]);
 
     return null;
 }
@@ -248,11 +247,9 @@ export function ErrorComponent({ message, details, status }: ErrorData) {
                     <ArrowLeft className="size-4" />
                     Go Back
                 </Button>
-                <Button variant="ghost" size="sm" asChild>
-                    <Link to="/">
-                        <Home className="size-4" />
-                        Home
-                    </Link>
+                <Button variant="ghost" size="sm" render={<Link to="/" />}>
+                    <Home className="size-4" />
+                    Home
                 </Button>
             </div>
         </div>

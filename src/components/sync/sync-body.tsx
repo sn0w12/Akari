@@ -41,7 +41,7 @@ export function SyncBody<T>({
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-row justify-between">
+                    <div className="flex flex-row justify-between gap-2">
                         <h1 className="text-2xl font-bold mb-4">
                             {title} - {data.length} items
                         </h1>

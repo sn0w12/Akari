@@ -1,17 +1,19 @@
 import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import {
+    Command,
     CommandDialog,
+    CommandDialogPopup,
     CommandEmpty,
-    CommandGroup,
     CommandInput,
     CommandItem,
     CommandList,
+    CommandPanel,
 } from "@/components/ui/command";
 import Spinner from "@/components/ui/puff-loader";
 import { client } from "@/lib/api";
 import { getSearchResults } from "@/lib/api/search";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -56,11 +58,11 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
         });
 
         if (error) {
-            new Toast(error.data?.message || "Failed to add to list", "error");
+            toastManager.add({ title: error.data?.message || "Failed to add to list", type: "error" });
             return;
         }
 
-        new Toast("Added to list successfully", "success");
+        toastManager.add({ title: "Added to list successfully", type: "success" });
         queryClient.invalidateQueries({ queryKey: ["list", listId] });
         setOpen(false);
         setQuery("");
@@ -78,72 +80,62 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                 <Plus />
                 Add manga
             </Button>
-            <CommandDialog
-                open={open}
-                onOpenChange={setOpen}
-                title="Add manga to list"
-                description="Search and add a manga to this list."
-            >
-                <CommandInput
-                    placeholder="Search manga..."
-                    value={query}
-                    onValueChange={setQuery}
-                />
-                <CommandList data-scrollbar-custom>
-                    {isLoading ? (
-                        <div className="flex items-center justify-center py-6">
-                            <Spinner />
-                        </div>
-                    ) : (
-                        <>
-                            <CommandEmpty>
-                                {query.trim().length > 0
-                                    ? "No results"
-                                    : "Type to search"}
-                            </CommandEmpty>
-                            <CommandGroup>
-                                {searchResults.map((result) => {
-                                    const isInList = existingEntryIds.has(
-                                        result.id,
-                                    );
-                                    return (
-                                        <CommandItem
-                                            key={result.id}
-                                            value={result.title}
-                                            onSelect={() => {
-                                                if (!isInList) {
-                                                    void handleAdd(result.id);
-                                                }
-                                            }}
-                                            disabled={isInList}
-                                            className="flex items-center gap-3"
-                                        >
-                                            <Image
-                                                src={result.cover}
-                                                alt={result.title}
-                                                className="rounded-sm"
-                                                height={72}
-                                                width={48}
-                                                sizes={{ default: "48px" }}
-                                                quality={40}
-                                            />
-                                            <div className="flex flex-1 items-center justify-between gap-2">
-                                                <span className="line-clamp-1">
-                                                    {result.title}
-                                                </span>
-                                                {isInList ? (
-                                                    <span className="text-xs text-muted-foreground">
-                                                        In list
+            <CommandDialog open={open} onOpenChange={setOpen}>
+                <CommandDialogPopup aria-label="Add manga to list">
+                    <Command
+                        items={searchResults}
+                        mode="none"
+                        value={query}
+                        onValueChange={(v) => setQuery(v)}
+                    >
+                        <CommandInput placeholder="Search manga..." />
+                        <CommandPanel>
+                            {isLoading ? (
+                                <div className="flex items-center justify-center py-6">
+                                    <Spinner />
+                                </div>
+                            ) : (
+                                <>
+                                    <CommandEmpty>
+                                        {query.trim().length > 0
+                                            ? "No results"
+                                            : "Type to search"}
+                                    </CommandEmpty>
+                                    <CommandList>
+                                        {(item: components["schemas"]["MangaSearchResponse"]) => (
+                                            <CommandItem
+                                                value={item.title}
+                                                onClick={() => handleAdd(item.id)}
+                                                disabled={existingEntryIds.has(item.id)}
+                                                className="flex items-center gap-3"
+                                            >
+                                                <Image
+                                                    src={item.cover}
+                                                    alt={item.title}
+                                                    className="rounded-sm"
+                                                    height={72}
+                                                    width={48}
+                                                    sizes={{ default: "48px" }}
+                                                    quality={40}
+                                                />
+                                                <div className="flex flex-1 items-center justify-between gap-2">
+                                                    <span className="line-clamp-1">
+                                                        {item.title}
                                                     </span>
-                                                ) : null}
-                                            </div>
-                                        </CommandItem>
-                                    );
-                                })}
-                            </CommandGroup>
-                        </>
-                    )}
-                </CommandList>
+                                                    {existingEntryIds.has(item.id) && (
+                                                        <span className="text-xs text-muted-foreground">
+                                                            In list
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </CommandItem>
+                                        )}
+                                    </CommandList>
+                                </>
+                            )}
+                        </CommandPanel>
+                    </Command>
+                </CommandDialogPopup>
             </CommandDialog>
         </>
     );

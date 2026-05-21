@@ -8,9 +8,9 @@ import {
     SelectValue,
 } from "../ui/select";
 
-type CurrentSort = { key: string; value: string };
+type CurrentSort = { key: string; value: number };
 type SortSeparator = { key: "separator" };
-type SortItem = { key: string; value: string; label: string } | SortSeparator;
+type SortItem = { key: string; value: number; label: string } | SortSeparator;
 
 function isSeparator(item: SortItem): item is SortSeparator {
     return item.key === "separator";
@@ -19,29 +19,44 @@ function isSeparator(item: SortItem): item is SortSeparator {
 export interface Sorting {
     currentSort: CurrentSort;
     sortItems: SortItem[];
-    defaultSortValue?: string;
+    defaultSortValue?: number;
 }
 
 export function GridSortSelect({ sorting }: { sorting: Sorting }) {
     const router = useRouter();
 
-    const onValueChange = (value: string) => {
+    const onValueChange = (value: number | null) => {
+        if (!value) return;
         const item = sorting.sortItems.find(
             (i) => !isSeparator(i) && i.value === value,
         );
         if (!item || isSeparator(item)) return;
 
-        router.navigate({ to: `?${item.key}=${item.value}` });
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(item.key, item.value.toString());
+        const paramsString = searchParams.toString();
+        router.navigate({
+            to: `${window.location.pathname}?${paramsString}`,
+            replace: true,
+        });
     };
+
+    const selectItems = sorting.sortItems
+        .filter(
+            (i): i is { key: string; value: number; label: string } =>
+                !isSeparator(i),
+        )
+        .map(({ value, label }) => ({ value, label }));
 
     return (
         <Select
+            items={selectItems}
             value={sorting.currentSort.value}
             defaultValue={sorting.defaultSortValue}
             onValueChange={onValueChange}
         >
             <SelectTrigger className="w-[180px]" aria-label="Sort By">
-                <SelectValue placeholder="Sort By" />
+                <SelectValue />
             </SelectTrigger>
             <SelectContent align="center">
                 {sorting.sortItems.map((item, index) =>
@@ -54,16 +69,6 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
                     ),
                 )}
             </SelectContent>
-        </Select>
-    );
-}
-
-export function GridSortSelectFallback() {
-    return (
-        <Select disabled>
-            <SelectTrigger className="w-[180px]" disabled aria-label="Sort By">
-                <SelectValue placeholder="Sort By" />
-            </SelectTrigger>
         </Select>
     );
 }

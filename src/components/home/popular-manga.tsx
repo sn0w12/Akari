@@ -1,18 +1,19 @@
 import { Image } from "@/components/image";
-import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { GenreBadge } from "../manga-details/badges/genre";
+import { StatusBadge } from "../manga-details/badges/status";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { Card } from "../ui/card";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     useCarousel,
 } from "../ui/carousel";
-import { Skeleton } from "../ui/skeleton";
 
 interface PopularMangaProps {
     manga: components["schemas"]["MangaResponse"][];
@@ -96,15 +97,15 @@ function CarouselControls() {
 
 function PopularMangaCardInfo({
     label,
-    value,
+    children,
 }: {
     label: string;
-    value: string;
+    children: React.ReactNode;
 }) {
     return (
         <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
-            <p className="line-clamp-1 text-lg text-foreground">{value}</p>
+            {children}
         </div>
     );
 }
@@ -116,84 +117,65 @@ interface PopularMangaCardProps {
 
 function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
     return (
-        <Link
-            to="/manga/$id"
-            params={{ id: manga.id }}
-            className="flex flex-row h-full w-full rounded-lg border bg-card"
-        >
-            <Image
-                src={manga.cover}
-                alt={manga.title}
-                className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
-                width={160}
-                height={240}
-                fetchPriority={priority ? "high" : "auto"}
-                decoding="async"
-                sizes={{
-                    default: "50vw",
-                    sm: 240,
-                }}
-                quality={40}
-            />
-            <div className="space-y-2 py-2 px-4 w-full hidden sm:block">
-                <h2 className="line-clamp-2 text-3xl font-semibold leading-tight text-card-foreground border-b pb-1">
-                    {manga.title}
-                </h2>
-
-                <PopularMangaCardInfo
-                    label="Author"
-                    value={manga.authors.join(", ")}
+        <Card>
+            <Link
+                to="/manga/$id"
+                params={{ id: manga.id }}
+                className="flex flex-row h-full w-full"
+            >
+                <Image
+                    src={manga.cover}
+                    alt={manga.title}
+                    className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
+                    width={160}
+                    height={240}
+                    fetchPriority={priority ? "high" : "auto"}
+                    decoding="async"
+                    sizes={{
+                        default: "50vw",
+                        sm: 240,
+                    }}
+                    quality={40}
                 />
-                <PopularMangaCardInfo label="Status" value={manga.status} />
-                <PopularMangaCardInfo label="Type" value={manga.type} />
-                <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">
-                        Genres
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                        {manga.genres.slice(0, 6).map((genre) => (
-                            <Badge variant="secondary" key={genre}>
-                                {genre}
-                            </Badge>
-                        ))}
-                        {manga.genres.length > 6 && (
-                            <Badge variant="secondary">
-                                +{manga.genres.length - 6}
-                            </Badge>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </Link>
-    );
-}
+                <div className="space-y-2 py-2 px-4 w-full hidden sm:block">
+                    <h2 className="line-clamp-2 text-3xl font-semibold leading-tight text-card-foreground border-b pb-1">
+                        {manga.title}
+                    </h2>
 
-export function PopularMangaSkeleton() {
-    return (
-        <div className="w-full grid grid-cols-1 2xl:grid-cols-2 gap-4">
-            <PopularMangaSkeletonCard />
-            <PopularMangaSkeletonCard className="hidden 2xl:block" />
-        </div>
-    );
-}
-
-function PopularMangaSkeletonCard({ className }: { className?: string }) {
-    return (
-        <div className={cn("w-full", className)}>
-            <div className="overflow-hidden">
-                <div className="flex">
-                    <div className="min-w-0 flex-shrink-0 flex-grow-0 pr-[1px] basis-full">
-                        <div className="flex flex-row h-full w-full rounded-lg border bg-card">
-                            <Skeleton className="aspect-[2/3] sm:h-[384px] w-full sm:w-64 rounded-l-lg rounded-r-lg sm:rounded-r-none" />
+                    <PopularMangaCardInfo label="Author">
+                        <div className="flex flex-wrap gap-1">
+                            {manga.authors.map((author) => (
+                                <Badge key={author} size="lg">
+                                    {author}
+                                </Badge>
+                            ))}
                         </div>
-                    </div>
+                    </PopularMangaCardInfo>
+                    <PopularMangaCardInfo label="Status">
+                        <StatusBadge status={manga.status} size="lg" />
+                    </PopularMangaCardInfo>
+                    <PopularMangaCardInfo label="Type">
+                        <Badge size="lg">{manga.type}</Badge>
+                    </PopularMangaCardInfo>
+                    <PopularMangaCardInfo label="Genres">
+                        <div className="flex flex-wrap gap-1">
+                            {manga.genres.slice(0, 6).map((genre) => (
+                                <GenreBadge
+                                    key={genre}
+                                    genre={genre}
+                                    size="lg"
+                                />
+                            ))}
+                            {manga.genres.length > 6 && (
+                                <GenreBadge
+                                    genre={`+${manga.genres.length - 6}`}
+                                    size="lg"
+                                />
+                            )}
+                        </div>
+                    </PopularMangaCardInfo>
                 </div>
-            </div>
-            <div className="flex items-center gap-2 pt-2 w-full justify-between sm:p-0 sm:w-auto sm:absolute sm:bottom-2 sm:right-2">
-                <Skeleton className="order-2 sm:order-1 h-5 w-12" />
-                <Skeleton className="order-1 sm:order-2 h-10 w-10" />
-                <Skeleton className="order-3 h-10 w-10" />
-            </div>
-        </div>
+            </Link>
+        </Card>
     );
 }

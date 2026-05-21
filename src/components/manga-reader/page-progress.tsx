@@ -85,7 +85,7 @@ export default function PageProgress({
     return (
         <div
             className={cn(
-                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-7 lg:top-auto",
+                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-16 lg:top-auto",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,

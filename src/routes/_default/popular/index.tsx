@@ -34,16 +34,16 @@ const getPopularData = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/_default/popular/")({
     validateSearch: (
         search: Record<string, string | undefined>,
-    ): { days?: string; page?: number } => {
+    ): { days?: number; page?: number } => {
         const page = Number(search.page);
         return {
-            ...(search.days ? { days: search.days } : {}),
+            ...(search.days ? { days: Number(search.days) } : {}),
             ...(Number.isFinite(page) && page > 0 ? { page } : {}),
         };
     },
     loaderDeps: ({ search }) => ({
         days: Number(search.days) || 30,
-        page: search.page ?? 1,
+        page: Number(search.page) || 1,
     }),
     loader: async ({ deps }) =>
         getPopularData({ data: { page: deps.page, days: deps.days } }),
@@ -83,21 +83,21 @@ export const Route = createFileRoute("/_default/popular/")({
 
 function Popular() {
     const { data, error } = Route.useLoaderData();
-    const { days = "30", page: currentPage = 1 } = Route.useSearch();
+    const { days = 30, page: currentPage = 1 } = Route.useSearch();
 
     const sorting = {
-        currentSort: { key: "days", value: days ?? "30" },
-        defaultSortValue: "30",
+        currentSort: { key: "days", value: days ?? 30 },
+        defaultSortValue: 30,
         sortItems: [
-            { key: "days", value: "1", label: "Last 24 Hours" },
+            { key: "days", value: 1, label: "Last 24 Hours" },
             { key: "separator" } as const,
-            { key: "days", value: "7", label: "Last 7 Days" },
-            { key: "days", value: "30", label: "Last 30 Days" },
+            { key: "days", value: 7, label: "Last 7 Days" },
+            { key: "days", value: 30, label: "Last 30 Days" },
             { key: "separator" } as const,
-            { key: "days", value: "90", label: "Last 3 Months" },
-            { key: "days", value: "180", label: "Last 6 Months" },
+            { key: "days", value: 90, label: "Last 3 Months" },
+            { key: "days", value: 180, label: "Last 6 Months" },
             { key: "separator" } as const,
-            { key: "days", value: "365", label: "Last Year" },
+            { key: "days", value: 365, label: "Last Year" },
         ],
     };
 

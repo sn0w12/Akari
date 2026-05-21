@@ -11,13 +11,13 @@ import ErrorComponent from "./error-page";
 const CallbackPage = () => {
     const router = useRouter();
     const location = useRouterState({ select: (s) => s.location });
-    const searchParams = new URLSearchParams(location.search);
     const [error, setError] = useState<
         components["schemas"]["ErrorResponse"] | undefined
     >(undefined);
     const [success, setSuccess] = useState<boolean>(false);
 
     useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
         const provider = searchParams.get("provider") || "mal";
 
         const getToken = async (accountId: string) => {
@@ -99,7 +99,7 @@ const CallbackPage = () => {
         };
 
         processCallback();
-    }, [searchParams, router]);
+    }, [location.search, router]);
 
     return (
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">

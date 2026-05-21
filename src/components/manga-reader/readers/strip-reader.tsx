@@ -41,6 +41,8 @@ export default function StripReader({
         mountTimeRef.current = Date.now();
     }, []);
 
+    const pixels = scrollMetrics.pixels;
+    const clientHeight = scrollMetrics.clientHeight;
     useEffect(() => {
         if (
             !lastImageRef.current ||
@@ -48,7 +50,6 @@ export default function StripReader({
             imagesLoaded !== chapter.images.length
         )
             return;
-        const { clientHeight } = scrollMetrics;
         const firstImage = readerRef.current.querySelector(
             "img",
         ) as HTMLImageElement;
@@ -57,7 +58,7 @@ export default function StripReader({
         const lastImage = lastImageRef.current;
         const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
         const totalHeight = lastImageBottom - clientHeight - firstImageTop;
-        const currentPosition = scrollMetrics.pixels - firstImageTop;
+        const currentPosition = pixels - firstImageTop;
         const newProgress = Math.max(
             0,
             Math.min(1, currentPosition / totalHeight),
@@ -66,22 +67,26 @@ export default function StripReader({
         queueMicrotask(() => {
             setProgress(newProgress);
         });
-    }, [scrollMetrics, imagesLoaded, chapter.images.length]);
+    }, [pixels, clientHeight, imagesLoaded, chapter.images.length]);
 
+    const chapterRef = useRef(chapter);
+    chapterRef.current = chapter;
+    const imagesLength = chapter.images.length;
+    const nextChapter = chapter.nextChapter;
     useEffect(() => {
-        if (!chapter) return;
+        if (!chapterRef.current) return;
         const halfWay = progress > 0.5;
         const prefetch = progress > 0.8;
         const currentTime = Date.now();
         const timeElapsed = currentTime - mountTimeRef.current;
-        const minSyncTime = 5000; // 5 seconds minimum before syncing
+        const minSyncTime = 5000;
 
         if (
             halfWay &&
             !bookmarkUpdatedRef.current &&
             timeElapsed >= minSyncTime
         ) {
-            syncAllServices(chapter).then((success) => {
+            syncAllServices(chapterRef.current).then((success) => {
                 setBookmarkState(success);
                 if (success) {
                     queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
@@ -90,10 +95,10 @@ export default function StripReader({
             bookmarkUpdatedRef.current = true;
         }
 
-        if (prefetch && chapter.nextChapter && !hasPrefetchedRef.current) {
+        if (prefetch && nextChapter && !hasPrefetchedRef.current) {
             hasPrefetchedRef.current = true;
         }
-    }, [progress, chapter, setBookmarkState, queryClient]);
+    }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
 
     return (
         <>

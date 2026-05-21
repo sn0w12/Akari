@@ -32,10 +32,16 @@ export function SettingsPopover({
 }) {
     return (
         <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="outline" size="icon" className="h-7.5 md:h-9">
-                    <Settings className="h-4 w-4" />
-                </Button>
+            <PopoverTrigger
+                render={
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-7.5 md:size-9"
+                    />
+                }
+            >
+                <Settings />
             </PopoverTrigger>
             <PopoverContent
                 side={orientation === "vertical" ? "left" : "bottom"}

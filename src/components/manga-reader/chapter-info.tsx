@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { ButtonGroup } from "../ui/button-group";
+import { ButtonGroup } from "../ui/group";
 import { CommentsButton } from "./info-popovers/comments";
 import { InfoPopover } from "./info-popovers/info";
 import { SettingsPopover } from "./info-popovers/settings";
@@ -39,7 +39,7 @@ export function ChapterInfo({
     return (
         <div
             className={cn(
-                `flex fixed z-50 bottom-16 left-auto right-4 h-fit md:right-7 md:top-11.5 transition-opacity`,
+                `flex fixed z-50 bottom-16 left-auto right-4 h-fit md:left-16 md:top-14 transition-opacity`,
                 {
                     "opacity-0 pointer-events-none": hidden,
                     "opacity-100": !hidden,
@@ -56,19 +56,11 @@ export function ChapterInfo({
             <ButtonGroup orientation={orientation}>
                 {orientation === "vertical" ? (
                     <>
-                        <InfoPopover
-                            chapter={chapter}
-                            scanlator={scanlator}
-                            orientation={orientation}
-                        />
+                        <InfoPopover chapter={chapter} scanlator={scanlator} />
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoPopover
-                        chapter={chapter}
-                        scanlator={scanlator}
-                        orientation={orientation}
-                    />
+                    <InfoPopover chapter={chapter} scanlator={scanlator} />
                 )}
                 <CommentsButton mangaType={chapter.type} />
             </ButtonGroup>

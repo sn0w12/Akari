@@ -14,7 +14,7 @@ import {
     MessageSquareReply,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ButtonGroup } from "../ui/button-group";
+import { ButtonGroup } from "../ui/group";
 import { CommentAttachment } from "./attachment";
 
 export type CommentData =

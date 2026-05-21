@@ -2,7 +2,11 @@ import { SettingsInput } from "@/components/settings/settings-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent } from "@/components/ui/popover";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tree, TreeItem } from "@/components/ui/tree";
 import { APP_SETTINGS, inDevelopment } from "@/config";
@@ -18,7 +22,6 @@ import {
     Setting,
     shouldShowSetting,
 } from "@/lib/settings";
-import { PopoverTrigger } from "@radix-ui/react-popover";
 import { TableOfContents } from "lucide-react";
 import React from "react";
 
@@ -233,7 +236,10 @@ export default function SettingsPage() {
                         },
                     )}
                 >
-                    <TabsList className={`bg-background rounded-b-none p-0`}>
+                    <TabsList
+                        variant="underline"
+                        className="bg-background rounded-b-none p-0"
+                    >
                         {Object.keys(settingsMaps).map((groupName) => (
                             <TabsTrigger
                                 key={groupName}
@@ -264,15 +270,17 @@ export default function SettingsPage() {
                                         {/* ToC Popover Button */}
                                         {tocTree && tocTree.length > 0 ? (
                                             <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="absolute top-4 right-6 h-8 w-8 p-0"
-                                                        aria-label="Table of Contents"
-                                                    >
-                                                        <TableOfContents className="h-4 w-4" />
-                                                    </Button>
+                                                <PopoverTrigger
+                                                    render={
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="absolute top-4 right-6 h-8 w-8 p-0"
+                                                            aria-label="Table of Contents"
+                                                        />
+                                                    }
+                                                >
+                                                    <TableOfContents className="h-4 w-4" />
                                                 </PopoverTrigger>
                                                 <PopoverContent
                                                     className="w-64 p-0"

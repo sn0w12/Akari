@@ -49,17 +49,11 @@ export function BaseLayout({
     );
 
     return (
-        <div className="flex flex-col w-full" data-vaul-drawer-wrapper>
-            <Suspense
-                fallback={<div className="h-14 md:h-10 bg-sidebar border-b" />}
-            >
-                <HeaderComponent notification={notification} />
-            </Suspense>
+        <div className="flex flex-col w-full">
+            <HeaderComponent notification={notification} />
             <div className="bg-background md:bg-sidebar flex flex-1 h-full">
                 <Sidebar collapsible="icon" aria-label="Main navigation">
-                    <Suspense fallback={<div className="w-4" />}>
-                        <BaseSidebarContent notification={notification} />
-                    </Suspense>
+                    <BaseSidebarContent notification={notification} />
                 </Sidebar>
                 <PullToRefresh
                     as="main"

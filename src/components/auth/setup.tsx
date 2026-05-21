@@ -6,21 +6,23 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { client } from "@/lib/api";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
 export function SetupAccountForm() {
-    const [userName, setUserName] = useState("");
-    const [displayName, setDisplayName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (values: Record<string, unknown>) => {
+        const userName = values.username as string;
+        const displayName = values.displayName as string;
+
         try {
             setIsLoading(true);
             const { error } = await client.PUT("/v2/user/profile", {
@@ -55,34 +57,29 @@ export function SetupAccountForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit}>
+                    <Form onFormSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    placeholder="username"
-                                    required
-                                    value={userName}
-                                    onChange={(e) =>
-                                        setUserName(e.target.value)
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="display-name">
-                                    Display Name
-                                </Label>
-                                <Input
-                                    id="display-name"
-                                    placeholder="Display Name"
-                                    required
-                                    value={displayName}
-                                    onChange={(e) =>
-                                        setDisplayName(e.target.value)
-                                    }
-                                />
-                            </div>
+                            <Fieldset>
+                                <FieldsetLegend>Profile</FieldsetLegend>
+                                <div className="flex flex-col gap-4">
+                                    <Field name="username">
+                                        <FieldLabel>Username</FieldLabel>
+                                        <Input
+                                            placeholder="username"
+                                            required
+                                        />
+                                        <FieldError />
+                                    </Field>
+                                    <Field name="displayName">
+                                        <FieldLabel>Display Name</FieldLabel>
+                                        <Input
+                                            placeholder="Display Name"
+                                            required
+                                        />
+                                        <FieldError />
+                                    </Field>
+                                </div>
+                            </Fieldset>
                             {error && (
                                 <p className="text-sm text-red-500">{error}</p>
                             )}
@@ -94,7 +91,7 @@ export function SetupAccountForm() {
                                 {isLoading ? "Setting up..." : "Setup Account"}
                             </Button>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

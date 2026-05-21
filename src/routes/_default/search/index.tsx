@@ -14,6 +14,37 @@ export const Route = createFileRoute("/_default/search/")({
         });
         return { meta, links };
     },
+    validateSearch: (
+        search: Record<string, string | undefined>,
+    ): {
+        page?: number;
+        query?: string;
+        genres?: string;
+        types?: string;
+        excludedGenres?: string;
+        excludedTypes?: string;
+        sort?: "search" | "latest" | "popular" | "newest";
+    } => {
+        const page = Number(search.page);
+        const query = search.q;
+        const genres = search.genres;
+        const types = search.types;
+        const excludedGenres = search.excludedGenres;
+        const excludedTypes = search.excludedTypes;
+        const sort = search.sort;
+
+        return {
+            ...(Number.isFinite(page) && page > 0 ? { page } : {}),
+            ...(query ? { query } : {}),
+            ...(genres ? { genres } : {}),
+            ...(types ? { types } : {}),
+            ...(excludedGenres ? { excludedGenres } : {}),
+            ...(excludedTypes ? { excludedTypes } : {}),
+            ...(sort && ["search", "latest", "popular", "newest"].includes(sort)
+                ? { sort: sort as "search" | "latest" | "popular" | "newest" }
+                : {}),
+        };
+    },
     component: Search,
     headers: () => ({
         "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),

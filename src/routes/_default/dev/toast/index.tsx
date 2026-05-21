@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,7 @@ function ToastTestPage() {
     const [description, setDescription] = useState("");
 
     const showToast = () => {
-        new Toast(message, type, { autoClose: duration, description });
+        toastManager.add({ title: message, type, timeout: duration, description });
     };
 
     return (

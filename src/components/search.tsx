@@ -12,20 +12,18 @@ import { Filters, SearchFilters } from "./search/filters";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
-    const searchParams = new URLSearchParams(
-        useRouterState({ select: (s) => s.location.search }),
-    );
+    const search = useRouterState({ select: (s) => s.location.search });
     const router = useRouter();
 
-    const query = searchParams.get("q") || "";
-    const page = Number(searchParams.get("p")) || 1;
+    const query = search.query || "";
+    const page = parseInt(String(search.page || "1"), 10);
 
     // Parse filters from URL
-    const genresParam = searchParams.get("genres") || "";
-    const typesParam = searchParams.get("types") || "";
-    const excludedGenresParam = searchParams.get("excludedGenres") || "";
-    const excludedTypesParam = searchParams.get("excludedTypes") || "";
-    const sortParam = searchParams.get("sort") || "search";
+    const genresParam = search.genres || "";
+    const typesParam = search.types || "";
+    const excludedGenresParam = search.excludedGenres || "";
+    const excludedTypesParam = search.excludedTypes || "";
+    const sortParam = search.sort || "search";
 
     const selectedGenresFromUrl = genresParam
         ? (genresParam
@@ -134,7 +132,7 @@ export default function SearchPage() {
                     value={searchQuery}
                     placeholder="Search manga..."
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 p-2"
+                    className="flex-1"
                 />
                 <Filters filters={filters} onChange={setFilters} />
             </div>

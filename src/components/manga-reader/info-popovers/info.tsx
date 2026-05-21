@@ -5,10 +5,11 @@ import BookmarkButton from "@/components/manga-details/bookmark-button";
 import { Button } from "../../ui/button";
 import { ButtonLink } from "../../ui/button-link";
 import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "../../ui/popover-drawer";
+    ResponsiveModal,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTrigger,
+} from "../../ui/responsive-modal";
 import { ChapterSelector } from "../chapter-selector";
 
 export function InfoContent({
@@ -84,26 +85,32 @@ export function InfoContent({
 export function InfoPopover({
     chapter,
     scanlator,
-    orientation,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
     scanlator: string;
-    orientation: "vertical" | "horizontal";
 }) {
     return (
-        <PopoverDrawer>
-            <PopoverDrawerTrigger>
-                <Button variant="outline" size="icon" className="h-7.5 md:h-9">
-                    <Info className="h-4 w-4" />
-                </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent
-                popoverSide={orientation === "vertical" ? "left" : "bottom"}
-                popoverAlign="start"
-                popoverClassName="w-auto sm:w-96 max-h-96 overflow-y-auto"
+        <ResponsiveModal desktop="popover">
+            <ResponsiveModalTrigger
+                render={
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-7.5 md:size-9"
+                    >
+                        <Info />
+                    </Button>
+                }
+            />
+            <ResponsiveModalPopup
+                dialogClassName="w-auto sm:w-96"
+                align="end"
+                side="right"
             >
-                <InfoContent chapter={chapter} scanlator={scanlator} />
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+                <ResponsiveModalPanel>
+                    <InfoContent chapter={chapter} scanlator={scanlator} />
+                </ResponsiveModalPanel>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }

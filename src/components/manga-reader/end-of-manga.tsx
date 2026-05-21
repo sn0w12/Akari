@@ -48,32 +48,19 @@ export default function EndOfManga({
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
                 <div className="grid grid-cols-1 gap-4 w-full">
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            to="/bookmarks"
-                        >
-                            <Bookmark className="mr-2 h-4 w-4" />
-                            Bookmarks
-                        </Link>
+                    <Button variant="outline" render={<Link to="/bookmarks" />} onClick={handleClick}>
+                        <Bookmark className="mr-2 h-4 w-4" />
+                        Bookmarks
                     </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full">
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            to="/"
-                        >
-                            <Home className="mr-2 h-4 w-4" />
-                            Homepage
-                        </Link>
+                    <Button variant="outline" render={<Link to="/" />} onClick={handleClick}>
+                        <Home className="mr-2 h-4 w-4" />
+                        Homepage
                     </Button>
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            to="/manga/$id"
-                            params={{ id: identifier }}
-                        >
-                            <List className="mr-2 h-4 w-4" />
-                            Manga Page
-                        </Link>
+                    <Button variant="outline" render={<Link to="/manga/$id" params={{ id: identifier }} />} onClick={handleClick}>
+                        <List className="mr-2 h-4 w-4" />
+                        Manga Page
                     </Button>
                 </div>
             </CardFooter>

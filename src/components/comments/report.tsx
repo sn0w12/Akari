@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { useState } from "react";
 
 interface ReportCommentDialogProps {
@@ -53,11 +53,11 @@ export function ReportCommentDialog({
             );
 
             if (error) {
-                new Toast("Failed to report comment.", "error");
+                toastManager.add({ title: "Failed to report comment.", type: "error" });
                 return;
             }
 
-            new Toast("Comment reported successfully.", "success");
+            toastManager.add({ title: "Comment reported successfully.", type: "success" });
         } finally {
             setReason(null);
             setDetails("");

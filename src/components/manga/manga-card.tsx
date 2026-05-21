@@ -4,6 +4,10 @@ import { cn } from "@/lib/utils";
 import { useThrottledCallback } from "@tanstack/react-pacer";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { GenreBadge } from "../manga-details/badges/genre";
+import { StatusBadge } from "../manga-details/badges/status";
+import { Badge } from "../ui/badge";
+import { Card } from "../ui/card";
 
 interface MangaCardProps {
     manga: components["schemas"]["MangaResponse"];
@@ -147,7 +151,7 @@ export function MangaCard({
             {/* Cover Image - Always stays in place */}
             <div
                 ref={innerCardRef}
-                className="relative overflow-hidden rounded-lg bg-card shadow-lg z-10"
+                className="relative overflow-hidden rounded-2xl bg-card shadow-lg z-10"
                 style={{
                     height: useFixedHeight ? `${cardHeight}px` : undefined,
                     aspectRatio: useFixedHeight ? undefined : "2 / 3",
@@ -174,18 +178,18 @@ export function MangaCard({
             </div>
 
             {/* Metadata Panel - Absolutely positioned */}
-            <div
+            <Card
                 className={cn(
-                    "absolute top-0 border flex h-full shrink-0 flex-col gap-3 overflow-hidden bg-card p-4 shadow-lg transition-all duration-300 ease-snappy pointer-events-none opacity-0",
+                    "absolute top-0 flex h-full shrink-0 flex-col gap-3 overflow-hidden p-4 transition-all duration-300 ease-snappy pointer-events-none opacity-0",
                     {
-                        "rounded-r-lg border-l-0": direction === "right",
-                        "rounded-l-lg border-r-0": direction === "left",
+                        "border-l-0": direction === "right",
+                        "border-r-0": direction === "left",
                         "opacity-100": shouldExpand,
                     },
                 )}
                 style={
                     {
-                        "--card-padding": "calc(var(--spacing) * 4)",
+                        "--card-padding": "calc(var(--spacing) * 6)",
                         width: `${cardWidth}px`,
                         [direction === "left" ? "right" : "left"]:
                             "calc(100% - var(--card-padding))",
@@ -211,27 +215,25 @@ export function MangaCard({
                         <p className="text-xs font-medium text-muted-foreground">
                             Authors
                         </p>
-                        <p className="line-clamp-1 text-sm text-foreground">
-                            {manga.authors.join(", ")}
-                        </p>
+                        <div className="flex flex-wrap gap-1">
+                            {manga.authors.map((author) => (
+                                <Badge key={author}>{author}</Badge>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-1">
                         <p className="text-xs font-medium text-muted-foreground">
                             Status
                         </p>
-                        <p className="text-sm capitalize text-foreground">
-                            {manga.status}
-                        </p>
+                        <StatusBadge status={manga.status} />
                     </div>
 
                     <div className="space-y-1">
                         <p className="text-xs font-medium text-muted-foreground">
                             Type
                         </p>
-                        <p className="text-sm capitalize text-foreground">
-                            {manga.type}
-                        </p>
+                        <Badge>{manga.type}</Badge>
                     </div>
 
                     <div className="space-y-1">
@@ -240,22 +242,17 @@ export function MangaCard({
                         </p>
                         <div className="flex flex-wrap gap-1">
                             {manga.genres.slice(0, 6).map((genre) => (
-                                <span
-                                    key={genre}
-                                    className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
-                                >
-                                    {genre}
-                                </span>
+                                <GenreBadge key={genre} genre={genre} />
                             ))}
                             {manga.genres.length > 6 && (
-                                <span className="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                                    +{manga.genres.length - 6}
-                                </span>
+                                <GenreBadge
+                                    genre={`+${manga.genres.length - 6}`}
+                                />
                             )}
                         </div>
                     </div>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 }

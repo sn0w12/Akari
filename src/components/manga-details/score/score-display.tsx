@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { StarHalf } from "lucide-react";
@@ -18,7 +19,9 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
         fill: 0.5 | 1;
     } | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [initialRating, setInitialRating] = useState<number>(0);
+    const [initialRating, setInitialRating] = useState<number>(
+        Math.round(rating.average),
+    );
     const starRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const score = useMemo(
@@ -67,7 +70,7 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     };
 
     return (
-        <div className="flex w-full h-full bg-primary/10 rounded-xl flex-col items-center justify-center p-2 xl:p-4">
+        <Card className="flex w-full h-full flex-col items-center justify-center p-2 xl:p-4">
             <div className="flex flex-col items-center justify-center relative top-1 xl:top-2.5">
                 <div
                     className="flex items-center justify-center space-x-1"
@@ -90,11 +93,16 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
                                 onMouseEnter={(e) => handleMouseEnter(index, e)}
                                 onMouseMove={(e) => handleMouseMove(index, e)}
                                 onClick={() => {
-                                    if (!user || !hoverState) return;
-                                    setInitialRating(
-                                        (hoverState.index + hoverState.fill) *
-                                            2,
-                                    );
+                                    if (!user) return;
+                                    if (hoverState) {
+                                        setInitialRating(
+                                            (hoverState.index +
+                                                hoverState.fill) *
+                                                2,
+                                        );
+                                    } else {
+                                        setInitialRating(score);
+                                    }
                                     setDialogOpen(true);
                                 }}
                             >
@@ -114,14 +122,13 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
                 </p>
             </div>
             <RateDialog
-                key={`${dialogOpen}-${initialRating}`}
                 mangaId={mangaId}
                 rating={rating}
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 initialRating={initialRating}
             />
-        </div>
+        </Card>
     );
 }
 

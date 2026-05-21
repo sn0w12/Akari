@@ -12,13 +12,31 @@ function ContextMenu({
 }
 
 function ContextMenuTrigger({
+    render,
+    children,
     ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
+}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger> & {
+    render?: React.ReactElement;
+}) {
+    if (render) {
+        return (
+            <ContextMenuPrimitive.Trigger
+                data-slot="context-menu-trigger"
+                asChild
+                {...props}
+            >
+                {React.cloneElement(render, undefined, children)}
+            </ContextMenuPrimitive.Trigger>
+        );
+    }
+
     return (
         <ContextMenuPrimitive.Trigger
             data-slot="context-menu-trigger"
             {...props}
-        />
+        >
+            {children}
+        </ContextMenuPrimitive.Trigger>
     );
 }
 

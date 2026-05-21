@@ -1,19 +1,20 @@
-"use client";
-"use no memo";
-
 import { Button } from "@/components/ui/button";
 import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "@/components/ui/popover-drawer";
+    ResponsiveModal,
+    ResponsiveModalDrawerOnly,
+    ResponsiveModalHeader,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+    ResponsiveModalTrigger,
+} from "@/components/ui/responsive-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { client } from "@/lib/api";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronsUpDownIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import React, { memo, useMemo, useRef } from "react";
 
 interface ChaptersPopupProps {
@@ -64,32 +65,39 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
     }, [data, scanlatorId]);
 
     return (
-        <PopoverDrawer open={open} onOpenChange={setOpen}>
-            <PopoverDrawerTrigger>
-                <Button
-                    size="sm"
-                    className="size-8 hidden md:flex"
-                    aria-label="Browse chapters"
-                >
-                    <ChevronsUpDownIcon className="h-5 w-5" />
-                </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent
-                popoverClassName="p-2"
-                popoverAlign="end"
-                drawerTitle={title}
+        <ResponsiveModal desktop="popover" open={open} onOpenChange={setOpen}>
+            <ResponsiveModalTrigger
+                render={
+                    <Button size="icon-sm" aria-label="Browse chapters">
+                        <ChevronsUpDownIcon className="h-5 w-5" />
+                    </Button>
+                }
+            />
+            <ResponsiveModalPopup
+                align="end"
+                side="bottom"
+                dialogClassName="min-w-64 w-auto"
             >
-                {open ? (
-                    <ChaptersList
-                        isLoading={isLoading}
-                        chapters={filteredChapters}
-                        estimatedChapters={estimatedChapters}
-                        mangaId={mangaId}
-                        lastReadChapter={lastReadChapter}
-                    />
-                ) : null}
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+                <ResponsiveModalDrawerOnly>
+                    <ResponsiveModalHeader>
+                        <ResponsiveModalTitle className="text-center">
+                            {title}
+                        </ResponsiveModalTitle>
+                    </ResponsiveModalHeader>
+                </ResponsiveModalDrawerOnly>
+                <ResponsiveModalPanel>
+                    {open ? (
+                        <ChaptersList
+                            isLoading={isLoading}
+                            chapters={filteredChapters}
+                            estimatedChapters={estimatedChapters}
+                            mangaId={mangaId}
+                            lastReadChapter={lastReadChapter}
+                        />
+                    ) : null}
+                </ResponsiveModalPanel>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 };
 
@@ -109,6 +117,8 @@ function ChaptersList({
     lastReadChapter,
 }: ChaptersListProps): React.JSX.Element {
     const parentRef = useRef<HTMLDivElement | null>(null);
+
+    // eslint-disable-next-line react-hooks/incompatible-library
     const rowVirtualizer = useVirtualizer({
         count: chapters.length,
         getScrollElement: () => parentRef.current,
@@ -159,7 +169,9 @@ function ChaptersList({
                                 <ChapterRow
                                     chapter={chapter}
                                     mangaId={mangaId}
-                                    isLastRead={chapter.id === lastReadChapter?.id}
+                                    isLastRead={
+                                        chapter.id === lastReadChapter?.id
+                                    }
                                 />
                             </div>
                         );
@@ -188,7 +200,11 @@ const ChapterRow = memo(function ChapterRow({
     return (
         <Link
             to="/manga/$id/$scanlator/$subId"
-            params={{ id: mangaId, scanlator: String(chapter.scanlatorId), subId: String(chapter.number) }}
+            params={{
+                id: mangaId,
+                scanlator: String(chapter.scanlatorId),
+                subId: String(chapter.number),
+            }}
             className={cn(
                 "block rounded p-2 text-sm transition-colors duration-100 hover:bg-accent",
                 {
@@ -199,7 +215,7 @@ const ChapterRow = memo(function ChapterRow({
             aria-label={`Read ${chapter.title} ${isLastRead ? "(Last Read)" : ""}`}
         >
             <div className="flex items-start justify-between gap-3">
-                <span className="min-w-0 flex-1 break-words">{chapter.title}</span>
+                <span className="min-w-0 break-words">{chapter.title}</span>
                 <span
                     className={cn(
                         "shrink-0 text-xs",
