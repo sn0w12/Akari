@@ -50,14 +50,33 @@ export const Route = createFileRoute("/_default/")({
         ]);
         return { popular: popular.data, latest: latest.data };
     },
-    head: () =>
-        createMetadata({
+    head: ({ loaderData }) => {
+        return createMetadata({
             title: "Akari Manga",
             description:
                 "Browse popular manga and the latest releases on Akari.",
             canonicalPath: "/",
             image: "/og/akari.webp",
-        }),
+            preloadImages: [
+                {
+                    src: loaderData?.popular?.[0]?.cover,
+                    sizes: {
+                        default: "50vw",
+                        sm: 240,
+                    },
+                    quality: 40,
+                },
+                {
+                    src: loaderData?.popular?.[1]?.cover,
+                    sizes: {
+                        default: "50vw",
+                        sm: 240,
+                    },
+                    quality: 40,
+                },
+            ],
+        });
+    },
     component: Home,
     headers: () => ({
         "Cache-Control": new ResponseCacheControlBuilder()

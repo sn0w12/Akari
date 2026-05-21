@@ -3,12 +3,7 @@ import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
-import {
-    createImagePreloadLink,
-    createJsonLd,
-    createMetadata,
-    createOgImage,
-} from "@/lib/seo";
+import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
@@ -57,7 +52,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
                 canonicalPath: `/manga/${params.id}/${params.scanlator}/${params.subId}`,
             });
         }
-        const metadata = createMetadata({
+        return createMetadata({
             title: `${chapter.mangaTitle} - ${chapter.title}`,
             description: `Read ${chapter.mangaTitle} ${chapter.title}.`,
             canonicalPath: `/manga/${chapter.mangaId}/${params.scanlator}/${params.subId}`,
@@ -75,22 +70,14 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
                       }
                     : {}),
             },
-        });
-        return {
-            ...metadata,
-            links: [
-                ...(metadata.links ?? []),
-                ...(chapter.images[0]
-                    ? [
-                          createImagePreloadLink({
-                              src: chapter.images[0],
-                              sizes: { default: "100vw" },
-                              quality: 100,
-                          }),
-                      ]
-                    : []),
+            preloadImages: [
+                {
+                    src: chapter.images[0],
+                    sizes: { default: "100vw" },
+                    quality: 100,
+                },
             ],
-        };
+        });
     },
     component: MangaReaderPage,
     headers: () => ({

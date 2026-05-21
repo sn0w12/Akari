@@ -99,7 +99,7 @@ export interface HeadData {
 }
 
 interface ImagePreloadOptions {
-    src: string;
+    src: string | undefined;
     sizes: SizesConfig;
     quality?: number;
 }
@@ -115,6 +115,7 @@ interface MetadataOptions {
         previous?: string;
         next?: string;
     };
+    preloadImages?: ImagePreloadOptions[];
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -199,6 +200,13 @@ export function createMetadata(options: MetadataOptions): HeadData {
         });
     }
 
+    if (options.preloadImages) {
+        for (const img of options.preloadImages) {
+            if (!img.src) continue;
+            links.push(createImagePreloadLink(img));
+        }
+    }
+
     const robotsVal = robots();
     if (!robotsVal.index) {
         meta.push({
@@ -223,6 +231,7 @@ export function createImagePreloadLink({
     sizes,
     quality,
 }: ImagePreloadOptions): Record<string, string> {
+    if (!src) return {};
     return {
         rel: "preload",
         as: "image",

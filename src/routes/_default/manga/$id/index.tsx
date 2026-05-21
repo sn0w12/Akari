@@ -6,11 +6,7 @@ import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
-import {
-    createImagePreloadLink,
-    createMetadata,
-    createOgImage,
-} from "@/lib/seo";
+import { createMetadata, createOgImage } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
@@ -47,24 +43,20 @@ export const Route = createFileRoute("/_default/manga/$id/")({
                 canonicalPath: `/manga/${params.id}`,
             });
         }
-        const metadata = createMetadata({
+        return createMetadata({
             title: manga.title,
             description: manga.description ?? "",
             canonicalPath: `/manga/${manga.id}`,
             image: createOgImage("manga", manga.id),
             type: "book",
-        });
-        return {
-            ...metadata,
-            links: [
-                ...(metadata.links ?? []),
-                createImagePreloadLink({
+            preloadImages: [
+                {
                     src: manga.cover,
                     sizes: MANGA_DETAILS_COVER_IMAGE_SIZES,
                     quality: 60,
-                }),
+                },
             ],
-        };
+        });
     },
     component: MangaPage,
     headers: () => ({

@@ -12,6 +12,15 @@ interface MangaCardProps {
     priority?: boolean;
 }
 
+export const MANGA_CARD_IMG_OPTS = {
+    sizes: {
+        default: "128px",
+        sm: 96,
+        lg: 240,
+    },
+    quality: 40,
+} as const;
+
 export function MangaCard({
     manga,
     expandDirection = "auto",
@@ -157,12 +166,8 @@ export function MangaCard({
                         height={300}
                         fetchPriority={priority ? "high" : "auto"}
                         decoding="async"
-                        sizes={{
-                            default: "128px",
-                            sm: 96,
-                            lg: 240,
-                        }}
-                        quality={20}
+                        sizes={MANGA_CARD_IMG_OPTS.sizes}
+                        quality={MANGA_CARD_IMG_OPTS.quality}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </Link>

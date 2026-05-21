@@ -1,4 +1,5 @@
 import ErrorPage from "@/components/error-page";
+import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
@@ -40,6 +41,8 @@ export const Route = createFileRoute("/_default/latest/")({
         if (paginationData && paginationData.totalPages > page) {
             pagination.next = `/latest?page=${page + 1}`;
         }
+        const preloadImages = loaderData?.data?.data?.items?.slice(0, 4);
+
         return createMetadata({
             title,
             description: "Read the latest manga releases for free on Akari.",
@@ -47,6 +50,12 @@ export const Route = createFileRoute("/_default/latest/")({
             image: "/og/akari.webp",
             pagination:
                 Object.keys(pagination).length > 0 ? pagination : undefined,
+            preloadImages:
+                preloadImages?.map((item) => ({
+                    src: item.cover,
+                    sizes: MANGA_CARD_IMG_OPTS.sizes,
+                    quality: MANGA_CARD_IMG_OPTS.quality,
+                })) ?? [],
         });
     },
     component: Latest,

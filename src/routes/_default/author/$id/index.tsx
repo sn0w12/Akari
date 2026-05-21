@@ -1,4 +1,5 @@
 import ErrorPage from "@/components/error-page";
+import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { client, serverHeaders } from "@/lib/api";
@@ -52,6 +53,8 @@ export const Route = createFileRoute("/_default/author/$id/")({
         if (totalPages && totalPages > page) {
             pagination.next = `/author/${params.id}?page=${page + 1}`;
         }
+        const preloadImages = loaderData?.data?.data?.items?.slice(0, 4);
+
         return createMetadata({
             title: page === 1 ? name : `${name} - Page ${page}`,
             description: `Browse the full manga catalog by ${name} on Akari.`,
@@ -59,6 +62,12 @@ export const Route = createFileRoute("/_default/author/$id/")({
             image: createOgImage("author", params.id),
             pagination:
                 Object.keys(pagination).length > 0 ? pagination : undefined,
+            preloadImages:
+                preloadImages?.map((item) => ({
+                    src: item.cover,
+                    sizes: MANGA_CARD_IMG_OPTS.sizes,
+                    quality: MANGA_CARD_IMG_OPTS.quality,
+                })) ?? [],
         });
     },
     component: AuthorPage,
