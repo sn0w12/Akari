@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { cn } from "@/lib/utils";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { JumpToPagePopover } from "./pagination-popover";
@@ -25,6 +26,7 @@ export function BasePagination({
     getPageUrl,
     onPrefetch,
 }: BasePaginationProps) {
+    const router = useRouter();
     const [jumpToPage, setJumpToPage] = useState(currentPage.toString());
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const visiblePages = getVisiblePages(currentPage, totalPages);
@@ -33,9 +35,10 @@ export function BasePagination({
         if (onPageChange) {
             onPageChange(page);
         } else if (getPageUrl) {
-            // For server pagination, navigation is handled by the link
-            // This is used by the JumpToPagePopover
-            window.location.href = getPageUrl(page);
+            router.navigate({
+                to: getPageUrl(page) as never,
+                resetScroll: true,
+            });
         }
     };
 
@@ -55,6 +58,7 @@ export function BasePagination({
                     variant="outline"
                     size="sm"
                     to={url}
+                    resetScroll={true}
                     onMouseOver={() => onPrefetch?.(url)}
                     disabled={disabled}
                     className={className}
@@ -69,7 +73,7 @@ export function BasePagination({
             <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onPageChange?.(page)}
+                onClick={() => handlePageChange(page)}
                 disabled={disabled}
                 className={className}
                 aria-label={ariaLabel}
