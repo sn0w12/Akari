@@ -4,7 +4,8 @@ import { routeTree } from "./routeTree.gen";
 export function getRouter() {
     const router = createRouter({
         routeTree,
-        scrollRestoration: false,
+        scrollRestoration: true,
+        scrollToTopSelectors: ["#scroll-element"],
         defaultPreload: "intent",
         defaultNotFoundComponent: () => <p>Page not found</p>,
     });
