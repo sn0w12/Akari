@@ -5,7 +5,7 @@ import createClient from "openapi-fetch";
 import pkg from "../../../package.json";
 
 const apiUrl =
-    env("NEXT_PRIVATE_API_URL") ||
+    env("API_URL") ||
     env("VITE_API_URL") ||
     "http://localhost:5188/";
 
