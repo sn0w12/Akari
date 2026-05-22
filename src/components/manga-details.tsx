@@ -1,14 +1,8 @@
-import { JsonLd } from "@/components/json-ld";
 import { Image, type SizesConfig } from "@/components/image";
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTitle,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { createJsonLd } from "@/lib/seo";
 import { formatNumberShort, pluralize } from "@/lib/utils";
 import type { components } from "@/types/api";
@@ -22,6 +16,14 @@ import Buttons from "./manga-details/buttons";
 import { ScoreDisplay } from "./manga-details/score/score-display";
 import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
+import {
+    ResponsiveModal,
+    ResponsiveModalDrawerOnly,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+    ResponsiveModalTrigger,
+} from "./ui/responsive-modal";
 import { Separator } from "./ui/separator";
 
 export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
@@ -143,8 +145,8 @@ export function MangaDetailsComponent({
                                 {manga.title}
                             </h1>
                             {alternativeTitles.length > 0 && (
-                                <Popover>
-                                    <PopoverTrigger
+                                <ResponsiveModal desktop="popover">
+                                    <ResponsiveModalTrigger
                                         render={
                                             <Button
                                                 variant="ghost"
@@ -162,27 +164,31 @@ export function MangaDetailsComponent({
                                             </Button>
                                         }
                                     />
-                                    <PopoverContent
+                                    <ResponsiveModalPopup
                                         side="bottom"
                                         align="start"
-                                        className="w-auto max-w-80"
+                                        dialogClassName="w-auto max-w-80"
                                     >
-                                        <PopoverTitle>
-                                            Also known as
-                                        </PopoverTitle>
-                                        <Separator className="mt-1" />
-                                        {alternativeTitles.map(
-                                            (mangaName: string) => (
-                                                <p
-                                                    className="text-sm text-muted-foreground py-0.5"
-                                                    key={mangaName}
-                                                >
-                                                    {mangaName}
-                                                </p>
-                                            ),
-                                        )}
-                                    </PopoverContent>
-                                </Popover>
+                                        <ResponsiveModalPanel>
+                                            <ResponsiveModalTitle>
+                                                Also known as
+                                            </ResponsiveModalTitle>
+                                            <ResponsiveModalDrawerOnly>
+                                                <Separator className="mt-1" />
+                                            </ResponsiveModalDrawerOnly>
+                                            {alternativeTitles.map(
+                                                (mangaName: string) => (
+                                                    <p
+                                                        className="text-sm text-muted-foreground py-0.5"
+                                                        key={mangaName}
+                                                    >
+                                                        {mangaName}
+                                                    </p>
+                                                ),
+                                            )}
+                                        </ResponsiveModalPanel>
+                                    </ResponsiveModalPopup>
+                                </ResponsiveModal>
                             )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row lg:gap-0">
@@ -207,29 +213,27 @@ export function MangaDetailsComponent({
                                         :
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {manga.authors.map(
-                                            (author: string) => (
-                                                <Badge
-                                                    key={author}
-                                                    variant="default"
-                                                    render={
-                                                        <Link
-                                                            to="/author/$id"
-                                                            params={{
-                                                                id: encodeURIComponent(
-                                                                    author.replaceAll(
-                                                                        " ",
-                                                                        "-",
-                                                                    ),
+                                        {manga.authors.map((author: string) => (
+                                            <Badge
+                                                key={author}
+                                                variant="default"
+                                                render={
+                                                    <Link
+                                                        to="/author/$id"
+                                                        params={{
+                                                            id: encodeURIComponent(
+                                                                author.replaceAll(
+                                                                    " ",
+                                                                    "-",
                                                                 ),
-                                                            }}
-                                                        />
-                                                    }
-                                                >
-                                                    {author}
-                                                </Badge>
-                                            ),
-                                        )}
+                                                            ),
+                                                        }}
+                                                    />
+                                                }
+                                            >
+                                                {author}
+                                            </Badge>
+                                        ))}
                                     </div>
                                 </div>
                                 <div>
