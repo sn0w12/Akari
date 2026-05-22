@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import BookmarkButton from "../manga-details/bookmark-button";
+import { BookmarkButton } from "../manga-details/bookmark-button";
 import { Button } from "../ui/button";
 import { ButtonLink } from "../ui/button-link";
 import { ChapterSelector } from "./chapter-selector";
@@ -96,7 +96,7 @@ export default function MangaFooter({
                     </Button>
                     <BookmarkButton
                         mangaId={chapter.mangaId}
-                        className="w-full order-3 xl:order-2 p-2 h-9"
+                        className="w-full order-3 xl:order-2"
                     />
                 </div>
             </div>

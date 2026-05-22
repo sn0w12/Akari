@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { toastManager } from "@/components/ui/toast";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
@@ -11,18 +11,24 @@ import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
-import React, { useState, useTransition } from "react";
-import Spinner from "../ui/puff-loader";
+import { useState, useTransition } from "react";
 
-interface BookmarkButtonProps {
+export interface BookmarkButtonProps extends ButtonProps {
     mangaId: string;
-    className?: string;
 }
 
-const BookmarkButton: React.FC<BookmarkButtonProps> = ({
+export function BookmarkButton({
     mangaId,
     className,
-}) => {
+    disabled,
+    loading,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    size,
+    variant = "ghost",
+    ...props
+}: BookmarkButtonProps) {
     const queryClient = useQueryClient();
     const [hovered, setHovered] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -40,7 +46,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         enabled: !!mangaId && !!user,
     });
 
-    const handleBookmarkClick = async () => {
+    const handleBookmarkClick = () => {
         if (!mangaId || isBookmarked === null || isBookmarked) return;
 
         startTransition(async () => {
@@ -86,56 +92,78 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         return true;
     };
 
-    const buttonContent =
-        isBookmarked === null || isPending || isQueryLoading ? (
-            <Spinner size={30} />
-        ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
-                {fancyAnimationsEnabled ? (
-                    <>
-                        <Bookmark
-                            className={`transition-all duration-300 ease-in-out ${
-                                isBookmarked && hovered
-                                    ? "-translate-x-7"
-                                    : "translate-x-0"
-                            }`}
-                        />
-                        <span
-                            className={`absolute transition-all duration-300 ease-in-out -translate-x-6.5 ${
-                                isBookmarked && hovered
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                            }`}
-                        >
-                            Remove
-                        </span>
-                        <span
-                            className={`ml-2 transition-all duration-300 ease-in-out ${
-                                isBookmarked && hovered
-                                    ? "translate-x-7"
-                                    : "translate-x-0"
-                            }`}
-                        >
-                            Bookmark
-                        </span>
-                    </>
-                ) : (
-                    <>
-                        <Bookmark className="mr-2" />
-                        <span>
-                            {isBookmarked
-                                ? hovered
-                                    ? "Remove"
-                                    : "Bookmarked"
-                                : "Bookmark"}
-                        </span>
-                    </>
-                )}
-            </div>
-        );
+    const handleClick: NonNullable<ButtonProps["onClick"]> = (event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+
+        if (isBookmarked) {
+            void handleRemoveBookmark();
+        } else {
+            handleBookmarkClick();
+        }
+    };
+
+    const handleMouseEnter: NonNullable<ButtonProps["onMouseEnter"]> = (
+        event,
+    ) => {
+        onMouseEnter?.(event);
+        setHovered(true);
+    };
+
+    const handleMouseLeave: NonNullable<ButtonProps["onMouseLeave"]> = (
+        event,
+    ) => {
+        onMouseLeave?.(event);
+        setHovered(false);
+    };
+
+    const buttonContent = (
+        <div className="relative flex h-full w-full items-center justify-center">
+            {fancyAnimationsEnabled ? (
+                <>
+                    <Bookmark
+                        className={`transition-all duration-300 ease-in-out ${
+                            isBookmarked && hovered
+                                ? "-translate-x-7"
+                                : "translate-x-0"
+                        }`}
+                    />
+                    <span
+                        className={`absolute transition-all duration-300 ease-in-out -translate-x-6.5 ${
+                            isBookmarked && hovered
+                                ? "opacity-100"
+                                : "opacity-0"
+                        }`}
+                    >
+                        Remove
+                    </span>
+                    <span
+                        className={`ml-2 transition-all duration-300 ease-in-out ${
+                            isBookmarked && hovered
+                                ? "translate-x-7"
+                                : "translate-x-0"
+                        }`}
+                    >
+                        Bookmark
+                    </span>
+                </>
+            ) : (
+                <>
+                    <Bookmark />
+                    <span>
+                        {isBookmarked
+                            ? hovered
+                                ? "Remove"
+                                : "Bookmarked"
+                            : "Bookmark"}
+                    </span>
+                </>
+            )}
+        </div>
+    );
 
     const buttonClass = cn(
-        `w-full xl:flex-1 relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
+        `relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
             isBookmarked
                 ? "bg-accent-positive hover:bg-negative"
                 : "bg-background hover:bg-accent-positive"
@@ -146,21 +174,21 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const button = (
         <Button
             aria-label={isBookmarked ? "Remove Bookmark" : "Bookmark"}
-            variant={"ghost"}
-            size="lg"
+            variant={variant}
+            size={size}
             className={buttonClass}
-            disabled={!user || isBookmarked === undefined}
-            onClick={
-                isBookmarked ? handleRemoveBookmark : handleBookmarkClick
+            disabled={disabled || !user || isBookmarked === undefined}
+            loading={
+                loading || isBookmarked === null || isPending || isQueryLoading
             }
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            {...props}
         >
             {buttonContent}
         </Button>
     );
 
     return button;
-};
-
-export default BookmarkButton;
+}
