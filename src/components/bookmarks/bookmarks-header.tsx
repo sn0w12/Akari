@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { client } from "@/lib/api";
 import { toastManager } from "@/components/ui/toast";
+import { client } from "@/lib/api";
 import { useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
@@ -36,10 +36,14 @@ type SearchAction =
 
 function searchReducer(state: SearchState, action: SearchAction): SearchState {
     switch (action.type) {
-        case "CLEAR": return { searchResults: [], error: null };
-        case "SUCCESS": return { searchResults: action.results, error: null };
-        case "ERROR": return { searchResults: [], error: action.error };
-        case "CLEAR_ERROR": return { ...state, error: null };
+        case "CLEAR":
+            return { searchResults: [], error: null };
+        case "SUCCESS":
+            return { searchResults: action.results, error: null };
+        case "ERROR":
+            return { searchResults: [], error: action.error };
+        case "CLEAR_ERROR":
+            return { ...state, error: null };
     }
 }
 
@@ -47,6 +51,7 @@ export default function BookmarksHeader() {
     const router = useRouter();
     const [searchValue, setSearchValue] = useState("");
     const [isPending, startTransition] = useTransition();
+    const [isExporting, setIsExporting] = useState(false);
     const [{ searchResults, error }, dispatch] = useReducer(searchReducer, {
         searchResults: [] as BookmarkResult[],
         error: null,
@@ -80,7 +85,10 @@ export default function BookmarksHeader() {
                     if (!ignore) dispatch({ type: "SUCCESS", results });
                 } catch {
                     if (!ignore) {
-                        dispatch({ type: "ERROR", error: "Failed to fetch results. Please try again." });
+                        dispatch({
+                            type: "ERROR",
+                            error: "Failed to fetch results. Please try again.",
+                        });
                     }
                 }
             });
@@ -110,7 +118,10 @@ export default function BookmarksHeader() {
         );
 
         if (firstError || !firstData) {
-            toastManager.add({ title: "Error fetching bookmarks", type: "error" });
+            toastManager.add({
+                title: "Error fetching bookmarks",
+                type: "error",
+            });
             return;
         }
 
@@ -131,7 +142,10 @@ export default function BookmarksHeader() {
 
             for (const { data, error } of results) {
                 if (error || !data) {
-                    toastManager.add({ title: "Error fetching bookmarks", type: "error" });
+                    toastManager.add({
+                        title: "Error fetching bookmarks",
+                        type: "error",
+                    });
                     return;
                 }
                 allBookmarks.push(...data.data.items);
@@ -152,6 +166,15 @@ export default function BookmarksHeader() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    function handleExportBookmarks() {
+        startTransition(() => {
+            setIsExporting(true);
+            void exportBookmarks().finally(() => {
+                setIsExporting(false);
+            });
+        });
     }
 
     const handleSelect = (result: BookmarkResult) => {
@@ -191,7 +214,8 @@ export default function BookmarksHeader() {
                     variant="outline"
                     size="lg"
                     className="hidden md:flex w-auto md:h-auto items-center justify-center px-4"
-                    onClick={exportBookmarks}
+                    loading={isExporting}
+                    onClick={handleExportBookmarks}
                 >
                     Export Bookmarks
                 </Button>
