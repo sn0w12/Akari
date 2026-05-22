@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import type * as React from "react";
 
 export function Breadcrumb({
@@ -18,7 +18,7 @@ export function BreadcrumbList({
     return (
         <ol
             className={cn(
-                "wrap-break-word flex flex-wrap items-center gap-1.5 text-muted-foreground text-sm sm:gap-2.5",
+                "wrap-break-word flex flex-wrap items-center gap-1.5 text-muted-foreground text-sm",
                 className,
             )}
             data-slot="breadcrumb-list"
@@ -83,7 +83,7 @@ export function BreadcrumbSeparator({
             role="presentation"
             {...props}
         >
-            {children ?? <ChevronRight />}
+            {children ?? "/"}
         </li>
     );
 }
