@@ -1,14 +1,11 @@
+import { genreSeverityRank } from "@/lib/api/search";
 import { Link } from "@tanstack/react-router";
 import { Badge, BadgeVariantProps } from "../../ui/badge";
 
-const genreVariantMap: Record<string, BadgeVariantProps["variant"]> = {
-    adult: "destructive",
-    hentai: "destructive",
-    mature: "destructive",
-    shoujo_ai: "destructive",
-    shounen_ai: "destructive",
-    smut: "destructive",
-    ecchi: "warning",
+const genreVariantBySeverity: Record<number, BadgeVariantProps["variant"]> = {
+    0: "secondary",
+    1: "warning",
+    2: "destructive",
 };
 
 export function GenreBadge({
@@ -18,12 +15,12 @@ export function GenreBadge({
     genre: string;
     size?: BadgeVariantProps["size"];
 }) {
+    const severity =
+        genreSeverityRank[genre.toLowerCase().replaceAll(" ", "_")] ?? 0;
+
     return (
         <Badge
-            variant={
-                genreVariantMap[genre.toLowerCase().replaceAll(" ", "_")] ||
-                "secondary"
-            }
+            variant={genreVariantBySeverity[severity]}
             size={size}
             render={
                 <Link

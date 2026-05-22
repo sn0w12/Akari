@@ -3,6 +3,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { sortGenresByCategory } from "@/lib/api/search";
 import { createJsonLd } from "@/lib/seo";
 import { formatNumberShort, pluralize } from "@/lib/utils";
 import type { components } from "@/types/api";
@@ -86,6 +87,8 @@ export function MangaDetailsComponent({
 }: {
     manga: components["schemas"]["MangaResponse"];
 }) {
+    const sortedGenres = sortGenresByCategory(manga.genres);
+
     const alternativeTitles = (manga.alternativeTitles || []).filter(
         (title) => title.toLowerCase() !== manga.title.toLowerCase(),
     );
@@ -96,7 +99,7 @@ export function MangaDetailsComponent({
         alternateName: alternativeTitles.join(", "),
         image: manga.cover,
         description: manga.description,
-        genre: manga.genres,
+        genre: sortedGenres,
         author: manga.authors.map((author) =>
             createJsonLd<Person>({
                 "@type": "Person",
@@ -264,7 +267,7 @@ export function MangaDetailsComponent({
                                         Genres:
                                     </h2>
                                     <div className="flex flex-wrap gap-2 overflow-y-visible md:max-h-24 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
-                                        {manga.genres.map((genre: string) => (
+                                        {sortedGenres.map((genre: string) => (
                                             <GenreBadge
                                                 key={genre}
                                                 genre={genre}

@@ -1,6 +1,7 @@
 import { Image } from "@/components/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import { sortGenresByCategory } from "@/lib/api/search";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { GenreBadge } from "../manga-details/badges/genre";
@@ -116,6 +117,8 @@ interface PopularMangaCardProps {
 }
 
 function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
+    const sortedGenres = sortGenresByCategory(manga.genres);
+
     return (
         <Card>
             <Link
@@ -159,16 +162,16 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                     </PopularMangaCardInfo>
                     <PopularMangaCardInfo label="Genres">
                         <div className="flex flex-wrap gap-1">
-                            {manga.genres.slice(0, 6).map((genre) => (
+                            {sortedGenres.slice(0, 6).map((genre) => (
                                 <GenreBadge
                                     key={genre}
                                     genre={genre}
                                     size="lg"
                                 />
                             ))}
-                            {manga.genres.length > 6 && (
+                            {sortedGenres.length > 6 && (
                                 <GenreBadge
-                                    genre={`+${manga.genres.length - 6}`}
+                                    genre={`+${sortedGenres.length - 6}`}
                                     size="lg"
                                 />
                             )}

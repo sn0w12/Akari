@@ -1,5 +1,6 @@
 import { Image } from "@/components/image";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { sortGenresByCategory } from "@/lib/api/search";
 import { cn } from "@/lib/utils";
 import { useThrottledCallback } from "@tanstack/react-pacer";
 import { Link } from "@tanstack/react-router";
@@ -41,10 +42,18 @@ type ExpandAction =
 
 function expandReducer(state: ExpandState, action: ExpandAction): ExpandState {
     switch (action.type) {
-        case "SHOULD_EXPAND": return { ...state, shouldExpand: action.value };
-        case "COMPUTED_DIRECTION": return { ...state, computedDirection: action.direction };
-        case "DIMENSIONS": return { ...state, cardWidth: action.width, cardHeight: action.height };
-        case "USE_FIXED_HEIGHT": return { ...state, useFixedHeight: action.value };
+        case "SHOULD_EXPAND":
+            return { ...state, shouldExpand: action.value };
+        case "COMPUTED_DIRECTION":
+            return { ...state, computedDirection: action.direction };
+        case "DIMENSIONS":
+            return {
+                ...state,
+                cardWidth: action.width,
+                cardHeight: action.height,
+            };
+        case "USE_FIXED_HEIGHT":
+            return { ...state, useFixedHeight: action.value };
     }
 }
 
@@ -62,8 +71,19 @@ export function MangaCard({
     className,
     priority = false,
 }: MangaCardProps) {
-    const [expandState, dispatch] = useReducer(expandReducer, INITIAL_EXPAND_STATE);
-    const { shouldExpand, computedDirection, cardWidth, cardHeight, useFixedHeight } = expandState;
+    const sortedGenres = sortGenresByCategory(manga.genres);
+
+    const [expandState, dispatch] = useReducer(
+        expandReducer,
+        INITIAL_EXPAND_STATE,
+    );
+    const {
+        shouldExpand,
+        computedDirection,
+        cardWidth,
+        cardHeight,
+        useFixedHeight,
+    } = expandState;
     const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -73,7 +93,11 @@ export function MangaCard({
     const updateDirectionCallback = () => {
         const rect = cardRef.current?.getBoundingClientRect();
         if (rect) {
-            dispatch({ type: "DIMENSIONS", width: rect.width, height: rect.height });
+            dispatch({
+                type: "DIMENSIONS",
+                width: rect.width,
+                height: rect.height,
+            });
 
             if (expandDirection === "auto") {
                 const spaceOnRight = window.innerWidth - rect.right;
@@ -81,10 +105,14 @@ export function MangaCard({
 
                 dispatch({
                     type: "COMPUTED_DIRECTION",
-                    direction: spaceOnRight < expansionWidth + 20 ? "left" : "right",
+                    direction:
+                        spaceOnRight < expansionWidth + 20 ? "left" : "right",
                 });
             } else {
-                dispatch({ type: "COMPUTED_DIRECTION", direction: expandDirection });
+                dispatch({
+                    type: "COMPUTED_DIRECTION",
+                    direction: expandDirection,
+                });
             }
         }
     };
@@ -114,24 +142,29 @@ export function MangaCard({
             collapseTimeoutRef.current = null;
         }
 
-            if (cardRef.current) {
-                const rect = cardRef.current.getBoundingClientRect();
-                dispatch({ type: "DIMENSIONS", width: rect.width, height: rect.height });
+        if (cardRef.current) {
+            const rect = cardRef.current.getBoundingClientRect();
+            dispatch({
+                type: "DIMENSIONS",
+                width: rect.width,
+                height: rect.height,
+            });
 
-                if (expandDirection === "auto") {
-                    const spaceOnRight = window.innerWidth - rect.right;
-                    const expansionWidth = rect.width;
-                    dispatch({
-                        type: "COMPUTED_DIRECTION",
-                        direction: spaceOnRight < expansionWidth + 20 ? "left" : "right",
-                    });
-                }
+            if (expandDirection === "auto") {
+                const spaceOnRight = window.innerWidth - rect.right;
+                const expansionWidth = rect.width;
+                dispatch({
+                    type: "COMPUTED_DIRECTION",
+                    direction:
+                        spaceOnRight < expansionWidth + 20 ? "left" : "right",
+                });
             }
+        }
 
-            dispatch({ type: "USE_FIXED_HEIGHT", value: true });
-            expandTimeoutRef.current = setTimeout(() => {
-                dispatch({ type: "SHOULD_EXPAND", value: true });
-            }, 300);
+        dispatch({ type: "USE_FIXED_HEIGHT", value: true });
+        expandTimeoutRef.current = setTimeout(() => {
+            dispatch({ type: "SHOULD_EXPAND", value: true });
+        }, 300);
     };
 
     const handleMouseLeave = () => {
@@ -144,9 +177,9 @@ export function MangaCard({
         }
 
         dispatch({ type: "SHOULD_EXPAND", value: false });
-            collapseTimeoutRef.current = setTimeout(() => {
-                dispatch({ type: "USE_FIXED_HEIGHT", value: false });
-            }, 300);
+        collapseTimeoutRef.current = setTimeout(() => {
+            dispatch({ type: "USE_FIXED_HEIGHT", value: false });
+        }, 300);
     };
 
     useEffect(() => {
@@ -272,12 +305,12 @@ export function MangaCard({
                             Genres
                         </p>
                         <div className="flex flex-wrap gap-1">
-                            {manga.genres.slice(0, 6).map((genre) => (
+                            {sortedGenres.slice(0, 6).map((genre) => (
                                 <GenreBadge key={genre} genre={genre} />
                             ))}
-                            {manga.genres.length > 6 && (
+                            {sortedGenres.length > 6 && (
                                 <GenreBadge
-                                    genre={`+${manga.genres.length - 6}`}
+                                    genre={`+${sortedGenres.length - 6}`}
                                 />
                             )}
                         </div>
