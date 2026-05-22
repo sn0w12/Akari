@@ -20,6 +20,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useConfirm } from "@/contexts/confirm-context";
 import {
     type ButtonSetting,
     type CheckboxGroupSetting,
@@ -31,7 +32,6 @@ import {
     getDefaultSettingsValue,
     getSettingValue,
 } from "@/lib/settings";
-import { useConfirm } from "@/contexts/confirm-context";
 import { cn } from "@/lib/utils";
 import { formatForDisplay, useHotkeyRecorder } from "@tanstack/react-hotkeys";
 import { Info, RotateCcw } from "lucide-react";
@@ -192,6 +192,7 @@ function SettingInputRenderer({
         case "select":
             return (
                 <Select
+                    items={setting.options}
                     value={getSettingValue(setting) as string}
                     onValueChange={(value) => {
                         setting.onChange?.(value ?? "");
@@ -206,7 +207,7 @@ function SettingInputRenderer({
                                 />
                             }
                         >
-                            <SelectValue placeholder={"Select an option"} />
+                            <SelectValue placeholder="Select an option" />
                         </ContextMenuTrigger>
                         <ContextMenuContent>
                             <ContextMenuItem
