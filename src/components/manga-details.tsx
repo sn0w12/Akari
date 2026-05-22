@@ -290,7 +290,7 @@ export function MangaDetailsComponent({
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full flex flex-col">
                             <Card
-                                className="w-full h-full max-h-60 md:max-h-96 lg:max-h-none p-4 overflow-y-auto"
+                                className="w-full h-full max-h-60 md:max-h-96 lg:max-h-[527px] p-4 overflow-y-auto"
                                 aria-label="Description"
                                 role="region"
                                 data-scrollbar-custom
