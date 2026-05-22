@@ -1,6 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { DrawerConfirm } from "@/components/ui/confirm";
-import { Drawer, DrawerPopup, DrawerTrigger } from "@/components/ui/drawer";
 import {
     ResponsiveModal,
     ResponsiveModalDialogOnly,
@@ -11,11 +9,11 @@ import {
     ResponsiveModalTitle,
     ResponsiveModalTrigger,
 } from "@/components/ui/responsive-modal";
+import { toastManager } from "@/components/ui/toast";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { removeBookmark } from "@/lib/manga/bookmarks";
 import { syncAllServices } from "@/lib/manga/sync";
-import { toastManager } from "@/components/ui/toast";
 import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 
@@ -25,7 +23,7 @@ export function ConfirmDialogs({
     bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
 }) {
     const [open, setOpen] = useState(false);
-    const { confirm } = useConfirm();
+    const { confirm, ConfirmHost } = useConfirm();
 
     async function handleRemoveBookmark(mangaId: string, shouldConfirm = true) {
         if (shouldConfirm) {
@@ -45,11 +43,17 @@ export function ConfirmDialogs({
         setOpen(false);
 
         if (!data) {
-            toastManager.add({ title: "Failed to remove bookmark", type: "error" });
+            toastManager.add({
+                title: "Failed to remove bookmark",
+                type: "error",
+            });
             return false;
         }
 
-        toastManager.add({ title: "Bookmark removed successfully", type: "success" });
+        toastManager.add({
+            title: "Bookmark removed successfully",
+            type: "success",
+        });
         return true;
     }
 
@@ -89,7 +93,10 @@ export function ConfirmDialogs({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to update bookmark", type: "error" });
+            toastManager.add({
+                title: "Failed to update bookmark",
+                type: "error",
+            });
             setOpen(false);
             return false;
         }
@@ -97,11 +104,17 @@ export function ConfirmDialogs({
         const success = await syncAllServices(data.data);
         setOpen(false);
         if (!success) {
-            toastManager.add({ title: "Failed to sync manga services", type: "error" });
+            toastManager.add({
+                title: "Failed to sync manga services",
+                type: "error",
+            });
             return false;
         }
 
-        toastManager.add({ title: "Bookmark updated successfully", type: "success" });
+        toastManager.add({
+            title: "Bookmark updated successfully",
+            type: "success",
+        });
         return true;
     }
 
@@ -118,6 +131,7 @@ export function ConfirmDialogs({
                     </Button>
                 }
             />
+            <ConfirmHost />
             <ResponsiveModalPopup align="end">
                 <ResponsiveModalDrawerOnly>
                     <ResponsiveModalHeader>
@@ -176,49 +190,26 @@ function BookmarkDrawerContent({
     ) => Promise<boolean>;
     removeBookmark: (id: string, shouldConfirm?: boolean) => Promise<boolean>;
 }) {
-    const [updateOpen, setUpdateOpen] = useState(false);
-    const [removeOpen, setRemoveOpen] = useState(false);
-
     return (
         <div className="flex flex-col gap-2">
-            <Drawer open={updateOpen} onOpenChange={setUpdateOpen}>
-                <DrawerTrigger render={<Button variant="success" />}>
-                    Mark as Read
-                </DrawerTrigger>
-                <DrawerPopup>
-                    <DrawerConfirm
-                        title="Mark as Read"
-                        description="Are you sure?"
-                        onCancel={() => setUpdateOpen(false)}
-                        onConfirm={async () => {
-                            await updateBookmark(
-                                bookmark.mangaId,
-                                bookmark.latestChapter.number,
-                                bookmark.latestChapter.scanlatorId,
-                                false,
-                            );
-                            setUpdateOpen(false);
-                        }}
-                    />
-                </DrawerPopup>
-            </Drawer>
-            <Drawer open={removeOpen} onOpenChange={setRemoveOpen}>
-                <DrawerTrigger render={<Button variant="destructive" />}>
-                    Remove Bookmark
-                </DrawerTrigger>
-                <DrawerPopup>
-                    <DrawerConfirm
-                        title="Remove Bookmark"
-                        description="Are you sure?"
-                        variant="destructive"
-                        onCancel={() => setRemoveOpen(false)}
-                        onConfirm={async () => {
-                            await removeBookmark(bookmark.mangaId, false);
-                            setRemoveOpen(false);
-                        }}
-                    />
-                </DrawerPopup>
-            </Drawer>
+            <Button
+                onClick={() =>
+                    updateBookmark(
+                        bookmark.mangaId,
+                        bookmark.latestChapter.number,
+                        bookmark.latestChapter.scanlatorId,
+                    )
+                }
+                variant="success"
+            >
+                Mark as Read
+            </Button>
+            <Button
+                onClick={() => removeBookmark(bookmark.mangaId)}
+                variant="destructive"
+            >
+                Remove Bookmark
+            </Button>
         </div>
     );
 }

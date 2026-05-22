@@ -242,7 +242,7 @@ export default function SettingsPage() {
                     variant="destructive"
                     size="sm"
                     onClick={async () => {
-                        await confirm({
+                        const confirmed = await confirm({
                             title: "Reset",
                             description:
                                 "Are you sure you want to reset all settings to their default values?",
@@ -250,6 +250,8 @@ export default function SettingsPage() {
                             cancelText: "Cancel",
                             variant: "destructive",
                         });
+                        if (!confirmed) return;
+
                         resetAllSettingsToDefault();
                         setSettings(defaultSettings);
                     }}

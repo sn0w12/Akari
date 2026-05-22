@@ -13,16 +13,17 @@ import {
     SmallSecondaryAccount,
     validateSecondaryAccounts,
 } from "@/lib/auth/secondary-accounts";
+import { useConfirm } from "@/contexts/confirm-context";
 import { cn } from "@/lib/utils";
 import { Download, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
-import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function ConnectedAccounts() {
     const [validAccounts, setValidAccounts] = useState<SmallSecondaryAccount[]>(
         [],
     );
+    const { confirm } = useConfirm();
 
     useEffect(() => {
         async function validate() {
@@ -33,6 +34,15 @@ export function ConnectedAccounts() {
     }, []);
 
     const handleLogout = async (account: SecondaryAccount) => {
+        const confirmed = await confirm({
+            title: "Disconnect Account",
+            description: `Are you sure you want to disconnect your ${account.name} account? This will stop syncing your manga data.`,
+            confirmText: "Disconnect",
+            cancelText: "Cancel",
+            variant: "destructive",
+        });
+        if (!confirmed) return;
+
         const success = await account.logOut();
         if (success) {
             setValidAccounts((accounts) =>
@@ -137,25 +147,16 @@ export function ConnectedAccounts() {
                                                 <Download className="size-4" />
                                                 Import Manga
                                             </ButtonLink>
-                                            <ButtonConfirmDialog
-                                                triggerButton={
-                                                    <Button
-                                                        variant="destructive"
-                                                        className="flex-1 sm:flex-initial"
-                                                    >
-                                                        <LogOut className="size-4" />
-                                                        Disconnect
-                                                    </Button>
-                                                }
-                                                title="Disconnect Account"
-                                                description={`Are you sure you want to disconnect your ${account.name} account? This will stop syncing your manga data.`}
-                                                confirmText="Disconnect"
-                                                cancelText="Cancel"
+                                            <Button
                                                 variant="destructive"
-                                                onConfirm={() =>
+                                                className="flex-1 sm:flex-initial"
+                                                onClick={() =>
                                                     handleLogout(account)
                                                 }
-                                            />
+                                            >
+                                                <LogOut className="size-4" />
+                                                Disconnect
+                                            </Button>
                                         </>
                                     ) : (
                                         <a

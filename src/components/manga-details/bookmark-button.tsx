@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { toastManager } from "@/components/ui/toast";
+import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import {
     bookmarkManga,
@@ -11,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
 import React, { useState, useTransition } from "react";
-import { ButtonConfirmDialog } from "../ui/confirm";
 import Spinner from "../ui/puff-loader";
 
 interface BookmarkButtonProps {
@@ -28,6 +28,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const [isPending, startTransition] = useTransition();
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
     const { data: user } = useUser();
+    const { confirm } = useConfirm();
 
     const {
         data: isBookmarked,
@@ -62,6 +63,13 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
     const handleRemoveBookmark = async () => {
         if (!mangaId || isBookmarked === null || !isBookmarked) return;
+
+        const confirmed = await confirm({
+            title: "Confirm Bookmark Removal",
+            description: "Are you sure you want to remove this bookmark?",
+            variant: "destructive",
+        });
+        if (!confirmed) return;
 
         startTransition(async () => {
             try {
@@ -142,7 +150,9 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             size="lg"
             className={buttonClass}
             disabled={!user || isBookmarked === undefined}
-            onClick={handleBookmarkClick}
+            onClick={
+                isBookmarked ? handleRemoveBookmark : handleBookmarkClick
+            }
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
@@ -150,17 +160,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         </Button>
     );
 
-    return isBookmarked ? (
-        <ButtonConfirmDialog
-            triggerButton={button}
-            title="Confirm Bookmark Removal"
-            description="Are you sure you want to remove this bookmark?"
-            variant="destructive"
-            onConfirm={handleRemoveBookmark}
-        />
-    ) : (
-        button
-    );
+    return button;
 };
 
 export default BookmarkButton;

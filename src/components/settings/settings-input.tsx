@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/ui/color-picker";
-import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import {
     ContextMenu,
     ContextMenuContent,
@@ -32,6 +31,7 @@ import {
     getDefaultSettingsValue,
     getSettingValue,
 } from "@/lib/settings";
+import { useConfirm } from "@/contexts/confirm-context";
 import { cn } from "@/lib/utils";
 import { formatForDisplay, useHotkeyRecorder } from "@tanstack/react-hotkeys";
 import { Info, RotateCcw } from "lucide-react";
@@ -100,6 +100,8 @@ function SettingInputRenderer({
     setting,
     settingsMap,
 }: SettingsInputProps) {
+    const { confirm } = useConfirm();
+
     switch (setting.type) {
         case "checkbox":
             return (
@@ -365,15 +367,21 @@ function SettingInputRenderer({
 
             const variant = buttonSetting.confirmVariant ?? "default";
             return (
-                <ButtonConfirmDialog
-                    triggerButton={
-                        <Button className="mb-0">{buttonSetting.label}</Button>
-                    }
-                    title={"Confirm"}
-                    description={buttonSetting.confirmation ?? ""}
-                    onConfirm={() => buttonSetting.onClick?.()}
-                    variant={variant}
-                />
+                <Button
+                    onClick={async () => {
+                        const confirmed = await confirm({
+                            title: "Confirm",
+                            description: buttonSetting.confirmation ?? "",
+                            variant,
+                        });
+                        if (!confirmed) return;
+
+                        buttonSetting.onClick?.();
+                    }}
+                    className="mb-0"
+                >
+                    {buttonSetting.label}
+                </Button>
             );
         }
         case "color":

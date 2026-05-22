@@ -1,12 +1,12 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useConfirm } from "@/contexts/confirm-context";
 import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
-import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
     user,
@@ -15,8 +15,19 @@ export function UserProfile({
 }) {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { confirm } = useConfirm();
 
     const handleLogout = async () => {
+        const confirmed = await confirm({
+            title: "Confirm Logout",
+            description:
+                "Are you sure you want to logout from all accounts? This will also disconnect all linked services.",
+            confirmText: "Logout",
+            cancelText: "Cancel",
+            variant: "destructive",
+        });
+        if (!confirmed) return;
+
         await logOut(SECONDARY_ACCOUNTS);
         queryClient.invalidateQueries({ queryKey: ["user"] });
         router.navigate({ to: "/" });
@@ -43,20 +54,10 @@ export function UserProfile({
                     </div>
                 </div>
 
-                <ButtonConfirmDialog
-                    triggerButton={
-                        <Button variant="destructive">
-                            <LogOut className="size-4" />
-                            Logout
-                        </Button>
-                    }
-                    title="Confirm Logout"
-                    description="Are you sure you want to logout from all accounts? This will also disconnect all linked services."
-                    confirmText="Logout"
-                    cancelText="Cancel"
-                    variant="destructive"
-                    onConfirm={handleLogout}
-                />
+                <Button variant="destructive" onClick={handleLogout}>
+                    <LogOut className="size-4" />
+                    Logout
+                </Button>
             </div>
         </Card>
     );
