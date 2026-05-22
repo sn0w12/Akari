@@ -2,7 +2,7 @@ import { parseUserAgent } from "@/lib/ua";
 import {
     createContext,
     ReactNode,
-    useContext,
+    use,
     useEffect,
     useState,
 } from "react";
@@ -58,6 +58,6 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
 }
 
 export function useDevice(): DeviceInfo {
-    const context = useContext(DeviceContext);
+    const context = use(DeviceContext);
     return context;
 }

@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 
 export const Route = createFileRoute("/_default/auth/error/")({
+    validateSearch: (search: Record<string, string>) => ({
+        error: search.error || "",
+    }),
     component: AuthErrorPage,
     headers: () => ({
         "Cache-Control": new ResponseCacheControlBuilder().noCache().build(),
-    }),
-    validateSearch: (search: Record<string, string>) => ({
-        error: search.error || "",
     }),
 });
 

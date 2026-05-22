@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/auth/client";
 import { Provider } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 const providers = [
     {
@@ -25,28 +25,28 @@ const providers = [
 
 export function Providers() {
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const handleSocialLogin = async (provider: Provider) => {
         const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+        startTransition(async () => {
+            setError(null);
 
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: `${window.location.origin}/auth/oauth`,
-                },
-            });
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider,
+                    options: {
+                        redirectTo: `${window.location.origin}/auth/oauth`,
+                    },
+                });
 
-            if (error) throw error;
-        } catch (error: unknown) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-            setIsLoading(false);
-        }
+                if (error) throw error;
+            } catch (error: unknown) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
+            }
+        });
     };
 
     return (
@@ -67,7 +67,7 @@ export function Providers() {
                         key={p.provider}
                         variant="outline"
                         onClick={() => handleSocialLogin(p.provider)}
-                        disabled={isLoading}
+                        disabled={isPending}
                         className="w-full"
                     >
                         {p.icon}

@@ -79,8 +79,8 @@ export class StorageWrapper<T extends SchemaDefinition> {
                     const arraySep = fieldDef.arraySeparator || ";";
                     const arrayValues = (data[key] as (string | number)[]).map(
                         (item) =>
-                            String(item).replace(
-                                new RegExp(`\\${arraySep}`, "g"),
+                            String(item).replaceAll(
+                                arraySep,
                                 `\\${arraySep}`,
                             ),
                     );
@@ -89,8 +89,8 @@ export class StorageWrapper<T extends SchemaDefinition> {
                     encodedValue = String(data[key]);
                 }
 
-                encodedValue = encodedValue.replace(
-                    new RegExp(`\\${this.separator}`, "g"),
+                encodedValue = encodedValue.replaceAll(
+                    this.separator,
                     `\\${this.separator}`,
                 );
                 values.push(encodedValue);

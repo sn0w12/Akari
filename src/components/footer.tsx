@@ -4,13 +4,14 @@ import { Separator } from "./ui/separator";
 
 export default function Footer() {
     const version = pkg.version;
+
     return (
         <footer className="flex flex-col justify-center border-t h-30 md:h-23 flex-shrink-0">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-2">
                     <div>
                         <p className="text-center text-base flex items-center justify-center gap-2">
-                            <span>&copy; {new Date().getFullYear()} Akari</span>
+                            <span suppressHydrationWarning>&copy; {new Date().getFullYear()} Akari</span>
                             <span className="h-4 border-r border-gray-400"></span>
                             <span>v{version}</span>
                             <span className="h-4 border-r border-gray-400"></span>

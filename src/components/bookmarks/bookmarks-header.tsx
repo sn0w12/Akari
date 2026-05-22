@@ -13,7 +13,7 @@ import { toastManager } from "@/components/ui/toast";
 import { useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState, useTransition } from "react";
 import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 type BookmarkResult = {
@@ -23,12 +23,34 @@ type BookmarkResult = {
     type: string;
 };
 
+type SearchState = {
+    searchResults: BookmarkResult[];
+    error: string | null;
+};
+
+type SearchAction =
+    | { type: "CLEAR" }
+    | { type: "SUCCESS"; results: BookmarkResult[] }
+    | { type: "ERROR"; error: string }
+    | { type: "CLEAR_ERROR" };
+
+function searchReducer(state: SearchState, action: SearchAction): SearchState {
+    switch (action.type) {
+        case "CLEAR": return { searchResults: [], error: null };
+        case "SUCCESS": return { searchResults: action.results, error: null };
+        case "ERROR": return { searchResults: [], error: action.error };
+        case "CLEAR_ERROR": return { ...state, error: null };
+    }
+}
+
 export default function BookmarksHeader() {
     const router = useRouter();
     const [searchValue, setSearchValue] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState<BookmarkResult[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const [{ searchResults, error }, dispatch] = useReducer(searchReducer, {
+        searchResults: [] as BookmarkResult[],
+        error: null,
+    });
 
     async function getBookmarkSearchResults(query: string) {
         const { data, error } = await client.GET("/v2/bookmarks/search", {
@@ -40,30 +62,28 @@ export default function BookmarksHeader() {
 
     useEffect(() => {
         if (!searchValue.trim()) {
-            setSearchResults([]);
-            setIsLoading(false);
-            setError(null);
+            startTransition(() => {
+                dispatch({ type: "CLEAR" });
+            });
             return;
         }
 
-        setIsLoading(true);
-        setError(null);
+        dispatch({ type: "CLEAR_ERROR" });
         let ignore = false;
 
-        const timeoutId = setTimeout(async () => {
-            try {
-                const results = await getBookmarkSearchResults(
-                    searchValue.trim(),
-                );
-                if (!ignore) setSearchResults(results);
-            } catch {
-                if (!ignore) {
-                    setError("Failed to fetch results. Please try again.");
-                    setSearchResults([]);
+        const timeoutId = setTimeout(() => {
+            startTransition(async () => {
+                try {
+                    const results = await getBookmarkSearchResults(
+                        searchValue.trim(),
+                    );
+                    if (!ignore) dispatch({ type: "SUCCESS", results });
+                } catch {
+                    if (!ignore) {
+                        dispatch({ type: "ERROR", error: "Failed to fetch results. Please try again." });
+                    }
                 }
-            } finally {
-                if (!ignore) setIsLoading(false);
-            }
+            });
         }, 300);
 
         return () => {
@@ -75,28 +95,47 @@ export default function BookmarksHeader() {
     async function exportBookmarks() {
         const allBookmarks: components["schemas"]["BookmarkListResponse"]["items"] =
             [];
-        let currentPage = 1;
-        let totalPages = 1;
         const pageSize = 100;
 
-        while (currentPage <= totalPages) {
-            const { data, error } = await client.GET("/v2/bookmarks", {
+        const { data: firstData, error: firstError } = await client.GET(
+            "/v2/bookmarks",
+            {
                 params: {
                     query: {
-                        page: currentPage,
+                        page: 1,
                         pageSize,
                     },
                 },
-            });
+            },
+        );
 
-            if (error || !data) {
-                toastManager.add({ title: "Error fetching bookmarks", type: "error" });
-                return;
+        if (firstError || !firstData) {
+            toastManager.add({ title: "Error fetching bookmarks", type: "error" });
+            return;
+        }
+
+        allBookmarks.push(...firstData.data.items);
+        const totalPages = firstData.data.totalPages;
+
+        if (totalPages > 1) {
+            const pagePromises = [];
+            for (let page = 2; page <= totalPages; page++) {
+                pagePromises.push(
+                    client.GET("/v2/bookmarks", {
+                        params: { query: { page, pageSize } },
+                    }),
+                );
             }
 
-            allBookmarks.push(...data.data.items);
-            totalPages = data.data.totalPages;
-            currentPage++;
+            const results = await Promise.all(pagePromises);
+
+            for (const { data, error } of results) {
+                if (error || !data) {
+                    toastManager.add({ title: "Error fetching bookmarks", type: "error" });
+                    return;
+                }
+                allBookmarks.push(...data.data.items);
+            }
         }
 
         const bookmarksBlob = new Blob(
@@ -120,10 +159,10 @@ export default function BookmarksHeader() {
     };
 
     let status: ReactNode;
-    if (isLoading) {
+    if (isPending) {
         status = (
             <span className="flex items-center justify-between gap-2 text-muted-foreground">
-                Searching...
+                Searching&hellip;
                 <Spinner className="size-4.5 sm:size-4" />
             </span>
         );
@@ -176,7 +215,7 @@ export default function BookmarksHeader() {
                         />
                         {shouldRenderPopup && (
                             <AutocompletePopup
-                                aria-busy={isLoading || undefined}
+                                aria-busy={isPending || undefined}
                                 align="start"
                             >
                                 {status && (

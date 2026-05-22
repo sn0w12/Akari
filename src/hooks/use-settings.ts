@@ -8,7 +8,7 @@ import {
 export const useSettings = () => {
     const [settings, setSettingsState] = useState<SettingsInterface>(() => {
         if (typeof window !== "undefined") {
-            const storedSettings = localStorage.getItem("settings");
+            const storedSettings = localStorage.getItem("settings:v1");
             return storedSettings
                 ? JSON.parse(storedSettings)
                 : defaultSettings;
@@ -53,7 +53,7 @@ export const useSettings = () => {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            localStorage.setItem("settings", JSON.stringify(settings));
+            localStorage.setItem("settings:v1", JSON.stringify(settings));
         }
     }, [settings]);
 

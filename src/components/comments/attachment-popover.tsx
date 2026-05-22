@@ -9,19 +9,21 @@ import {
     ResponsiveModalTrigger,
 } from "@/components/ui/responsive-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toastManager } from "@/components/ui/toast";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
 import { StorageManager } from "@/lib/storage";
-import { toastManager } from "@/components/ui/toast";
 import type { components } from "@/types/api";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageIcon, Star, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Button } from "../ui/button";
 
 type UploadResponse = components["schemas"]["UploadResponse"];
+
+const EMPTY_FAVORITES: string[] = [];
 
 interface AttachmentPopoverProps {
     onSelect?: (upload: UploadResponse) => void;
@@ -35,7 +37,7 @@ function ImageGrid({
     onClose,
     onDelete,
     onToggleFavorite,
-    favorites = [],
+    favorites = EMPTY_FAVORITES,
 }: {
     uploads: UploadResponse[];
     isLoading: boolean;
@@ -111,7 +113,7 @@ function ImageGrid({
                                     }}
                                     className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors"
                                 >
-                                    <X className="h-3 w-3" />
+                                    <X className="size-3" />
                                 </button>
                             )}
                         </div>
@@ -124,26 +126,62 @@ function ImageGrid({
     );
 }
 
+// TODO: Extract FormState and formReducer into a separate component to reduce AttachmentPopover size
+type FormState = {
+    file: File | null;
+    uploading: boolean;
+    isDragOver: boolean;
+    previewUrl: string | null;
+    tags: string;
+};
+
+type FormAction =
+    | { type: "SET_FILE"; file: File | null }
+    | { type: "SET_PREVIEW_URL"; previewUrl: string | null }
+    | { type: "SET_UPLOADING"; uploading: boolean }
+    | { type: "SET_DRAG_OVER"; isDragOver: boolean }
+    | { type: "SET_TAGS"; tags: string }
+    | { type: "RESET" };
+
+function formReducer(state: FormState, action: FormAction): FormState {
+    switch (action.type) {
+        case "SET_FILE":
+            return { ...state, file: action.file };
+        case "SET_PREVIEW_URL":
+            return { ...state, previewUrl: action.previewUrl };
+        case "SET_UPLOADING":
+            return { ...state, uploading: action.uploading };
+        case "SET_DRAG_OVER":
+            return { ...state, isDragOver: action.isDragOver };
+        case "SET_TAGS":
+            return { ...state, tags: action.tags };
+        case "RESET":
+            return {
+                file: null,
+                uploading: false,
+                isDragOver: false,
+                previewUrl: null,
+                tags: "",
+            };
+    }
+}
+
 export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const [open, setOpen] = useState(false);
-    const [file, setFile] = useState<File | null>(null);
-    const [uploading, setUploading] = useState(false);
-    const [isDragOver, setIsDragOver] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [tags, setTags] = useState("");
+    const [{ file, uploading, isDragOver, previewUrl, tags }, dispatchForm] =
+        useReducer(formReducer, {
+            file: null,
+            uploading: false,
+            isDragOver: false,
+            previewUrl: null,
+            tags: "",
+        });
     const [searchQuery, setSearchQuery] = useState("");
     const [favorites, setFavorites] = useState<string[]>([]);
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: user } = useUser();
     const { confirm } = useConfirm();
-
-    // Load favorites from storage
-    useEffect(() => {
-        const storage = StorageManager.get("favoriteAttachments");
-        const data = storage.getWithDefaults();
-        setFavorites(data.ids as string[]);
-    }, []);
 
     const toggleFavorite = (upload: UploadResponse) => {
         const storage = StorageManager.get("favoriteAttachments");
@@ -154,17 +192,14 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
         let newIds: string[];
 
         if (index > -1) {
-            // Remove from favorites
             newIds = currentIds.filter((_, i) => i !== index);
         } else {
-            // Add to favorites
             newIds = [...currentIds, upload.id];
         }
 
         storage.set({ ids: newIds });
         setFavorites(newIds);
 
-        // Invalidate favorites query to refetch
         queryClient.invalidateQueries({ queryKey: ["favorite-uploads"] });
     };
 
@@ -175,10 +210,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     useEffect(() => {
         if (file) {
             const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
+            dispatchForm({ type: "SET_PREVIEW_URL", previewUrl: url });
             return () => URL.revokeObjectURL(url);
         } else {
-            setPreviewUrl(null);
+            dispatchForm({ type: "SET_PREVIEW_URL", previewUrl: null });
         }
     }, [file]);
 
@@ -255,14 +290,16 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
     const handleUpload = async (values: Record<string, unknown>) => {
         if (!file) return;
 
-        setUploading(true);
+        dispatchForm({ type: "SET_UPLOADING", uploading: true });
         const formData = new FormData();
         formData.append("file", file);
 
         const tagsArray = (values.tags as string)
             .split(",")
-            .map((t: string) => t.trim())
-            .filter(Boolean);
+            .flatMap((t: string) => {
+                const trimmed = t.trim();
+                return trimmed ? [trimmed] : [];
+            });
         tagsArray.forEach((tag) => formData.append("tags", tag));
 
         try {
@@ -272,14 +309,13 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
             if (data) {
                 queryClient.invalidateQueries({ queryKey: ["uploads"] });
                 onSelect?.(data.data);
-                setFile(null);
-                setTags("");
+                dispatchForm({ type: "RESET" });
                 setOpen(false);
             }
         } catch (error) {
             console.error("Failed to upload image:", error);
         } finally {
-            setUploading(false);
+            dispatchForm({ type: "SET_UPLOADING", uploading: false });
         }
     };
 
@@ -301,7 +337,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
             });
 
             if (error) {
-                toastManager.add({ title: "Failed to delete upload", type: "error" });
+                toastManager.add({
+                    title: "Failed to delete upload",
+                    type: "error",
+                });
                 throw new Error(
                     error.data.message || "Failed to delete upload",
                 );
@@ -321,11 +360,11 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0"
+                    className="size-8 p-0"
                     disabled={!user}
                     aria-label="Manage Attachments"
                 >
-                    <ImageIcon className="h-4 w-4" />
+                    <ImageIcon className="size-4" />
                 </Button>
             </ResponsiveModalTrigger>
             <ResponsiveModalPopup showCloseButton={false}>
@@ -379,8 +418,13 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                         </TabsContent>
                         <TabsContent value="upload" className="space-y-2">
                             <h4 className="font-medium">Upload an image</h4>
-                            <Form onFormSubmit={handleUpload} className="space-y-2">
+                            <Form
+                                onFormSubmit={handleUpload}
+                                className="space-y-2"
+                            >
                                 <div
+                                    role="button"
+                                    tabIndex={0}
                                     className={`border-2 border-dashed bg-background rounded-lg p-4 text-center cursor-pointer transition-colors ${
                                         isDragOver
                                             ? "border-primary bg-primary/10"
@@ -389,17 +433,40 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                     onClick={() =>
                                         fileInputRef.current?.click()
                                     }
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === "Enter" ||
+                                            e.key === " "
+                                        ) {
+                                            e.preventDefault();
+                                            fileInputRef.current?.click();
+                                        }
+                                    }}
                                     onDragOver={(e) => {
                                         e.preventDefault();
-                                        setIsDragOver(true);
+                                        dispatchForm({
+                                            type: "SET_DRAG_OVER",
+                                            isDragOver: true,
+                                        });
                                     }}
-                                    onDragLeave={() => setIsDragOver(false)}
+                                    onDragLeave={() =>
+                                        dispatchForm({
+                                            type: "SET_DRAG_OVER",
+                                            isDragOver: false,
+                                        })
+                                    }
                                     onDrop={(e) => {
                                         e.preventDefault();
-                                        setIsDragOver(false);
+                                        dispatchForm({
+                                            type: "SET_DRAG_OVER",
+                                            isDragOver: false,
+                                        });
                                         const files = e.dataTransfer.files;
                                         if (files.length > 0) {
-                                            setFile(files[0]);
+                                            dispatchForm({
+                                                type: "SET_FILE",
+                                                file: files[0],
+                                            });
                                         }
                                     }}
                                 >
@@ -417,7 +484,7 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
-                                            <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
+                                            <ImageIcon className="size-8 mx-auto text-muted-foreground" />
                                             <p className="text-muted-foreground">
                                                 Drop image here or click to
                                                 select
@@ -430,7 +497,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) =>
-                                        setFile(e.target.files?.[0] || null)
+                                        dispatchForm({
+                                            type: "SET_FILE",
+                                            file: e.target.files?.[0] || null,
+                                        })
                                     }
                                     className="hidden"
                                 />
@@ -443,7 +513,10 @@ export function AttachmentPopover({ onSelect }: AttachmentPopoverProps) {
                                         placeholder="Enter tags separated by commas (optional)"
                                         value={tags}
                                         onChange={(e) =>
-                                            setTags(e.target.value)
+                                            dispatchForm({
+                                                type: "SET_TAGS",
+                                                tags: e.target.value,
+                                            })
                                         }
                                     />
                                 </Field>

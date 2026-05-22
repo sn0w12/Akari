@@ -45,7 +45,7 @@ const ResponsiveModalContext = React.createContext<ResponsiveModalContextValue>(
 );
 
 export function useResponsiveModal() {
-    return React.useContext(ResponsiveModalContext);
+    return React.use(ResponsiveModalContext);
 }
 
 type DialogRootProps = React.ComponentProps<typeof Dialog>;

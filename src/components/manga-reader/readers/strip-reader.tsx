@@ -35,7 +35,7 @@ export default function StripReader({
     const lastImageRef = useRef<HTMLImageElement>(null);
     const readerRef = useRef<HTMLDivElement>(null);
     const [progress, setProgress] = useState(0);
-    const [imagesLoaded, setImagesLoaded] = useState(0);
+    const imagesLoadedRef = useRef(0);
 
     useEffect(() => {
         mountTimeRef.current = Date.now();
@@ -47,7 +47,7 @@ export default function StripReader({
         if (
             !lastImageRef.current ||
             !readerRef.current ||
-            imagesLoaded !== chapter.images.length
+            imagesLoadedRef.current !== chapter.images.length
         )
             return;
         const firstImage = readerRef.current.querySelector(
@@ -67,7 +67,7 @@ export default function StripReader({
         queueMicrotask(() => {
             setProgress(newProgress);
         });
-    }, [pixels, clientHeight, imagesLoaded, chapter.images.length]);
+    }, [pixels, clientHeight, chapter.images.length]);
 
     const chapterRef = useRef(chapter);
     chapterRef.current = chapter;
@@ -115,7 +115,7 @@ export default function StripReader({
                 >
                     {chapter.images.map((img, index) => (
                         <Image
-                            key={index}
+                            key={img}
                             ref={
                                 index === chapter.images.length - 1
                                     ? lastImageRef
@@ -139,7 +139,7 @@ export default function StripReader({
                                 width: `calc(var(--spacing) * ${stripWidth})`,
                             }}
                             fetchPriority={index === 0 ? "high" : "auto"}
-                            onLoad={() => setImagesLoaded((prev) => prev + 1)}
+                            onLoad={() => { imagesLoadedRef.current += 1; }}
                             sizes={{ default: "100vw" }}
                             quality={100}
                         />

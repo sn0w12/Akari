@@ -222,7 +222,7 @@ export function Filters({ filters, onChange }: FiltersProps) {
         <ResponsiveModal desktop="popover">
             <ResponsiveModalTrigger>
                 <Button variant="outline">
-                    <FilterIcon className="w-4 h-4" />
+                    <FilterIcon className="size-4" />
                     Filter
                     {(filters.genres.length > 0 ||
                         filters.types.length > 0 ||

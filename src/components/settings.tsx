@@ -33,6 +33,46 @@ interface HierarchicalGroup {
     subgroups: Record<string, Record<string, Setting>>;
 }
 
+interface SettingsGroupGridProps {
+    groupSettings: Record<string, Setting>;
+    groupName?: string;
+    customRenderers: Record<CustomRenderSettingKeys, React.ReactNode>;
+    settingsMap: Record<string, Setting>;
+}
+
+function SettingsGroupGrid({
+    groupSettings,
+    groupName,
+    customRenderers,
+    settingsMap,
+}: SettingsGroupGridProps) {
+    return (
+        <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4">
+            {Object.entries(groupSettings).map(([key, setting]) => {
+                const isFullWidth =
+                    setting.type === "custom-render" ||
+                    setting.type === "textarea" ||
+                    groupName?.toLowerCase() === "about";
+
+                return (
+                    <div key={key}>
+                        {setting.type === "custom-render" ? (
+                            customRenderers[key as keyof typeof customRenderers]
+                        ) : (
+                            <SettingsInput
+                                settingKey={key}
+                                setting={setting as Setting}
+                                settingsMap={settingsMap}
+                                className={isFullWidth ? "col-span-full" : ""}
+                            />
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function SettingsPage() {
     const { settings, setSettings } = useSettings();
     const { confirm } = useConfirm();
@@ -94,7 +134,7 @@ export default function SettingsPage() {
     }, [allSettingsMaps, deviceType, isPWA]);
 
     const firstTab = Object.keys(settingsMaps)[0];
-    const [activeTab, setActiveTab] = React.useState(firstTab);
+    const [activeTab, setActiveTab] = React.useState(firstTab); // useState initializer — local state owner after mount
     const [stickyRef, isSticky] = useSticky(-8);
     const [activeSection, setActiveSection] = React.useState<string | null>(
         null,
@@ -197,7 +237,7 @@ export default function SettingsPage() {
     return (
         <div className="flex flex-col max-w-6xl mx-auto px-4 pb-4 pt-2 w-full h-full">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Settings</h1>
+                <h1 className="text-3xl font-semibold">Settings</h1>
                 <Button
                     variant="destructive"
                     size="sm"
@@ -275,12 +315,12 @@ export default function SettingsPage() {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="absolute top-4 right-6 h-8 w-8 p-0"
+                                                            className="absolute top-4 right-6 size-8 p-0"
                                                             aria-label="Table of Contents"
                                                         />
                                                     }
                                                 >
-                                                    <TableOfContents className="h-4 w-4" />
+                                                    <TableOfContents className="size-4" />
                                                 </PopoverTrigger>
                                                 <PopoverContent
                                                     className="w-64 p-0"
@@ -298,13 +338,19 @@ export default function SettingsPage() {
                                         {(() => {
                                             // Check if this tab contains only a single custom rendered setting
                                             const customSettingKeys =
-                                                Object.entries(settingsMap)
-                                                    .filter(
-                                                        ([, setting]) =>
+                                                Object.entries(
+                                                    settingsMap,
+                                                ).reduce<string[]>(
+                                                    (acc, [key, setting]) => {
+                                                        if (
                                                             setting.type ===
-                                                            "custom-render",
-                                                    )
-                                                    .map(([key]) => key);
+                                                            "custom-render"
+                                                        )
+                                                            acc.push(key);
+                                                        return acc;
+                                                    },
+                                                    [],
+                                                );
                                             const totalSettingKeys =
                                                 Object.keys(settingsMap).filter(
                                                     (k) => k !== "label",
@@ -322,7 +368,7 @@ export default function SettingsPage() {
                                                 ] as Setting;
                                                 return (
                                                     <div className="space-y-2">
-                                                        <div className="flex flex-col space-y-1">
+                                                        <div className="flex flex-col gap-y-1">
                                                             <Label
                                                                 htmlFor={key}
                                                                 className="font-medium"
@@ -489,69 +535,6 @@ export default function SettingsPage() {
                                                                 },
                                                             );
 
-                                                            // Function to render a group of settings
-                                                            const renderSettingsGroup =
-                                                                (
-                                                                    groupSettings: Record<
-                                                                        string,
-                                                                        Setting
-                                                                    >,
-                                                                ) => {
-                                                                    return (
-                                                                        <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4">
-                                                                            {Object.entries(
-                                                                                groupSettings,
-                                                                            ).map(
-                                                                                ([
-                                                                                    key,
-                                                                                    setting,
-                                                                                ]) => {
-                                                                                    // For certain settings that should span the full width
-                                                                                    const isFullWidth =
-                                                                                        setting.type ===
-                                                                                            "custom-render" ||
-                                                                                        setting.type ===
-                                                                                            "textarea" ||
-                                                                                        groupName.toLowerCase() ===
-                                                                                            "about";
-
-                                                                                    return (
-                                                                                        <div
-                                                                                            key={
-                                                                                                key
-                                                                                            }
-                                                                                        >
-                                                                                            {setting.type ===
-                                                                                            "custom-render" ? (
-                                                                                                customRenderers[
-                                                                                                    key as keyof typeof customRenderers
-                                                                                                ]
-                                                                                            ) : (
-                                                                                                <SettingsInput
-                                                                                                    settingKey={
-                                                                                                        key
-                                                                                                    }
-                                                                                                    setting={
-                                                                                                        setting as Setting
-                                                                                                    }
-                                                                                                    settingsMap={
-                                                                                                        settingsMap
-                                                                                                    }
-                                                                                                    className={
-                                                                                                        isFullWidth
-                                                                                                            ? "col-span-full"
-                                                                                                            : ""
-                                                                                                    }
-                                                                                                />
-                                                                                            )}
-                                                                                        </div>
-                                                                                    );
-                                                                                },
-                                                                            )}
-                                                                        </div>
-                                                                    );
-                                                                };
-
                                                             return (
                                                                 <div className="space-y-8">
                                                                     {/* Render ungrouped settings first if they exist */}
@@ -560,9 +543,17 @@ export default function SettingsPage() {
                                                                     ).length >
                                                                         0 && (
                                                                         <div className="space-y-4">
-                                                                            {renderSettingsGroup(
-                                                                                settingsWithoutGroups,
-                                                                            )}
+                                                                            <SettingsGroupGrid
+                                                                                groupSettings={
+                                                                                    settingsWithoutGroups
+                                                                                }
+                                                                                customRenderers={
+                                                                                    customRenderers
+                                                                                }
+                                                                                settingsMap={
+                                                                                    settingsMap
+                                                                                }
+                                                                            />
                                                                         </div>
                                                                     )}
 
@@ -597,10 +588,22 @@ export default function SettingsPage() {
                                                                                     groupData.settings,
                                                                                 )
                                                                                     .length >
-                                                                                    0 &&
-                                                                                    renderSettingsGroup(
-                                                                                        groupData.settings,
-                                                                                    )}
+                                                                                    0 && (
+                                                                                    <SettingsGroupGrid
+                                                                                        groupSettings={
+                                                                                            groupData.settings
+                                                                                        }
+                                                                                        groupName={
+                                                                                            groupName
+                                                                                        }
+                                                                                        customRenderers={
+                                                                                            customRenderers
+                                                                                        }
+                                                                                        settingsMap={
+                                                                                            settingsMap
+                                                                                        }
+                                                                                    />
+                                                                                )}
 
                                                                                 {/* Subgroups */}
                                                                                 {Object.entries(
@@ -629,9 +632,20 @@ export default function SettingsPage() {
                                                                                             </h4>
 
                                                                                             {/* Subgroup settings */}
-                                                                                            {renderSettingsGroup(
-                                                                                                subgroupSettings,
-                                                                                            )}
+                                                                                            <SettingsGroupGrid
+                                                                                                groupSettings={
+                                                                                                    subgroupSettings
+                                                                                                }
+                                                                                                groupName={
+                                                                                                    groupName
+                                                                                                }
+                                                                                                customRenderers={
+                                                                                                    customRenderers
+                                                                                                }
+                                                                                                settingsMap={
+                                                                                                    settingsMap
+                                                                                                }
+                                                                                            />
                                                                                         </div>
                                                                                     ),
                                                                                 )}

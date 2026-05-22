@@ -82,7 +82,7 @@ export function ChapterSelector({
                         }
                     >
                         <ComboboxValue placeholder="Select Chapter" />
-                        <ChevronsUpDownIcon className="-me-1! ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        <ChevronsUpDownIcon className="-me-1! ml-2 size-4 shrink-0 opacity-50" />
                     </ComboboxTrigger>
                     <ComboboxPopup aria-label="Select chapter">
                         <div className="border-b p-2">

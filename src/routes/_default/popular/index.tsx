@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld";
 import ErrorPage from "@/components/error-page";
 import { GridSortSelect } from "@/components/grid/grid-sort";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
@@ -152,18 +153,13 @@ function Popular() {
     return (
         <div className="flex-1 px-4 pt-2 pb-4">
             <div className="flex gap-4">
-                <h2 className="text-3xl font-bold mb-2">Popular</h2>
+                <h2 className="text-3xl font-semibold mb-2">Popular</h2>
                 <div className="ml-auto">
                     <GridSortSelect sorting={sorting} />
                 </div>
             </div>
 
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={jsonLd} />
             <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}

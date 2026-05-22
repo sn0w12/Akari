@@ -13,7 +13,7 @@ import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Providers } from "./auth/oauth";
 
 export function LoginForm({
@@ -21,7 +21,7 @@ export function LoginForm({
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const queryClient = useQueryClient();
     const router = useRouter();
 
@@ -29,24 +29,23 @@ export function LoginForm({
         const email = values.email as string;
         const password = values.password as string;
         const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+        startTransition(async () => {
+            setError(null);
 
-        try {
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-            if (error) throw error;
-            queryClient.invalidateQueries({ queryKey: ["user"] });
-            router.navigate({ to: "/account" });
-        } catch (error: unknown) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+            try {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                queryClient.invalidateQueries({ queryKey: ["user"] });
+                router.navigate({ to: "/account" });
+            } catch (error: unknown) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
+            }
+        });
     };
 
     return (
@@ -89,9 +88,9 @@ export function LoginForm({
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading ? "Logging in..." : "Login"}
+                                {isPending ? "Logging in..." : "Login"}
                             </Button>
                             <Providers />
                         </div>

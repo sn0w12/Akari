@@ -23,7 +23,7 @@ export function BookmarksDropdown({ exportBookmarks }: BookmarksDropdownProps) {
                     />
                 }
             >
-                <MoreVertical className="h-4 w-4" />
+                <MoreVertical className="size-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={exportBookmarks}>

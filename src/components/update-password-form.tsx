@@ -12,33 +12,32 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 export function UpdatePasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     const handleUpdatePassword = async (values: Record<string, unknown>) => {
         const password = values.password as string;
         const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+        startTransition(async () => {
+            setError(null);
 
-        try {
-            const { error } = await supabase.auth.updateUser({ password });
-            if (error) throw error;
-            router.navigate({ to: "/account" });
-        } catch (error: unknown) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+            try {
+                const { error } = await supabase.auth.updateUser({ password });
+                if (error) throw error;
+                router.navigate({ to: "/account" });
+            } catch (error: unknown) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
+            }
+        });
     };
 
     return (
@@ -70,9 +69,9 @@ export function UpdatePasswordForm({
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading ? "Saving..." : "Save new password"}
+                                {isPending ? "Saving..." : "Save new password"}
                             </Button>
                         </div>
                     </Form>

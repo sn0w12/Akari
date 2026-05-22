@@ -2,6 +2,7 @@ import { useWindowWidth } from "@/hooks/use-window-width";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import React, { useRef } from "react";
+import { useSidebar } from "../ui/sidebar";
 
 interface PageProgressProps {
     progress: number;
@@ -17,16 +18,19 @@ export default function StripPageProgress({
     const containerRef = useRef<HTMLDivElement>(null);
     const gradient =
         "from-primary/20 via-primary/30 to-accent-positive/40 bg-gradient-to-r lg:bg-gradient-to-b";
+    const { open } = useSidebar();
     const isVisible = useSetting("showPageProgress");
     const windowWidth = useWindowWidth();
 
     return (
         <div
             className={cn(
-                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-16 lg:top-auto w-[calc(100%-118px)] lg:w-9",
+                "flex transition-[opacity,left] ease-snappy fixed z-50 left-4 right-4 lg:bottom-4 lg:top-auto w-[calc(100%-118px)] lg:w-9",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,
+                    "lg:left-16": !open,
+                    "lg:left-68": open,
                 },
             )}
             style={
@@ -39,6 +43,8 @@ export default function StripPageProgress({
         >
             <div
                 ref={containerRef}
+                role="button"
+                tabIndex={0}
                 className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:h-[80vh]"
                 style={
                     {
@@ -46,6 +52,11 @@ export default function StripPageProgress({
                     } as React.CSSProperties
                 }
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.stopPropagation();
+                    }
+                }}
             >
                 <div
                     className={cn(

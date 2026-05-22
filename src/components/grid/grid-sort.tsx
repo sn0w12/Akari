@@ -41,12 +41,9 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
         });
     };
 
-    const selectItems = sorting.sortItems
-        .filter(
-            (i): i is { key: string; value: number; label: string } =>
-                !isSeparator(i),
-        )
-        .map(({ value, label }) => ({ value, label }));
+    const selectItems = sorting.sortItems.flatMap((i) =>
+        !isSeparator(i) ? [{ value: i.value, label: i.label }] : [],
+    );
 
     return (
         <Select
@@ -59,15 +56,18 @@ export function GridSortSelect({ sorting }: { sorting: Sorting }) {
                 <SelectValue />
             </SelectTrigger>
             <SelectContent align="center">
-                {sorting.sortItems.map((item, index) =>
-                    isSeparator(item) ? (
-                        <SelectSeparator key={`separator-${index}`} />
-                    ) : (
-                        <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                        </SelectItem>
-                    ),
-                )}
+                {(() => {
+                    let sepIdx = 0;
+                    return sorting.sortItems.map((item) =>
+                        isSeparator(item) ? (
+                            <SelectSeparator key={`sep-${sepIdx++}`} />
+                        ) : (
+                            <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                            </SelectItem>
+                        ),
+                    );
+                })()}
             </SelectContent>
         </Select>
     );

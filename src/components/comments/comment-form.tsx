@@ -26,7 +26,6 @@ export function CommentForm({
     placeholder = "Write a comment...",
     submitLabel = "Comment",
     onCancel,
-    autoFocus = false,
     currentUser,
 }: CommentFormProps) {
     const [content, setContent] = useState("");
@@ -61,7 +60,6 @@ export function CommentForm({
                         onChange={(e) => setContent(e.target.value)}
                         placeholder={placeholder}
                         className="min-h-[80px] resize-none text-base"
-                        autoFocus={autoFocus}
                         disabled={
                             isSubmitting || !currentUser || currentUser.banned
                         }
@@ -74,7 +72,7 @@ export function CommentForm({
                         <Image
                             src={selectedAttachment.url!}
                             alt="Selected attachment"
-                            className="h-10 w-10 object-cover rounded"
+                            className="size-10 object-cover rounded"
                             height={40}
                             width={40}
                             sizes={{ default: "40px" }}
@@ -88,9 +86,9 @@ export function CommentForm({
                             variant="destructive"
                             size="sm"
                             onClick={() => setSelectedAttachment(undefined)}
-                            className="h-6 w-6 p-0"
+                            className="size-6 p-0"
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                         </Button>
                     </div>
                 )}

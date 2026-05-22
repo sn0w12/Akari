@@ -12,10 +12,10 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { client } from "@/lib/api";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 export function SetupAccountForm() {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -23,28 +23,27 @@ export function SetupAccountForm() {
         const userName = values.username as string;
         const displayName = values.displayName as string;
 
-        try {
-            setIsLoading(true);
-            const { error } = await client.PUT("/v2/user/profile", {
-                body: {
-                    username: userName,
-                    displayName: displayName,
-                },
-            });
+        startTransition(async () => {
+            try {
+                const { error } = await client.PUT("/v2/user/profile", {
+                    body: {
+                        username: userName,
+                        displayName: displayName,
+                    },
+                });
 
-            if (error) {
-                setError(error.data.message);
-                return;
+                if (error) {
+                    setError(error.data.message);
+                    return;
+                }
+
+                router.navigate({ to: "/account" });
+            } catch (error) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
             }
-
-            router.navigate({ to: "/account" });
-        } catch (error) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
     return (
@@ -86,9 +85,9 @@ export function SetupAccountForm() {
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading ? "Setting up..." : "Setup Account"}
+                                {isPending ? "Setting up..." : "Setup Account"}
                             </Button>
                         </div>
                     </Form>

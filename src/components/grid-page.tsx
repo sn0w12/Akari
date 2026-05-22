@@ -13,8 +13,8 @@ export function GridBodySkeleton({
 }) {
     return (
         <div className={cn(GRID_CLASS, className)}>
-            {[...Array(pageSize)].map((_, index) => (
-                <MangaCardSkeleton key={index} />
+            {Array.from({ length: pageSize }, (_, i) => i).map((i) => (
+                <MangaCardSkeleton key={`skeleton-${i}`} />
             ))}
         </div>
     );

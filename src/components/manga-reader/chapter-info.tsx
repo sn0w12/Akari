@@ -4,6 +4,7 @@ import { ButtonGroup } from "../ui/group";
 import { CommentsButton } from "./info-popovers/comments";
 import { InfoPopover } from "./info-popovers/info";
 import { SettingsPopover } from "./info-popovers/settings";
+import { useSidebar } from "../ui/sidebar";
 
 export function ChapterInfo({
     chapter,
@@ -14,6 +15,7 @@ export function ChapterInfo({
     scanlator: string;
     hidden: boolean;
 }) {
+    const { open } = useSidebar();
     const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
         () => {
             if (typeof window !== "undefined") {
@@ -39,10 +41,12 @@ export function ChapterInfo({
     return (
         <div
             className={cn(
-                `flex fixed z-50 bottom-16 left-auto right-4 h-fit md:left-16 md:top-14 transition-opacity`,
+                `flex fixed z-50 bottom-16 left-auto right-4 h-fit md:left-16 md:top-14 transition-[opacity,left] ease-snappy`,
                 {
                     "opacity-0 pointer-events-none": hidden,
                     "opacity-100": !hidden,
+                    "md:left-16": !open,
+                    "md:left-68": open,
                 },
             )}
             style={

@@ -26,7 +26,7 @@ function AboutPage() {
     return (
         <div className="flex-1 bg-background text-foreground">
             <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold mb-6">About Akari</h1>
+                <h1 className="text-3xl font-semibold mb-6">About Akari</h1>
                 <p className="text-lg mb-4">
                     Akari is a high-quality, open-source manga reader built with
                     Next.js. It provides an enhanced reading experience,

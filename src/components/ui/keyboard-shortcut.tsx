@@ -56,9 +56,9 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
         >
             {formatForDisplay(keys as Hotkey)
                 .split("+")
-                .map((key, index) => (
+                .map((key) => (
                     <Kbd
-                        key={`${keys}-${index}`}
+                        key={`${keys}-${key}`}
                         isPressed={formattedPressedKeys.includes(key)}
                     >
                         {key}
@@ -91,9 +91,9 @@ function ContextKeyboardShortcut({
         >
             {formatForDisplay(keys as Hotkey)
                 .split("+")
-                .map((key, index) => (
+                .map((key) => (
                     <Kbd
-                        key={`${keys}-${index}`}
+                        key={`${keys}-${key}`}
                         isPressed={formattedPressedKeys.includes(key)}
                     >
                         {key}

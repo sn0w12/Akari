@@ -29,8 +29,6 @@ export function useBodyScrollListener(
                 : document.documentElement;
         callbackRef.current(initialElement);
 
-        const controller = new AbortController();
-        const signal = controller.signal;
         const wrappedCallback = () => {
             const mainScroll = mainElement.scrollTop;
             const windowScroll = window.scrollY;
@@ -41,17 +39,12 @@ export function useBodyScrollListener(
             callbackRef.current(element);
         };
 
-        mainElement.addEventListener("scroll", wrappedCallback, {
-            ...optionsRef.current,
-            signal,
-        });
-        window.addEventListener("scroll", wrappedCallback, {
-            ...optionsRef.current,
-            signal,
-        });
+        mainElement.addEventListener("scroll", wrappedCallback, { passive: true });
+        window.addEventListener("scroll", wrappedCallback, { passive: true });
 
         return () => {
-            controller.abort();
+            mainElement.removeEventListener("scroll", wrappedCallback);
+            window.removeEventListener("scroll", wrappedCallback);
         };
     }, [enabled]);
 }

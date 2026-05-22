@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toastManager } from "@/components/ui/toast";
 import { useUser } from "@/hooks/use-user";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
-import { toastManager } from "@/components/ui/toast";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -103,7 +103,7 @@ function ChaptersControls({
                     }
                     className="flex-1 md:w-40 has-[>svg]:px-4"
                 >
-                    <ArrowUpDown className="h-4 w-4" />
+                    <ArrowUpDown className="size-4" />
                     Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
                 </Button>
             </div>
@@ -161,7 +161,10 @@ export function ChaptersSection({
 
     const navigateToLastRead = () => {
         if (!lastRead || !mangaId) {
-            toastManager.add({ title: "No previous reading history found", type: "error" });
+            toastManager.add({
+                title: "No previous reading history found",
+                type: "error",
+            });
             return;
         }
         const chapterIndex = getSortedChapters(data.scanlatorId).findIndex(
@@ -169,7 +172,10 @@ export function ChaptersSection({
         );
 
         if (chapterIndex === -1 || chapterIndex === undefined) {
-            toastManager.add({ title: "Last read chapter not found", type: "error" });
+            toastManager.add({
+                title: "Last read chapter not found",
+                type: "error",
+            });
             return;
         }
 

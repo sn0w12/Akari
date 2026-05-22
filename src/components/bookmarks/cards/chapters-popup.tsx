@@ -69,7 +69,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
             <ResponsiveModalTrigger
                 render={
                     <Button size="icon-sm" aria-label="Browse chapters">
-                        <ChevronsUpDownIcon className="h-5 w-5" />
+                        <ChevronsUpDownIcon className="size-5" />
                     </Button>
                 }
             />
@@ -134,10 +134,9 @@ function ChaptersList({
         >
             {isLoading ? (
                 <div className="space-y-2 py-2">
-                    {Array(estimatedChapters < 10 ? estimatedChapters : 10)
-                        .fill(0)
-                        .map((_, index) => (
-                            <div key={index} className="p-2">
+                    {Array.from({ length: estimatedChapters < 10 ? estimatedChapters : 10 }, (_, i) => i).map(
+                        (i) => (
+                            <div key={`skeleton-${i}`} className="p-2">
                                 <div className="flex items-center justify-between">
                                     <Skeleton className="h-4 w-28" />
                                     <Skeleton className="h-3 w-16" />

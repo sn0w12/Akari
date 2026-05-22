@@ -25,7 +25,7 @@ export function InfoContent({
     return (
         <div className="space-y-4">
             <div className="space-y-2">
-                <h2 className="text-lg font-bold leading-tight text-center md:text-left">
+                <h2 className="text-lg font-semibold leading-tight text-center md:text-left">
                     <Link
                         to="/manga/$id"
                         params={{ id: chapter.mangaId }}
@@ -58,7 +58,7 @@ export function InfoContent({
                             aria-label="Previous Chapter"
                             disabled={!lastChapterExists}
                         >
-                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            <ChevronLeft className="mr-2 size-4" />
                             Previous
                         </ButtonLink>
                         <ButtonLink
@@ -73,7 +73,7 @@ export function InfoContent({
                             disabled={!nextChapterExists}
                         >
                             Next
-                            <ChevronRight className="ml-2 h-4 w-4" />
+                            <ChevronRight className="ml-2 size-4" />
                         </ButtonLink>
                     </div>
                 </div>

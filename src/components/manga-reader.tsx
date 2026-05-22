@@ -73,14 +73,20 @@ export function Reader({ chapter, scanlator }: ReaderProps) {
         }, 2000);
     }, []);
 
+    const resetInactivityRef = useRef(resetInactivityTimer);
+    useEffect(() => {
+        resetInactivityRef.current = resetInactivityTimer;
+    });
+
     useEffect(() => {
         inactivityTimer.current = setTimeout(() => {
             setIsInactive(true);
         }, 2000);
 
+        const handler = () => resetInactivityRef.current();
         const events = ["mousemove", "scroll", "touchstart"];
         events.forEach((event) => {
-            window.addEventListener(event, resetInactivityTimer);
+            window.addEventListener(event, handler);
         });
 
         return () => {
@@ -88,10 +94,10 @@ export function Reader({ chapter, scanlator }: ReaderProps) {
                 clearTimeout(inactivityTimer.current);
             }
             events.forEach((event) => {
-                window.removeEventListener(event, resetInactivityTimer);
+                window.removeEventListener(event, handler);
             });
         };
-    }, [resetInactivityTimer]);
+    }, []);
 
     const calculateScrollMetrics = (mainElement: HTMLElement) => {
         const scrollTop = mainElement.scrollTop;

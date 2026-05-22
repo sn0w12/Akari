@@ -121,7 +121,7 @@ function SettingInputRenderer({
                     {checkboxGroupSetting.options.map((option) => (
                         <div
                             key={option.value}
-                            className="flex items-center space-x-2"
+                            className="flex items-center gap-x-2"
                         >
                             <Label htmlFor={`${settingKey}-${option.value}`}>
                                 {option.label}
@@ -225,9 +225,9 @@ function SettingInputRenderer({
                                     <>
                                         <ContextMenuSeparator />
                                         {setting.contextMenuItems.map(
-                                            (item, index) => (
+                                            (item) => (
                                                 <ContextMenuItem
-                                                    key={index}
+                                                    key={item.label}
                                                     onClick={item.onClick}
                                                     variant={item.variant}
                                                     className="flex gap-2"
@@ -257,12 +257,12 @@ function SettingInputRenderer({
                     onValueChange={(value) => {
                         setting.onChange?.(value);
                     }}
-                    className="flex flex-col space-y-1 mb-0"
+                    className="flex flex-col gap-y-1 mb-0"
                 >
                     {setting.options.map((option) => (
                         <div
                             key={option.value}
-                            className="flex items-center space-x-2"
+                            className="flex items-center gap-x-2"
                         >
                             <RadioGroupItem
                                 value={option.value}
@@ -411,7 +411,7 @@ function ShortcutSettingInput({
         : recordedHotkey || (getSettingValue(setting) as string);
 
     return (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-x-2">
             <Input
                 id={settingKey}
                 type="text"
@@ -513,9 +513,9 @@ export function SettingsInput({
                     setting.contextMenuItems.length > 0 && (
                         <>
                             <ContextMenuSeparator />
-                            {setting.contextMenuItems.map((item, index) => (
+                            {setting.contextMenuItems.map((item) => (
                                 <ContextMenuItem
-                                    key={index}
+                                    key={item.label}
                                     onClick={item.onClick}
                                     variant={item.variant}
                                     className="flex gap-2"

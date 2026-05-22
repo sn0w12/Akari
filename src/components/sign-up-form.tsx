@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Providers } from "./auth/oauth";
 
 export function SignUpForm({
@@ -21,7 +21,7 @@ export function SignUpForm({
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     const handleSignUp = async (values: Record<string, unknown>) => {
@@ -37,30 +37,29 @@ export function SignUpForm({
         }
 
         const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+        startTransition(async () => {
+            setError(null);
 
-        try {
-            const { error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    emailRedirectTo: `${window.location.origin}/account`,
-                    data: {
-                        username: userName,
-                        display_name: displayName,
+            try {
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/account`,
+                        data: {
+                            username: userName,
+                            display_name: displayName,
+                        },
                     },
-                },
-            });
-            if (error) throw error;
-            router.navigate({ to: "/auth/sign-up-success" });
-        } catch (error: unknown) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+                });
+                if (error) throw error;
+                router.navigate({ to: "/auth/sign-up-success" });
+            } catch (error: unknown) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
+            }
+        });
     };
 
     return (
@@ -112,9 +111,9 @@ export function SignUpForm({
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading
+                                {isPending
                                     ? "Creating an account..."
                                     : "Sign up"}
                             </Button>

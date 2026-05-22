@@ -116,7 +116,7 @@ export default function PageReader({
     useShortcutSetting("nextPage", nextPage);
     useShortcutSetting("previousPage", prevPage);
 
-    const handleClick = useCallback(
+    const handlePageNavigation = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             const screenWidth = windowWidth;
             const clickX = e.clientX;
@@ -155,7 +155,7 @@ export default function PageReader({
                     {/* Spacer for 1/3 of available space at the top */}
                     <div className="flex-1"></div>
                     {/* Content container: image or end-of-manga, no shrinking/growing */}
-                    <div className="flex-shrink-0" onClick={handleClick}>
+                    <div className="flex-shrink-0" role="button" tabIndex={0} onClick={handlePageNavigation} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); nextPage(); } }}>
                         {chapter.images[currentPage] && (
                             <Image
                                 src={chapter.images[currentPage]}

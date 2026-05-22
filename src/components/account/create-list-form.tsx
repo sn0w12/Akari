@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/api";
 import { toastManager } from "@/components/ui/toast";
-import { useState } from "react";
+import { useTransition } from "react";
 import { Button } from "../ui/button";
 
 interface CreateListFormProps {
@@ -16,28 +16,28 @@ interface CreateListFormProps {
 }
 
 export function CreateListForm({ onSuccess, onClose }: CreateListFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     async function handleSubmit(values: Record<string, unknown>) {
         const title = values.title as string;
         if (!title?.trim()) return;
 
-        setIsLoading(true);
-        const { data, error } = await client.POST("/v2/lists", {
-            body: {
-                title,
-                description: (values.description as string) ?? "",
-                isPublic: !!values.isPublic,
-            },
-        });
-        setIsLoading(false);
+        startTransition(async () => {
+            const { data, error } = await client.POST("/v2/lists", {
+                body: {
+                    title,
+                    description: (values.description as string) ?? "",
+                    isPublic: !!values.isPublic,
+                },
+            });
 
-        if (error) {
-            toastManager.add({ title: "Failed to create list", type: "error" });
-        } else {
-            toastManager.add({ title: "List created successfully", type: "success" });
-            onSuccess(data.data);
-        }
+            if (error) {
+                toastManager.add({ title: "Failed to create list", type: "error" });
+            } else {
+                toastManager.add({ title: "List created successfully", type: "success" });
+                onSuccess(data.data);
+            }
+        });
     }
 
     return (
@@ -52,7 +52,7 @@ export function CreateListForm({ onSuccess, onClose }: CreateListFormProps) {
                 <Textarea style={{ resize: "none" }} />
             </Field>
             <Field name="isPublic">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-x-2">
                     <Checkbox />
                     <FieldLabel>Public</FieldLabel>
                 </div>
@@ -62,12 +62,12 @@ export function CreateListForm({ onSuccess, onClose }: CreateListFormProps) {
                     type="button"
                     variant="outline"
                     onClick={onClose}
-                    disabled={isLoading}
+                    disabled={isPending}
                 >
                     Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Creating..." : "Create"}
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? "Creating..." : "Create"}
                 </Button>
             </div>
         </Form>

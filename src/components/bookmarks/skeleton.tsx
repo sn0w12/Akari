@@ -44,8 +44,8 @@ function BookmarkCardSkeleton() {
 export default function BookmarksSkeleton() {
     return (
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
-            {[...Array(24)].map((_, index) => (
-                <BookmarkCardSkeleton key={`skeleton-card-${index}`} />
+            {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                <BookmarkCardSkeleton key={`skeleton-card-${i}`} />
             ))}
         </div>
     );

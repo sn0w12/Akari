@@ -82,7 +82,7 @@ export function UserHeader({ id }: { id: string }) {
             <div className="flex flex-col md:flex-row items-baseline md:gap-2">
                 <div className="flex flex-row gap-2 items-baseline">
                     <Avatar name={data.username} />
-                    <h2 className="text-4xl font-bold">
+                    <h2 className="text-4xl font-semibold">
                         {data.displayName || data.username}
                     </h2>
                 </div>

@@ -105,7 +105,7 @@ function MangaCommentsHeader({ mangaData, chapterId }: { mangaData: components["
                 })}
             />
             <div className="flex flex-col min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl font-bold">{manga.title}</h1>
+                <h1 className="text-lg sm:text-xl font-semibold">{manga.title}</h1>
                 <p className="text-sm text-muted-foreground">
                     Chapter {chapterId}
                 </p>

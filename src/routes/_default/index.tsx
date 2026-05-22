@@ -11,14 +11,16 @@ import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { env } from "@/lib/env";
+import { JsonLd } from "@/components/json-ld";
 import { createMetadata } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
 
-const getPopularSection = createServerFn({ method: "GET" }).handler(
-    async () => {
+const getPopularSection = createServerFn({ method: "GET" })
+    .inputValidator(() => undefined)
+    .handler(async () => {
         const { data, error } = await client.GET("/v2/manga/list/popular", {
             params: {
                 query: {
@@ -34,13 +36,15 @@ const getPopularSection = createServerFn({ method: "GET" }).handler(
     },
 );
 
-const getLatestSection = createServerFn({ method: "GET" }).handler(async () => {
-    const { data, error } = await client.GET("/v2/manga/list", {
-        params: { query: { page: 1, pageSize: 24 } },
-        headers: serverHeaders,
+const getLatestSection = createServerFn({ method: "GET" })
+    .inputValidator(() => undefined)
+    .handler(async () => {
+        const { data, error } = await client.GET("/v2/manga/list", {
+            params: { query: { page: 1, pageSize: 24 } },
+            headers: serverHeaders,
+        });
+        return { data: data?.data ?? null, error };
     });
-    return { data: data?.data ?? null, error };
-});
 
 export const Route = createFileRoute("/_default/")({
     loader: async () => {
@@ -90,92 +94,56 @@ export const Route = createFileRoute("/_default/")({
 function Home() {
     const { popular, latest } = Route.useLoaderData();
 
+    const websiteJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        url: "/",
+        name: "Akari Manga",
+        description: "Read manga for free on Akari.",
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `https://${env("VITE_HOST") || ""}/search?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+        },
+    };
+
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        url: "/",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+            { "@type": "ListItem", position: 2, name: "Popular", item: "/popular" },
+            { "@type": "ListItem", position: 3, name: "Latest", item: "/latest" },
+            { "@type": "ListItem", position: 4, name: "Search", item: "/search" },
+            { "@type": "ListItem", position: 5, name: "Bookmarks", item: "/bookmarks" },
+            { "@type": "ListItem", position: 6, name: "Lists", item: "/lists" },
+        ],
+    };
+
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "WebSite",
-                        url: "/",
-                        name: "Akari Manga",
-                        description: "Read manga for free on Akari.",
-                        potentialAction: {
-                            "@type": "SearchAction",
-                            target: {
-                                "@type": "EntryPoint",
-                                urlTemplate: `https://${env("VITE_HOST") || ""}/search?q={search_term_string}`,
-                            },
-                            "query-input": "required name=search_term_string",
-                        },
-                    }).replace(/</g, "\\u003c"),
-                }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "BreadcrumbList",
-                        url: "/",
-                        itemListElement: [
-                            {
-                                "@type": "ListItem",
-                                position: 1,
-                                name: "Home",
-                                item: "/",
-                            },
-                            {
-                                "@type": "ListItem",
-                                position: 2,
-                                name: "Popular",
-                                item: "/popular",
-                            },
-                            {
-                                "@type": "ListItem",
-                                position: 3,
-                                name: "Latest",
-                                item: "/latest",
-                            },
-                            {
-                                "@type": "ListItem",
-                                position: 4,
-                                name: "Search",
-                                item: "/search",
-                            },
-                            {
-                                "@type": "ListItem",
-                                position: 5,
-                                name: "Bookmarks",
-                                item: "/bookmarks",
-                            },
-                            {
-                                "@type": "ListItem",
-                                position: 6,
-                                name: "Lists",
-                                item: "/lists",
-                            },
-                        ],
-                    }).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={websiteJsonLd} />
+            <JsonLd data={breadcrumbJsonLd} />
             <div className="flex-1 px-4 pt-2 pb-4">
                 <div>
-                    <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
+                    <h2 className="text-3xl font-semibold mb-2">Popular Manga</h2>
                     {popular ? <PopularManga manga={popular} /> : null}
                 </div>
 
                 <Suspense
                     fallback={
                         <>
-                            <h2 className="text-3xl font-bold mb-2">
+                            <h2 className="text-3xl font-semibold mb-2">
                                 Recently Viewed
                             </h2>
                             <div className={GRID_CLASS}>
-                                {[...Array(8)].map((_, index) => (
+                                {Array.from({ length: 8 }, (_, i) => i).map((i) => (
                                     <MangaCardSkeleton
-                                        key={`recent-skeleton-${index}`}
+                                        key={`recent-skeleton-${i}`}
                                     />
                                 ))}
                             </div>
@@ -185,7 +153,7 @@ function Home() {
                     <HomeRecent />
                 </Suspense>
 
-                <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
+                <h2 className="text-3xl font-semibold mb-2">Latest Releases</h2>
                 {latest ? (
                     <>
                         <MangaGrid mangaList={latest.items} priority={2} />
@@ -225,7 +193,7 @@ function HomeRecent() {
 
     return (
         <>
-            <h2 className="text-3xl font-bold mb-2">Recently Viewed</h2>
+            <h2 className="text-3xl font-semibold mb-2">Recently Viewed</h2>
             <div className={GRID_CLASS}>
                 {data.map((manga, index) => (
                     <MangaCard

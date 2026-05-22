@@ -91,7 +91,7 @@ export function SettingsSearch() {
                                                 key={key}
                                                 className="space-y-2"
                                             >
-                                                <div className="flex flex-col space-y-1">
+                                                <div className="flex flex-col gap-y-1">
                                                     <Label
                                                         htmlFor={key}
                                                         className="font-medium"

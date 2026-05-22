@@ -48,16 +48,20 @@ sw.addEventListener("notificationclick", (event) => {
                 includeUncontrolled: true,
             });
             // Try to focus existing tab with same origin + path
-            for (const client of allClients) {
-                try {
-                    const clientUrl = new URL(client.url);
-                    const targetUrl = new URL(urlToOpen, self.location.origin);
-                    if (clientUrl.pathname === targetUrl.pathname) {
-                        await client.focus();
-                        return;
-                    }
-                } catch {}
-            }
+            const focusResults = await Promise.all(
+                allClients.map(async (client) => {
+                    try {
+                        const clientUrl = new URL(client.url);
+                        const targetUrl = new URL(urlToOpen, self.location.origin);
+                        if (clientUrl.pathname === targetUrl.pathname) {
+                            await client.focus();
+                            return true;
+                        }
+                    } catch {}
+                    return false;
+                }),
+            );
+            if (focusResults.some(Boolean)) return;
             // Not found -> open a new window/tab
             await sw.clients.openWindow(urlToOpen);
         })(),

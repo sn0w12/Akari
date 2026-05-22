@@ -22,7 +22,7 @@ const ErrorContext = React.createContext<ErrorContextType | undefined>(
 );
 
 export function useError() {
-    const context = React.useContext(ErrorContext);
+    const context = React.use(ErrorContext);
     if (!context) {
         return {
             setError: () => {},

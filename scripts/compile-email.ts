@@ -12,8 +12,11 @@ if (!existsSync(outputDir)) {
 
 // Get all .mjml files except head.mjml
 const mjmlFiles = readdirSync(templatesDir)
-    .filter((file) => extname(file) === ".mjml" && file !== "head.mjml")
-    .map((file) => file.replace(".mjml", ""));
+    .flatMap((file) =>
+        extname(file) === ".mjml" && file !== "head.mjml"
+            ? [file.replace(".mjml", "")]
+            : [],
+    );
 
 console.log("Compiling MJML templates to HTML...");
 

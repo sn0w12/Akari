@@ -9,13 +9,15 @@ import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { client, serverHeaders } from "@/lib/api";
 import { capitalize } from "@/lib/utils";
 
-const getUsers = createServerFn({ method: "GET" }).handler(async () => {
-    const { data, error } = await client.GET("/v2/user", {
-        params: { query: { page: 1, pageSize: 100, sortBy: "TotalBookmarks" } },
-        headers: serverHeaders,
+const getUsers = createServerFn({ method: "GET" })
+    .inputValidator(() => undefined)
+    .handler(async () => {
+        const { data, error } = await client.GET("/v2/user", {
+            params: { query: { page: 1, pageSize: 100, sortBy: "TotalBookmarks" } },
+            headers: serverHeaders,
+        });
+        return { data: data?.data ?? null, error };
     });
-    return { data: data?.data ?? null, error };
-});
 
 export const Route = createFileRoute("/_default/user/")({
     loader: () => getUsers(),
@@ -37,7 +39,7 @@ function UsersPage() {
     return (
         <div className="flex-1 px-4 pt-2 pb-4">
             <div className="flex gap-4">
-                <h2 className="text-3xl font-bold mb-2">Users</h2>
+                <h2 className="text-3xl font-semibold mb-2">Users</h2>
             </div>
             <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {data?.items.map((user) => (

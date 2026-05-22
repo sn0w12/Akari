@@ -20,7 +20,7 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
     } | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [initialRating, setInitialRating] = useState<number>(
-        Math.round(rating.average),
+        () => Math.round(rating.average),
     );
     const starRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -73,16 +73,19 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
         <Card className="flex w-full h-full flex-col items-center justify-center p-2 xl:p-4">
             <div className="flex flex-col items-center justify-center relative top-1 xl:top-2.5">
                 <div
-                    className="flex items-center justify-center space-x-1"
+                    className="flex items-center justify-center gap-x-1"
                     onMouseLeave={() => setHoverState(null)}
                 >
-                    {[...Array(5)].map((_, index) => {
+                    {Array.from({ length: 5 }, (_, i) => i).map((i) => {
+                        const index = i;
                         const hoverFill = getHoverFill(index);
                         const isAnyHovered = hoverState !== null;
 
                         return (
                             <div
-                                key={index}
+                                key={`star-${i}`}
+                                role="button"
+                                tabIndex={0}
                                 className={cn(
                                     "relative size-6 md:size-7 xl:size-8",
                                     user ? "cursor-pointer" : "cursor-default",
@@ -104,6 +107,12 @@ export function ScoreDisplay({ mangaId, rating }: ScoreDisplayProps) {
                                         setInitialRating(score);
                                     }
                                     setDialogOpen(true);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        if (user) setDialogOpen(true);
+                                    }
                                 }}
                             >
                                 <ScoreStars

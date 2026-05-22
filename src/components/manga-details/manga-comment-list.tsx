@@ -1,9 +1,9 @@
 import type { CommentData, VoteType } from "@/components/comments/comment";
 import { CommentList } from "@/components/comments/comment-list";
+import { toastManager } from "@/components/ui/toast";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import { toastManager } from "@/components/ui/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommentSorting } from "../comments/sorting";
 import { Button } from "../ui/button";
@@ -54,8 +54,10 @@ export function MangaCommentList({
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
             initialComments,
         );
+
     const { data: user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
+    const queryClient = useQueryClient();
 
     const handleSortChange = (
         newSort: components["schemas"]["CommentSortOrder"],
@@ -89,9 +91,13 @@ export function MangaCommentList({
                 }));
             setComments((prev) => [...prev, ...newComments]);
             setCurrentPage((prev) => prev + 1);
+            queryClient.invalidateQueries({ queryKey: [mangaId] });
         },
         onError: () => {
-            toastManager.add({ title: "Failed to load more comments.", type: "error" });
+            toastManager.add({
+                title: "Failed to load more comments.",
+                type: "error",
+            });
         },
     });
 
@@ -120,9 +126,13 @@ export function MangaCommentList({
                 }));
             setComments(newComments);
             setCurrentPage(1);
+            queryClient.invalidateQueries({ queryKey: [mangaId] });
         },
         onError: () => {
-            toastManager.add({ title: "Failed to load comments.", type: "error" });
+            toastManager.add({
+                title: "Failed to load comments.",
+                type: "error",
+            });
         },
     });
 
@@ -215,7 +225,10 @@ export function MangaCommentList({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to vote. Please try again.", type: "error" });
+            toastManager.add({
+                title: "Failed to vote. Please try again.",
+                type: "error",
+            });
             return;
         }
     };
@@ -240,7 +253,11 @@ export function MangaCommentList({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to post reply. Please try again.", type: "error", description: error.data.message });
+            toastManager.add({
+                title: "Failed to post reply. Please try again.",
+                type: "error",
+                description: error.data.message,
+            });
             throw error; // Re-throw so the caller can handle it
         }
 
@@ -279,7 +296,10 @@ export function MangaCommentList({
             insertReply(prevComments, parentId, data.data),
         );
 
-        toastManager.add({ title: "Reply posted successfully!", type: "success" });
+        toastManager.add({
+            title: "Reply posted successfully!",
+            type: "success",
+        });
         return data.data;
     };
 
@@ -301,7 +321,11 @@ export function MangaCommentList({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to post comment. Please try again.", type: "error", description: error.data.message });
+            toastManager.add({
+                title: "Failed to post comment. Please try again.",
+                type: "error",
+                description: error.data.message,
+            });
             return;
         }
 
@@ -312,7 +336,10 @@ export function MangaCommentList({
 
         setComments((prevComments) => [newComment, ...prevComments]);
 
-        toastManager.add({ title: "Comment posted successfully!", type: "success" });
+        toastManager.add({
+            title: "Comment posted successfully!",
+            type: "success",
+        });
     };
 
     const handleEdit = async (
@@ -331,7 +358,11 @@ export function MangaCommentList({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to edit comment. Please try again.", type: "error", description: error.data.message });
+            toastManager.add({
+                title: "Failed to edit comment. Please try again.",
+                type: "error",
+                description: error.data.message,
+            });
             return;
         }
 
@@ -339,7 +370,10 @@ export function MangaCommentList({
             updateCommentContent(prevComments, commentId, content),
         );
 
-        toastManager.add({ title: "Comment edited successfully!", type: "success" });
+        toastManager.add({
+            title: "Comment edited successfully!",
+            type: "success",
+        });
     };
 
     const handleDelete = async (commentId: string): Promise<void> => {
@@ -352,7 +386,10 @@ export function MangaCommentList({
         });
 
         if (error) {
-            toastManager.add({ title: "Failed to delete comment. Please try again.", type: "error" });
+            toastManager.add({
+                title: "Failed to delete comment. Please try again.",
+                type: "error",
+            });
             return;
         }
 
@@ -360,7 +397,10 @@ export function MangaCommentList({
             updateCommentContent(prevComments, commentId, "[deleted]"),
         );
 
-        toastManager.add({ title: "Comment deleted successfully!", type: "success" });
+        toastManager.add({
+            title: "Comment deleted successfully!",
+            type: "success",
+        });
     };
 
     return (
@@ -369,7 +409,7 @@ export function MangaCommentList({
                 className="flex flex-row justify-between my-2 pb-2 border-b"
                 id="comments"
             >
-                <h2 className="text-2xl font-bold">Comments</h2>
+                <h2 className="text-2xl font-semibold">Comments</h2>
                 <CommentSorting
                     sort={sortOrder}
                     onSortChange={handleSortChange}

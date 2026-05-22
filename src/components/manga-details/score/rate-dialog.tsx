@@ -19,7 +19,7 @@ import { client } from "@/lib/api";
 import { toastManager } from "@/components/ui/toast";
 import { cn, formatNumberShort } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const RATINGS = [
     { label: "Remove Rating", value: -1 },
@@ -69,7 +69,6 @@ export function RateDialog({
     const { data: user } = useUser();
     const queryClient = useQueryClient();
     const [selectedRating, setSelectedRating] = useState<number>(initialRating);
-
     const { data: userScore } = useQuery({
         queryKey: ["user-score", mangaId],
         queryFn: () => getUserScore(mangaId),
@@ -142,21 +141,29 @@ export function RateDialog({
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent align="center">
-                            {RATINGS.filter(
-                                (rating) =>
-                                    rating.value !== -1 || userScore !== null,
-                            ).map((rating) => (
-                                <SelectItem
-                                    key={rating.value}
-                                    className={cn("", {
-                                        "bg-destructive/70 dark:bg-destructive/70 border border-destructive text-white hover:bg-destructive/90 dark:hover:bg-destructive/90 focus-visible:ring-destructive/20":
-                                            rating.value === -1,
-                                    })}
-                                    value={rating.value}
-                                >
-                                    {rating.label}
-                                </SelectItem>
-                            ))}
+                            {RATINGS.reduce<React.ReactNode[]>(
+                                (acc, rating) => {
+                                    if (
+                                        rating.value !== -1 ||
+                                        userScore !== null
+                                    ) {
+                                        acc.push(
+                                            <SelectItem
+                                                key={rating.value}
+                                                className={cn("", {
+                                                    "bg-destructive/70 dark:bg-destructive/70 border border-destructive text-white hover:bg-destructive/90 dark:hover:bg-destructive/90 focus-visible:ring-destructive/20":
+                                                        rating.value === -1,
+                                                })}
+                                                value={rating.value}
+                                            >
+                                                {rating.label}
+                                            </SelectItem>,
+                                        );
+                                    }
+                                    return acc;
+                                },
+                                [],
+                            )}
                         </SelectContent>
                     </Select>
                     <Button

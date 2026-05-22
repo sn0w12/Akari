@@ -127,7 +127,7 @@ function Entry({
                         size="sm"
                         onClick={handleRemove}
                     >
-                        <X className="w-4 h-4" />
+                        <X className="size-4" />
                     </Button>
                 </div>
             )}
@@ -178,7 +178,7 @@ function SortableEntry({
                         {...listeners}
                         aria-label="Reorder entry"
                     >
-                        <GripVertical className="h-4 w-4" />
+                        <GripVertical className="size-4" />
                     </Button>
                 ) : null
             }
@@ -326,7 +326,7 @@ export function ListComponent({ id }: { id: string }) {
             <div className="flex justify-between items-center">
                 <div>
                     <div className="flex flex-col md:flex-row md:gap-2">
-                        <h1 className="text-2xl font-bold">{data.title}</h1>
+                        <h1 className="text-2xl font-semibold">{data.title}</h1>
                         <Link
                             to="/user/$id"
                             params={{ id: data.user.userId }}

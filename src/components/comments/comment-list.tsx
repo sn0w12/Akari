@@ -5,6 +5,8 @@ import {
 } from "@/components/comments/comment";
 import { CommentForm } from "@/components/comments/comment-form";
 
+const EMPTY_USER_VOTES: components["schemas"]["CommentVoteResponse"][] = [];
+
 interface CommentListProps {
     comments: CommentData[];
     onLoadReplies?: (commentId: string) => Promise<void>;
@@ -25,7 +27,7 @@ export function CommentList({
     onEdit,
     onDelete,
     onNewComment,
-    userVotes = [],
+    userVotes = EMPTY_USER_VOTES,
     currentUser,
 }: CommentListProps) {
     return (

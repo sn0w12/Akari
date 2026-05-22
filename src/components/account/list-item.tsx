@@ -74,14 +74,14 @@ export function ListItem({ list, onDelete }: ListItemProps) {
                         <Button
                             variant="destructive"
                             size="sm"
-                            className="absolute top-2 right-2 h-6 w-6 p-0"
+                            className="absolute top-2 right-2 size-6 p-0"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 deleteList(list.id);
                             }}
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                         </Button>
                     )}
                 </CardContent>

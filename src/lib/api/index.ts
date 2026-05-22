@@ -30,16 +30,12 @@ export function getAuthCookie() {
         } else {
             // New format: multi-part cookies
             const parts = authCookies
-                .map((row) => {
+                .flatMap((row) => {
                     const [key, value] = row.split("=");
                     const match = key.match(/^sb-db-auth-token\.(\d+)$/);
-                    if (!match) return null;
-                    return { num: parseInt(match[1]), value };
+                    if (!match) return [];
+                    return [{ num: parseInt(match[1]), value }];
                 })
-                .filter(
-                    (item): item is { num: number; value: string } =>
-                        item !== null,
-                )
                 .sort((a, b) => a.num - b.num)
                 .map((p) => p.value);
             if (parts.length === 0) return null;

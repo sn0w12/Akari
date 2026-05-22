@@ -3,7 +3,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useThrottledCallback } from "@tanstack/react-pacer";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { GenreBadge } from "../manga-details/badges/genre";
 import { StatusBadge } from "../manga-details/badges/status";
 import { Badge } from "../ui/badge";
@@ -25,19 +25,45 @@ export const MANGA_CARD_IMG_OPTS = {
     quality: 40,
 } as const;
 
+type ExpandState = {
+    shouldExpand: boolean;
+    computedDirection: "left" | "right";
+    cardWidth: number;
+    cardHeight: number;
+    useFixedHeight: boolean;
+};
+
+type ExpandAction =
+    | { type: "SHOULD_EXPAND"; value: boolean }
+    | { type: "COMPUTED_DIRECTION"; direction: "left" | "right" }
+    | { type: "DIMENSIONS"; width: number; height: number }
+    | { type: "USE_FIXED_HEIGHT"; value: boolean };
+
+function expandReducer(state: ExpandState, action: ExpandAction): ExpandState {
+    switch (action.type) {
+        case "SHOULD_EXPAND": return { ...state, shouldExpand: action.value };
+        case "COMPUTED_DIRECTION": return { ...state, computedDirection: action.direction };
+        case "DIMENSIONS": return { ...state, cardWidth: action.width, cardHeight: action.height };
+        case "USE_FIXED_HEIGHT": return { ...state, useFixedHeight: action.value };
+    }
+}
+
+const INITIAL_EXPAND_STATE: ExpandState = {
+    shouldExpand: false,
+    computedDirection: "right",
+    cardWidth: 200,
+    cardHeight: 300,
+    useFixedHeight: false,
+};
+
 export function MangaCard({
     manga,
     expandDirection = "auto",
     className,
     priority = false,
 }: MangaCardProps) {
-    const [shouldExpand, setShouldExpand] = useState(false);
-    const [computedDirection, setComputedDirection] = useState<
-        "left" | "right"
-    >("right");
-    const [cardWidth, setCardWidth] = useState(200);
-    const [cardHeight, setCardHeight] = useState(300);
-    const [useFixedHeight, setUseFixedHeight] = useState(false);
+    const [expandState, dispatch] = useReducer(expandReducer, INITIAL_EXPAND_STATE);
+    const { shouldExpand, computedDirection, cardWidth, cardHeight, useFixedHeight } = expandState;
     const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -47,19 +73,18 @@ export function MangaCard({
     const updateDirectionCallback = () => {
         const rect = cardRef.current?.getBoundingClientRect();
         if (rect) {
-            setCardWidth(rect.width);
-            setCardHeight(rect.height);
+            dispatch({ type: "DIMENSIONS", width: rect.width, height: rect.height });
 
             if (expandDirection === "auto") {
                 const spaceOnRight = window.innerWidth - rect.right;
                 const expansionWidth = rect.width;
 
-                // If not enough space on right (with 20px padding), expand left
-                setComputedDirection(
-                    spaceOnRight < expansionWidth + 20 ? "left" : "right",
-                );
+                dispatch({
+                    type: "COMPUTED_DIRECTION",
+                    direction: spaceOnRight < expansionWidth + 20 ? "left" : "right",
+                });
             } else {
-                setComputedDirection(expandDirection);
+                dispatch({ type: "COMPUTED_DIRECTION", direction: expandDirection });
             }
         }
     };
@@ -68,11 +93,17 @@ export function MangaCard({
         wait: 1000,
     });
 
+    const updateDirectionRef = useRef(updateDirection);
     useEffect(() => {
-        updateDirection();
-        window.addEventListener("resize", updateDirection);
-        return () => window.removeEventListener("resize", updateDirection);
-    }, [updateDirection]);
+        updateDirectionRef.current = updateDirection;
+    });
+
+    useEffect(() => {
+        const handler = () => updateDirectionRef.current();
+        handler();
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
+    }, [expandDirection]);
 
     const handleMouseEnter = () => {
         if (isMobile) return;
@@ -83,24 +114,24 @@ export function MangaCard({
             collapseTimeoutRef.current = null;
         }
 
-        if (cardRef.current) {
-            const rect = cardRef.current.getBoundingClientRect();
-            setCardWidth(rect.width);
-            setCardHeight(rect.height);
+            if (cardRef.current) {
+                const rect = cardRef.current.getBoundingClientRect();
+                dispatch({ type: "DIMENSIONS", width: rect.width, height: rect.height });
 
-            if (expandDirection === "auto") {
-                const spaceOnRight = window.innerWidth - rect.right;
-                const expansionWidth = rect.width;
-                setComputedDirection(
-                    spaceOnRight < expansionWidth + 20 ? "left" : "right",
-                );
+                if (expandDirection === "auto") {
+                    const spaceOnRight = window.innerWidth - rect.right;
+                    const expansionWidth = rect.width;
+                    dispatch({
+                        type: "COMPUTED_DIRECTION",
+                        direction: spaceOnRight < expansionWidth + 20 ? "left" : "right",
+                    });
+                }
             }
-        }
 
-        setUseFixedHeight(true);
-        expandTimeoutRef.current = setTimeout(() => {
-            setShouldExpand(true);
-        }, 300);
+            dispatch({ type: "USE_FIXED_HEIGHT", value: true });
+            expandTimeoutRef.current = setTimeout(() => {
+                dispatch({ type: "SHOULD_EXPAND", value: true });
+            }, 300);
     };
 
     const handleMouseLeave = () => {
@@ -112,15 +143,15 @@ export function MangaCard({
             expandTimeoutRef.current = null;
         }
 
-        setShouldExpand(false);
-        collapseTimeoutRef.current = setTimeout(() => {
-            setUseFixedHeight(false);
-        }, 300);
+        dispatch({ type: "SHOULD_EXPAND", value: false });
+            collapseTimeoutRef.current = setTimeout(() => {
+                dispatch({ type: "USE_FIXED_HEIGHT", value: false });
+            }, 300);
     };
 
     useEffect(() => {
         queueMicrotask(() => {
-            setShouldExpand(false);
+            dispatch({ type: "SHOULD_EXPAND", value: false });
         });
 
         return () => {

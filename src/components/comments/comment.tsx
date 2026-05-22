@@ -13,7 +13,7 @@ import {
     MessageSquare,
     MessageSquareReply,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { ButtonGroup } from "../ui/group";
 import { CommentAttachment } from "./attachment";
 
@@ -38,6 +38,8 @@ interface CommentProps {
     currentUser?: components["schemas"]["UserResponse"];
 }
 
+const EMPTY_USER_VOTES: components["schemas"]["CommentVoteResponse"][] = [];
+
 export function Comment({
     comment,
     onLoadReplies,
@@ -46,33 +48,127 @@ export function Comment({
     onEdit,
     onDelete,
     depth = 0,
-    userVotes = [],
+    userVotes = EMPTY_USER_VOTES,
     currentUser,
 }: CommentProps) {
     const { confirm } = useConfirm();
-
-    const [showReplies, setShowReplies] = useState(false);
-    const [isLoadingReplies, setIsLoadingReplies] = useState(false);
-    const [showReplyForm, setShowReplyForm] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(comment.content);
-    const [showReportDialog, setShowReportDialog] = useState(false);
+
+    type UIState = {
+        showReplies: boolean;
+        isLoadingReplies: boolean;
+        showReplyForm: boolean;
+        isEditing: boolean;
+        showReportDialog: boolean;
+    };
+
+    type UIAction =
+        | { type: "TOGGLE_REPLIES" }
+        | { type: "SET_LOADING_REPLIES"; loading: boolean }
+        | { type: "SET_REPLY_FORM"; open: boolean }
+        | { type: "SET_EDITING"; editing: boolean }
+        | { type: "SET_REPORT"; open: boolean };
+
+    function uiReducer(state: UIState, action: UIAction): UIState {
+        switch (action.type) {
+            case "TOGGLE_REPLIES":
+                return { ...state, showReplies: !state.showReplies };
+            case "SET_LOADING_REPLIES":
+                return { ...state, isLoadingReplies: action.loading };
+            case "SET_REPLY_FORM":
+                return { ...state, showReplyForm: action.open };
+            case "SET_EDITING":
+                return { ...state, isEditing: action.editing };
+            case "SET_REPORT":
+                return { ...state, showReportDialog: action.open };
+        }
+    }
+
+    const [uiState, dispatchUI] = useReducer(uiReducer, {
+        showReplies: false,
+        isLoadingReplies: false,
+        showReplyForm: false,
+        isEditing: false,
+        showReportDialog: false,
+    });
+    const {
+        showReplies,
+        isLoadingReplies,
+        showReplyForm,
+        isEditing,
+        showReportDialog,
+    } = uiState;
+
+    type VoteState = {
+        userVote: VoteType | null;
+        localUpvotes: number;
+        localDownvotes: number;
+    };
+
+    type VoteAction =
+        | { type: "VOTE"; voteType: VoteType }
+        | { type: "REVERT"; prev: VoteState }
+        | { type: "SYNC"; upvotes: number; downvotes: number };
+
+    function voteReducer(state: VoteState, action: VoteAction): VoteState {
+        switch (action.type) {
+            case "VOTE": {
+                const { userVote, localUpvotes, localDownvotes } = state;
+                if (userVote === action.voteType) {
+                    return {
+                        userVote: null,
+                        localUpvotes:
+                            action.voteType === "up"
+                                ? localUpvotes - 1
+                                : localUpvotes,
+                        localDownvotes:
+                            action.voteType === "down"
+                                ? localDownvotes - 1
+                                : localDownvotes,
+                    };
+                }
+                let newUpvotes = localUpvotes;
+                let newDownvotes = localDownvotes;
+                if (userVote === "up") newUpvotes--;
+                else if (userVote === "down") newDownvotes--;
+                if (action.voteType === "up") newUpvotes++;
+                else newDownvotes++;
+                return {
+                    userVote: action.voteType,
+                    localUpvotes: newUpvotes,
+                    localDownvotes: newDownvotes,
+                };
+            }
+            case "REVERT":
+                return action.prev;
+            case "SYNC":
+                return {
+                    ...state,
+                    localUpvotes: action.upvotes,
+                    localDownvotes: action.downvotes,
+                };
+        }
+    }
 
     const initialVote = userVotes.find((v) => v.commentId === comment.id);
-    const [userVote, setUserVote] = useState<VoteType | null>(null);
-    const [localUpvotes, setLocalUpvotes] = useState(comment.upvotes);
-    const [localDownvotes, setLocalDownvotes] = useState(comment.downvotes);
+    const [voteState, dispatchVote] = useReducer(voteReducer, {
+        userVote: initialVote
+            ? initialVote.value === 1
+                ? "up"
+                : "down"
+            : null,
+        localUpvotes: comment.upvotes,
+        localDownvotes: comment.downvotes,
+    });
+    const { userVote, localUpvotes, localDownvotes } = voteState;
     const isBanned = currentUser?.banned;
 
     useEffect(() => {
-        setUserVote(
-            initialVote ? (initialVote.value === 1 ? "up" : "down") : null,
-        );
-    }, [initialVote]);
-
-    useEffect(() => {
-        setLocalUpvotes(comment.upvotes);
-        setLocalDownvotes(comment.downvotes);
+        dispatchVote({
+            type: "SYNC",
+            upvotes: comment.upvotes,
+            downvotes: comment.downvotes,
+        });
     }, [comment.upvotes, comment.downvotes]);
 
     const hasReplies =
@@ -94,59 +190,29 @@ export function Comment({
             (!comment.replies || comment.replies.length === 0) &&
             depth === 0
         ) {
-            setIsLoadingReplies(true);
+            dispatchUI({ type: "SET_LOADING_REPLIES", loading: true });
             try {
                 await onLoadReplies(comment.id);
             } finally {
-                setIsLoadingReplies(false);
+                dispatchUI({ type: "SET_LOADING_REPLIES", loading: false });
             }
         }
-        setShowReplies(!showReplies);
+        dispatchUI({ type: "TOGGLE_REPLIES" });
     };
 
     const handleVote = async (voteType: VoteType) => {
         if (!onVote) return;
 
-        const previousVote = userVote;
-        const previousUpvotes = localUpvotes;
-        const previousDownvotes = localDownvotes;
+        const previousState = voteState;
+        const actionArg = userVote === voteType ? "unset" : voteType;
 
-        let action: VoteType = voteType;
-
-        // Optimistic update
-        if (userVote === voteType) {
-            // Remove vote
-            setUserVote(null);
-            if (voteType === "up") {
-                setLocalUpvotes((prev) => prev - 1);
-            } else {
-                setLocalDownvotes((prev) => prev - 1);
-            }
-            action = "unset";
-        } else {
-            // Add or change vote
-            if (userVote === "up") {
-                setLocalUpvotes((prev) => prev - 1);
-            } else if (userVote === "down") {
-                setLocalDownvotes((prev) => prev - 1);
-            }
-
-            setUserVote(voteType);
-            if (voteType === "up") {
-                setLocalUpvotes((prev) => prev + 1);
-            } else {
-                setLocalDownvotes((prev) => prev + 1);
-            }
-        }
+        dispatchVote({ type: "VOTE", voteType });
 
         try {
-            await onVote(comment.id, action);
+            await onVote(comment.id, actionArg);
         } catch (error) {
             console.error("Failed to vote:", error);
-            // Revert on error
-            setUserVote(previousVote);
-            setLocalUpvotes(previousUpvotes);
-            setLocalDownvotes(previousDownvotes);
+            dispatchVote({ type: "REVERT", prev: previousState });
         }
     };
 
@@ -157,7 +223,7 @@ export function Comment({
         if (!onReply) return;
         try {
             await onReply(comment.id, content, attachment);
-            setShowReplyForm(false);
+            dispatchUI({ type: "SET_REPLY_FORM", open: false });
             // If replies aren't shown yet, show them after posting
             if (!showReplies && hasReplies) {
                 handleShowReplies();
@@ -195,7 +261,7 @@ export function Comment({
                 {depth > 0 && (
                     <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute -left-2 sm:-left-4 top-0 h-4 w-4 rounded-bl-md border-b border-l border-accent"
+                        className="pointer-events-none absolute -left-2 sm:-left-4 top-0 size-4 rounded-bl-md border-b border-l border-accent"
                     />
                 )}
                 <div className="flex flex-col gap-2 items-center">
@@ -237,8 +303,15 @@ export function Comment({
                         )}
 
                         <CommentMenu
-                            onReport={() => setShowReportDialog(true)}
-                            onEdit={() => setIsEditing(true)}
+                            onReport={() =>
+                                dispatchUI({ type: "SET_REPORT", open: true })
+                            }
+                            onEdit={() =>
+                                dispatchUI({
+                                    type: "SET_EDITING",
+                                    editing: true,
+                                })
+                            }
                             onDelete={
                                 onDelete
                                     ? async () => {
@@ -298,7 +371,7 @@ export function Comment({
                                 disabled={comment.deleted || isBanned}
                                 aria-label="Upvote Comment"
                             >
-                                <ChevronUp className="h-4 w-4" />
+                                <ChevronUp className="size-4" />
                             </Button>
                             <span className="text-xs font-medium text-muted-foreground px-1 sm:px-1.5 min-w-[20px] sm:min-w-[24px] text-center">
                                 {localUpvotes - localDownvotes}
@@ -315,7 +388,7 @@ export function Comment({
                                 disabled={comment.deleted || isBanned}
                                 aria-label="Downvote Comment"
                             >
-                                <ChevronDown className="h-4 w-4" />
+                                <ChevronDown className="size-4" />
                             </Button>
                         </div>
 
@@ -324,7 +397,10 @@ export function Comment({
                                 <Button
                                     variant="outline"
                                     onClick={() => {
-                                        setIsEditing(false);
+                                        dispatchUI({
+                                            type: "SET_EDITING",
+                                            editing: false,
+                                        });
                                         setEditContent(comment.content);
                                     }}
                                     size="sm"
@@ -340,7 +416,10 @@ export function Comment({
                                                 comment.id,
                                                 editContent,
                                             );
-                                            setIsEditing(false);
+                                            dispatchUI({
+                                                type: "SET_EDITING",
+                                                editing: false,
+                                            });
                                         } catch (error) {
                                             console.error(
                                                 "Failed to edit comment:",
@@ -364,7 +443,7 @@ export function Comment({
                                             size="sm"
                                             className="h-8 sm:h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                                         >
-                                            <MessageSquare className="h-3 w-3" />
+                                            <MessageSquare className="size-3" />
                                             <span className="sr-only sm:not-sr-only">
                                                 {isLoadingReplies
                                                     ? "Loading..."
@@ -389,11 +468,14 @@ export function Comment({
                                                 "bg-primary/10 text-primary hover:bg-primary/20",
                                         )}
                                         onClick={() =>
-                                            setShowReplyForm(!showReplyForm)
+                                            dispatchUI({
+                                                type: "SET_REPLY_FORM",
+                                                open: !showReplyForm,
+                                            })
                                         }
                                         disabled={comment.deleted || isBanned}
                                     >
-                                        <MessageSquareReply className="h-3 w-3" />
+                                        <MessageSquareReply className="size-3" />
                                         <span className="sr-only sm:not-sr-only">
                                             Reply
                                         </span>
@@ -409,8 +491,12 @@ export function Comment({
                                 onSubmit={handleReplySubmit}
                                 placeholder={`Reply to ${comment.userProfile.displayName}...`}
                                 submitLabel="Reply"
-                                onCancel={() => setShowReplyForm(false)}
-                                autoFocus
+                                onCancel={() =>
+                                    dispatchUI({
+                                        type: "SET_REPLY_FORM",
+                                        open: false,
+                                    })
+                                }
                                 currentUser={currentUser}
                             />
                         </div>
@@ -419,7 +505,9 @@ export function Comment({
                 <ReportCommentDialog
                     commentId={comment.id}
                     isOpen={showReportDialog}
-                    onOpenChange={setShowReportDialog}
+                    onOpenChange={(open) =>
+                        dispatchUI({ type: "SET_REPORT", open })
+                    }
                 />
             </div>
             {showReplies && displayReplies.length > 0 && (

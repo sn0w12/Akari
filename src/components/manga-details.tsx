@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld";
 import { Image, type SizesConfig } from "@/components/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -120,12 +121,7 @@ export function MangaDetailsComponent({
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={jsonLd} />
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
             <div className="mb-2 flex h-auto flex-col justify-center gap-4 items-stretch lg:grid lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-y-0">
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
@@ -143,7 +139,7 @@ export function MangaDetailsComponent({
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
-                            <h1 className="overflow-y-auto text-2xl font-bold md:text-3xl lg:max-h-27">
+                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl lg:max-h-27">
                                 {manga.title}
                             </h1>
                             {alternativeTitles.length > 0 && (
@@ -156,7 +152,7 @@ export function MangaDetailsComponent({
                                                 aria-label={`Alternative titles (${alternativeTitles.length})`}
                                                 className="relative shrink-0"
                                             >
-                                                <LanguagesIcon className="w-4 h-4" />
+                                                <LanguagesIcon className="size-4" />
                                                 <Badge
                                                     size="sm"
                                                     className="absolute -top-1 -right-1"
@@ -176,13 +172,10 @@ export function MangaDetailsComponent({
                                         </PopoverTitle>
                                         <Separator className="mt-1" />
                                         {alternativeTitles.map(
-                                            (
-                                                mangaName: string,
-                                                index: number,
-                                            ) => (
+                                            (mangaName: string) => (
                                                 <p
                                                     className="text-sm text-muted-foreground py-0.5"
-                                                    key={`alt-title-${index}-${mangaName}`}
+                                                    key={mangaName}
                                                 >
                                                     {mangaName}
                                                 </p>
@@ -215,8 +208,9 @@ export function MangaDetailsComponent({
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {manga.authors.map(
-                                            (author: string, index: number) => (
+                                            (author: string) => (
                                                 <Badge
+                                                    key={author}
                                                     variant="default"
                                                     render={
                                                         <Link
@@ -229,7 +223,6 @@ export function MangaDetailsComponent({
                                                                     ),
                                                                 ),
                                                             }}
-                                                            key={`author-${index}-${author}`}
                                                         />
                                                     }
                                                 >

@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld";
 import ErrorPage from "@/components/error-page";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
@@ -97,15 +98,10 @@ function AuthorPage() {
     return (
         <div className="flex-1 px-4 pt-2 pb-4">
             <div className="flex gap-4">
-                <h2 className="text-3xl font-bold mb-2">{title}</h2>
+                <h2 className="text-3xl font-semibold mb-2">{title}</h2>
             </div>
 
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={jsonLd} />
             <MangaGrid mangaList={data.data.items} priority={4} />
             <ServerPagination
                 currentPage={data.data.currentPage}

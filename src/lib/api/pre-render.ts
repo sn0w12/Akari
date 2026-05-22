@@ -15,50 +15,74 @@ export async function getAllPaginated<T>(
 ): Promise<T[]> {
     try {
         const allItems: T[] = [];
-        let page = 1;
-        let totalPages = 2;
 
-        while (page <= totalPages) {
-            const { data, error } = await client.GET(path, {
-                params: {
-                    query: {
-                        page,
-                        pageSize,
-                    },
+        const { data: firstData, error: firstError } = await client.GET(path, {
+            params: {
+                query: {
+                    page: 1,
+                    pageSize,
                 },
-                headers: serverHeaders,
-            });
+            },
+            headers: serverHeaders,
+        });
 
-            if (error || !data) {
-                console.error(
-                    `Failed to fetch page ${page} for ${path}:`,
-                    error,
+        if (firstError || !firstData) {
+            console.error(`Failed to fetch page 1 for ${path}:`, firstError);
+            return [];
+        }
+
+        if (
+            typeof firstData.data !== "object" ||
+            firstData.data === null ||
+            !("items" in firstData.data) ||
+            !("totalPages" in firstData.data)
+        ) {
+            console.error(
+                `Unexpected response format for page 1 on ${path}:`,
+                firstData.data,
+            );
+            return [];
+        }
+
+        const responseData = firstData.data as PaginatedResponse<unknown>;
+        let totalPages = responseData.totalPages;
+        if (maxPages) {
+            totalPages = Math.min(totalPages, maxPages);
+        }
+
+        allItems.push(...responseData.items.map(transform));
+
+        if (totalPages > 1) {
+            const pagePromises = [];
+            for (let page = 2; page <= totalPages; page++) {
+                pagePromises.push(
+                    client.GET(path, {
+                        params: { query: { page, pageSize } },
+                        headers: serverHeaders,
+                    }),
                 );
-                break;
             }
 
-            if (
-                typeof data.data === "object" &&
-                data.data !== null &&
-                "items" in data.data &&
-                "totalPages" in data.data
-            ) {
-                const responseData = data.data as PaginatedResponse<unknown>;
-                if (page === 1) {
-                    totalPages = responseData.totalPages;
-                    if (maxPages) {
-                        totalPages = Math.min(totalPages, maxPages);
-                    }
+            const results = await Promise.all(pagePromises);
+
+            for (const { data, error } of results) {
+                if (error || !data) {
+                    console.error(
+                        `Failed to fetch page for ${path}:`,
+                        error,
+                    );
+                    break;
                 }
 
-                allItems.push(...responseData.items.map(transform));
-                page++;
-            } else {
-                console.error(
-                    `Unexpected response format for page ${page} on ${path}:`,
-                    data.data,
-                );
-                break;
+                if (
+                    typeof data.data === "object" &&
+                    data.data !== null &&
+                    "items" in data.data
+                ) {
+                    const responseData =
+                        data.data as PaginatedResponse<unknown>;
+                    allItems.push(...responseData.items.map(transform));
+                }
             }
         }
 

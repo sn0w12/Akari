@@ -6,14 +6,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
 export const Route = createFileRoute("/_default/search/")({
-    head: () => {
-        const { meta, links } = createMetadata({
-            title: "Search Manga",
-            description: "Search for your favorite manga titles on Akari.",
-            canonicalPath: "/search",
-        });
-        return { meta, links };
-    },
     validateSearch: (
         search: Record<string, string | undefined>,
     ): {
@@ -44,6 +36,14 @@ export const Route = createFileRoute("/_default/search/")({
                 ? { sort: sort as "search" | "latest" | "popular" | "newest" }
                 : {}),
         };
+    },
+    head: () => {
+        const { meta, links } = createMetadata({
+            title: "Search Manga",
+            description: "Search for your favorite manga titles on Akari.",
+            canonicalPath: "/search",
+        });
+        return { meta, links };
     },
     component: Search,
     headers: () => ({

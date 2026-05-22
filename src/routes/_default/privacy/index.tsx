@@ -26,7 +26,7 @@ function PrivacyPage() {
     return (
         <div className="flex-1 bg-background text-foreground">
             <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+                <h1 className="text-3xl font-semibold mb-6">Privacy Policy</h1>
                 <div className="prose dark:prose-invert">
                     <p>
                         <strong>Last Updated: 2026-01-17</strong>

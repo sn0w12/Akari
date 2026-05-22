@@ -8,13 +8,13 @@ export default function HomeSkeleton() {
     return (
         <>
             <div className="mx-auto px-4 pt-2 pb-4">
-                <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
+                <h2 className="text-3xl font-semibold mb-2">Popular Manga</h2>
                 <div className={GRID_CLASS}>
-                    {[...Array(12)].map((_, index) => (
-                        <MangaCardSkeleton key={index} />
+                    {Array.from({ length: 12 }, (_, i) => i).map((i) => (
+                        <MangaCardSkeleton key={`skeleton-${i}`} />
                     ))}
                 </div>
-                <div className="flex justify-between items-center mt-6 px-4 py-4 border-t border-b">
+                <div className="flex justify-between items-center mt-6 p-4 border-t border-b">
                     <Button variant="outline" disabled>
                         Previous
                     </Button>
@@ -24,11 +24,11 @@ export default function HomeSkeleton() {
                     </Button>
                 </div>
 
-                <h2 className={`text-3xl font-bold my-2`}>Latest Releases</h2>
+                <h2 className={`text-3xl font-semibold my-2`}>Latest Releases</h2>
 
                 <div className={GRID_CLASS}>
-                    {[...Array(24)].map((_, index) => (
-                        <MangaCardSkeleton key={index} />
+                    {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                        <MangaCardSkeleton key={`skeleton-${i}`} />
                     ))}
                 </div>
             </div>

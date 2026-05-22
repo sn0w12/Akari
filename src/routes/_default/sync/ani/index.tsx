@@ -1,14 +1,51 @@
 import { SyncBody } from "@/components/sync/sync-body";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { toastManager } from "@/components/ui/toast";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { StorageManager } from "@/lib/storage";
-import { toastManager } from "@/components/ui/toast";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
+
+type SyncState = {
+    aniData: components["schemas"]["AniEntry"][];
+    bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
+    aniLoading: boolean;
+    bookmarksLoading: boolean;
+    bookmarksProgress: number;
+};
+
+type SyncAction =
+    | { type: "ANI_DATA"; data: components["schemas"]["AniEntry"][] }
+    | { type: "ANI_ERROR" }
+    | {
+          type: "BOOKMARKS";
+          data: components["schemas"]["BookmarkListResponse"]["items"];
+      }
+    | { type: "BOOKMARKS_ERROR" }
+    | { type: "BOOKMARKS_PROGRESS"; progress: number };
+
+function syncReducer(state: SyncState, action: SyncAction): SyncState {
+    switch (action.type) {
+        case "ANI_DATA":
+            return { ...state, aniData: action.data, aniLoading: false };
+        case "ANI_ERROR":
+            return { ...state, aniLoading: false };
+        case "BOOKMARKS":
+            return {
+                ...state,
+                bookmarks: action.data,
+                bookmarksLoading: false,
+            };
+        case "BOOKMARKS_ERROR":
+            return { ...state, bookmarksLoading: false };
+        case "BOOKMARKS_PROGRESS":
+            return { ...state, bookmarksProgress: action.progress };
+    }
+}
 
 export const Route = createFileRoute("/_default/sync/ani/")({
     component: SyncAniPage,
@@ -21,15 +58,16 @@ export const Route = createFileRoute("/_default/sync/ani/")({
 });
 
 function SyncAniPage() {
-    const [aniData, setAniData] = useState<components["schemas"]["AniEntry"][]>(
-        [],
-    );
-    const [bookmarks, setBookmarks] = useState<
-        components["schemas"]["BookmarkListResponse"]["items"]
-    >([]);
-    const [aniLoading, setAniLoading] = useState(true);
-    const [bookmarksLoading, setBookmarksLoading] = useState(true);
-    const [bookmarksProgress, setBookmarksProgress] = useState(0);
+    const [
+        { aniData, bookmarks, aniLoading, bookmarksLoading, bookmarksProgress },
+        dispatch,
+    ] = useReducer(syncReducer, {
+        aniData: [] as components["schemas"]["AniEntry"][],
+        bookmarks: [] as components["schemas"]["BookmarkListResponse"]["items"],
+        aniLoading: true,
+        bookmarksLoading: true,
+        bookmarksProgress: 0,
+    });
     const { confirm } = useConfirm();
 
     const getStatusVariant = (status: string | null) => {
@@ -50,12 +88,23 @@ function SyncAniPage() {
     };
 
     useEffect(() => {
+        const timeoutIds: Set<ReturnType<typeof setTimeout>> = new Set();
+
+        const delay = (ms: number) =>
+            new Promise<void>((resolve) => {
+                const id = setTimeout(() => {
+                    timeoutIds.delete(id);
+                    resolve();
+                }, ms);
+                timeoutIds.add(id);
+            });
+
         async function fetchAllAniList() {
             const aniListUserStorage = StorageManager.get("aniListUser");
             const userName = aniListUserStorage.get()?.name;
             if (!userName) {
                 console.error("No AniList username found in storage");
-                setAniLoading(false);
+                dispatch({ type: "ANI_ERROR" });
                 return;
             }
 
@@ -69,12 +118,11 @@ function SyncAniPage() {
 
             if (error) {
                 console.error("Error fetching AniList manga list:", error);
-                setAniLoading(false);
+                dispatch({ type: "ANI_ERROR" });
                 return;
             }
 
-            setAniData(data?.data.lists[0].entries);
-            setAniLoading(false);
+            dispatch({ type: "ANI_DATA", data: data?.data.lists[0].entries });
         }
 
         async function fetchAllBookmarks() {
@@ -95,40 +143,53 @@ function SyncAniPage() {
 
                 if (error || !data) {
                     console.error("Error fetching bookmarks:", error);
-                    setBookmarksLoading(false);
+                    dispatch({ type: "BOOKMARKS_ERROR" });
                     break;
                 }
 
-                if (data.data?.items) {
-                    allData = [...allData, ...data.data.items];
+                const d = data.data;
+                if (d?.items) {
+                    allData = [...allData, ...d.items];
                 }
 
-                if (!totalPages && data.data?.totalPages) {
-                    totalPages = data.data.totalPages;
+                if (!totalPages && d?.totalPages) {
+                    totalPages = d.totalPages;
                 }
 
                 if (totalPages) {
-                    setBookmarksProgress((page / totalPages) * 100);
+                    dispatch({
+                        type: "BOOKMARKS_PROGRESS",
+                        progress: (page / totalPages) * 100,
+                    });
                 }
 
-                if (page >= (data.data?.totalPages || 0)) {
+                if (page >= (d?.totalPages || 0)) {
                     break;
                 }
                 page += 1;
-                await new Promise((resolve) => setTimeout(resolve, 500));
+                await delay(500);
             }
 
-            setBookmarks(allData);
-            setBookmarksLoading(false);
+            dispatch({ type: "BOOKMARKS", data: allData });
         }
 
         fetchAllAniList();
         fetchAllBookmarks();
+
+        return () => {
+            timeoutIds.forEach((id) => {
+                clearTimeout(id);
+            });
+            timeoutIds.clear();
+        };
     }, []);
 
     async function syncAniToBookmarks() {
         if (aniData.length === 0) {
-            toastManager.add({ title: "No AniList data to sync", type: "warning" });
+            toastManager.add({
+                title: "No AniList data to sync",
+                type: "warning",
+            });
             return;
         }
 
@@ -141,75 +202,97 @@ function SyncAniPage() {
         });
         if (!confirmed) return;
 
-        const aniDataToSync = aniData.filter(
-            (item) =>
-                !bookmarks.some((bookmark) => bookmark.aniId === item.media.id),
-        );
+        const aniDataToSync = aniData.filter((item) => {
+            const media = item.media;
+            return !bookmarks.some((bookmark) => bookmark.aniId === media.id);
+        });
 
         if (aniDataToSync.length === 0) {
-            toastManager.add({ title: "All manga already synced", type: "info", description: "No new manga to sync from your AniList" });
+            toastManager.add({
+                title: "All manga already synced",
+                type: "info",
+                description: "No new manga to sync from your AniList",
+            });
             return;
         }
 
         const alreadySynced = aniData.length - aniDataToSync.length;
-        toastManager.add({ title: `Starting sync of ${aniDataToSync.length} manga`, type: "info", description: alreadySynced > 0 ? `Skipping ${alreadySynced} already synced manga` : undefined });
+        toastManager.add({
+            title: `Starting sync of ${aniDataToSync.length} manga`,
+            type: "info",
+            description:
+                alreadySynced > 0
+                    ? `Skipping ${alreadySynced} already synced manga`
+                    : undefined,
+        });
 
         const batchSize = 50;
         const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
             [];
         let errorCount = 0;
 
+        const aniDataById = new Map(
+            aniData.map((item) => [item.media.id, item]),
+        );
+        const aniDataToSyncById = new Map(
+            aniDataToSync.map((item) => [item.media.id, item]),
+        );
+
+        const batchPromises = [];
         for (let i = 0; i < aniDataToSync.length; i += batchSize) {
-            const batch = aniDataToSync
+            const batchIds = aniDataToSync
                 .slice(i, i + batchSize)
                 .map((item) => item.media.id);
-            const bookmarkRatings = bookmarks
-                .filter(
-                    (bookmark) =>
-                        bookmark.aniId && batch.includes(bookmark.aniId),
-                )
-                .map((bookmark) => {
-                    const aniItem = aniData.find(
-                        (item) => item.media.id === bookmark.aniId,
-                    );
-                    return {
-                        mangaId: bookmark.mangaId,
-                        rating: aniItem?.score,
-                    };
-                })
-                .filter(
-                    (item): item is { mangaId: string; rating: number } =>
-                        typeof item.rating === "number" && item.rating > 0,
-                );
-
-            await new Promise((resolve) => setTimeout(resolve, 500));
-
-            const { data, error } = await client.POST("/v2/manga/ani/batch", {
-                body: { aniIds: batch },
+            const batchSet = new Set(batchIds);
+            const bookmarkRatings = bookmarks.flatMap((bookmark) => {
+                if (!bookmark.aniId || !batchSet.has(bookmark.aniId)) return [];
+                const aniItem = aniDataById.get(bookmark.aniId);
+                const rating = aniItem?.score;
+                if (typeof rating === "number" && rating > 0) {
+                    return [{ mangaId: bookmark.mangaId, rating }];
+                }
+                return [];
             });
-            const { data: ratingData, error: ratingError } = await client.POST(
-                "/v2/manga/rate/batch",
-                {
-                    body: { ratings: bookmarkRatings },
-                },
+
+            batchPromises.push(
+                (async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+
+                    const [batchRes, ratingRes] = await Promise.all([
+                        client.POST("/v2/manga/ani/batch", {
+                            body: { aniIds: batchIds },
+                        }),
+                        client.POST("/v2/manga/rate/batch", {
+                            body: { ratings: bookmarkRatings },
+                        }),
+                    ]);
+
+                    const { data, error } = batchRes;
+                    const { data: ratingData, error: ratingError } = ratingRes;
+
+                    if (error || !data) {
+                        console.error("Error fetching manga batch:", error);
+                        errorCount++;
+                        return null;
+                    }
+
+                    if (ratingError || !ratingData) {
+                        console.error("Error rating manga batch:", ratingError);
+                        errorCount++;
+                        return null;
+                    }
+
+                    return data.data;
+                })(),
             );
+        }
 
-            if (error || !data) {
-                console.error("Error fetching manga batch:", error);
-                errorCount++;
-                continue;
-            }
+        const batchResults = await Promise.all(batchPromises);
 
-            if (ratingError || !ratingData) {
-                console.error("Error rating manga batch:", ratingError);
-                errorCount++;
-                continue;
-            }
-
-            for (const manga of data.data) {
-                const aniItem = aniDataToSync.find(
-                    (item) => item.media.id === manga.aniId,
-                );
+        for (const data of batchResults) {
+            if (!data) continue;
+            for (const manga of data) {
+                const aniItem = aniDataToSyncById.get(manga.aniId);
                 if (aniItem) {
                     updateItems.push({
                         mangaId: manga.id,
@@ -220,32 +303,53 @@ function SyncAniPage() {
         }
 
         if (updateItems.length === 0) {
-            toastManager.add({ title: "Sync failed", type: "error", description: "Could not find matching manga in database" });
+            toastManager.add({
+                title: "Sync failed",
+                type: "error",
+                description: "Could not find matching manga in database",
+            });
             return;
         }
 
         const bookmarkBatchSize = 100;
         let bookmarkErrorCount = 0;
 
+        const bookmarkPromises = [];
         for (let i = 0; i < updateItems.length; i += bookmarkBatchSize) {
             const batch = updateItems.slice(i, i + bookmarkBatchSize);
 
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            bookmarkPromises.push(
+                (async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 500));
 
-            const { error } = await client.POST("/v2/bookmarks/batch", {
-                body: { items: batch },
-            });
+                    const { error } = await client.POST("/v2/bookmarks/batch", {
+                        body: { items: batch },
+                    });
 
-            if (error) {
-                console.error("Error batch updating bookmarks:", error);
-                bookmarkErrorCount++;
-            }
+                    if (error) {
+                        console.error("Error batch updating bookmarks:", error);
+                        return false;
+                    }
+                    return true;
+                })(),
+            );
         }
 
+        const bookmarkResults = await Promise.all(bookmarkPromises);
+        bookmarkErrorCount = bookmarkResults.filter((r) => !r).length;
+
         if (bookmarkErrorCount > 0 || errorCount > 0) {
-            toastManager.add({ title: "Sync completed with errors", type: "warning", description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred` });
+            toastManager.add({
+                title: "Sync completed with errors",
+                type: "warning",
+                description: `Synced ${updateItems.length - bookmarkErrorCount} manga, ${errorCount + bookmarkErrorCount} errors occurred`,
+            });
         } else {
-            toastManager.add({ title: "Sync completed successfully", type: "success", description: `Successfully synced ${updateItems.length} manga to bookmarks` });
+            toastManager.add({
+                title: "Sync completed successfully",
+                type: "success",
+                description: `Successfully synced ${updateItems.length} manga to bookmarks`,
+            });
         }
     }
 
@@ -267,9 +371,9 @@ function SyncAniPage() {
                 {bookmarks.some(
                     (bookmark) => bookmark.aniId === item.media.id,
                 ) ? (
-                    <Check className="h-4 w-4 text-green-600" />
+                    <Check className="size-4 text-green-600" />
                 ) : (
-                    <X className="h-4 w-4 text-gray-400" />
+                    <X className="size-4 text-gray-400" />
                 )}
             </TableCell>
         </TableRow>

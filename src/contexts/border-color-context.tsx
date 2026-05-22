@@ -1,7 +1,7 @@
 import {
     createContext,
     useCallback,
-    useContext,
+    use,
     useEffect,
     useRef,
     useState,
@@ -62,7 +62,7 @@ export function BorderColorProvider({
 }
 
 export function useBorderColor() {
-    const context = useContext(BorderColorContext);
+    const context = use(BorderColorContext);
     if (!context) {
         throw new Error(
             "useBorderColor must be used within a BorderColorProvider",

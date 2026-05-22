@@ -53,12 +53,12 @@ export default function SearchPage() {
               ) as (typeof MANGA_TYPES)[number][])
         : [];
 
-    const [searchQuery, setSearchQuery] = useState(query);
+    const [searchQuery, setSearchQuery] = useState(query); // useState initializer — local state owner after mount
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
         wait: 300,
     });
-    const [currentPage, setCurrentPage] = useState(page);
-    const [filters, setFilters] = useState<SearchFilters>({
+    const [currentPage, setCurrentPage] = useState(page); // useState initializer — local state owner after mount
+    const [filters, setFilters] = useState<SearchFilters>({ // useState initializer — local state owner after mount
         genres: selectedGenresFromUrl,
         excludedGenres: excludedGenresFromUrl,
         types: selectedTypesFromUrl,

@@ -104,9 +104,9 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
                             >
                                 <div className="flex items-center gap-2">
                                     {existingListData?.includes(item.id) ? (
-                                        <CheckSquare className="h-4 w-4" />
+                                        <CheckSquare className="size-4" />
                                     ) : (
-                                        <Square className="h-4 w-4" />
+                                        <Square className="size-4" />
                                     )}
                                     {item.title}
                                 </div>

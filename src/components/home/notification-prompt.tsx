@@ -20,17 +20,7 @@ export function NotificationPrompt() {
 
     useEffect(() => {
         const data = storage.get();
-        if (data?.declined || data?.enabled) {
-            setIsVisible(false);
-            return;
-        }
-
-        // Only show the prompt when the user is signed in
-        if (!user) {
-            setIsVisible(false);
-        } else {
-            setIsVisible(true);
-        }
+        setIsVisible(!!user && !data?.declined && !data?.enabled);
     }, [user, storage]);
 
     const handleDecline = () => {

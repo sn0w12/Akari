@@ -27,8 +27,9 @@ export function HeaderComponent({ notification }: HeaderProps) {
 
         async function validate() {
             const validated = await validateSecondaryAccounts();
+            const validNotifsSet = new Set(validNotifs);
             for (const account of validated) {
-                if (validNotifs.includes(account.id) && !account.valid) {
+                if (validNotifsSet.has(account.id) && !account.valid) {
                     toastManager.add({ title: `${account.name} session has expired.`, type: "error", description: "You can disable this notification in settings." });
                 }
             }

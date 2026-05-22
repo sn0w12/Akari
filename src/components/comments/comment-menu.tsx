@@ -42,7 +42,7 @@ export function CommentMenu({
                     />
                 }
             >
-                <MoreVertical className="h-3 w-3" />
+                <MoreVertical className="size-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
                 {!isOwner && (
@@ -50,7 +50,7 @@ export function CommentMenu({
                         onClick={onReport}
                         disabled={commentDeleted || !user || user.banned}
                     >
-                        <Flag className="h-3 w-3" />
+                        <Flag className="size-3" />
                         <span>Report</span>
                     </DropdownMenuItem>
                 )}
@@ -60,7 +60,7 @@ export function CommentMenu({
                             onClick={onEdit}
                             disabled={showReplyForm || !user || user.banned}
                         >
-                            <Edit className="h-3 w-3" />
+                            <Edit className="size-3" />
                             <span>Edit</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -68,7 +68,7 @@ export function CommentMenu({
                             disabled={showReplyForm || !user || user.banned}
                             variant="destructive"
                         >
-                            <Trash className="h-3 w-3" />
+                            <Trash className="size-3" />
                             <span>Delete</span>
                         </DropdownMenuItem>
                     </>

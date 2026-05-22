@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld";
 import { createJsonLd } from "@/lib/seo";
 import { CollectionPage } from "schema-dts";
 import { ChaptersSection } from "./chapters-client";
@@ -27,15 +28,7 @@ export function ChaptersSectionServer({ chapters, mangaId }: { chapters: compone
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(chapterListJsonLd).replace(
-                        /</g,
-                        "\\u003c",
-                    ),
-                }}
-            />
+            <JsonLd data={chapterListJsonLd} />
             <ChaptersSection
                 mangaId={mangaId}
                 chapters={chapters.chapters}

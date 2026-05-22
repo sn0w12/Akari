@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Link, useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState, useTransition } from "react";
 
 type SearchResult = {
     id: string;
@@ -22,39 +22,59 @@ type SearchResult = {
     type: string;
 };
 
+type SearchState = {
+    searchResults: SearchResult[];
+    error: string | null;
+};
+
+type SearchAction =
+    | { type: "CLEAR" }
+    | { type: "SUCCESS"; results: SearchResult[] }
+    | { type: "ERROR"; error: string }
+    | { type: "CLEAR_ERROR" };
+
+function searchReducer(state: SearchState, action: SearchAction): SearchState {
+    switch (action.type) {
+        case "CLEAR": return { searchResults: [], error: null };
+        case "SUCCESS": return { searchResults: action.results, error: null };
+        case "ERROR": return { searchResults: [], error: action.error };
+        case "CLEAR_ERROR": return { ...state, error: null };
+    }
+}
+
 export default function SearchBar() {
     const router = useRouter();
     const [searchValue, setSearchValue] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const [{ searchResults, error }, dispatch] = useReducer(searchReducer, {
+        searchResults: [] as SearchResult[],
+        error: null,
+    });
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!searchValue.trim()) {
-            setSearchResults([]);
-            setIsLoading(false);
-            setError(null);
+            startTransition(() => {
+                dispatch({ type: "CLEAR" });
+            });
             return;
         }
 
-        setIsLoading(true);
-        setError(null);
+        dispatch({ type: "CLEAR_ERROR" });
         let ignore = false;
 
-        const timeoutId = setTimeout(async () => {
-            try {
-                const results = await getSearchResults(searchValue.trim());
-                if (!ignore) setSearchResults(results);
-            } catch {
-                if (!ignore) {
-                    setError("Failed to fetch results. Please try again.");
-                    setSearchResults([]);
+        const timeoutId = setTimeout(() => {
+            startTransition(async () => {
+                try {
+                    const results = await getSearchResults(searchValue.trim());
+                    if (!ignore) dispatch({ type: "SUCCESS", results });
+                } catch {
+                    if (!ignore) {
+                        dispatch({ type: "ERROR", error: "Failed to fetch results. Please try again." });
+                    }
                 }
-            } finally {
-                if (!ignore) setIsLoading(false);
-            }
+            });
         }, 300);
 
         return () => {
@@ -83,10 +103,10 @@ export default function SearchBar() {
     };
 
     let status: ReactNode = `${searchResults.length} result${searchResults.length === 1 ? "" : "s"} found`;
-    if (isLoading) {
+    if (isPending) {
         status = (
             <span className="flex items-center justify-between gap-2 text-muted-foreground">
-                Searching...
+                Searching&hellip;
                 <Spinner className="size-4.5 sm:size-4" />
             </span>
         );
@@ -133,7 +153,7 @@ export default function SearchBar() {
                     startAddon={<Search className="size-4.5 sm:size-4" />}
                 />
                 {shouldRenderPopup && (
-                    <AutocompletePopup aria-busy={isLoading || undefined}>
+                    <AutocompletePopup aria-busy={isPending || undefined}>
                         <AutocompleteStatus className="text-muted-foreground">
                             {status}
                         </AutocompleteStatus>

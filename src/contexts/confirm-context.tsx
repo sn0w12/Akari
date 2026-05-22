@@ -18,7 +18,7 @@ const ConfirmContext = React.createContext<ConfirmContextType | undefined>(
 );
 
 export function useConfirm() {
-    const context = React.useContext(ConfirmContext);
+    const context = React.use(ConfirmContext);
     if (!context) {
         throw new Error("useConfirm must be used within a ConfirmProvider");
     }

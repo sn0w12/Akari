@@ -34,7 +34,7 @@ export function SyncBody<T>({
         <div className="flex-1 container mx-auto p-4">
             {loading ? (
                 <div className="flex flex-col items-center justify-center h-64 gap-4">
-                    <p className="text-lg">Loading data...</p>
+                    <p className="text-lg">Loading data&hellip;</p>
                     {progress !== undefined && (
                         <Progress value={progress} className="w-64" />
                     )}
@@ -42,7 +42,7 @@ export function SyncBody<T>({
             ) : (
                 <>
                     <div className="flex flex-row justify-between gap-2">
-                        <h1 className="text-2xl font-bold mb-4">
+                        <h1 className="text-2xl font-semibold mb-4">
                             {title} - {data.length} items
                         </h1>
                         <Button onClick={onButtonClick}>{buttonText}</Button>
@@ -50,8 +50,8 @@ export function SyncBody<T>({
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                {tableHeaders.map((header, index) => (
-                                    <TableHead key={index}>{header}</TableHead>
+                                {tableHeaders.map((header) => (
+                                    <TableHead key={header}>{header}</TableHead>
                                 ))}
                             </TableRow>
                         </TableHeader>

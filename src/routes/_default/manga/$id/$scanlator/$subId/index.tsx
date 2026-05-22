@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
@@ -139,12 +140,7 @@ function MangaReaderBody({
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={jsonLd} />
             <Reader chapter={data} scanlator={params.scanlator} />
         </>
     );

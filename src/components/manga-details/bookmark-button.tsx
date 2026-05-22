@@ -10,7 +10,7 @@ import { toastManager } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { ButtonConfirmDialog } from "../ui/confirm";
 import Spinner from "../ui/puff-loader";
 
@@ -25,13 +25,13 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 }) => {
     const queryClient = useQueryClient();
     const [hovered, setHovered] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
     const { data: user } = useUser();
 
     const {
         data: isBookmarked,
-        isLoading: isQueryLoading,
+        isPending: isQueryLoading,
         refetch,
     } = useQuery({
         queryKey: ["bookmark", mangaId],
@@ -42,43 +42,41 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     const handleBookmarkClick = async () => {
         if (!mangaId || isBookmarked === null || isBookmarked) return;
 
-        setIsLoading(true);
-        try {
-            const data = await bookmarkManga(mangaId);
-            if (!data) {
-                throw new Error("Failed to bookmark manga");
+        startTransition(async () => {
+            try {
+                const data = await bookmarkManga(mangaId);
+                if (!data) {
+                    throw new Error("Failed to bookmark manga");
+                }
+                await refetch();
+                queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+                toastManager.add({ title: "Manga bookmarked", type: "success" });
+            } catch (error) {
+                console.error("Failed to bookmark:", error);
             }
-            await refetch();
-            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-            toastManager.add({ title: "Manga bookmarked", type: "success" });
-        } catch (error) {
-            console.error("Failed to bookmark:", error);
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
     const handleRemoveBookmark = async () => {
         if (!mangaId || isBookmarked === null || !isBookmarked) return;
 
-        try {
-            setIsLoading(true);
-            const result = await removeBookmark(mangaId);
-            if (!result) return;
-            await refetch();
-            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-        } catch (error) {
-            console.error("Failed to remove bookmark:", error);
-        } finally {
-            setIsLoading(false);
-        }
+        startTransition(async () => {
+            try {
+                const result = await removeBookmark(mangaId);
+                if (!result) return;
+                await refetch();
+                queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+            } catch (error) {
+                console.error("Failed to remove bookmark:", error);
+            }
+        });
 
         toastManager.add({ title: "Bookmark removed", type: "success" });
         return true;
     };
 
     const buttonContent =
-        isBookmarked === null || isLoading || isQueryLoading ? (
+        isBookmarked === null || isPending || isQueryLoading ? (
             <Spinner size={30} />
         ) : (
             <div className="relative w-full h-full flex items-center justify-center">

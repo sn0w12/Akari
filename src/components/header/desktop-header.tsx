@@ -12,7 +12,7 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { useRouterState } from "@tanstack/react-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import SearchBar from "./search/search-bar";
 
@@ -28,10 +28,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
     const [segments, setSegments] = useState<string[]>([]);
     const [originalSegments, setOriginalSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
-    const isSidebarCollapsed = useMemo(
-        () => sidebarState === "collapsed",
-        [sidebarState],
-    );
+    const isSidebarCollapsed = sidebarState === "collapsed";
 
     const isUUID = (str: string) =>
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -108,7 +105,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
                     <Breadcrumb>
                         <BreadcrumbList>
                             {segments.map((segment, index) => (
-                                <React.Fragment key={index}>
+                                <React.Fragment key={originalSegments.slice(0, index + 1).join("/")}>
                                     {index != 0 && <BreadcrumbSeparator />}
                                     <BreadcrumbItem>
                                         {index != 0 ? (

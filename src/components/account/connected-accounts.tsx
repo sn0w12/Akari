@@ -86,7 +86,7 @@ export function ConnectedAccounts() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div
-                                        className={`flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color)] text-[var(--text-color)]`}
+                                        className={`flex size-12 items-center justify-center rounded-lg bg-[var(--color)] text-[var(--text-color)]`}
                                     >
                                         <span className="font-semibold">
                                             {account.id.toUpperCase()}
@@ -134,7 +134,7 @@ export function ConnectedAccounts() {
                                                 variant="default"
                                                 className="gap-2 flex-1 sm:flex-initial"
                                             >
-                                                <Download className="h-4 w-4" />
+                                                <Download className="size-4" />
                                                 Import Manga
                                             </ButtonLink>
                                             <ButtonConfirmDialog
@@ -143,7 +143,7 @@ export function ConnectedAccounts() {
                                                         variant="destructive"
                                                         className="flex-1 sm:flex-initial"
                                                     >
-                                                        <LogOut className="h-4 w-4" />
+                                                        <LogOut className="size-4" />
                                                         Disconnect
                                                     </Button>
                                                 }
@@ -166,7 +166,7 @@ export function ConnectedAccounts() {
                                                 color: "var(--text-color)",
                                             }}
                                         >
-                                            <LogIn className="h-4 w-4" />
+                                            <LogIn className="size-4" />
                                             Connect {account.name}
                                         </a>
                                     )}

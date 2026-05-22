@@ -65,13 +65,26 @@ export function PullToRefresh({
     const [pullDistance, setPullDistance] = useState<number>(0);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-    const [isAtTop, setIsAtTop] = useState<boolean>(true);
-    const [canPull, setCanPull] = useState<boolean>(false);
+    const isAtTopRef = useRef<boolean>(true);
+    const canPullRef = useRef<boolean>(false);
     const pullTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleScroll = useThrottledCallback(
         (element: HTMLElement) => {
-            setIsAtTop(element.scrollTop < 20);
+            const currentlyAtTop = element.scrollTop < 20;
+            isAtTopRef.current = currentlyAtTop;
+
+            if (currentlyAtTop) {
+                pullTimeoutRef.current = setTimeout(() => {
+                    canPullRef.current = true;
+                }, CAN_PULL_DELAY_MS);
+            } else {
+                if (pullTimeoutRef.current) {
+                    clearTimeout(pullTimeoutRef.current);
+                    pullTimeoutRef.current = null;
+                }
+                canPullRef.current = false;
+            }
         },
         {
             wait: 50,
@@ -86,30 +99,20 @@ export function PullToRefresh({
     );
 
     useEffect(() => {
-        if (isAtTop) {
-            pullTimeoutRef.current = setTimeout(
-                () => setCanPull(true),
-                CAN_PULL_DELAY_MS,
-            );
-        } else {
-            if (pullTimeoutRef.current) {
-                clearTimeout(pullTimeoutRef.current);
-                pullTimeoutRef.current = null;
-            }
-            setCanPull(false);
-        }
         return () => {
             if (pullTimeoutRef.current) {
                 clearTimeout(pullTimeoutRef.current);
             }
         };
-    }, [isAtTop]);
+    }, []);
 
     useEffect(() => {
         if (typeof document === "undefined") return;
         document.documentElement.style.overscrollBehavior =
-            isEnabled && isAtTop && canPull ? "none" : "auto";
-    }, [isEnabled, isAtTop, canPull]);
+            isEnabled && isAtTopRef.current && canPullRef.current
+                ? "none"
+                : "auto";
+    }, [isEnabled]);
 
     const progress: number = useMemo(
         () => Math.min(pullDistance / threshold, 1),
@@ -145,7 +148,7 @@ export function PullToRefresh({
 
     const handleTouchStart = useCallback(
         (event: React.TouchEvent<HTMLElement>): void => {
-            if (!isEnabled || isRefreshing || !canPull || !isAtTop) return;
+            if (!isEnabled || isRefreshing || !canPullRef.current || !isAtTopRef.current) return;
 
             // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
             if (
@@ -162,12 +165,12 @@ export function PullToRefresh({
             hasTriggeredRef.current = false;
             setIsDragging(true);
         },
-        [isEnabled, isRefreshing, canPull, isAtTop],
+        [isEnabled, isRefreshing],
     );
 
     const handleTouchMove = useCallback(
         (event: React.TouchEvent<HTMLElement>): void => {
-            if (!isEnabled || isRefreshing || !isDragging || !canPull) return;
+            if (!isEnabled || isRefreshing || !isDragging || !canPullRef.current) return;
 
             // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
             if (
@@ -176,7 +179,7 @@ export function PullToRefresh({
             )
                 return;
 
-            if (!isAtTop) {
+            if (!isAtTopRef.current) {
                 setIsDragging(false);
                 setPullDistance(0);
                 return;
@@ -198,7 +201,7 @@ export function PullToRefresh({
                 setPullDistance(0);
             }
         },
-        [isEnabled, isRefreshing, isDragging, canPull, isAtTop, maxPull],
+        [isEnabled, isRefreshing, isDragging, maxPull],
     );
 
     const finishPull = useCallback(async (): Promise<void> => {
@@ -232,9 +235,9 @@ export function PullToRefresh({
     }, [onRefresh, pullDistance, threshold, minRefreshTime]);
 
     const handleTouchEnd = useCallback((): void => {
-        if (!isEnabled || isRefreshing || !canPull || !isAtTop) return;
+        if (!isEnabled || isRefreshing || !canPullRef.current || !isAtTopRef.current) return;
         void finishPull();
-    }, [isEnabled, isRefreshing, canPull, isAtTop, finishPull]);
+    }, [isEnabled, isRefreshing, finishPull]);
 
     const handleTouchCancel = useCallback((): void => {
         setIsDragging(false);

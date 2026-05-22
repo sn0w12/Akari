@@ -44,12 +44,12 @@ export function Slider({
                         className="select-none rounded-full bg-primary data-[orientation=horizontal]:ms-0.5 data-[orientation=vertical]:mb-0.5"
                         data-slot="slider-indicator"
                     />
-                    {Array.from({ length: _values.length }, (_, index) => (
+                    {Array.from({ length: _values.length }, (_, i) => i).map((i) => (
                         <SliderPrimitive.Thumb
                             className="block size-5 shrink-0 select-none rounded-full border border-input bg-white not-dark:bg-clip-padding shadow-xs/5 outline-none transition-[box-shadow,scale] before:absolute before:inset-0 before:rounded-full before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:ring-[3px] has-focus-visible:ring-ring/24 data-dragging:scale-120 sm:size-4 dark:border-background dark:has-focus-visible:ring-ring/48 [:has(*:focus-visible),[data-dragging]]:shadow-none"
                             data-slot="slider-thumb"
-                            index={index}
-                            key={String(index)}
+                            index={i}
+                            key={String(i)}
                         />
                     ))}
                 </SliderPrimitive.Track>
