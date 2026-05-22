@@ -14,7 +14,6 @@ import { useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useReducer, useState, useTransition } from "react";
-import { BookmarksDropdown } from "./bookmarks-dropdown";
 
 type BookmarkResult = {
     mangaId: string;
@@ -219,53 +218,46 @@ export default function BookmarksHeader() {
                 >
                     Export Bookmarks
                 </Button>
-                <div className="relative w-full">
-                    <Autocomplete
-                        autoHighlight
-                        filter={null}
-                        items={searchResults}
-                        itemToStringValue={(item: unknown) =>
-                            (item as BookmarkResult).title
-                        }
-                        onValueChange={setSearchValue}
-                        value={searchValue}
-                    >
-                        <AutocompleteInput
-                            placeholder="Search bookmarks..."
-                            className="w-full"
-                            startAddon={
-                                <Search className="size-4.5 sm:size-4" />
-                            }
-                        />
-                        {shouldRenderPopup && (
-                            <AutocompletePopup
-                                aria-busy={isPending || undefined}
-                                align="start"
-                            >
-                                {status && (
-                                    <AutocompleteStatus className="text-muted-foreground">
-                                        {status}
-                                    </AutocompleteStatus>
+                <Autocomplete
+                    autoHighlight
+                    filter={null}
+                    items={searchResults}
+                    itemToStringValue={(item: unknown) =>
+                        (item as BookmarkResult).title
+                    }
+                    onValueChange={setSearchValue}
+                    value={searchValue}
+                >
+                    <AutocompleteInput
+                        placeholder="Search bookmarks..."
+                        className="w-full"
+                        startAddon={<Search className="size-4.5 sm:size-4" />}
+                    />
+                    {shouldRenderPopup && (
+                        <AutocompletePopup
+                            aria-busy={isPending || undefined}
+                            align="start"
+                        >
+                            {status && (
+                                <AutocompleteStatus className="text-muted-foreground">
+                                    {status}
+                                </AutocompleteStatus>
+                            )}
+                            <AutocompleteList>
+                                {(result: BookmarkResult) => (
+                                    <SearchItem
+                                        key={result.mangaId}
+                                        cover={result.cover}
+                                        title={result.title}
+                                        subtitle={result.type}
+                                        value={result}
+                                        onSelect={() => handleSelect(result)}
+                                    />
                                 )}
-                                <AutocompleteList>
-                                    {(result: BookmarkResult) => (
-                                        <SearchItem
-                                            key={result.mangaId}
-                                            cover={result.cover}
-                                            title={result.title}
-                                            subtitle={result.type}
-                                            value={result}
-                                            onSelect={() =>
-                                                handleSelect(result)
-                                            }
-                                        />
-                                    )}
-                                </AutocompleteList>
-                            </AutocompletePopup>
-                        )}
-                    </Autocomplete>
-                </div>
-                <BookmarksDropdown exportBookmarks={exportBookmarks} />
+                            </AutocompleteList>
+                        </AutocompletePopup>
+                    )}
+                </Autocomplete>
             </div>
         </div>
     );
