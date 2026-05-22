@@ -1,14 +1,15 @@
-import { Input } from "@/components/ui/input";
 import { client } from "@/lib/api";
 import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useRouterState } from "@tanstack/react-router";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GRID_CLASS } from "./grid-page";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { MangaGrid } from "./manga/manga-grid";
 import { Filters, SearchFilters } from "./search/filters";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
@@ -58,7 +59,8 @@ export default function SearchPage() {
         wait: 300,
     });
     const [currentPage, setCurrentPage] = useState(page); // useState initializer — local state owner after mount
-    const [filters, setFilters] = useState<SearchFilters>({ // useState initializer — local state owner after mount
+    const [filters, setFilters] = useState<SearchFilters>({
+        // useState initializer — local state owner after mount
         genres: selectedGenresFromUrl,
         excludedGenres: excludedGenresFromUrl,
         types: selectedTypesFromUrl,
@@ -127,13 +129,18 @@ export default function SearchPage() {
     return (
         <div className="px-4 pt-4">
             <div className="flex gap-2 mb-4">
-                <Input
-                    type="search"
-                    value={searchQuery}
-                    placeholder="Search manga..."
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
-                />
+                <InputGroup>
+                    <InputGroupInput
+                        type="search"
+                        value={searchQuery}
+                        placeholder="Search manga..."
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1"
+                    />
+                    <InputGroupAddon>
+                        <Search className="size-4.5 sm:size-4" />
+                    </InputGroupAddon>
+                </InputGroup>
                 <Filters filters={filters} onChange={setFilters} />
             </div>
 
