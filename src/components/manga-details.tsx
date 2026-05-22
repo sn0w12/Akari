@@ -1,6 +1,6 @@
 import { Image, type SizesConfig } from "@/components/image";
 import { JsonLd } from "@/components/json-ld";
-import { Badge } from "@/components/ui/badge";
+import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createJsonLd } from "@/lib/seo";
@@ -32,15 +32,12 @@ export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
     lg: 400,
 } satisfies SizesConfig;
 
-const getViewsColor = (views: number): string => {
-    if (views < 100) return "bg-[#ffc659] hover:bg-[#ffc659] text-black";
-    else if (views < 1_000) return "bg-[#ff8f70] hover:bg-[#ff8f70] text-black";
-    else if (views < 10_000)
-        return "bg-[#ff609e] hover:bg-[#ff609e] text-white";
-    else if (views < 100_000)
-        return "bg-[#e255d0] hover:bg-[#e255d0] text-white";
+const getViewsVariant = (views: number): BadgeVariantProps["variant"] => {
+    if (views < 100) return "warning";
+    else if (views < 1_000) return "info";
+    else if (views < 10_000) return "destructive";
 
-    return "bg-accent-positive hover:bg-accent-positive text-white";
+    return "success";
 };
 
 function ExternalLinks({
@@ -255,7 +252,7 @@ export function MangaDetailsComponent({
                                         Views:
                                     </div>
                                     <Badge
-                                        className={getViewsColor(manga.views)}
+                                        variant={getViewsVariant(manga.views)}
                                     >
                                         {formatNumberShort(manga.views)}
                                     </Badge>
