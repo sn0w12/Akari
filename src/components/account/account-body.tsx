@@ -3,6 +3,7 @@ import { client, getAuthCookie, serverHeaders } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
+import { AccountActions } from "./account-actions";
 import { ConnectedAccounts } from "./connected-accounts";
 import { UserMangaLists } from "./lists";
 import { UserProfile } from "./user-profile";
@@ -43,6 +44,7 @@ export function AccountBody() {
     return (
         <div className="space-y-4">
             <UserProfile user={data.user} />
+            <AccountActions user={data.user} />
             <ConnectedAccounts />
             <UserMangaLists initialLists={data.lists} />
         </div>

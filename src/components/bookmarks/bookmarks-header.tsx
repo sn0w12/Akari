@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toastManager } from "@/components/ui/toast";
 import { client } from "@/lib/api";
+import { exportBookmarks } from "@/lib/manga/export-bookmarks";
 import { useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
@@ -99,80 +100,19 @@ export default function BookmarksHeader() {
         };
     }, [searchValue]);
 
-    async function exportBookmarks() {
-        const allBookmarks: components["schemas"]["BookmarkListResponse"]["items"] =
-            [];
-        const pageSize = 100;
-
-        const { data: firstData, error: firstError } = await client.GET(
-            "/v2/bookmarks",
-            {
-                params: {
-                    query: {
-                        page: 1,
-                        pageSize,
-                    },
-                },
-            },
-        );
-
-        if (firstError || !firstData) {
-            toastManager.add({
-                title: "Error fetching bookmarks",
-                type: "error",
-            });
-            return;
-        }
-
-        allBookmarks.push(...firstData.data.items);
-        const totalPages = firstData.data.totalPages;
-
-        if (totalPages > 1) {
-            const pagePromises = [];
-            for (let page = 2; page <= totalPages; page++) {
-                pagePromises.push(
-                    client.GET("/v2/bookmarks", {
-                        params: { query: { page, pageSize } },
-                    }),
-                );
-            }
-
-            const results = await Promise.all(pagePromises);
-
-            for (const { data, error } of results) {
-                if (error || !data) {
+    function handleExportBookmarks() {
+        startTransition(() => {
+            setIsExporting(true);
+            void exportBookmarks()
+                .catch(() => {
                     toastManager.add({
                         title: "Error fetching bookmarks",
                         type: "error",
                     });
-                    return;
-                }
-                allBookmarks.push(...data.data.items);
-            }
-        }
-
-        const bookmarksBlob = new Blob(
-            [JSON.stringify(allBookmarks, null, 2)],
-            { type: "application/json" },
-        );
-        const url = URL.createObjectURL(bookmarksBlob);
-        const a = Object.assign(document.createElement("a"), {
-            href: url,
-            download: "bookmarks.json",
-        });
-
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    function handleExportBookmarks() {
-        startTransition(() => {
-            setIsExporting(true);
-            void exportBookmarks().finally(() => {
-                setIsExporting(false);
-            });
+                })
+                .finally(() => {
+                    setIsExporting(false);
+                });
         });
     }
 
