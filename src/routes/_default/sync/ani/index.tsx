@@ -292,6 +292,7 @@ function SyncAniPage() {
         for (const data of batchResults) {
             if (!data) continue;
             for (const manga of data) {
+                if (!manga.aniId) continue;
                 const aniItem = aniDataToSyncById.get(manga.aniId);
                 if (aniItem) {
                     updateItems.push({

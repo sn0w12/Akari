@@ -312,6 +312,7 @@ function SyncMalPage() {
         for (const data of batchResults) {
             if (!data) continue;
             for (const manga of data) {
+                if (!manga.malId) continue;
                 const malItem = malDataToSyncById.get(manga.malId);
                 if (malItem) {
                     updateItems.push({
