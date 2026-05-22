@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { toastManager } from "@/components/ui/toast";
 import { useUser } from "@/hooks/use-user";
 import {
     bookmarkManga,
@@ -6,7 +7,6 @@ import {
     removeBookmark,
 } from "@/lib/manga/bookmarks";
 import { useSetting } from "@/lib/settings";
-import { toastManager } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
@@ -31,7 +31,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
     const {
         data: isBookmarked,
-        isPending: isQueryLoading,
+        isLoading: isQueryLoading,
         refetch,
     } = useQuery({
         queryKey: ["bookmark", mangaId],
@@ -50,7 +50,10 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
                 }
                 await refetch();
                 queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-                toastManager.add({ title: "Manga bookmarked", type: "success" });
+                toastManager.add({
+                    title: "Manga bookmarked",
+                    type: "success",
+                });
             } catch (error) {
                 console.error("Failed to bookmark:", error);
             }
