@@ -241,55 +241,52 @@ export function ChaptersSection({
             {/* Chapters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mb-4 pointer-events-auto">
                 {currentChapters?.map((chapter) => (
-                    <Link
-                        to="/manga/$id/$scanlator/$subId"
-                        params={{
-                            id: mangaId,
-                            scanlator: String(chapter.scanlatorId),
-                            subId: String(chapter.number),
-                        }}
-                        key={chapter.id}
-                        id={chapter.id}
+                    <Card
+                        className={`h-full transition-colors p-0 ${
+                            chapter.id === lastRead
+                                ? "bg-accent-positive hover:bg-accent-positive/70"
+                                : "hover:bg-card/70"
+                        }`}
+                        render={
+                            <Link
+                                to="/manga/$id/$scanlator/$subId"
+                                params={{
+                                    id: mangaId,
+                                    scanlator: String(chapter.scanlatorId),
+                                    subId: String(chapter.number),
+                                }}
+                                key={chapter.id}
+                                id={chapter.id}
+                            ></Link>
+                        }
                     >
-                        <Card
-                            className={`h-full transition-colors p-0 ${
-                                chapter.id === lastRead
-                                    ? "bg-accent-positive hover:bg-accent-positive/70"
-                                    : "hover:bg-accent"
-                            }`}
-                        >
-                            <CardContent className="p-4">
-                                <h3
-                                    className={cn(
-                                        "font-semibold mb-2 line-clamp-2",
-                                        {
-                                            "text-background":
-                                                chapter.id === lastRead,
-                                        },
-                                    )}
-                                >
-                                    {chapter.title}
-                                </h3>
-                                <p
-                                    className={cn(
-                                        "text-sm text-muted-foreground",
-                                        {
-                                            "text-background":
-                                                chapter.id === lastRead,
-                                        },
-                                    )}
-                                >
-                                    Pages: {chapter.pages}
-                                </p>
-                                <Suspense fallback={null}>
-                                    <Released
-                                        chapter={chapter}
-                                        lastRead={lastRead}
-                                    />
-                                </Suspense>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                        <CardContent className="p-4">
+                            <h3
+                                className={cn(
+                                    "font-semibold mb-2 line-clamp-2",
+                                    {
+                                        "text-background":
+                                            chapter.id === lastRead,
+                                    },
+                                )}
+                            >
+                                {chapter.title}
+                            </h3>
+                            <p
+                                className={cn("text-sm text-muted-foreground", {
+                                    "text-background": chapter.id === lastRead,
+                                })}
+                            >
+                                Pages: {chapter.pages}
+                            </p>
+                            <Suspense fallback={null}>
+                                <Released
+                                    chapter={chapter}
+                                    lastRead={lastRead}
+                                />
+                            </Suspense>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
 
