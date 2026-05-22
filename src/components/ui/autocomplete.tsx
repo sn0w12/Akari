@@ -13,6 +13,7 @@ export function AutocompleteInput({
     showTrigger = false,
     showClear = false,
     startAddon,
+    endAddon,
     size,
     triggerProps,
     clearProps,
@@ -21,6 +22,7 @@ export function AutocompleteInput({
     showTrigger?: boolean;
     showClear?: boolean;
     startAddon?: React.ReactNode;
+    endAddon?: React.ReactNode;
     size?: "sm" | "default" | "lg" | number;
     ref?: React.Ref<HTMLInputElement>;
     triggerProps?: AutocompletePrimitive.Trigger.Props;
@@ -78,6 +80,15 @@ export function AutocompleteInput({
                 >
                     <XIcon />
                 </AutocompleteClear>
+            )}
+            {endAddon && (
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 end-px z-10 flex items-center pe-[calc(--spacing(3)-1px)] opacity-80 has-[+[data-size=sm]]:pe-[calc(--spacing(2.5)-1px)] [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:-mx-0.5"
+                    data-slot="autocomplete-end-addon"
+                >
+                    {endAddon}
+                </div>
             )}
         </AutocompletePrimitive.InputGroup>
     );

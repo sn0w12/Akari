@@ -6,9 +6,10 @@ import {
     AutocompletePopup,
     AutocompleteStatus,
 } from "@/components/ui/autocomplete";
+import { KeyboardShortcut } from "@/components/ui/keyboard-shortcut";
 import { Spinner } from "@/components/ui/spinner";
 import { getSearchResults } from "@/lib/api/search";
-import { useShortcutSetting } from "@/lib/settings";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { Link, useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
@@ -35,10 +36,14 @@ type SearchAction =
 
 function searchReducer(state: SearchState, action: SearchAction): SearchState {
     switch (action.type) {
-        case "CLEAR": return { searchResults: [], error: null };
-        case "SUCCESS": return { searchResults: action.results, error: null };
-        case "ERROR": return { searchResults: [], error: action.error };
-        case "CLEAR_ERROR": return { ...state, error: null };
+        case "CLEAR":
+            return { searchResults: [], error: null };
+        case "SUCCESS":
+            return { searchResults: action.results, error: null };
+        case "ERROR":
+            return { searchResults: [], error: action.error };
+        case "CLEAR_ERROR":
+            return { ...state, error: null };
     }
 }
 
@@ -71,7 +76,10 @@ export default function SearchBar() {
                     if (!ignore) dispatch({ type: "SUCCESS", results });
                 } catch {
                     if (!ignore) {
-                        dispatch({ type: "ERROR", error: "Failed to fetch results. Please try again." });
+                        dispatch({
+                            type: "ERROR",
+                            error: "Failed to fetch results. Please try again.",
+                        });
                     }
                 }
             });
@@ -89,17 +97,6 @@ export default function SearchBar() {
 
     const handleSelect = (result: SearchResult) => {
         router.navigate({ to: "/manga/$id", params: { id: result.id } });
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (
-            e.key === "Enter" &&
-            searchValue.trim() &&
-            searchResults.length === 0
-        ) {
-            inputRef.current?.blur();
-            router.navigate({ to: "/search", search: { query: searchValue } });
-        }
     };
 
     let status: ReactNode = `${searchResults.length} result${searchResults.length === 1 ? "" : "s"} found`;
@@ -149,8 +146,13 @@ export default function SearchBar() {
                     className="w-full hidden md:block h-8"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    onKeyDown={handleKeyDown}
                     startAddon={<Search className="size-4.5 sm:size-4" />}
+                    endAddon={
+                        <KeyboardShortcut
+                            className={`${isFocused ? "opacity-0" : "opacity-100"} transition-opacity`}
+                            keys={useSetting("searchManga")}
+                        />
+                    }
                 />
                 {shouldRenderPopup && (
                     <AutocompletePopup aria-busy={isPending || undefined}>
