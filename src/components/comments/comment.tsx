@@ -276,8 +276,8 @@ export function Comment({
                 <div className="flex-1 min-w-0 mb-2">
                     <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
                         <Link
-                            to="/user/$id"
-                            params={{ id: comment.userProfile.id }}
+                            to="/user/$userId"
+                            params={{ userId: comment.userProfile.id }}
                             className="font-medium text-foreground hover:underline"
                         >
                             {comment.userProfile.displayName}

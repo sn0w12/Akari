@@ -219,9 +219,9 @@ export function MangaDetailsComponent({
                                                 variant="default"
                                                 render={
                                                     <Link
-                                                        to="/author/$id"
+                                                        to="/author/$authorId"
                                                         params={{
-                                                            id: encodeURIComponent(
+                                                            authorId: encodeURIComponent(
                                                                 author.replaceAll(
                                                                     " ",
                                                                     "-",

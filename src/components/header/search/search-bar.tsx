@@ -96,7 +96,7 @@ export default function SearchBar() {
     });
 
     const handleSelect = (result: SearchResult) => {
-        router.navigate({ to: "/manga/$id", params: { id: result.id } });
+        router.navigate({ to: "/manga/$mangaId", params: { mangaId: result.id } });
     };
 
     let status: ReactNode = `${searchResults.length} result${searchResults.length === 1 ? "" : "s"} found`;

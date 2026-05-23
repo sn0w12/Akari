@@ -122,8 +122,8 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
     return (
         <Card>
             <Link
-                to="/manga/$id"
-                params={{ id: manga.id }}
+                to="/manga/$mangaId"
+                params={{ mangaId: manga.id }}
                 className="flex flex-row h-full w-full"
             >
                 <Image

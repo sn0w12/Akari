@@ -4,7 +4,7 @@ import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
-export const Route = createFileRoute("/_default/lists/$id/")({
+export const Route = createFileRoute("/_default/lists/$listId/")({
     component: ListPage,
     headers: () => ({
         "Cache-Control": new ResponseCacheControlBuilder()
@@ -16,11 +16,11 @@ export const Route = createFileRoute("/_default/lists/$id/")({
 });
 
 function ListPage() {
-    const { id } = Route.useParams();
+    const { listId } = Route.useParams();
     return (
         <div className="flex-1">
             <Suspense fallback={<ListSkeleton />}>
-                <ListComponent id={id} />
+                <ListComponent id={listId} />
             </Suspense>
         </div>
     );

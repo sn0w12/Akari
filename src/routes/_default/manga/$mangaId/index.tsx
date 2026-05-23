@@ -32,15 +32,15 @@ const loadMangaPage = createServerFn({ method: "GET" })
         };
     });
 
-export const Route = createFileRoute("/_default/manga/$id/")({
-    loader: async ({ params }) => loadMangaPage({ data: params.id }),
+export const Route = createFileRoute("/_default/manga/$mangaId/")({
+    loader: async ({ params }) => loadMangaPage({ data: params.mangaId }),
     head: ({ loaderData, params }) => {
         const manga = loaderData?.manga?.data;
         if (!manga) {
             return createMetadata({
                 title: "Manga Not Found",
                 description: "The requested manga could not be found.",
-                canonicalPath: `/manga/${params.id}`,
+                canonicalPath: `/manga/${params.mangaId}`,
             });
         }
         return createMetadata({
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/_default/manga/$id/")({
 
 function MangaPage() {
     const { manga, chapters, mangaError } = Route.useLoaderData();
-    const { id } = Route.useParams();
+    const { mangaId } = Route.useParams();
 
     if (mangaError) {
         return <div className="w-full p-4">Failed to load manga.</div>;
@@ -80,11 +80,11 @@ function MangaPage() {
         <div className="w-full p-4">
             {manga?.data && <MangaDetailsComponent manga={manga.data} />}
             {chapters?.data && (
-                <MangaDetailsBody chapters={chapters.data} mangaId={id} />
+                <MangaDetailsBody chapters={chapters.data} mangaId={mangaId} />
             )}
 
             <Suspense fallback={null}>
-                <MangaComments id={id} target="manga" />
+                <MangaComments id={mangaId} target="manga" />
             </Suspense>
         </div>
     );

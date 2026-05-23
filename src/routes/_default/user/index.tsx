@@ -43,7 +43,7 @@ function UsersPage() {
             </div>
             <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {data?.items.map((user) => (
-                    <Link key={user.userId} to="/user/$id" params={{ id: user.userId }}>
+                    <Link key={user.userId} to="/user/$userId" params={{ userId: user.userId }}>
                         <Card className="gap-0 py-4 hover:bg-accent transition-colors">
                             <CardHeader className="flex flex-row items-center gap-1 px-4">
                                 <Avatar name={user.username} size={24} />

@@ -41,8 +41,8 @@ const loadUserPage = createServerFn({ method: "GET" })
         };
     });
 
-export const Route = createFileRoute("/_default/user/$id/")({
-    loader: async ({ params }) => loadUserPage({ data: params.id }),
+export const Route = createFileRoute("/_default/user/$userId/")({
+    loader: async ({ params }) => loadUserPage({ data: params.userId }),
     component: UserPage,
     headers: () => ({
         "Cache-Control": new ResponseCacheControlBuilder()
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/_default/user/$id/")({
 
 function UserPage() {
     const { user, userError, lists } = Route.useLoaderData();
-    const { id } = Route.useParams();
+    const { userId } = Route.useParams();
 
     if (userError) return <ErrorPage error={userError} />;
     if (!user) return null;
@@ -92,7 +92,7 @@ function UserPage() {
             <Separator className="my-2" />
             <Suspense fallback={<UserListsSkeleton />}>
                 <UserLists
-                    userId={id}
+                    userId={userId}
                     initialData={
                         lists ?? {
                             result: "Success" as const,

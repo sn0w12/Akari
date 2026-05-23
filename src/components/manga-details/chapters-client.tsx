@@ -85,10 +85,9 @@ function ChaptersControls({
                     </Button>
                 ) : (
                     <ButtonLink
-                        to="/manga/$id/$scanlator/$subId"
+                        to="/manga/$mangaId/$scanlator/$subId"
                         params={{
-                            // @ts-expect-error - Thinks id is invalid for unknown reason
-                            id: mangaId,
+                            mangaId,
                             scanlator: String(scanlatorId),
                             subId: String(firstChapterNumber),
                         }}
@@ -249,9 +248,9 @@ export function ChaptersSection({
                         }`}
                         render={
                             <Link
-                                to="/manga/$id/$scanlator/$subId"
+                                to="/manga/$mangaId/$scanlator/$subId"
                                 params={{
-                                    id: mangaId,
+                                    mangaId,
                                     scanlator: String(chapter.scanlatorId),
                                     subId: String(chapter.number),
                                 }}

@@ -20,8 +20,8 @@ const loadManga = createServerFn({ method: "GET" })
         return { data: result, error };
     });
 
-export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/comments/")({
-    loader: async ({ params }) => loadManga({ data: params.id }),
+export const Route = createFileRoute("/_default/manga/$mangaId/$scanlator/$subId/comments/")({
+    loader: async ({ params }) => loadManga({ data: params.mangaId }),
     head: ({ loaderData, params }) => {
         const mangaData = loaderData?.data?.data;
         const title = mangaData
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/comm
             description: mangaData
                 ? `Comments for ${mangaData.title} Chapter ${params.subId}.`
                 : "Comments for this chapter.",
-            canonicalPath: `/manga/${params.id}/${params.scanlator}/${params.subId}/comments`,
+            canonicalPath: `/manga/${params.mangaId}/${params.scanlator}/${params.subId}/comments`,
             image: mangaData ? createOgImage("manga", mangaData.id) : undefined,
         });
     },
@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/comm
 
 function MangaReaderComments() {
     const { data, error } = Route.useLoaderData();
-    const { id, subId, scanlator } = Route.useParams();
+    const { mangaId, subId } = Route.useParams();
 
     if (error) {
         return (
@@ -65,7 +65,7 @@ function MangaReaderComments() {
                     <MangaCommentsHeader mangaData={data?.data} chapterId={subId} />
                 </Suspense>
                 <Suspense fallback={null}>
-                    <MangaComments id={id} target="chapter" />
+                    <MangaComments id={mangaId} target="chapter" />
                 </Suspense>
             </div>
         </div>
@@ -110,8 +110,8 @@ function MangaCommentsHeader({ mangaData, chapterId }: { mangaData: components["
                     Chapter {chapterId}
                 </p>
                 <Link
-                    to={`/manga/$id/$scanlator/$subId`}
-                    params={{ id: manga.id, scanlator: "1", subId: chapterId }}
+                    to="/manga/$mangaId/$scanlator/$subId"
+                    params={{ mangaId: manga.id, scanlator: "1", subId: chapterId }}
                     className="text-sm text-primary hover:underline"
                 >
                     Back to Chapter

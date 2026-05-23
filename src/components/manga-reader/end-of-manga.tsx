@@ -58,7 +58,7 @@ export default function EndOfManga({
                         <Home className="mr-2 size-4" />
                         Homepage
                     </Button>
-                    <Button variant="outline" render={<Link to="/manga/$id" params={{ id: identifier }} />} onClick={stopPropagation}>
+                    <Button variant="outline" render={<Link to="/manga/$mangaId" params={{ mangaId: identifier }} />} onClick={stopPropagation}>
                         <List className="mr-2 size-4" />
                         Manga Page
                     </Button>

@@ -23,8 +23,8 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                     {/* Cover Image */}
                     <div className="w-20 lg:w-30 h-full mb-0 shrink-0">
                         <Link
-                            to="/manga/$id"
-                            params={{ id: bookmark.mangaId }}
+                            to="/manga/$mangaId"
+                            params={{ mangaId: bookmark.mangaId }}
                             rel="noopener noreferrer"
                             className="block"
                             tabIndex={-1}
@@ -49,8 +49,8 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             <div className="flex items-center gap-2 justify-between">
                                 <Link
                                     className="hover:underline"
-                                    to="/manga/$id"
-                                    params={{ id: bookmark.mangaId }}
+                                    to="/manga/$mangaId"
+                                    params={{ mangaId: bookmark.mangaId }}
                                 >
                                     <h3 className="line-clamp-2 flex-1 text-lg font-semibold leading-snug">
                                         {bookmark.title}
@@ -121,10 +121,9 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 </Button>
             ) : shouldReadLatest ? (
                 <ButtonLink
-                    to="/manga/$id/$scanlator/$subId"
+                    to="/manga/$mangaId/$scanlator/$subId"
                     params={{
-                        // @ts-expect-error - Thinks id is invalid for unknown reason
-                        id: bookmark.mangaId,
+                        mangaId: bookmark.mangaId,
                         scanlator: String(bookmark.latestChapter.scanlatorId),
                         subId: String(bookmark.latestChapter.number),
                     }}
@@ -137,10 +136,9 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 </ButtonLink>
             ) : (
                 <ButtonLink
-                    to="/manga/$id/$scanlator/$subId"
+                    to="/manga/$mangaId/$scanlator/$subId"
                     params={{
-                        // @ts-expect-error - Thinks id is invalid for unknown reason
-                        id: bookmark.mangaId,
+                        mangaId: bookmark.mangaId,
                         scanlator: String(bookmark.nextChapter.scanlatorId),
                         subId: String(bookmark.nextChapter.number),
                     }}

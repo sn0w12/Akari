@@ -928,7 +928,6 @@ function SidebarSection({
                     {items.map((item) => (
                         <SidebarMenuLink
                             key={item.id}
-                            // @ts-expect-error - We know this is correct
                             to={`${basePath}/${item.id}`}
                             isActive={isItemActive(item.id)}
                             tooltip={item.name}

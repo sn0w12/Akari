@@ -95,8 +95,8 @@ function Entry({
                 </div>
             )}
             <Link
-                to="/manga/$id"
-                params={{ id: entry.mangaId }}
+                to="/manga/$mangaId"
+                params={{ mangaId: entry.mangaId }}
                 className="shrink-0"
             >
                 <Image
@@ -110,7 +110,7 @@ function Entry({
                 />
             </Link>
             <div className="flex-1 min-w-0">
-                <Link to="/manga/$id" params={{ id: entry.mangaId }}>
+                <Link to="/manga/$mangaId" params={{ mangaId: entry.mangaId }}>
                     <h3 className="font-semibold truncate hover:underline">
                         {entry.mangaTitle}
                     </h3>
@@ -328,8 +328,8 @@ export function ListComponent({ id }: { id: string }) {
                     <div className="flex flex-col md:flex-row md:gap-2">
                         <h1 className="text-2xl font-semibold">{data.title}</h1>
                         <Link
-                            to="/user/$id"
-                            params={{ id: data.user.userId }}
+                            to="/user/$userId"
+                            params={{ userId: data.user.userId }}
                             className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
                         >
                             <Avatar name={data.user.username} size={32} />

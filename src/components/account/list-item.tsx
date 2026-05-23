@@ -44,7 +44,7 @@ export function ListItem({ list, onDelete }: ListItemProps) {
     }
 
     return (
-        <Link to="/lists/$id" params={{ id: list.id }} className="block">
+        <Link to="/lists/$listId" params={{ listId: list.id }} className="block">
             <Card className="relative p-0 hover:bg-accent transition-colors">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between">

@@ -23,8 +23,8 @@ export default function MangaFooter({
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
                         <Link
-                            to="/manga/$id"
-                            params={{ id: chapter.mangaId }}
+                            to="/manga/$mangaId"
+                            params={{ mangaId: chapter.mangaId }}
                             className="hover:underline"
                         >
                             {chapter.mangaTitle}
@@ -38,9 +38,9 @@ export default function MangaFooter({
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">
                     {lastChapterExists ? (
                         <ButtonLink
-                            to="/manga/$id/$scanlator/$subId"
+                            to="/manga/$mangaId/$scanlator/$subId"
                             params={{
-                                id: chapter.mangaId,
+                                mangaId: chapter.mangaId,
                                 scanlator,
                                 subId: chapter.lastChapter!.toString(),
                             }}
@@ -64,9 +64,9 @@ export default function MangaFooter({
                     )}
                     {nextChapterExists ? (
                         <ButtonLink
-                            to="/manga/$id/$scanlator/$subId"
+                            to="/manga/$mangaId/$scanlator/$subId"
                             params={{
-                                id: chapter.mangaId,
+                                mangaId: chapter.mangaId,
                                 scanlator,
                                 subId: chapter.nextChapter!.toString(),
                             }}

@@ -198,9 +198,9 @@ const ChapterRow = memo(function ChapterRow({
 }: ChapterRowProps): React.JSX.Element {
     return (
         <Link
-            to="/manga/$id/$scanlator/$subId"
+            to="/manga/$mangaId/$scanlator/$subId"
             params={{
-                id: mangaId,
+                mangaId,
                 scanlator: String(chapter.scanlatorId),
                 subId: String(chapter.number),
             }}

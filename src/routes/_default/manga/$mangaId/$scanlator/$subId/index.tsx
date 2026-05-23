@@ -27,7 +27,7 @@ const loadChapter = createServerFn({ method: "GET" })
         return { data: result.data, error: null };
     });
 
-export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
+export const Route = createFileRoute("/_default/manga/$mangaId/$scanlator/$subId/")({
     validateSearch: (
         search: Record<string, string | undefined>,
     ): { page?: string | number } => {
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
     loader: async ({ params }) =>
         loadChapter({
             data: {
-                id: params.id,
+                id: params.mangaId,
                 subId: Number(params.subId),
                 scanlator: Number(params.scanlator),
             },
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
             return createMetadata({
                 title: "Chapter Not Found",
                 description: "The requested chapter could not be found.",
-                canonicalPath: `/manga/${params.id}/${params.scanlator}/${params.subId}`,
+                canonicalPath: `/manga/${params.mangaId}/${params.scanlator}/${params.subId}`,
             });
         }
         return createMetadata({
@@ -62,12 +62,12 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
             pagination: {
                 ...(chapter.lastChapter
                     ? {
-                          previous: `/manga/${params.id}/${params.scanlator}/${chapter.lastChapter}`,
+                          previous: `/manga/${params.mangaId}/${params.scanlator}/${chapter.lastChapter}`,
                       }
                     : {}),
                 ...(chapter.nextChapter
                     ? {
-                          next: `/manga/${params.id}/${params.scanlator}/${chapter.nextChapter}`,
+                          next: `/manga/${params.mangaId}/${params.scanlator}/${chapter.nextChapter}`,
                       }
                     : {}),
             },
@@ -92,18 +92,18 @@ export const Route = createFileRoute("/_default/manga/$id/$scanlator/$subId/")({
 
 function MangaReaderPage() {
     const { data, error } = Route.useLoaderData();
-    const { id, scanlator, subId } = Route.useParams();
+    const { mangaId, scanlator, subId } = Route.useParams();
 
     return (
         <div className="bg-background text-foreground">
             <MangaReaderBody
                 data={data}
                 error={error}
-                params={{ id, scanlator, subId }}
+                params={{ mangaId, scanlator, subId }}
             />
             <div className="p-4">
                 <Suspense fallback={null}>
-                    <MangaComments id={id} target="chapter" />
+                    <MangaComments id={mangaId} target="chapter" />
                 </Suspense>
             </div>
         </div>
@@ -117,7 +117,7 @@ function MangaReaderBody({
 }: {
     data: components["schemas"]["ChapterResponse"] | null;
     error: components["schemas"]["ErrorResponse"] | null;
-    params: { id: string; scanlator: string; subId: string };
+    params: { mangaId: string; scanlator: string; subId: string };
 }) {
     if (error || !data) {
         return <ErrorPage error={error ?? undefined} />;

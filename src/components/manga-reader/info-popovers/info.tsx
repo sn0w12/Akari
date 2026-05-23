@@ -27,8 +27,8 @@ export function InfoContent({
             <div className="space-y-2">
                 <h2 className="text-lg font-semibold leading-tight text-center md:text-left">
                     <Link
-                        to="/manga/$id"
-                        params={{ id: chapter.mangaId }}
+                        to="/manga/$mangaId"
+                        params={{ mangaId: chapter.mangaId }}
                         className="text-foreground hover:text-primary transition-colors"
                     >
                         {chapter.mangaTitle}

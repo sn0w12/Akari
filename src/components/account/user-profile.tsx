@@ -40,7 +40,7 @@ export function UserProfile({
                     <Avatar name={user.username} size={64} />
 
                     <div>
-                        <Link to="/user/$id" params={{ id: user.userId }}>
+                        <Link to="/user/$userId" params={{ userId: user.userId }}>
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}
                             </h2>

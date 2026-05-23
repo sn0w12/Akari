@@ -382,8 +382,8 @@ function SyncMalPage() {
             <TableCell className="font-medium max-w-xs truncate">
                 <Link
                     className="hover:underline"
-                    to="/mal/$id"
-                    params={{ id: String(item.node.id) }}
+                    to="/mal/$malId"
+                    params={{ malId: String(item.node.id) }}
                 >
                     {item.node.title || "Unknown Title"}
                 </Link>

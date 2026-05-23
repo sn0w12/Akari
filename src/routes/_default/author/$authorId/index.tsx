@@ -23,7 +23,7 @@ const getAuthorData = createServerFn({ method: "GET" })
         return { data: result, error: null };
     });
 
-export const Route = createFileRoute("/_default/author/$id/")({
+export const Route = createFileRoute("/_default/author/$authorId/")({
     validateSearch: (
         search: Record<string, string | undefined>,
     ): { page?: number } => {
@@ -32,27 +32,27 @@ export const Route = createFileRoute("/_default/author/$id/")({
     },
     loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
     loader: async ({ params, deps }) => {
-        const name = decodeURIComponent(params.id).replaceAll("-", " ");
+        const name = decodeURIComponent(params.authorId).replaceAll("-", " ");
         return getAuthorData({ data: { name, page: deps.page } });
     },
     head: ({ loaderData, params }) => {
-        const name = decodeURIComponent(params.id).replaceAll("-", " ");
+        const name = decodeURIComponent(params.authorId).replaceAll("-", " ");
         const paginationData = loaderData?.data?.data;
         const page = paginationData?.currentPage ?? 1;
         const totalPages = paginationData?.totalPages;
         const canonicalPath =
             page === 1
-                ? `/author/${params.id}`
-                : `/author/${params.id}?page=${page}`;
+                ? `/author/${params.authorId}`
+                : `/author/${params.authorId}?page=${page}`;
         const pagination: { previous?: string; next?: string } = {};
         if (page > 1) {
             pagination.previous =
                 page === 2
-                    ? `/author/${params.id}`
-                    : `/author/${params.id}?page=${page - 1}`;
+                    ? `/author/${params.authorId}`
+                    : `/author/${params.authorId}?page=${page - 1}`;
         }
         if (totalPages && totalPages > page) {
-            pagination.next = `/author/${params.id}?page=${page + 1}`;
+            pagination.next = `/author/${params.authorId}?page=${page + 1}`;
         }
         const preloadImages = loaderData?.data?.data?.items?.slice(0, 4);
 
@@ -60,7 +60,7 @@ export const Route = createFileRoute("/_default/author/$id/")({
             title: page === 1 ? name : `${name} - Page ${page}`,
             description: `Browse the full manga catalog by ${name} on Akari.`,
             canonicalPath,
-            image: createOgImage("author", params.id),
+            image: createOgImage("author", params.authorId),
             pagination:
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
@@ -76,8 +76,8 @@ export const Route = createFileRoute("/_default/author/$id/")({
 
 function AuthorPage() {
     const { data, error } = Route.useLoaderData();
-    const { id } = Route.useParams();
-    const title = decodeURIComponent(id).replaceAll("-", " ");
+    const { authorId } = Route.useParams();
+    const title = decodeURIComponent(authorId).replaceAll("-", " ");
 
     if (error || !data) {
         return (
@@ -89,9 +89,9 @@ function AuthorPage() {
 
     const jsonLd = createJsonLd<Person>({
         "@type": "Person",
-        url: `/author/${id}`,
+        url: `/author/${authorId}`,
         name: title,
-        image: createOgImage("author", id),
+        image: createOgImage("author", authorId),
         knowsAbout: ["Manga", "Comics"],
     });
 
@@ -107,7 +107,7 @@ function AuthorPage() {
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
                 className="mt-4"
-                href={`/author/${id}`}
+                href={`/author/${authorId}`}
             />
         </div>
     );

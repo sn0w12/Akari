@@ -33,7 +33,7 @@ const getGenreData = createServerFn({ method: "GET" })
         return { data: result, error: null };
     });
 
-export const Route = createFileRoute("/_default/genre/$id/")({
+export const Route = createFileRoute("/_default/genre/$genreId/")({
     validateSearch: (
         search: Record<string, string | undefined>,
     ): {
@@ -54,7 +54,7 @@ export const Route = createFileRoute("/_default/genre/$id/")({
         sort: search.sort ?? "latest",
     }),
     loader: async ({ params, deps }) => {
-        const name = decodeURIComponent(params.id).replaceAll("-", " ");
+        const name = decodeURIComponent(params.genreId).replaceAll("-", " ");
         return getGenreData({
             data: {
                 name,
@@ -64,23 +64,23 @@ export const Route = createFileRoute("/_default/genre/$id/")({
         });
     },
     head: ({ loaderData, params }) => {
-        const name = decodeURIComponent(params.id).replaceAll("-", " ");
+        const name = decodeURIComponent(params.genreId).replaceAll("-", " ");
         const paginationData = loaderData?.data?.data;
         const page = paginationData?.currentPage ?? 1;
         const totalPages = paginationData?.totalPages;
         const canonicalPath =
             page === 1
-                ? `/genre/${params.id}`
-                : `/genre/${params.id}?page=${page}`;
+                ? `/genre/${params.genreId}`
+                : `/genre/${params.genreId}?page=${page}`;
         const pagination: { previous?: string; next?: string } = {};
         if (page > 1) {
             pagination.previous =
                 page === 2
-                    ? `/genre/${params.id}`
-                    : `/genre/${params.id}?page=${page - 1}`;
+                    ? `/genre/${params.genreId}`
+                    : `/genre/${params.genreId}?page=${page - 1}`;
         }
         if (totalPages && totalPages > page) {
-            pagination.next = `/genre/${params.id}?page=${page + 1}`;
+            pagination.next = `/genre/${params.genreId}?page=${page + 1}`;
         }
         const preloadImages = loaderData?.data?.data?.items?.slice(0, 4);
 
@@ -89,7 +89,7 @@ export const Route = createFileRoute("/_default/genre/$id/")({
                 page === 1 ? `${name} Manga` : `${name} Manga - Page ${page}`,
             description: `Browse manga in the ${name} genre on Akari.`,
             canonicalPath,
-            image: createOgImage("genre", params.id),
+            image: createOgImage("genre", params.genreId),
             pagination:
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
@@ -105,9 +105,9 @@ export const Route = createFileRoute("/_default/genre/$id/")({
 
 function GenrePage() {
     const { data, error } = Route.useLoaderData();
-    const { id } = Route.useParams();
+    const { genreId } = Route.useParams();
     const { page: currentPage = 1 } = Route.useSearch();
-    const name = decodeURIComponent(id).replaceAll("-", " ");
+    const name = decodeURIComponent(genreId).replaceAll("-", " ");
 
     if (error || !data) {
         return (
@@ -121,10 +121,10 @@ function GenrePage() {
         "@type": "CollectionPage",
         url:
             currentPage === 1
-                ? `/genre/${id}`
-                : `/genre/${id}?page=${currentPage}`,
+                ? `/genre/${genreId}`
+                : `/genre/${genreId}?page=${currentPage}`,
         name: name,
-        image: createOgImage("genre", id),
+        image: createOgImage("genre", genreId),
         mainEntity: {
             "@type": "ItemList",
             itemListElement: data.data.items.map((item, index) =>
@@ -174,7 +174,7 @@ function GenrePage() {
                 currentPage={data.data.currentPage}
                 totalPages={data.data.totalPages}
                 className="mt-4"
-                href={`/genre/${id}`}
+                href={`/genre/${genreId}`}
             />
         </div>
     );

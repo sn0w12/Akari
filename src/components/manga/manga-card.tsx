@@ -222,8 +222,8 @@ export function MangaCard({
                 }}
             >
                 <Link
-                    to="/manga/$id"
-                    params={{ id: manga.id }}
+                    to="/manga/$mangaId"
+                    params={{ mangaId: manga.id }}
                     className="relative block h-full w-full"
                 >
                     <Image

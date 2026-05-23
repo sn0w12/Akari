@@ -25,9 +25,9 @@ export function GenreBadge({
             render={
                 <Link
                     key={genre}
-                    to="/genre/$id"
+                    to="/genre/$genreId"
                     params={{
-                        id: encodeURIComponent(genre.replaceAll(" ", "-")),
+                        genreId: encodeURIComponent(genre.replaceAll(" ", "-")),
                     }}
                 />
             }
