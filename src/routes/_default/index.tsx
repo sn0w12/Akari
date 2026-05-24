@@ -3,6 +3,7 @@ import { InstallPrompt } from "@/components/home/install-prompt";
 import { NotificationPrompt } from "@/components/home/notification-prompt";
 import { PopularManga } from "@/components/home/popular-manga";
 import { RemotePrompts } from "@/components/home/remote-prompts";
+import { JsonLd } from "@/components/json-ld";
 import { MangaCard } from "@/components/manga/manga-card";
 import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
@@ -11,7 +12,6 @@ import { PromptStack } from "@/components/ui/prompt-stack";
 import { client, serverHeaders } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { env } from "@/lib/env";
-import { JsonLd } from "@/components/json-ld";
 import { createMetadata } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -33,8 +33,7 @@ const getPopularSection = createServerFn({ method: "GET" })
             headers: serverHeaders,
         });
         return { data: data?.data.items ?? null, error };
-    },
-);
+    });
 
 const getLatestSection = createServerFn({ method: "GET" })
     .inputValidator(() => undefined)
@@ -116,10 +115,30 @@ function Home() {
         url: "/",
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-            { "@type": "ListItem", position: 2, name: "Popular", item: "/popular" },
-            { "@type": "ListItem", position: 3, name: "Latest", item: "/latest" },
-            { "@type": "ListItem", position: 4, name: "Search", item: "/search" },
-            { "@type": "ListItem", position: 5, name: "Bookmarks", item: "/bookmarks" },
+            {
+                "@type": "ListItem",
+                position: 2,
+                name: "Popular",
+                item: "/popular",
+            },
+            {
+                "@type": "ListItem",
+                position: 3,
+                name: "Latest",
+                item: "/latest",
+            },
+            {
+                "@type": "ListItem",
+                position: 4,
+                name: "Search",
+                item: "/search",
+            },
+            {
+                "@type": "ListItem",
+                position: 5,
+                name: "Bookmarks",
+                item: "/bookmarks",
+            },
             { "@type": "ListItem", position: 6, name: "Lists", item: "/lists" },
         ],
     };
@@ -130,22 +149,26 @@ function Home() {
             <JsonLd data={breadcrumbJsonLd} />
             <div className="flex-1 px-4 pt-2 pb-4">
                 <div>
-                    <h2 className="text-3xl font-semibold mb-2">Popular Manga</h2>
+                    <h2 className="text-3xl font-semibold mb-2">
+                        Popular Manga
+                    </h2>
                     {popular ? <PopularManga manga={popular} /> : null}
                 </div>
 
+                <h2 className="text-3xl font-semibold mb-2 mt-1">
+                    Recently Viewed
+                </h2>
                 <Suspense
                     fallback={
                         <>
-                            <h2 className="text-3xl font-semibold mb-2">
-                                Recently Viewed
-                            </h2>
                             <div className={GRID_CLASS}>
-                                {Array.from({ length: 8 }, (_, i) => i).map((i) => (
-                                    <MangaCardSkeleton
-                                        key={`recent-skeleton-${i}`}
-                                    />
-                                ))}
+                                {Array.from({ length: 8 }, (_, i) => i).map(
+                                    (i) => (
+                                        <MangaCardSkeleton
+                                            key={`recent-skeleton-${i}`}
+                                        />
+                                    ),
+                                )}
                             </div>
                         </>
                     }
@@ -153,7 +176,9 @@ function Home() {
                     <HomeRecent />
                 </Suspense>
 
-                <h2 className="text-3xl font-semibold mb-2">Latest Releases</h2>
+                <h2 className="text-3xl font-semibold mb-2 mt-1">
+                    Latest Releases
+                </h2>
                 {latest ? (
                     <>
                         <MangaGrid mangaList={latest.items} priority={2} />
@@ -192,22 +217,17 @@ function HomeRecent() {
     if (!data || data.length === 0) return null;
 
     return (
-        <>
-            <h2 className="text-3xl font-semibold mb-2">Recently Viewed</h2>
-            <div className={GRID_CLASS}>
-                {data.map((manga, index) => (
-                    <MangaCard
-                        key={manga.id}
-                        manga={manga}
-                        priority={index < 2}
-                        className={
-                            index > 5
-                                ? "block sm:hidden lg:block 2xl:hidden"
-                                : ""
-                        }
-                    />
-                ))}
-            </div>
-        </>
+        <div className={GRID_CLASS}>
+            {data.map((manga, index) => (
+                <MangaCard
+                    key={manga.id}
+                    manga={manga}
+                    priority={index < 2}
+                    className={
+                        index > 5 ? "block sm:hidden lg:block 2xl:hidden" : ""
+                    }
+                />
+            ))}
+        </div>
     );
 }
