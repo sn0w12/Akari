@@ -140,6 +140,33 @@ export function getRouter() {
                     return [];
                 }
                 if (fromLocation.pathname === toLocation.pathname) {
+                    const fromPage = fromLocation.searchStr
+                        .substring(1)
+                        .split("&")
+                        .find((param) => param.startsWith("page="));
+                    const toPage = toLocation.searchStr
+                        .substring(1)
+                        .split("&")
+                        .find((param) => param.startsWith("page="));
+
+                    if (fromPage && toPage) {
+                        const fromPageNum = parseInt(
+                            fromPage.split("=")[1],
+                            10,
+                        );
+                        const toPageNum = parseInt(toPage.split("=")[1], 10);
+
+                        if (fromPageNum !== toPageNum) {
+                            return [
+                                `slide-${toPageNum > fromPageNum ? "left" : "right"}`,
+                            ];
+                        }
+                    }
+
+                    if (toPage) {
+                        return [`slide-left`];
+                    }
+
                     return [];
                 }
 
