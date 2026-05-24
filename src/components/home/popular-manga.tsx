@@ -147,8 +147,8 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
 
                     <PopularMangaCardInfo label="Author">
                         <div className="flex flex-wrap gap-1">
-                            {manga.authors.map((author) => (
-                                <Badge key={author} size="lg">
+                            {[...new Set(manga.authors)].map((author) => (
+                                <Badge key={`${manga.id}-${author}`} size="lg">
                                     {author}
                                 </Badge>
                             ))}
@@ -164,7 +164,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                         <div className="flex flex-wrap gap-1">
                             {sortedGenres.slice(0, 6).map((genre) => (
                                 <GenreBadge
-                                    key={genre}
+                                    key={`${manga.id}-${genre}`}
                                     genre={genre}
                                     size="lg"
                                 />

@@ -280,8 +280,8 @@ export function MangaCard({
                             Authors
                         </p>
                         <div className="flex flex-wrap gap-1">
-                            {manga.authors.map((author) => (
-                                <Badge key={author}>{author}</Badge>
+                            {[...new Set(manga.authors)].map((author) => (
+                                <Badge key={`${manga.id}-${author}`}>{author}</Badge>
                             ))}
                         </div>
                     </div>
@@ -306,7 +306,7 @@ export function MangaCard({
                         </p>
                         <div className="flex flex-wrap gap-1">
                             {sortedGenres.slice(0, 6).map((genre) => (
-                                <GenreBadge key={genre} genre={genre} />
+                                <GenreBadge key={`${manga.id}-${genre}`} genre={genre} />
                             ))}
                             {sortedGenres.length > 6 && (
                                 <GenreBadge

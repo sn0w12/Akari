@@ -180,7 +180,7 @@ export function MangaDetailsComponent({
                                                 (mangaName: string) => (
                                                     <p
                                                         className="text-sm text-muted-foreground py-0.5"
-                                                        key={mangaName}
+                                                        key={`${manga.id}-${mangaName}`}
                                                     >
                                                         {mangaName}
                                                     </p>
@@ -213,9 +213,9 @@ export function MangaDetailsComponent({
                                         :
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {manga.authors.map((author: string) => (
+                                        {[...new Set(manga.authors)].map((author: string) => (
                                             <Badge
-                                                key={author}
+                                                key={`${manga.id}-${author}`}
                                                 variant="default"
                                                 render={
                                                     <Link
@@ -269,7 +269,7 @@ export function MangaDetailsComponent({
                                     <div className="flex flex-wrap gap-2 overflow-y-visible md:max-h-24 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
                                         {sortedGenres.map((genre: string) => (
                                             <GenreBadge
-                                                key={genre}
+                                                key={`${manga.id}-${genre}`}
                                                 genre={genre}
                                             />
                                         ))}
