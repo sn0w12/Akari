@@ -98,7 +98,10 @@ export function ResponsiveConfirmDialog({
 
     return (
         <ResponsiveModal open={open} onOpenChange={onOpenChange}>
-            <ResponsiveModalPopup className="sm:max-w-[425px]" {...popupProps}>
+            <ResponsiveModalPopup
+                dialogClassName="sm:max-w-[425px]"
+                {...popupProps}
+            >
                 <ResponsiveModalHeader>
                     <ResponsiveModalTitle>{title}</ResponsiveModalTitle>
                     {description && (
