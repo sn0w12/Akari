@@ -56,8 +56,7 @@ export default function PageReader({
     useEffect(() => {
         if (!chapterRef.current) return;
 
-        const isHalfwayThrough =
-            currentPage >= Math.floor(imagesLength / 2);
+        const isHalfwayThrough = currentPage >= Math.floor(imagesLength / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
             bookmarkUpdatedRef.current = true;
             syncAllServices(chapterRef.current).then((success) => {
@@ -81,7 +80,7 @@ export default function PageReader({
         setCurrentPage(newPage);
 
         if (typeof window === "undefined") return;
-        // Use history.replaceState to update URL without triggering Next.js re-renders
+        // Use history.replaceState to update URL without triggering re-renders
         window.history.replaceState(null, "", `?page=${newPage + 1}`);
     }, []);
 
@@ -155,7 +154,18 @@ export default function PageReader({
                     {/* Spacer for 1/3 of available space at the top */}
                     <div className="flex-1"></div>
                     {/* Content container: image or end-of-manga, no shrinking/growing */}
-                    <div className="flex-shrink-0" role="button" tabIndex={0} onClick={handlePageNavigation} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); nextPage(); } }}>
+                    <div
+                        className="flex-shrink-0"
+                        role="button"
+                        tabIndex={0}
+                        onClick={handlePageNavigation}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                nextPage();
+                            }
+                        }}
+                    >
                         {chapter.images[currentPage] && (
                             <Image
                                 src={chapter.images[currentPage]}

@@ -1,4 +1,4 @@
-name: Next.js Build
+name: Build
 
 on:
     pull_request:
@@ -23,7 +23,7 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Build Next.js project
+            - name: Build project
               run: npm run build
               env:
                   VITE_API_URL: "https://api.akarimanga.dpdns.org"

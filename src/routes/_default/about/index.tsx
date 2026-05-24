@@ -29,7 +29,7 @@ function AboutPage() {
                 <h1 className="text-3xl font-semibold mb-6">About Akari</h1>
                 <p className="text-lg mb-4">
                     Akari is a high-quality, open-source manga reader built with
-                    Next.js. It provides an enhanced reading experience,
+                    Tanstack Start. It provides an enhanced reading experience,
                     allowing users to manage bookmarks and reading history
                     seamlessly.
                 </p>
