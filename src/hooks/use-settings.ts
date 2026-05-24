@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
 import {
+    defaultSettings,
     dispatchSettingsChange,
     SettingsInterface,
-    defaultSettings,
 } from "@/lib/settings";
+import { useCallback, useEffect, useState } from "react";
 
 export const useSettings = () => {
     const [settings, setSettingsState] = useState<SettingsInterface>(() => {
         if (typeof window !== "undefined") {
-            const storedSettings = localStorage.getItem("settings:v1");
+            const storedSettings = localStorage.getItem("settings");
             return storedSettings
                 ? JSON.parse(storedSettings)
                 : defaultSettings;
@@ -53,7 +53,7 @@ export const useSettings = () => {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            localStorage.setItem("settings:v1", JSON.stringify(settings));
+            localStorage.setItem("settings", JSON.stringify(settings));
         }
     }, [settings]);
 
