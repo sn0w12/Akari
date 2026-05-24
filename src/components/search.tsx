@@ -54,13 +54,12 @@ export default function SearchPage() {
               ) as (typeof MANGA_TYPES)[number][])
         : [];
 
-    const [searchQuery, setSearchQuery] = useState(query); // useState initializer — local state owner after mount
+    const [searchQuery, setSearchQuery] = useState(query);
     const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
         wait: 300,
     });
-    const [currentPage, setCurrentPage] = useState(page); // useState initializer — local state owner after mount
+    const [currentPage, setCurrentPage] = useState(page);
     const [filters, setFilters] = useState<SearchFilters>({
-        // useState initializer — local state owner after mount
         genres: selectedGenresFromUrl,
         excludedGenres: excludedGenresFromUrl,
         types: selectedTypesFromUrl,
@@ -82,6 +81,9 @@ export default function SearchPage() {
             params.set("excludedTypes", filters.excludedTypes.join(","));
         if (filters.sort !== "search") params.set("sort", filters.sort);
 
+        if (params.toString().length < 1) {
+            return;
+        }
         window.history.replaceState(null, "", `/search?${params.toString()}`);
     }, [searchQuery, currentPage, filters, router]);
 

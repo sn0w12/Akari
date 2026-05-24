@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useRender } from "@base-ui/react/use-render";
 import { Link } from "@tanstack/react-router";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
@@ -47,9 +48,8 @@ function TabBarList({
 
 export interface TabBarTriggerProps
     extends
-        React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof tabBarTriggerVariants> {
-    href?: string;
+        VariantProps<typeof tabBarTriggerVariants>,
+        useRender.ComponentProps<typeof Link> {
     active?: boolean;
 }
 
@@ -71,6 +71,7 @@ function TabBarTrigger({
                     tabBarTriggerVariants({ variant, active: isActive }),
                     className,
                 )}
+                {...props}
             >
                 {children}
             </Link>
@@ -83,9 +84,9 @@ function TabBarTrigger({
                 tabBarTriggerVariants({ variant, active: isActive }),
                 className,
             )}
-            {...props}
+            {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
-            {children}
+            {children as React.ReactNode}
         </button>
     );
 }

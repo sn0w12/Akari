@@ -3,11 +3,10 @@ import { useBorderColor } from "@/contexts/border-color-context";
 import { ErrorProvider } from "@/contexts/error-context";
 import { useUser } from "@/hooks/use-user";
 import { fetchNotification } from "@/lib/manga/bookmarks";
-import { useShortcutSetting } from "@/lib/settings";
+import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { Suspense } from "react";
 import { BaseSidebarContent } from "./base/sidebar-content";
 import { HeaderComponent } from "./header";
 import { PullToRefresh } from "./pull-to-refresh";
@@ -22,6 +21,7 @@ export function BaseLayout({
     const router = useRouter();
     const { data: user } = useUser();
     const { borderClass } = useBorderColor();
+    const viewTransitions = useSetting("viewTransitions");
 
     const { data: notification = "" } = useQuery({
         queryKey: ["notification"],
@@ -62,12 +62,15 @@ export function BaseLayout({
                         "bg-background min-h-[var(--visible-height)] md:min-h-none h-full w-full flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto",
                         borderClass,
                     )}
-                    style={{ scrollbarGutter: gutter ? "stable" : "auto" }}
+                    style={{
+                        scrollbarGutter: gutter ? "stable" : "auto",
+                        viewTransitionName: viewTransitions
+                            ? "main-content"
+                            : undefined,
+                    }}
                     id="scroll-element"
                 >
-                    <Suspense fallback={children}>
-                        <ErrorProvider>{children}</ErrorProvider>
-                    </Suspense>
+                    <ErrorProvider>{children}</ErrorProvider>
                 </PullToRefresh>
             </div>
         </div>

@@ -63,6 +63,21 @@ export function MobileHeader() {
                         href="/bookmarks"
                         active={pathname === "/bookmarks"}
                         className={borderClass}
+                        viewTransition={{
+                            types: ({ pathChanged, toLocation }) => {
+                                if (!pathChanged) return false;
+
+                                if (
+                                    toLocation.pathname === "/" ||
+                                    toLocation.pathname === "/popular" ||
+                                    toLocation.pathname === "/search"
+                                ) {
+                                    return ["slide-right"];
+                                }
+
+                                return ["slide-left"];
+                            },
+                        }}
                     >
                         <BookmarkIcon className="size-6" />
                     </TabBarTrigger>
@@ -72,6 +87,21 @@ export function MobileHeader() {
                         href="/auth/login"
                         active={pathname === "/auth/login"}
                         className={borderClass}
+                        viewTransition={{
+                            types: ({ pathChanged, toLocation }) => {
+                                if (!pathChanged) return false;
+
+                                if (
+                                    toLocation.pathname === "/" ||
+                                    toLocation.pathname === "/popular" ||
+                                    toLocation.pathname === "/search"
+                                ) {
+                                    return ["slide-right"];
+                                }
+
+                                return ["slide-left"];
+                            },
+                        }}
                     >
                         <User className="size-6" />
                     </TabBarTrigger>
