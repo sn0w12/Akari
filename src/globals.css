@@ -376,6 +376,12 @@ li {
     }
 }
 
+@keyframes via-blur {
+    30% {
+        filter: blur(3px);
+    }
+}
+
 ::view-transition-group(root) {
     animation: none;
 }
@@ -407,6 +413,15 @@ html:active-view-transition-type(slide-right) {
         animation:
             var(--duration-enter) ease-out var(--duration-exit) both fade,
             var(--duration-move) ease-in-out both slide;
+    }
+}
+
+html:active-view-transition-type(blur) {
+    &::view-transition-old(main-content) {
+        animation: var(--duration-exit) ease-in both fade reverse;
+    }
+    &::view-transition-new(main-content) {
+        animation: var(--duration-enter) ease-out var(--duration-exit) both fade;
     }
 }
 

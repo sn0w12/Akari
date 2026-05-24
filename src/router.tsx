@@ -2,11 +2,11 @@ import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 type TransitionRouteNode = {
-    segment: string;
-    children?: TransitionRouteNode[];
+    segment: AllSegments;
+    children?: readonly TransitionRouteNode[];
 };
 
-const TRANSITION_ROUTE_TREE: TransitionRouteNode[] = [
+const TRANSITION_ROUTE_TREE = [
     { segment: "auth" },
     { segment: "about" },
     { segment: "bookmarks" },
@@ -70,7 +70,17 @@ const TRANSITION_ROUTE_TREE: TransitionRouteNode[] = [
         segment: "dev",
         children: [{ segment: "toast" }],
     },
-];
+] as const;
+
+type ExtractSegments<T> = T extends readonly (infer U)[]
+    ? ExtractSegments<U> // handle arrays
+    : T extends { segment: infer S; children?: infer C }
+      ? S extends string
+          ? (C extends readonly unknown[] ? ExtractSegments<C> : never) | S
+          : never
+      : never;
+
+type AllSegments = ExtractSegments<typeof TRANSITION_ROUTE_TREE>;
 
 const LOW_LAYER_ROOT_SEGMENTS = new Set(["popular", "settings", "account"]);
 
@@ -79,22 +89,28 @@ function normalizePath(pathname: string): string {
     return normalizedPath === "" ? "/" : normalizedPath;
 }
 
-function getTransitionLayer(pathname: string): number {
+function getTransitionLayer(pathname: string): {
+    layer: number;
+    segment: AllSegments | null;
+} {
     const normalizedPath = normalizePath(pathname);
 
     if (normalizedPath === "/") {
-        return 1;
+        return { layer: 1, segment: null };
     }
 
-    const segments = normalizedPath.split("/").filter(Boolean);
+    const segments = normalizedPath.split("/").filter(Boolean) as AllSegments[];
 
     if (segments.length === 1 && LOW_LAYER_ROOT_SEGMENTS.has(segments[0])) {
-        return 0;
+        return { layer: 0, segment: segments[0] };
     }
 
-    function walk(nodes: TransitionRouteNode[], index: number): number {
+    function walk(
+        nodes: readonly TransitionRouteNode[],
+        index: number,
+    ): AllSegments | null {
         if (index >= segments.length) {
-            return index;
+            return null;
         }
 
         const segment = segments[index];
@@ -111,21 +127,37 @@ function getTransitionLayer(pathname: string): number {
             }
 
             if (index === segments.length - 1) {
-                return index + 1;
+                return node.segment;
             }
 
             if (!node.children) {
-                return index + 1;
+                return node.segment;
             }
 
-            return walk(node.children, index + 1);
+            const childSegment = walk(node.children, index + 1);
+            if (childSegment) {
+                return childSegment;
+            }
+
+            return node.segment;
         }
 
-        return segments.length;
+        return null;
     }
 
-    return walk(TRANSITION_ROUTE_TREE, 0) + 1;
+    const segment = walk(TRANSITION_ROUTE_TREE, 0);
+
+    return {
+        layer: segment ? segments.length + 1 : 1,
+        segment,
+    };
 }
+
+// Key = simulated deeper in stack, Value = simulated shallower in stack
+const LAYER_COLLISION_RESOLVE: Partial<Record<AllSegments, AllSegments[]>> = {
+    ":mangaId": [":listId", ":userId", ":authorId", ":genreId"],
+    ":listId": [":userId"],
+};
 
 export function getRouter() {
     const router = createRouter({
@@ -172,8 +204,26 @@ export function getRouter() {
 
                 const fromLayer = getTransitionLayer(fromLocation.pathname);
                 const toLayer = getTransitionLayer(toLocation.pathname);
-                const direction = toLayer > fromLayer ? "left" : "right";
+                if (fromLayer.layer === toLayer.layer) {
+                    if (fromLayer.segment && toLayer.segment) {
+                        const fromCollisionTargets =
+                            LAYER_COLLISION_RESOLVE[fromLayer.segment];
+                        if (fromCollisionTargets?.includes(toLayer.segment)) {
+                            return ["slide-right"];
+                        }
 
+                        const toCollisionTargets =
+                            LAYER_COLLISION_RESOLVE[toLayer.segment];
+                        if (toCollisionTargets?.includes(fromLayer.segment)) {
+                            return ["slide-left"];
+                        }
+                    }
+
+                    return ["blur"];
+                }
+
+                const direction =
+                    toLayer.layer > fromLayer.layer ? "left" : "right";
                 return [`slide-${direction}`];
             },
         },
