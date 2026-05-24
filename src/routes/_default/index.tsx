@@ -5,7 +5,6 @@ import { PopularManga } from "@/components/home/popular-manga";
 import { RemotePrompts } from "@/components/home/remote-prompts";
 import { JsonLd } from "@/components/json-ld";
 import { MangaCard } from "@/components/manga/manga-card";
-import MangaCardSkeleton from "@/components/manga/manga-card-skeleton";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
@@ -155,24 +154,7 @@ function Home() {
                     {popular ? <PopularManga manga={popular} /> : null}
                 </div>
 
-                <h2 className="text-3xl font-semibold mb-2 mt-1">
-                    Recently Viewed
-                </h2>
-                <Suspense
-                    fallback={
-                        <>
-                            <div className={GRID_CLASS}>
-                                {Array.from({ length: 8 }, (_, i) => i).map(
-                                    (i) => (
-                                        <MangaCardSkeleton
-                                            key={`recent-skeleton-${i}`}
-                                        />
-                                    ),
-                                )}
-                            </div>
-                        </>
-                    }
-                >
+                <Suspense fallback={null}>
                     <HomeRecent />
                 </Suspense>
 
@@ -217,17 +199,24 @@ function HomeRecent() {
     if (!data || data.length === 0) return null;
 
     return (
-        <div className={GRID_CLASS}>
-            {data.map((manga, index) => (
-                <MangaCard
-                    key={manga.id}
-                    manga={manga}
-                    priority={index < 2}
-                    className={
-                        index > 5 ? "block sm:hidden lg:block 2xl:hidden" : ""
-                    }
-                />
-            ))}
-        </div>
+        <>
+            <h2 className="text-3xl font-semibold mb-2 mt-1">
+                Recently Viewed
+            </h2>
+            <div className={GRID_CLASS}>
+                {data.map((manga, index) => (
+                    <MangaCard
+                        key={manga.id}
+                        manga={manga}
+                        priority={index < 2}
+                        className={
+                            index > 5
+                                ? "block sm:hidden lg:block 2xl:hidden"
+                                : ""
+                        }
+                    />
+                ))}
+            </div>
+        </>
     );
 }
