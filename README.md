@@ -2,7 +2,7 @@
   <img src="./public/screenshots/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
 </p>
 
-<h1 align="center">灯 - Akari</h1>
+<h1 align="center">Akari</h1>
 
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
@@ -11,7 +11,7 @@
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a high-quality, open-source manga reader built with Next.js. It provides an enhanced reading experience, allowing users to manage bookmarks and reading history seamlessly.
+Akari is a high-quality, open-source manga reader built with [Tanstack Start](https://tanstack.com/start/latest). It provides an enhanced reading experience, allowing users to manage bookmarks and reading history seamlessly.
 
 ## Table of Contents
 
@@ -151,23 +151,23 @@ npm run start
 
 ### Front Page
 
-![FrontPage](./public/screenshots/wide/Homepage.webp)
+![FrontPage](./public/screenshots/wide/Homepage.png)
 
 ### Bookmarks
 
-![Bookmarks](./public/screenshots/wide/Bookmarks.webp)
+![Bookmarks](./public/screenshots/wide/Bookmarks.png)
 
 ### Manga
 
-![Manga](./public/screenshots/wide/Manga.webp)
+![Manga](./public/screenshots/wide/Manga.png)
 
 ### Author
 
-![Author](./public/screenshots/wide/Author.webp)
+![Author](./public/screenshots/wide/Author.png)
 
 ### Genre
 
-![Genre](./public/screenshots/wide/Genre.webp)
+![Genre](./public/screenshots/wide/Genre.png)
 
 </details>
 
