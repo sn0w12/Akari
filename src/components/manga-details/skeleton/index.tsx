@@ -19,16 +19,16 @@ export default function MangaDetailsSkeleton() {
                             <Skeleton className="h-8 w-1/2" />
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:gap-0 lg:flex-row">
-                            <Skeleton className="h-10 w-10 ml-2 rounded" />
-                            <Skeleton className="h-10 w-10 ml-2 rounded" />
+                            <Skeleton className="size-10 ml-2 rounded" />
+                            <Skeleton className="size-10 ml-2 rounded" />
                         </div>
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow overflow-hidden">
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-                                {details.map((label, index) => (
-                                    <div key={index}>
+                                {details.map((label) => (
+                                    <div key={label}>
                                         <div className="text-lg font-semibold">
                                             {label}:
                                         </div>
@@ -42,9 +42,9 @@ export default function MangaDetailsSkeleton() {
                                         Genres:
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {[...Array(4)].map((_, index) => (
+                                        {Array.from({ length: 4 }, (_, i) => i).map((i) => (
                                             <Skeleton
-                                                key={index}
+                                                key={`genre-skeleton-${i}`}
                                                 className="h-[22px] w-20 rounded-full"
                                             />
                                         ))}

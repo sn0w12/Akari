@@ -1,11 +1,9 @@
-"use client";
-
 import { useSettings } from "@/hooks/use-settings";
 import { createAllSettingsMaps, Setting } from "@/lib/settings";
-import { SettingsInput } from "./settings-input";
 import React from "react";
-import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { SettingsInput } from "./settings-input";
 
 export function SettingsSearch() {
     const { settings, setSettings } = useSettings();
@@ -93,7 +91,7 @@ export function SettingsSearch() {
                                                 key={key}
                                                 className="space-y-2"
                                             >
-                                                <div className="flex flex-col space-y-1">
+                                                <div className="flex flex-col gap-y-1">
                                                     <Label
                                                         htmlFor={key}
                                                         className="font-medium"

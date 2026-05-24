@@ -1,7 +1,6 @@
-"use client";
-
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useUser } from "@/hooks/use-user";
+import { useRouterState } from "@tanstack/react-router";
 import {
     BookmarkIcon,
     HomeIcon,
@@ -10,7 +9,6 @@ import {
     TrendingUp,
     User,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useSidebar } from "../ui/sidebar";
 import { TabBar, TabBarList, TabBarTrigger } from "../ui/tab-bar";
 
@@ -18,7 +16,7 @@ export function MobileHeader() {
     const { toggleSidebar } = useSidebar();
     const { borderClass } = useBorderColor();
     const { data: user } = useUser();
-    const pathname = usePathname();
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
 
     return (
         <TabBar>
@@ -38,38 +36,24 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Popular Manga"
                     href="/popular"
-                    prefetch={true}
                     active={pathname === "/popular"}
                     className={borderClass}
-                    transitionTypes={["transition-backwards"]}
                 >
                     <TrendingUp className="size-6" />
                 </TabBarTrigger>
                 <TabBarTrigger
                     aria-label="Home"
                     href="/"
-                    prefetch={true}
                     active={pathname === "/" || pathname.startsWith("/latest")}
                     className={borderClass}
-                    transitionTypes={
-                        pathname.startsWith("/popular")
-                            ? ["transition-forwards"]
-                            : ["transition-backwards"]
-                    }
                 >
                     <HomeIcon className="size-6" />
                 </TabBarTrigger>
                 <TabBarTrigger
                     aria-label="Search"
                     href="/search"
-                    prefetch={true}
                     active={pathname === "/search"}
                     className={borderClass}
-                    transitionTypes={
-                        pathname === "/"
-                            ? ["transition-forwards"]
-                            : ["transition-backwards"]
-                    }
                 >
                     <SearchIcon className="size-6" />
                 </TabBarTrigger>
@@ -79,12 +63,21 @@ export function MobileHeader() {
                         href="/bookmarks"
                         active={pathname === "/bookmarks"}
                         className={borderClass}
-                        prefetch={false}
-                        transitionTypes={
-                            pathname === "/"
-                                ? ["transition-forwards"]
-                                : ["transition-backwards"]
-                        }
+                        viewTransition={{
+                            types: ({ pathChanged, toLocation }) => {
+                                if (!pathChanged) return false;
+
+                                if (
+                                    toLocation.pathname === "/" ||
+                                    toLocation.pathname === "/popular" ||
+                                    toLocation.pathname === "/search"
+                                ) {
+                                    return ["slide-right"];
+                                }
+
+                                return ["slide-left"];
+                            },
+                        }}
                     >
                         <BookmarkIcon className="size-6" />
                     </TabBarTrigger>
@@ -94,6 +87,21 @@ export function MobileHeader() {
                         href="/auth/login"
                         active={pathname === "/auth/login"}
                         className={borderClass}
+                        viewTransition={{
+                            types: ({ pathChanged, toLocation }) => {
+                                if (!pathChanged) return false;
+
+                                if (
+                                    toLocation.pathname === "/" ||
+                                    toLocation.pathname === "/popular" ||
+                                    toLocation.pathname === "/search"
+                                ) {
+                                    return ["slide-right"];
+                                }
+
+                                return ["slide-left"];
+                            },
+                        }}
                     >
                         <User className="size-6" />
                     </TabBarTrigger>

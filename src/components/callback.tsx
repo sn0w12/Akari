@@ -1,25 +1,42 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import {
     getSecondaryAccountById,
     SecondaryAccountId,
 } from "@/lib/auth/secondary-accounts";
 import { StorageManager } from "@/lib/storage";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "@tanstack/react-router";
+import { useEffect, useReducer } from "react";
 import ErrorComponent from "./error-page";
+
+type CallbackState = {
+    error: components["schemas"]["ErrorResponse"] | undefined;
+    success: boolean;
+};
+
+type CallbackAction =
+    | { type: "ERROR"; error: components["schemas"]["ErrorResponse"] }
+    | { type: "SUCCESS" };
+
+function callbackReducer(_state: CallbackState, action: CallbackAction): CallbackState {
+    switch (action.type) {
+        case "ERROR":
+            return { error: action.error, success: false };
+        case "SUCCESS":
+            return { error: undefined, success: true };
+    }
+}
 
 const CallbackPage = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const [error, setError] = useState<
-        components["schemas"]["ErrorResponse"] | undefined
-    >(undefined);
-    const [success, setSuccess] = useState<boolean>(false);
+    const [{ error, success }, dispatch] = useReducer(callbackReducer, {
+        error: undefined,
+        success: false,
+    });
 
     useEffect(() => {
+        const searchParams = new URLSearchParams(router.state.location.search);
         const provider = searchParams.get("provider") || "mal";
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
         const getToken = async (accountId: string) => {
             const account = getSecondaryAccountById(
@@ -40,11 +57,14 @@ const CallbackPage = () => {
                     provider as SecondaryAccountId,
                 );
                 if (!account) {
-                    setError({
-                        result: "Error",
-                        status: 500,
-                        data: {
-                            message: "Unknown provider",
+                    dispatch({
+                        type: "ERROR",
+                        error: {
+                            result: "Error",
+                            status: 500,
+                            data: {
+                                message: "Unknown provider",
+                            },
                         },
                     });
                     return;
@@ -52,11 +72,14 @@ const CallbackPage = () => {
                 const tokenSuccess = await getToken(account.id);
 
                 if (!tokenSuccess) {
-                    setError({
-                        result: "Error",
-                        status: 500,
-                        data: {
-                            message: "Failed to handle callback",
+                    dispatch({
+                        type: "ERROR",
+                        error: {
+                            result: "Error",
+                            status: 500,
+                            data: {
+                                message: "Failed to handle callback",
+                            },
                         },
                     });
                     return;
@@ -64,43 +87,53 @@ const CallbackPage = () => {
 
                 const validateSuccess = await account.validate();
                 if (!validateSuccess) {
-                    setError({
-                        result: "Error",
-                        status: 500,
-                        data: {
-                            message: "Failed to validate account",
+                    dispatch({
+                        type: "ERROR",
+                        error: {
+                            result: "Error",
+                            status: 500,
+                            data: {
+                                message: "Failed to validate account",
+                            },
                         },
                     });
                     return;
                 }
 
-                setSuccess(true);
+                dispatch({ type: "SUCCESS" });
                 const cacheStorage = StorageManager.get(
                     "secondaryAccountCache",
                     { accountId: provider },
                 );
                 cacheStorage.set({ valid: true });
-                router.push("/account");
-            } catch (error) {
-                setError({
-                    result: "Error",
-                    status: 500,
-                    data: {
-                        message:
-                            error instanceof Error
-                                ? error.message
-                                : "Unknown error",
+                router.navigate({ to: "/account" });
+            } catch (err) {
+                dispatch({
+                    type: "ERROR",
+                    error: {
+                        result: "Error",
+                        status: 500,
+                        data: {
+                            message:
+                                err instanceof Error
+                                    ? err.message
+                                    : "Unknown error",
+                        },
                     },
                 });
             } finally {
-                setTimeout(() => {
-                    router.push("/account");
+                timeoutId = setTimeout(() => {
+                    router.navigate({ to: "/account" });
                 }, 5000);
             }
         };
 
         processCallback();
-    }, [searchParams, router]);
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [router]);
 
     return (
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background">

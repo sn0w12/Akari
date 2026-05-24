@@ -1,21 +1,19 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toastManager } from "@/components/ui/toast";
 import { useUser } from "@/hooks/use-user";
 import { getLatestReadChapter } from "@/lib/manga/bookmarks";
-import Toast from "@/lib/toast-wrapper";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ArrowUpDown } from "lucide-react";
-import Link from "next/link";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
 import {
     Select,
-    SelectContent,
     SelectItem,
+    SelectPopup,
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
@@ -33,7 +31,7 @@ interface ChaptersControlsProps {
     sortOrder: "asc" | "desc";
     onSortChange: (order: "asc" | "desc") => void;
     scanlatorId: number;
-    scanlatorOptions: { id: number; name: string }[];
+    scanlatorOptions: { value: number; label: string }[];
     setScanlatorId: (id: number) => void;
     isLoading: boolean;
     latestData: components["schemas"]["LastReadResponse"] | undefined | null;
@@ -58,22 +56,20 @@ function ChaptersControls({
         <div className="flex gap-2 w-full flex-col md:flex-row md:w-auto pointer-events-auto">
             {scanlatorOptions.length > 1 && (
                 <Select
+                    items={scanlatorOptions}
                     onValueChange={(value) => setScanlatorId(Number(value))}
-                    value={scanlatorId.toString()}
+                    value={scanlatorId}
                 >
                     <SelectTrigger className="w-full md:w-auto">
                         <SelectValue placeholder="Select Scanlator" />
                     </SelectTrigger>
-                    <SelectContent align="center">
-                        {scanlatorOptions.map((option) => (
-                            <SelectItem
-                                key={option.id}
-                                value={option.id.toString()}
-                            >
-                                {option.name}
+                    <SelectPopup align="center">
+                        {scanlatorOptions.map(({ label, value }) => (
+                            <SelectItem key={value} value={value}>
+                                {label}
                             </SelectItem>
                         ))}
-                    </SelectContent>
+                    </SelectPopup>
                 </Select>
             )}
             <div className="flex gap-2 w-full">
@@ -89,7 +85,12 @@ function ChaptersControls({
                     </Button>
                 ) : (
                     <ButtonLink
-                        href={`/manga/${mangaId}/${scanlatorId}/${firstChapterNumber}`}
+                        to="/manga/$mangaId/$scanlator/$subId"
+                        params={{
+                            mangaId,
+                            scanlator: String(scanlatorId),
+                            subId: String(firstChapterNumber),
+                        }}
                         className="flex-1 md:w-40"
                     >
                         Go to First Chapter
@@ -101,7 +102,7 @@ function ChaptersControls({
                     }
                     className="flex-1 md:w-40 has-[>svg]:px-4"
                 >
-                    <ArrowUpDown className="h-4 w-4" />
+                    <ArrowUpDown className="size-4" />
                     Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
                 </Button>
             </div>
@@ -159,7 +160,10 @@ export function ChaptersSection({
 
     const navigateToLastRead = () => {
         if (!lastRead || !mangaId) {
-            new Toast("No previous reading history found", "error");
+            toastManager.add({
+                title: "No previous reading history found",
+                type: "error",
+            });
             return;
         }
         const chapterIndex = getSortedChapters(data.scanlatorId).findIndex(
@@ -167,7 +171,10 @@ export function ChaptersSection({
         );
 
         if (chapterIndex === -1 || chapterIndex === undefined) {
-            new Toast("Last read chapter not found", "error");
+            toastManager.add({
+                title: "Last read chapter not found",
+                type: "error",
+            });
             return;
         }
 
@@ -208,8 +215,8 @@ export function ChaptersSection({
             }
         });
         return Array.from(uniqueScanlators.entries()).map(([id, name]) => ({
-            id,
-            name,
+            value: id,
+            label: name,
         }));
     }, [scanlators]);
 
@@ -233,52 +240,47 @@ export function ChaptersSection({
             {/* Chapters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mb-4 pointer-events-auto">
                 {currentChapters?.map((chapter) => (
-                    <Link
-                        href={`/manga/${mangaId}/${chapter.scanlatorId}/${chapter.number}`}
-                        key={chapter.id}
-                        id={chapter.id}
-                        prefetch={false}
-                        transitionTypes={["transition-forwards"]}
+                    <Card
+                        className={`h-full transition-colors p-0 ${
+                            chapter.id === lastRead
+                                ? "bg-accent-positive hover:bg-accent-positive/70"
+                                : "hover:bg-card/70"
+                        }`}
+                        render={
+                            <Link
+                                to="/manga/$mangaId/$scanlator/$subId"
+                                params={{
+                                    mangaId,
+                                    scanlator: String(chapter.scanlatorId),
+                                    subId: String(chapter.number),
+                                }}
+                                key={chapter.id}
+                                id={chapter.id}
+                            ></Link>
+                        }
                     >
-                        <Card
-                            className={`h-full transition-colors p-0 ${
-                                chapter.id === lastRead
-                                    ? "bg-accent-positive hover:bg-accent-positive/70"
-                                    : "hover:bg-accent"
-                            }`}
-                        >
-                            <CardContent className="p-4">
-                                <h3
-                                    className={cn(
-                                        "font-semibold mb-2 line-clamp-2",
-                                        {
-                                            "text-background":
-                                                chapter.id === lastRead,
-                                        },
-                                    )}
-                                >
-                                    {chapter.title}
-                                </h3>
-                                <p
-                                    className={cn(
-                                        "text-sm text-muted-foreground",
-                                        {
-                                            "text-background":
-                                                chapter.id === lastRead,
-                                        },
-                                    )}
-                                >
-                                    Pages: {chapter.pages}
-                                </p>
-                                <Suspense fallback={null}>
-                                    <Released
-                                        chapter={chapter}
-                                        lastRead={lastRead}
-                                    />
-                                </Suspense>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                        <CardContent className="p-4">
+                            <h3
+                                className={cn(
+                                    "font-semibold mb-2 line-clamp-2",
+                                    {
+                                        "text-background":
+                                            chapter.id === lastRead,
+                                    },
+                                )}
+                            >
+                                {chapter.title}
+                            </h3>
+                            <p
+                                className={cn("text-sm text-muted-foreground", {
+                                    "text-background": chapter.id === lastRead,
+                                })}
+                            >
+                                Pages: {chapter.pages}
+                            </p>
+                            <Released chapter={chapter} lastRead={lastRead} />
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
 

@@ -1,8 +1,7 @@
-"use client";
-
 import { cn } from "@/lib/utils";
+import { useRender } from "@base-ui/react/use-render";
+import { Link } from "@tanstack/react-router";
 import { cva, type VariantProps } from "class-variance-authority";
-import Link from "next/link";
 import * as React from "react";
 
 const tabBarTriggerVariants = cva(
@@ -49,22 +48,17 @@ function TabBarList({
 
 export interface TabBarTriggerProps
     extends
-        React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof tabBarTriggerVariants> {
-    href?: string;
-    prefetch?: boolean | "auto" | null;
+        VariantProps<typeof tabBarTriggerVariants>,
+        useRender.ComponentProps<typeof Link> {
     active?: boolean;
-    transitionTypes?: string[] | undefined;
 }
 
 function TabBarTrigger({
     className,
     variant,
     href,
-    prefetch,
     active,
     children,
-    transitionTypes,
     ...props
 }: TabBarTriggerProps) {
     const isActive = active ?? false;
@@ -72,13 +66,12 @@ function TabBarTrigger({
     if (href) {
         return (
             <Link
-                href={href}
-                prefetch={prefetch}
+                to={href}
                 className={cn(
                     tabBarTriggerVariants({ variant, active: isActive }),
                     className,
                 )}
-                transitionTypes={transitionTypes}
+                {...props}
             >
                 {children}
             </Link>
@@ -91,9 +84,9 @@ function TabBarTrigger({
                 tabBarTriggerVariants({ variant, active: isActive }),
                 className,
             )}
-            {...props}
+            {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
-            {children}
+            {children as React.ReactNode}
         </button>
     );
 }

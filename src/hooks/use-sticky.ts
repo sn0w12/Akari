@@ -38,11 +38,13 @@ export function useSticky(
         const top = elementRect.top - grandParentRect.top + offset;
 
         const sentinel = document.createElement("div");
-        sentinel.style.position = "relative";
-        sentinel.style.left = "0";
-        sentinel.style.width = "100%";
-        sentinel.style.height = "1px";
-        sentinel.style.top = `${top}px`;
+        Object.assign(sentinel.style, {
+            position: "relative",
+            left: "0",
+            width: "100%",
+            height: "1px",
+            top: `${top}px`,
+        });
 
         if (grandParent) {
             grandParent.insertBefore(sentinel, parent);

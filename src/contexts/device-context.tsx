@@ -1,12 +1,10 @@
-"use client";
-
 import { parseUserAgent } from "@/lib/ua";
 import {
     createContext,
-    useContext,
+    ReactNode,
+    use,
     useEffect,
     useState,
-    ReactNode,
 } from "react";
 
 export type DeviceType = "mobile" | "tablet" | "desktop" | undefined;
@@ -60,6 +58,6 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
 }
 
 export function useDevice(): DeviceInfo {
-    const context = useContext(DeviceContext);
+    const context = use(DeviceContext);
     return context;
 }

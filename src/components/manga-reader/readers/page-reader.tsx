@@ -1,11 +1,9 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
 import EndOfManga from "../end-of-manga";
@@ -14,71 +12,75 @@ import PageProgress from "../page-progress";
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     scrollMetrics: { pixels: number; percentage: number };
     toggleReaderMode: () => void;
     isInactive: boolean;
     setBookmarkState: (state: boolean | null) => void;
 }
 
-const pageHeightStyle = "calc(100dvh - var(--reader-offset))";
 export default function PageReader({
     chapter,
+    scanlator,
     scrollMetrics,
     toggleReaderMode,
     isInactive,
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useRouterState({ select: (s) => s.location.search });
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
     const windowWidth = useWindowWidth();
     const [currentPage, setCurrentPage] = useState(() => {
-        const pageParam = searchParams.get("page");
+        const pageParam = searchParams.page;
         if (!chapter) return 0;
+        if (!pageParam) return 0;
         if (pageParam === "last") return chapter.images.length - 1;
-        const pageNumber = parseInt(pageParam || "1", 10);
-        return isNaN(pageNumber) ||
-            pageNumber < 1 ||
-            pageNumber > chapter.images.length
+        if (typeof pageParam === "string") return 0;
+
+        return isNaN(pageParam) ||
+            pageParam < 1 ||
+            pageParam > chapter.images.length
             ? 0
-            : pageNumber - 1;
+            : pageParam - 1;
     });
+    const pageHeightStyle = "var(--visible-height)";
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
+    const chapterRef = useRef(chapter);
+    chapterRef.current = chapter;
+    const imagesLength = chapter.images.length;
+    const nextChapter = chapter.nextChapter;
     useEffect(() => {
-        if (!chapter) return;
+        if (!chapterRef.current) return;
 
-        // Handle bookmark update
-        const isHalfwayThrough =
-            currentPage >= Math.floor(chapter.images.length / 2);
+        const isHalfwayThrough = currentPage >= Math.floor(imagesLength / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
             bookmarkUpdatedRef.current = true;
-            syncAllServices(chapter).then((success) => {
+            syncAllServices(chapterRef.current).then((success) => {
                 setBookmarkState(success);
             });
         }
 
-        // Handle prefetching next chapter
-        if (chapter.nextChapter && !hasPrefetchedRef.current) {
+        if (nextChapter && !hasPrefetchedRef.current) {
             const threshold = Math.min(
-                Math.floor(chapter.images.length * 0.75),
-                chapter.images.length - 3,
+                Math.floor(imagesLength * 0.75),
+                imagesLength - 3,
             );
 
             if (currentPage >= threshold) {
-                router.prefetch(`./${chapter.nextChapter}`);
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [chapter, currentPage, router, setBookmarkState]);
+    }, [currentPage, imagesLength, nextChapter, router, setBookmarkState]);
 
     const setPageWithUrlUpdate = useCallback((newPage: number) => {
         setCurrentPage(newPage);
 
         if (typeof window === "undefined") return;
-        // Use history.replaceState to update URL without triggering Next.js re-renders
+        // Use history.replaceState to update URL without triggering re-renders
         window.history.replaceState(null, "", `?page=${newPage + 1}`);
     }, []);
 
@@ -88,7 +90,7 @@ export default function PageReader({
             chapter.nextChapter &&
             continueAfterChapter
         ) {
-            router.push(`./${chapter.nextChapter}`);
+            router.navigate({ to: `./${chapter.nextChapter}` });
             return;
         }
 
@@ -113,7 +115,7 @@ export default function PageReader({
     useShortcutSetting("nextPage", nextPage);
     useShortcutSetting("previousPage", prevPage);
 
-    const handleClick = useCallback(
+    const handlePageNavigation = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             const screenWidth = windowWidth;
             const clickX = e.clientX;
@@ -141,6 +143,7 @@ export default function PageReader({
         <>
             <ChapterInfo
                 chapter={chapter}
+                scanlator={scanlator}
                 hidden={scrollMetrics.pixels >= 50}
             />
             <div
@@ -151,7 +154,18 @@ export default function PageReader({
                     {/* Spacer for 1/3 of available space at the top */}
                     <div className="flex-1"></div>
                     {/* Content container: image or end-of-manga, no shrinking/growing */}
-                    <div className="flex-shrink-0" onClick={handleClick}>
+                    <div
+                        className="flex-shrink-0"
+                        role="button"
+                        tabIndex={0}
+                        onClick={handlePageNavigation}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                nextPage();
+                            }
+                        }}
+                    >
                         {chapter.images[currentPage] && (
                             <Image
                                 src={chapter.images[currentPage]}
@@ -167,12 +181,11 @@ export default function PageReader({
                                 style={{
                                     maxHeight: pageHeightStyle,
                                 }}
-                                loading="eager"
                                 width={720}
                                 height={1500}
-                                unoptimized={true}
-                                preload={true}
+                                quality={100}
                                 fetchPriority="high"
+                                sizes={{ default: "100vw" }}
                             />
                         )}
                         <EndOfManga
@@ -197,10 +210,10 @@ export default function PageReader({
                             style={{
                                 maxHeight: pageHeightStyle,
                             }}
-                            loading="eager"
                             width={720}
                             height={1500}
-                            unoptimized={true}
+                            quality={100}
+                            sizes={{ default: "100vw" }}
                         />
                     )}
                 </div>
@@ -226,6 +239,7 @@ export default function PageReader({
             </div>
             <MangaFooter
                 chapter={chapter}
+                scanlator={scanlator}
                 toggleReaderMode={toggleReaderMode}
             />
         </>

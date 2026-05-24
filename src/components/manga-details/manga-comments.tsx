@@ -1,10 +1,9 @@
-"use server";
-
 import { client, serverHeaders } from "@/lib/api";
 import { MangaCommentList } from "./manga-comment-list";
+import { useQuery } from "@tanstack/react-query";
 
-async function getMangaComments(id: string) {
-    const { data, error } = await client.GET("/v2/comments/{id}", {
+function getMangaComments(id: string) {
+    return client.GET("/v2/comments/{id}", {
         params: {
             path: {
                 id: id,
@@ -17,30 +16,23 @@ async function getMangaComments(id: string) {
         },
         headers: serverHeaders,
     });
-
-    if (error) {
-        return { data: null, error };
-    }
-
-    return { data: data.data, error: null };
 }
 
 export type CommentTarget = "manga" | "chapter";
 
-interface MangaCommentsProps {
-    params: Promise<{ id: string }>;
-    target: CommentTarget;
-}
+export function MangaComments({ id, target }: { id: string; target: CommentTarget }) {
+    const { data, error } = useQuery({
+        queryKey: ["manga-comments", id],
+        queryFn: async () => {
+            const { data, error } = await getMangaComments(id);
+            if (error) throw error;
+            return data.data;
+        },
+    });
 
-export async function MangaComments({ params, target }: MangaCommentsProps) {
-    const id = (await params).id;
-    const { data, error } = await getMangaComments(id);
+    if (error) return null;
+    if (!data) return null;
 
-    if (error) {
-        return null;
-    }
-
-    // Convert CommentResponse[] to CommentWithRepliesResponse[] with empty replies
     const commentsWithReplies: components["schemas"]["CommentWithRepliesResponse"][] =
         (data.items || []).map((comment) => ({
             ...comment,

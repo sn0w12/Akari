@@ -1,7 +1,6 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/use-user";
+import { env } from "@/lib/env";
 import { registerAndSubscribe } from "@/lib/notifications/subscribe";
 import { useStorage } from "@/lib/storage";
 import { useEffect, useState } from "react";
@@ -21,17 +20,7 @@ export function NotificationPrompt() {
 
     useEffect(() => {
         const data = storage.get();
-        if (data?.declined || data?.enabled) {
-            setIsVisible(false);
-            return;
-        }
-
-        // Only show the prompt when the user is signed in
-        if (!user) {
-            setIsVisible(false);
-        } else {
-            setIsVisible(true);
-        }
+        setIsVisible(!!user && !data?.declined && !data?.enabled);
     }, [user, storage]);
 
     const handleDecline = () => {
@@ -41,7 +30,7 @@ export function NotificationPrompt() {
 
     const handleEnable = async () => {
         setIsProcessing(true);
-        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+        const vapidKey = env("VITE_VAPID_PUBLIC_KEY") || "";
 
         try {
             const result = await registerAndSubscribe(vapidKey);

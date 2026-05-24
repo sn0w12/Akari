@@ -7,6 +7,7 @@ import {
     RegisterableHotkey,
     useHeldKeys,
 } from "@tanstack/react-hotkeys";
+import { badgeVariants } from "./badge";
 
 interface KeyboardShortcutProps {
     keys: RegisterableHotkey;
@@ -20,15 +21,12 @@ function Kbd({
     children: React.ReactNode;
     isPressed: boolean;
 }) {
+    const variant = isPressed ? "success" : "outline";
     return (
         <kbd
             className={cn(
-                "rounded-md border px-1 py-0.5 text-xs transition-colors",
-                {
-                    "bg-accent-positive border-accent-positive text-primary-foreground":
-                        isPressed,
-                    "bg-muted": !isPressed,
-                },
+                badgeVariants({ variant, size: "default" }),
+                "px-1 py-0.5 text-xs transition-colors",
             )}
         >
             {children}
@@ -56,9 +54,9 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
         >
             {formatForDisplay(keys as Hotkey)
                 .split("+")
-                .map((key, index) => (
+                .map((key) => (
                     <Kbd
-                        key={`${keys}-${index}`}
+                        key={`${keys}-${key}`}
                         isPressed={formattedPressedKeys.includes(key)}
                     >
                         {key}
@@ -91,9 +89,9 @@ function ContextKeyboardShortcut({
         >
             {formatForDisplay(keys as Hotkey)
                 .split("+")
-                .map((key, index) => (
+                .map((key) => (
                     <Kbd
-                        key={`${keys}-${index}`}
+                        key={`${keys}-${key}`}
                         isPressed={formattedPressedKeys.includes(key)}
                     >
                         {key}

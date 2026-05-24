@@ -1,56 +1,44 @@
+import { Image, type SizesConfig } from "@/components/image";
+import { JsonLd } from "@/components/json-ld";
 import { Badge, BadgeVariantProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { formatNumberShort, generateSizes, pluralize } from "@/lib/utils";
-import { InfoIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { sortGenresByCategory } from "@/lib/api/search";
+import { createJsonLd } from "@/lib/seo";
+import { formatNumberShort, pluralize } from "@/lib/utils";
+import type { components } from "@/types/api";
+import { Link } from "@tanstack/react-router";
+import { LanguagesIcon } from "lucide-react";
+import { ComicSeries, Person } from "schema-dts";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
+import { GenreBadge } from "./manga-details/badges/genre";
+import { StatusBadge } from "./manga-details/badges/status";
 import Buttons from "./manga-details/buttons";
 import { ScoreDisplay } from "./manga-details/score/score-display";
-import {
-    MangaUpdatedAt,
-    MangaUpdatedAtFallback,
-} from "./manga-details/updated-at";
+import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
-import EnhancedImage from "./ui/enhanced-image";
+import {
+    ResponsiveModal,
+    ResponsiveModalDrawerOnly,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+    ResponsiveModalTrigger,
+} from "./ui/responsive-modal";
+import { Separator } from "./ui/separator";
 
-import { MangaPageProps } from "@/app/(default)/manga/[id]/page";
-import { client, serverHeaders } from "@/lib/api";
-import { createJsonLd } from "@/lib/seo";
-import AniImage from "@/public/img/icons/AniList-logo.webp";
-import MalImage from "@/public/img/icons/MAL-logo.webp";
-import { cacheLife, cacheTag } from "next/cache";
-import { Suspense } from "react";
-import { ComicSeries, Person } from "schema-dts";
-import ErrorPage from "./error-page";
+export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
+    default: "200px",
+    sm: 128,
+    lg: 400,
+} satisfies SizesConfig;
 
-const getStatusVariant = (status: string): BadgeVariantProps["variant"] => {
-    switch (status.toLowerCase()) {
-        case "ongoing":
-            return "positive";
-        case "completed":
-            return "info";
-        case "hiatus":
-            return "warning";
-        default:
-            return "default";
-    }
-};
+const getViewsVariant = (views: number): BadgeVariantProps["variant"] => {
+    if (views < 100) return "warning";
+    else if (views < 1_000) return "info";
+    else if (views < 10_000) return "destructive";
 
-const getViewsColor = (views: number): string => {
-    if (views < 100) return "bg-[#ffc659] hover:bg-[#ffc659] text-black";
-    else if (views < 1_000) return "bg-[#ff8f70] hover:bg-[#ff8f70] text-black";
-    else if (views < 10_000)
-        return "bg-[#ff609e] hover:bg-[#ff609e] text-white";
-    else if (views < 100_000)
-        return "bg-[#e255d0] hover:bg-[#e255d0] text-white";
-
-    return "bg-accent-positive hover:bg-accent-positive text-white";
+    return "success";
 };
 
 function ExternalLinks({
@@ -61,69 +49,46 @@ function ExternalLinks({
     return (
         <>
             {manga.aniId && (
-                <Link
+                <a
                     href={`https://anilist.co/manga/${manga.aniId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
-                    prefetch={false}
                 >
                     <Image
-                        src={AniImage}
+                        src="/img/icons/AniList-logo.webp"
                         alt="AniList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        width={40}
-                        height={40}
+                        sizes={{ default: "40px" }}
                     />
-                </Link>
+                </a>
             )}
             {manga.malId && (
-                <Link
+                <a
                     href={`https://myanimelist.net/manga/${manga.malId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="h-10"
-                    prefetch={false}
                 >
                     <Image
-                        src={MalImage}
+                        src="/img/icons/MAL-logo.webp"
                         alt="MyAnimeList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        width={40}
-                        height={40}
+                        sizes={{ default: "40px" }}
                     />
-                </Link>
+                </a>
             )}
         </>
     );
 }
 
-export async function getManga(id: string) {
-    "use cache";
-    cacheLife("days");
-    cacheTag("manga", `manga-${id}`);
+export function MangaDetailsComponent({
+    manga,
+}: {
+    manga: components["schemas"]["MangaResponse"];
+}) {
+    const sortedGenres = sortGenresByCategory(manga.genres);
 
-    const { data, error } = await client.GET("/v2/manga/{id}", {
-        params: {
-            path: {
-                id,
-            },
-        },
-        headers: serverHeaders,
-    });
-
-    return { data, error };
-}
-
-export async function MangaDetailsComponent({ params }: MangaPageProps) {
-    const id = (await params).id;
-    const { data, error } = await getManga(id);
-
-    if (error || !data) {
-        return <ErrorPage error={error} />;
-    }
-
-    const manga = data.data;
     const alternativeTitles = (manga.alternativeTitles || []).filter(
         (title) => title.toLowerCase() !== manga.title.toLowerCase(),
     );
@@ -134,7 +99,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
         alternateName: alternativeTitles.join(", "),
         image: manga.cover,
         description: manga.description,
-        genre: manga.genres,
+        genre: sortedGenres,
         author: manga.authors.map((author) =>
             createJsonLd<Person>({
                 "@type": "Person",
@@ -158,63 +123,72 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-                }}
-            />
+            <JsonLd data={jsonLd} />
             <BreadcrumbSetter orig={manga.id} title={manga.title} />
             <div className="mb-2 flex h-auto flex-col justify-center gap-4 items-stretch lg:grid lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-y-0">
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
-                        <EnhancedImage
+                        <Image
                             src={manga.cover}
                             alt={manga.title}
                             className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
-                            hoverEffect="dynamic-tilt"
                             width={400}
                             height={600}
-                            preload={true}
-                            fetchPriority="high"
+                            loading="eager"
                             quality={60}
-                            sizes={generateSizes({
-                                sm: "128px",
-                                lg: "400px",
-                            })}
+                            sizes={MANGA_DETAILS_COVER_IMAGE_SIZES}
                         />
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
-                            <h1 className="overflow-y-auto text-2xl font-bold md:text-3xl lg:max-h-27">
+                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl lg:max-h-27">
                                 {manga.title}
                             </h1>
                             {alternativeTitles.length > 0 && (
-                                <Tooltip>
-                                    <TooltipTrigger
-                                        className="hidden lg:block"
-                                        aria-label="Alternative Names"
+                                <ResponsiveModal desktop="popover">
+                                    <ResponsiveModalTrigger
+                                        render={
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                aria-label={`Alternative titles (${alternativeTitles.length})`}
+                                                className="relative shrink-0"
+                                            >
+                                                <LanguagesIcon className="size-4" />
+                                                <Badge
+                                                    size="sm"
+                                                    className="absolute -top-1 -right-1"
+                                                >
+                                                    {alternativeTitles.length}
+                                                </Badge>
+                                            </Button>
+                                        }
+                                    />
+                                    <ResponsiveModalPopup
+                                        side="bottom"
+                                        align="start"
+                                        dialogClassName="w-auto max-w-80"
                                     >
-                                        <InfoIcon className="w-5 h-5" />
-                                    </TooltipTrigger>
-                                    <TooltipContent side="bottom">
-                                        <div className="flex flex-col gap-1 max-w-96 w-auto">
+                                        <ResponsiveModalPanel>
+                                            <ResponsiveModalTitle>
+                                                Also known as
+                                            </ResponsiveModalTitle>
+                                            <ResponsiveModalDrawerOnly>
+                                                <Separator className="mt-1" />
+                                            </ResponsiveModalDrawerOnly>
                                             {alternativeTitles.map(
-                                                (
-                                                    mangaName: string,
-                                                    index: number,
-                                                ) => (
+                                                (mangaName: string) => (
                                                     <p
-                                                        className="max-w-xs px-1 border-b border-background pb-1 last:border-b-0"
-                                                        key={index}
+                                                        className="text-sm text-muted-foreground py-0.5"
+                                                        key={`${manga.id}-${mangaName}`}
                                                     >
                                                         {mangaName}
                                                     </p>
                                                 ),
                                             )}
-                                        </div>
-                                    </TooltipContent>
-                                </Tooltip>
+                                        </ResponsiveModalPanel>
+                                    </ResponsiveModalPopup>
+                                </ResponsiveModal>
                             )}
                         </div>
                         <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row lg:gap-0">
@@ -239,62 +213,49 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         :
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {manga.authors.map(
-                                            (author: string, index: number) => (
-                                                <Link
-                                                    href={`/author/${encodeURIComponent(
-                                                        author.replaceAll(
-                                                            " ",
-                                                            "-",
-                                                        ),
-                                                    )}`}
-                                                    key={index}
-                                                    prefetch={false}
-                                                    transitionTypes={[
-                                                        "transition-backwards",
-                                                    ]}
-                                                >
-                                                    <Badge
-                                                        withShadow={true}
-                                                        className="bg-primary text-secondary hover:bg-gray-300 hover:text-primary dark:hover:text-secondary"
-                                                        shadowClassName="mt-[4px]"
-                                                    >
-                                                        {author}
-                                                    </Badge>
-                                                </Link>
-                                            ),
-                                        )}
+                                        {[...new Set(manga.authors)].map((author: string) => (
+                                            <Badge
+                                                key={`${manga.id}-${author}`}
+                                                variant="default"
+                                                render={
+                                                    <Link
+                                                        to="/author/$authorId"
+                                                        params={{
+                                                            authorId: encodeURIComponent(
+                                                                author.replaceAll(
+                                                                    " ",
+                                                                    "-",
+                                                                ),
+                                                            ),
+                                                        }}
+                                                    />
+                                                }
+                                            >
+                                                {author}
+                                            </Badge>
+                                        ))}
                                     </div>
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
                                         Status:
                                     </div>
-                                    <Badge
-                                        variant={getStatusVariant(manga.status)}
-                                    >
-                                        {manga.status.charAt(0).toUpperCase() +
-                                            manga.status.slice(1)}
-                                    </Badge>
+                                    <StatusBadge status={manga.status} />
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
                                         Updated:
                                     </div>
-                                    <Suspense
-                                        fallback={<MangaUpdatedAtFallback />}
-                                    >
-                                        <MangaUpdatedAt
-                                            updatedAt={manga.updatedAt}
-                                        />
-                                    </Suspense>
+                                    <MangaUpdatedAt
+                                        updatedAt={manga.updatedAt}
+                                    />
                                 </div>
                                 <div>
                                     <div className="text-lg font-semibold">
                                         Views:
                                     </div>
                                     <Badge
-                                        className={getViewsColor(manga.views)}
+                                        variant={getViewsVariant(manga.views)}
                                     >
                                         {formatNumberShort(manga.views)}
                                     </Badge>
@@ -306,26 +267,11 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                                         Genres:
                                     </h2>
                                     <div className="flex flex-wrap gap-2 overflow-y-visible md:max-h-24 lg:overflow-y-auto xl:overflow-y-visible xl:max-h-96">
-                                        {manga.genres.map((genre: string) => (
-                                            <Link
-                                                key={genre}
-                                                href={`/genre/${encodeURIComponent(
-                                                    genre.replaceAll(" ", "-"),
-                                                )}`}
-                                                prefetch={false}
-                                                transitionTypes={[
-                                                    "transition-backwards",
-                                                ]}
-                                            >
-                                                <Badge
-                                                    variant="secondary"
-                                                    withShadow={true}
-                                                    className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
-                                                    shadowClassName="mt-[3px]"
-                                                >
-                                                    {genre}
-                                                </Badge>
-                                            </Link>
+                                        {sortedGenres.map((genre: string) => (
+                                            <GenreBadge
+                                                key={`${manga.id}-${genre}`}
+                                                genre={genre}
+                                            />
                                         ))}
                                     </div>
                                 </div>
@@ -344,7 +290,7 @@ export async function MangaDetailsComponent({ params }: MangaPageProps) {
                         {/* Right section for the description */}
                         <div className="lg:w-1/2 flex-grow h-full flex flex-col">
                             <Card
-                                className="w-full h-full max-h-60 md:max-h-96 lg:max-h-none p-4 overflow-y-auto"
+                                className="w-full h-full max-h-60 md:max-h-96 lg:max-h-[527px] p-4 overflow-y-auto"
                                 aria-label="Description"
                                 role="region"
                                 data-scrollbar-custom

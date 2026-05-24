@@ -1,122 +1,150 @@
-"use client";
-
+import { SearchItem } from "@/components/search/search-item";
+import {
+    Autocomplete,
+    AutocompleteInput,
+    AutocompleteList,
+    AutocompletePopup,
+    AutocompleteStatus,
+} from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import Spinner from "@/components/ui/puff-loader";
+import { Spinner } from "@/components/ui/spinner";
+import { toastManager } from "@/components/ui/toast";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
-import { generateSizes } from "@/lib/utils";
-import { useDebouncedValue } from "@tanstack/react-pacer";
-import { useQuery } from "@tanstack/react-query";
+import { exportBookmarks } from "@/lib/manga/export-bookmarks";
+import { useRouter } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BookmarksDropdown } from "./bookmarks-dropdown";
+import type { ReactNode } from "react";
+import { useEffect, useReducer, useState, useTransition } from "react";
+
+type BookmarkResult = {
+    mangaId: string;
+    title: string;
+    cover: string;
+    type: string;
+};
+
+type SearchState = {
+    searchResults: BookmarkResult[];
+    error: string | null;
+};
+
+type SearchAction =
+    | { type: "CLEAR" }
+    | { type: "SUCCESS"; results: BookmarkResult[] }
+    | { type: "ERROR"; error: string }
+    | { type: "CLEAR_ERROR" };
+
+function searchReducer(state: SearchState, action: SearchAction): SearchState {
+    switch (action.type) {
+        case "CLEAR":
+            return { searchResults: [], error: null };
+        case "SUCCESS":
+            return { searchResults: action.results, error: null };
+        case "ERROR":
+            return { searchResults: [], error: action.error };
+        case "CLEAR_ERROR":
+            return { ...state, error: null };
+    }
+}
 
 export default function BookmarksHeader() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
-        wait: 300,
-    });
-    const [isHoveringSearchButton, setIsHoveringSearchButton] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(-1);
     const router = useRouter();
-
-    useEffect(() => {
-        queueMicrotask(() => {
-            setSelectedIndex(-1);
-        });
-    }, [debouncedSearchQuery]);
-
-    const getBookmarkSearchResults = async (
-        query: string,
-    ): Promise<components["schemas"]["BookmarkListResponse"]["items"]> => {
-        const { data, error } = await client.GET("/v2/bookmarks/search", {
-            params: {
-                query: {
-                    query,
-                },
-            },
-        });
-
-        if (error || !data) {
-            return [];
-        }
-
-        return data.data.items;
-    };
-
-    const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
-        queryKey: ["bookmarks-search", debouncedSearchQuery],
-        queryFn: () => getBookmarkSearchResults(debouncedSearchQuery),
-        enabled: debouncedSearchQuery.trim().length > 0,
-        staleTime: 5 * 60 * 1000,
+    const [searchValue, setSearchValue] = useState("");
+    const [isPending, startTransition] = useTransition();
+    const [isExporting, setIsExporting] = useState(false);
+    const [{ searchResults, error }, dispatch] = useReducer(searchReducer, {
+        searchResults: [] as BookmarkResult[],
+        error: null,
     });
 
-    async function exportBookmarks() {
-        const allBookmarks: components["schemas"]["BookmarkListResponse"]["items"] =
-            [];
-        let currentPage = 1;
-        let totalPages = 1;
-        const pageSize = 100;
-
-        while (currentPage <= totalPages) {
-            const { data, error } = await client.GET("/v2/bookmarks", {
-                params: {
-                    query: {
-                        page: currentPage,
-                        pageSize,
-                    },
-                },
-            });
-
-            if (error || !data) {
-                new Toast("Error fetching bookmarks", "error");
-                return;
-            }
-
-            allBookmarks.push(...data.data.items);
-            totalPages = data.data.totalPages;
-            currentPage++;
-        }
-
-        const bookmarksBlob = new Blob(
-            [JSON.stringify(allBookmarks, null, 2)],
-            { type: "application/json" },
-        );
-        const url = URL.createObjectURL(bookmarksBlob);
-        const a = Object.assign(document.createElement("a"), {
-            href: url,
-            download: "bookmarks.json",
+    async function getBookmarkSearchResults(query: string) {
+        const { data, error } = await client.GET("/v2/bookmarks/search", {
+            params: { query: { query } },
         });
-
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        if (error || !data) return [];
+        return data.data.items;
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (searchResults.length === 0) return;
-        if (searchResults[selectedIndex] === undefined) return;
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            setSelectedIndex((prev) =>
-                Math.min(prev + 1, searchResults.length - 1),
-            );
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            setSelectedIndex((prev) => Math.max(prev - 1, -1));
-        } else if (e.key === "Enter" && selectedIndex >= 0) {
-            e.preventDefault();
-            router.push(`/manga/${searchResults[selectedIndex].mangaId}`);
+    useEffect(() => {
+        if (!searchValue.trim()) {
+            startTransition(() => {
+                dispatch({ type: "CLEAR" });
+            });
+            return;
         }
+
+        dispatch({ type: "CLEAR_ERROR" });
+        let ignore = false;
+
+        const timeoutId = setTimeout(() => {
+            startTransition(async () => {
+                try {
+                    const results = await getBookmarkSearchResults(
+                        searchValue.trim(),
+                    );
+                    if (!ignore) dispatch({ type: "SUCCESS", results });
+                } catch {
+                    if (!ignore) {
+                        dispatch({
+                            type: "ERROR",
+                            error: "Failed to fetch results. Please try again.",
+                        });
+                    }
+                }
+            });
+        }, 300);
+
+        return () => {
+            clearTimeout(timeoutId);
+            ignore = true;
+        };
+    }, [searchValue]);
+
+    function handleExportBookmarks() {
+        startTransition(() => {
+            setIsExporting(true);
+            void exportBookmarks()
+                .catch(() => {
+                    toastManager.add({
+                        title: "Error fetching bookmarks",
+                        type: "error",
+                    });
+                })
+                .finally(() => {
+                    setIsExporting(false);
+                });
+        });
+    }
+
+    const handleSelect = (result: BookmarkResult) => {
+        router.navigate({ to: "/manga/$mangaId", params: { mangaId: result.mangaId } });
     };
+
+    let status: ReactNode;
+    if (isPending) {
+        status = (
+            <span className="flex items-center justify-between gap-2 text-muted-foreground">
+                Searching&hellip;
+                <Spinner className="size-4.5 sm:size-4" />
+            </span>
+        );
+    } else if (error) {
+        status = (
+            <span className="font-normal text-destructive text-sm">
+                {error}
+            </span>
+        );
+    } else if (searchResults.length > 0) {
+        status = `${searchResults.length} result${searchResults.length === 1 ? "" : "s"} found`;
+    } else if (searchValue.trim()) {
+        status = (
+            <span className="font-normal text-muted-foreground text-sm">
+                No bookmarks found for &ldquo;{searchValue}&rdquo;
+            </span>
+        );
+    }
+
+    const shouldRenderPopup = searchValue.trim() !== "";
 
     return (
         <div className="relative mb-4">
@@ -124,98 +152,53 @@ export default function BookmarksHeader() {
                 <Button
                     variant="outline"
                     size="lg"
-                    className={
-                        "hidden md:flex w-auto md:h-auto items-center justify-center px-4"
-                    }
-                    onClick={exportBookmarks}
+                    className="hidden md:flex w-auto md:h-auto items-center justify-center px-4"
+                    loading={isExporting}
+                    onClick={handleExportBookmarks}
                 >
                     Export Bookmarks
                 </Button>
-                <div className="relative w-full h-auto md:h-9">
-                    <Input
-                        type="search"
+                <Autocomplete
+                    autoHighlight
+                    filter={null}
+                    items={searchResults}
+                    itemToStringValue={(item: unknown) =>
+                        (item as BookmarkResult).title
+                    }
+                    onValueChange={setSearchValue}
+                    value={searchValue}
+                >
+                    <AutocompleteInput
                         placeholder="Search bookmarks..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() =>
-                            setTimeout(() => setIsFocused(false), 150)
-                        }
-                        onKeyDown={handleKeyDown}
-                        className="no-cancel md:h-full p-2"
+                        className="w-full"
+                        startAddon={<Search className="size-4.5 sm:size-4" />}
                     />
-                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-muted-foreground" />
-                </div>
-                <BookmarksDropdown exportBookmarks={exportBookmarks} />
+                    {shouldRenderPopup && (
+                        <AutocompletePopup
+                            aria-busy={isPending || undefined}
+                            align="start"
+                        >
+                            {status && (
+                                <AutocompleteStatus className="text-muted-foreground">
+                                    {status}
+                                </AutocompleteStatus>
+                            )}
+                            <AutocompleteList>
+                                {(result: BookmarkResult) => (
+                                    <SearchItem
+                                        key={result.mangaId}
+                                        cover={result.cover}
+                                        title={result.title}
+                                        subtitle={result.type}
+                                        value={result}
+                                        onSelect={() => handleSelect(result)}
+                                    />
+                                )}
+                            </AutocompleteList>
+                        </AutocompletePopup>
+                    )}
+                </Autocomplete>
             </div>
-            {isFocused && searchResults.length > 0 && (
-                <Card className="absolute z-10 w-full mt-1 p-0">
-                    <CardContent
-                        className="p-2 max-h-[60vh] overflow-y-scroll"
-                        data-scrollbar-custom
-                    >
-                        {isSearchLoading ? (
-                            <div className="flex justify-center">
-                                <Spinner />
-                            </div>
-                        ) : (
-                            searchResults.map((result, index) => (
-                                <Link
-                                    href={`/manga/${result.mangaId}`}
-                                    key={result.mangaId}
-                                    className={`block p-2 ${
-                                        index === selectedIndex
-                                            ? "bg-accent"
-                                            : isHoveringSearchButton
-                                              ? ""
-                                              : "hover:bg-accent"
-                                    } flex items-center rounded-lg`}
-                                    transitionTypes={["transition-forwards"]}
-                                >
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center">
-                                            <Image
-                                                src={result.cover}
-                                                alt={result.title}
-                                                width={48}
-                                                height={72}
-                                                className="w-12 h-18 rounded mr-2"
-                                                quality={40}
-                                                sizes={generateSizes({
-                                                    default: "48px",
-                                                })}
-                                            />
-                                            {result.title}
-                                        </div>
-                                        <Link
-                                            href={`/manga/${result.mangaId}/${result.nextChapter.scanlatorId}/${result.nextChapter.number}`}
-                                            transitionTypes={[
-                                                "transition-forwards",
-                                            ]}
-                                        >
-                                            <Button
-                                                className="z-20"
-                                                onMouseEnter={() => {
-                                                    setIsHoveringSearchButton(
-                                                        true,
-                                                    );
-                                                }}
-                                                onMouseLeave={() => {
-                                                    setIsHoveringSearchButton(
-                                                        false,
-                                                    );
-                                                }}
-                                            >
-                                                Continue Reading
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </Link>
-                            ))
-                        )}
-                    </CardContent>
-                </Card>
-            )}
         </div>
     );
 }

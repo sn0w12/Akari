@@ -1,5 +1,3 @@
-"use client";
-
 import { VariantProps, cva } from "class-variance-authority";
 import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
@@ -8,30 +6,35 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     Tooltip,
-    TooltipContent,
+    TooltipCreateHandle,
+    TooltipPopup,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useShortcutSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Drawer, DrawerContent } from "./drawer";
+import type { LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import {
+    Drawer,
+    DrawerDescription,
+    DrawerHeader,
+    DrawerPanel,
+    DrawerPopup,
+    DrawerTitle,
+} from "./drawer";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
+
+type TooltipHandleType = ReturnType<typeof TooltipCreateHandle<string>>;
 
 type SidebarContextProps = {
     state: "expanded" | "collapsed";
@@ -43,15 +46,13 @@ type SidebarContextProps = {
     toggleSidebar: () => void;
     isAnimating: boolean;
     onAnimationComplete: (callback: () => void) => () => void;
-    tooltipOpen: boolean;
-    onTooltipHoverStart: () => void;
-    onTooltipHoverEnd: () => void;
+    tooltipHandle: TooltipHandleType;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
 
 function useSidebar() {
-    const context = React.useContext(SidebarContext);
+    const context = React.use(SidebarContext);
     if (!context) {
         throw new Error("useSidebar must be used within a SidebarProvider.");
     }
@@ -75,10 +76,8 @@ function SidebarProvider({
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
-    const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const animationCallbacksRef = React.useRef<Set<() => void>>(new Set());
-    const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-    const resetTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    const [tooltipHandle] = React.useState(() => TooltipCreateHandle<string>());
 
     const [_open, _setOpen] = React.useState(() => {
         if (typeof window === "undefined") return defaultOpen;
@@ -127,28 +126,6 @@ function SidebarProvider({
         };
     }, []);
 
-    const onTooltipHoverStart = React.useCallback(() => {
-        if (resetTimeoutRef.current) {
-            clearTimeout(resetTimeoutRef.current);
-            resetTimeoutRef.current = null;
-        }
-        if (!tooltipOpen) {
-            hoverTimeoutRef.current = setTimeout(() => {
-                setTooltipOpen(true);
-            }, 700);
-        }
-    }, [tooltipOpen]);
-
-    const onTooltipHoverEnd = React.useCallback(() => {
-        if (hoverTimeoutRef.current) {
-            clearTimeout(hoverTimeoutRef.current);
-            hoverTimeoutRef.current = null;
-        }
-        resetTimeoutRef.current = setTimeout(() => {
-            setTooltipOpen(false);
-        }, 700);
-    }, []);
-
     const toggleSidebar = React.useCallback(() => {
         return isMobile
             ? setOpenMobile((open) => !open)
@@ -170,9 +147,7 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
-            tooltipOpen,
-            onTooltipHoverStart,
-            onTooltipHoverEnd,
+            tooltipHandle,
         }),
         [
             state,
@@ -184,15 +159,23 @@ function SidebarProvider({
             toggleSidebar,
             isAnimating,
             onAnimationComplete,
-            tooltipOpen,
-            onTooltipHoverStart,
-            onTooltipHoverEnd,
+            tooltipHandle,
         ],
     );
 
     return (
         <SidebarContext.Provider value={contextValue}>
             <TooltipProvider>
+                <Tooltip
+                    handle={tooltipHandle}
+                    disabled={state !== "collapsed" || isMobile}
+                >
+                    {({ payload }: { payload: string | undefined }) => (
+                        <TooltipPopup side="right" align="center">
+                            {payload}
+                        </TooltipPopup>
+                    )}
+                </Tooltip>
                 <div
                     data-slot="sidebar-wrapper"
                     style={
@@ -247,31 +230,35 @@ function Sidebar({
     if (isMobile) {
         return (
             <Drawer
-                direction={side}
+                position={side}
                 open={openMobile}
                 onOpenChange={setOpenMobile}
             >
-                <DrawerContent
+                <DrawerPopup
                     data-sidebar="sidebar"
-                    data-slot="sidebar"
                     data-mobile="true"
-                    className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden rounded-r-md"
+                    className="w-(--sidebar-width) p-0"
                     style={
                         {
                             "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
                         } as React.CSSProperties
                     }
+                    variant="straight"
                 >
-                    <SheetHeader className="sr-only">
-                        <SheetTitle>Sidebar</SheetTitle>
-                        <SheetDescription>
+                    <DrawerHeader className="sr-only">
+                        <DrawerTitle>Sidebar</DrawerTitle>
+                        <DrawerDescription>
                             Displays the mobile sidebar.
-                        </SheetDescription>
-                    </SheetHeader>
-                    <div className="flex h-full w-full flex-col">
+                        </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerPanel
+                        scrollable={false}
+                        allowSelection
+                        className="bg-sidebar text-sidebar-foreground flex h-full w-full flex-col p-0"
+                    >
                         {children}
-                    </div>
-                </DrawerContent>
+                    </DrawerPanel>
+                </DrawerPopup>
             </Drawer>
         );
     }
@@ -607,17 +594,11 @@ function SidebarMenuButton({
 }: React.ComponentProps<"button"> & {
     asChild?: boolean;
     isActive?: boolean;
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+    tooltip?: string | React.ComponentProps<typeof TooltipPopup>;
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? SlotPrimitive.Slot : "button";
-    const {
-        isMobile,
-        state,
-        tooltipOpen,
-        onTooltipHoverStart,
-        onTooltipHoverEnd,
-    } = useSidebar();
+    const { isMobile, tooltipHandle } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -641,8 +622,6 @@ function SidebarMenuButton({
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
             )}
-            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
-            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
             {...props}
         >
             {wrappedChildren}
@@ -653,20 +632,14 @@ function SidebarMenuButton({
         return button;
     }
 
-    if (typeof tooltip === "string") {
-        tooltip = { children: tooltip };
-    }
+    const payload = typeof tooltip === "string" ? tooltip : tooltip.children;
 
     return (
-        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
-            <TooltipTrigger asChild>{button}</TooltipTrigger>
-            <TooltipContent
-                side="right"
-                align="center"
-                hidden={state !== "collapsed" || isMobile}
-                {...tooltip}
-            />
-        </Tooltip>
+        <TooltipTrigger
+            handle={tooltipHandle}
+            payload={payload}
+            render={button}
+        />
     );
 }
 
@@ -677,25 +650,15 @@ function SidebarMenuLink({
     tooltip,
     className,
     children,
-    href,
     labelClassName,
-    prefetch,
     ...props
-}: React.ComponentProps<typeof Link> & {
+}: LinkProps & {
     isActive?: boolean;
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-    href: string;
+    tooltip?: string | React.ComponentProps<typeof TooltipPopup>;
+    className?: string;
     labelClassName?: string;
-    prefetch?: boolean;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-    const {
-        isMobile,
-        state,
-        tooltipOpen,
-        setOpenMobile,
-        onTooltipHoverStart,
-        onTooltipHoverEnd,
-    } = useSidebar();
+    const { isMobile, setOpenMobile, tooltipHandle } = useSidebar();
 
     const wrappedChildren = (
         <div
@@ -705,7 +668,7 @@ function SidebarMenuLink({
             )}
             style={{ marginLeft: -4 }}
         >
-            {children}
+            {children as React.ReactNode}
         </div>
     );
 
@@ -715,7 +678,6 @@ function SidebarMenuLink({
             data-sidebar="menu-button"
             data-size={size}
             data-active={isActive}
-            href={href}
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
@@ -725,10 +687,7 @@ function SidebarMenuLink({
                     setOpenMobile(false);
                 }
             }}
-            onMouseEnter={tooltip ? onTooltipHoverStart : undefined}
-            onMouseLeave={tooltip ? onTooltipHoverEnd : undefined}
-            prefetch={prefetch || true}
-            {...props}
+            {...(props as LinkProps)}
         >
             {wrappedChildren}
         </Link>
@@ -738,20 +697,14 @@ function SidebarMenuLink({
         return link;
     }
 
-    if (typeof tooltip === "string") {
-        tooltip = { children: tooltip };
-    }
+    const payload = typeof tooltip === "string" ? tooltip : tooltip.children;
 
     return (
-        <Tooltip delayDuration={tooltipOpen ? 0 : 700}>
-            <TooltipTrigger asChild>{link}</TooltipTrigger>
-            <TooltipContent
-                side="right"
-                align="center"
-                hidden={state !== "collapsed" || isMobile}
-                {...tooltip}
-            />
-        </Tooltip>
+        <TooltipTrigger
+            handle={tooltipHandle}
+            payload={payload}
+            render={link}
+        />
     );
 }
 
@@ -923,7 +876,6 @@ function SidebarSection({
     isItemActive,
 }: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
-    const path = usePathname();
     const { setOpen, state } = useSidebar();
     const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
 
@@ -976,17 +928,12 @@ function SidebarSection({
                     {items.map((item) => (
                         <SidebarMenuLink
                             key={item.id}
-                            href={`${basePath}/${item.id}`}
+                            to={`${basePath}/${item.id}`}
                             isActive={isItemActive(item.id)}
                             tooltip={item.name}
                             size="sm"
                             className="relative z-10 px-3 text-base md:text-sm hover:bg-accent"
                             onClick={handleLinkClick}
-                            transitionTypes={
-                                path.includes("manga")
-                                    ? ["transition-backwards"]
-                                    : ["transition-forwards"]
-                            }
                         >
                             <div className="flex max-w-[150px] items-center gap-1.5">
                                 <span className="truncate">{item.name}</span>

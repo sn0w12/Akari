@@ -1,48 +1,55 @@
+import { Link } from "@tanstack/react-router";
 import { type VariantProps } from "class-variance-authority";
-import Link from "next/link";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { mergeProps, useRender } from "@base-ui/react";
 import { buttonVariants } from "./button";
+import { Spinner } from "./spinner";
 
-export interface ButtonLinkProps
-    extends
-        React.ComponentProps<typeof Link>,
-        VariantProps<typeof buttonVariants> {
-    href: string;
-    prefetch?: boolean;
-    disabled?: boolean;
+export interface ButtonLinkProps extends useRender.ComponentProps<typeof Link> {
+    variant?: VariantProps<typeof buttonVariants>["variant"];
+    size?: VariantProps<typeof buttonVariants>["size"];
+    loading?: boolean;
 }
 
-const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
-    ({ className, variant, size, href, prefetch, disabled, ...props }, ref) => {
-        if (disabled) {
-            return (
-                <span
-                    className={cn(
-                        buttonVariants({ variant, size, className }),
-                        "pointer-events-none opacity-50",
-                    )}
-                    aria-disabled={true}
-                    ref={ref as React.Ref<HTMLSpanElement>}
-                    {...props}
-                >
-                    {props.children}
-                </span>
-            );
-        }
+export function ButtonLink({
+    to,
+    className,
+    variant,
+    size,
+    render,
+    children,
+    loading = false,
+    disabled: disabledProp,
+    ...props
+}: ButtonLinkProps): React.ReactElement {
+    const isDisabled: boolean = Boolean(loading || disabledProp);
+    const typeValue: React.ButtonHTMLAttributes<HTMLButtonElement>["type"] =
+        render ? undefined : "button";
 
-        return (
-            <Link
-                href={href}
-                prefetch={prefetch}
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-            />
-        );
-    },
-);
-ButtonLink.displayName = "ButtonLink";
+    const defaultProps = {
+        children: (
+            <>
+                {children}
+                {loading && (
+                    <Spinner
+                        className="pointer-events-none absolute"
+                        data-slot="button-loading-indicator"
+                    />
+                )}
+            </>
+        ),
+        className: cn(buttonVariants({ className, size, variant })),
+        "aria-disabled": loading || undefined,
+        "data-loading": loading ? "" : undefined,
+        "data-slot": "button",
+        disabled: isDisabled,
+        type: typeValue,
+    };
 
-export { ButtonLink };
+    return useRender({
+        props: mergeProps<typeof Link>(defaultProps, props),
+        render: (renderProps) => <Link to={to} {...renderProps} />,
+    });
+}

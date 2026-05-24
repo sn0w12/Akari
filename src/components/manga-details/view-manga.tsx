@@ -1,5 +1,3 @@
-"use client";
-
 import { client } from "@/lib/api";
 import { useSetting } from "@/lib/settings";
 import { useEffect } from "react";

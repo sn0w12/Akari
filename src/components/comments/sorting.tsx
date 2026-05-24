@@ -1,4 +1,15 @@
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
+import {
+    Select,
+    SelectItem,
+    SelectPopup,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
+
+const items = [
+    { value: "Latest", label: "Latest" },
+    { value: "Upvoted", label: "Most Upvoted" },
+];
 
 export function CommentSorting({
     sort,
@@ -9,18 +20,22 @@ export function CommentSorting({
 }) {
     return (
         <Select
+            items={items}
             value={sort}
             onValueChange={(value) =>
                 onSortChange(value as components["schemas"]["CommentSortOrder"])
             }
         >
-            <SelectTrigger className="min-w-36" aria-label="Sort Comments">
-                {sort === "Latest" ? "Latest" : "Most Upvoted"}
+            <SelectTrigger className="w-48 md:w-36" aria-label="Sort Comments">
+                <SelectValue />
             </SelectTrigger>
-            <SelectContent align="center">
-                <SelectItem value="Latest">Latest</SelectItem>
-                <SelectItem value="Upvoted">Most Upvoted</SelectItem>
-            </SelectContent>
+            <SelectPopup align="center">
+                {items.map(({ label, value }) => (
+                    <SelectItem key={value} value={value}>
+                        {label}
+                    </SelectItem>
+                ))}
+            </SelectPopup>
         </Select>
     );
 }

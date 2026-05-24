@@ -13,7 +13,7 @@ export default function SearchPageSkeleton() {
                     disabled
                 />
                 <Button variant="outline">
-                    <FilterIcon className="w-4 h-4" />
+                    <FilterIcon className="size-4" />
                     Filter
                 </Button>
             </div>

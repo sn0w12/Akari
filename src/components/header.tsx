@@ -1,14 +1,12 @@
-"use client";
-
+import { useUser } from "@/hooks/use-user";
 import { useWindowWidth } from "@/hooks/use-window-width";
+import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
+import { useSetting, useSettingsChange } from "@/lib/settings";
+import { toastManager } from "@/components/ui/toast";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 import { DesktopHeader } from "./header/desktop-header";
 import { MobileHeader } from "./header/mobile-header";
-import { useTheme } from "next-themes";
-import { useSetting, useSettingsChange } from "@/lib/settings";
-import { useEffect } from "react";
-import Toast from "@/lib/toast-wrapper";
-import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
-import { useUser } from "@/hooks/use-user";
 
 interface HeaderProps {
     notification: string;
@@ -29,12 +27,10 @@ export function HeaderComponent({ notification }: HeaderProps) {
 
         async function validate() {
             const validated = await validateSecondaryAccounts();
+            const validNotifsSet = new Set(validNotifs);
             for (const account of validated) {
-                if (validNotifs.includes(account.id) && !account.valid) {
-                    new Toast(`${account.name} session has expired.`, "error", {
-                        description:
-                            "You can disable this notification in settings.",
-                    });
+                if (validNotifsSet.has(account.id) && !account.valid) {
+                    toastManager.add({ title: `${account.name} session has expired.`, type: "error", description: "You can disable this notification in settings." });
                 }
             }
         }

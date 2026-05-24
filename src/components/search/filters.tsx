@@ -1,12 +1,14 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "@/components/ui/popover-drawer";
+    ResponsiveModal,
+    ResponsiveModalDrawerOnly,
+    ResponsiveModalHeader,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+    ResponsiveModalTrigger,
+} from "@/components/ui/responsive-modal";
 import {
     Select,
     SelectContent,
@@ -14,11 +16,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useDevice } from "@/contexts/device-context";
 import { GENRE_CATEGORIES, Genre, MANGA_TYPES } from "@/lib/api/search";
 import { cn } from "@/lib/utils";
 import { FilterIcon } from "lucide-react";
-import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 
 export interface SearchFilters {
     genres: Genre[];
@@ -78,7 +78,6 @@ const SortingOptions: { value: SearchFilters["sort"]; label: string }[] = [
 ];
 
 export function FiltersContent({ filters, onChange }: FiltersProps) {
-    const { deviceType } = useDevice();
     const updateFilters = <K extends keyof SearchFilters>(
         key: K,
         value: SearchFilters[K],
@@ -149,45 +148,24 @@ export function FiltersContent({ filters, onChange }: FiltersProps) {
     return (
         <div className="space-y-2">
             <h2 className="text-sm font-semibold">Sorting</h2>
-            {deviceType === "mobile" ? (
-                <NativeSelect
-                    size="sm"
-                    value={filters.sort}
-                    onChange={(value) =>
-                        updateFilters(
-                            "sort",
-                            value.target.value as SearchFilters["sort"],
-                        )
-                    }
-                >
+            <Select
+                items={SortingOptions}
+                value={filters.sort}
+                onValueChange={(value) =>
+                    updateFilters("sort", value as SearchFilters["sort"])
+                }
+            >
+                <SelectTrigger size="sm" className="min-w-36">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent align="center">
                     {SortingOptions.map((option) => (
-                        <NativeSelectOption
-                            key={option.value}
-                            value={option.value}
-                        >
+                        <SelectItem key={option.value} value={option.value}>
                             {option.label}
-                        </NativeSelectOption>
+                        </SelectItem>
                     ))}
-                </NativeSelect>
-            ) : (
-                <Select
-                    value={filters.sort}
-                    onValueChange={(value) =>
-                        updateFilters("sort", value as SearchFilters["sort"])
-                    }
-                >
-                    <SelectTrigger size="sm" className="min-w-36">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent align="center">
-                        {SortingOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            )}
+                </SelectContent>
+            </Select>
 
             <h2 className="text-sm font-semibold">Filter by Type</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
@@ -241,10 +219,10 @@ export function FiltersContent({ filters, onChange }: FiltersProps) {
 
 export function Filters({ filters, onChange }: FiltersProps) {
     return (
-        <PopoverDrawer>
-            <PopoverDrawerTrigger>
+        <ResponsiveModal desktop="popover">
+            <ResponsiveModalTrigger>
                 <Button variant="outline">
-                    <FilterIcon className="w-4 h-4" />
+                    <FilterIcon className="size-4" />
                     Filter
                     {(filters.genres.length > 0 ||
                         filters.types.length > 0 ||
@@ -258,13 +236,19 @@ export function Filters({ filters, onChange }: FiltersProps) {
                         </Badge>
                     )}
                 </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent
-                popoverClassName="w-80 md:w-128"
-                drawerTitle="Search Filters"
-            >
-                <FiltersContent filters={filters} onChange={onChange} />
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+            </ResponsiveModalTrigger>
+            <ResponsiveModalPopup dialogClassName="w-80 md:w-128">
+                <ResponsiveModalDrawerOnly>
+                    <ResponsiveModalHeader>
+                        <ResponsiveModalTitle>
+                            Search Filters
+                        </ResponsiveModalTitle>
+                    </ResponsiveModalHeader>
+                </ResponsiveModalDrawerOnly>
+                <ResponsiveModalPanel>
+                    <FiltersContent filters={filters} onChange={onChange} />
+                </ResponsiveModalPanel>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }

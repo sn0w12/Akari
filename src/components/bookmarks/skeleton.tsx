@@ -21,7 +21,7 @@ function BookmarkCardSkeleton() {
                             <div className="flex items-center gap-2 justify-between">
                                 <Skeleton className="h-6 w-40" />
                                 <div className="flex flex-row items-center gap-2 self-start">
-                                    <Skeleton className="size-8 rounded-sm" />
+                                    <Skeleton className="size-7 rounded-sm" />
                                 </div>
                             </div>
 
@@ -32,10 +32,10 @@ function BookmarkCardSkeleton() {
                                 <Skeleton className="h-4 w-32" />
                             </span>
                         </div>
-                        <Skeleton className="h-8 w-full hidden md:flex" />
+                        <Skeleton className="h-7 w-full hidden md:flex" />
                     </div>
                 </div>
-                <Skeleton className="h-8 w-full md:hidden" />
+                <Skeleton className="h-7 w-full md:hidden" />
             </div>
         </Card>
     );
@@ -44,8 +44,8 @@ function BookmarkCardSkeleton() {
 export default function BookmarksSkeleton() {
     return (
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
-            {[...Array(24)].map((_, index) => (
-                <BookmarkCardSkeleton key={`skeleton-card-${index}`} />
+            {Array.from({ length: 24 }, (_, i) => i).map((i) => (
+                <BookmarkCardSkeleton key={`skeleton-card-${i}`} />
             ))}
         </div>
     );

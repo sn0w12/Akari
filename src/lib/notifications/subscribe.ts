@@ -8,8 +8,10 @@ export async function registerAndSubscribe(vapidPublicKey?: string) {
 
     const storage = StorageManager.get("pushNotifications");
 
-    const reg = await navigator.serviceWorker.register("/sw.js");
-    const perm = await Notification.requestPermission();
+    const [reg, perm] = await Promise.all([
+        navigator.serviceWorker.register("/sw.js"),
+        Notification.requestPermission(),
+    ]);
     if (perm !== "granted") {
         storage.update({ declined: true });
         throw new Error("Permission denied");

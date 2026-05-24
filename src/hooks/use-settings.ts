@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
 import {
+    defaultSettings,
     dispatchSettingsChange,
     SettingsInterface,
-    defaultSettings,
 } from "@/lib/settings";
+import { useCallback, useEffect, useState } from "react";
 
 export const useSettings = () => {
     const [settings, setSettingsState] = useState<SettingsInterface>(() => {

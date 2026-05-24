@@ -1,11 +1,8 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { syncAllServices } from "@/lib/manga/sync";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
 import MangaFooter from "../manga-footer";
@@ -13,6 +10,7 @@ import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
     scrollMetrics: {
         pixels: number;
         percentage: number;
@@ -24,11 +22,11 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
+    scanlator,
     scrollMetrics,
     toggleReaderMode,
     setBookmarkState,
 }: StripReaderProps) {
-    const router = useRouter();
     const stripWidth = useSetting("stripWidth");
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
@@ -37,20 +35,21 @@ export default function StripReader({
     const lastImageRef = useRef<HTMLImageElement>(null);
     const readerRef = useRef<HTMLDivElement>(null);
     const [progress, setProgress] = useState(0);
-    const [imagesLoaded, setImagesLoaded] = useState(0);
+    const imagesLoadedRef = useRef(0);
 
     useEffect(() => {
         mountTimeRef.current = Date.now();
     }, []);
 
+    const pixels = scrollMetrics.pixels;
+    const clientHeight = scrollMetrics.clientHeight;
     useEffect(() => {
         if (
             !lastImageRef.current ||
             !readerRef.current ||
-            imagesLoaded !== chapter.images.length
+            imagesLoadedRef.current !== chapter.images.length
         )
             return;
-        const { clientHeight } = scrollMetrics;
         const firstImage = readerRef.current.querySelector(
             "img",
         ) as HTMLImageElement;
@@ -59,7 +58,7 @@ export default function StripReader({
         const lastImage = lastImageRef.current;
         const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
         const totalHeight = lastImageBottom - clientHeight - firstImageTop;
-        const currentPosition = scrollMetrics.pixels - firstImageTop;
+        const currentPosition = pixels - firstImageTop;
         const newProgress = Math.max(
             0,
             Math.min(1, currentPosition / totalHeight),
@@ -68,22 +67,26 @@ export default function StripReader({
         queueMicrotask(() => {
             setProgress(newProgress);
         });
-    }, [scrollMetrics, imagesLoaded, chapter.images.length]);
+    }, [pixels, clientHeight, chapter.images.length]);
 
+    const chapterRef = useRef(chapter);
+    chapterRef.current = chapter;
+    const imagesLength = chapter.images.length;
+    const nextChapter = chapter.nextChapter;
     useEffect(() => {
-        if (!chapter) return;
+        if (!chapterRef.current) return;
         const halfWay = progress > 0.5;
         const prefetch = progress > 0.8;
         const currentTime = Date.now();
         const timeElapsed = currentTime - mountTimeRef.current;
-        const minSyncTime = 5000; // 5 seconds minimum before syncing
+        const minSyncTime = 5000;
 
         if (
             halfWay &&
             !bookmarkUpdatedRef.current &&
             timeElapsed >= minSyncTime
         ) {
-            syncAllServices(chapter).then((success) => {
+            syncAllServices(chapterRef.current).then((success) => {
                 setBookmarkState(success);
                 if (success) {
                     queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
@@ -92,15 +95,18 @@ export default function StripReader({
             bookmarkUpdatedRef.current = true;
         }
 
-        if (prefetch && chapter.nextChapter && !hasPrefetchedRef.current) {
-            router.prefetch(`/manga/${chapter.nextChapter}`);
+        if (prefetch && nextChapter && !hasPrefetchedRef.current) {
             hasPrefetchedRef.current = true;
         }
-    }, [progress, chapter, router, setBookmarkState, queryClient]);
+    }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
 
     return (
         <>
-            <ChapterInfo chapter={chapter} hidden={progress === 1} />
+            <ChapterInfo
+                chapter={chapter}
+                scanlator={scanlator}
+                hidden={progress === 1}
+            />
             <div>
                 <div
                     id="reader"
@@ -109,7 +115,7 @@ export default function StripReader({
                 >
                     {chapter.images.map((img, index) => (
                         <Image
-                            key={index}
+                            key={img}
                             ref={
                                 index === chapter.images.length - 1
                                     ? lastImageRef
@@ -132,11 +138,10 @@ export default function StripReader({
                             style={{
                                 width: `calc(var(--spacing) * ${stripWidth})`,
                             }}
-                            loading={"eager"}
-                            preload={index === 0}
                             fetchPriority={index === 0 ? "high" : "auto"}
-                            unoptimized={true}
-                            onLoad={() => setImagesLoaded((prev) => prev + 1)}
+                            onLoad={() => { imagesLoadedRef.current += 1; }}
+                            sizes={{ default: "100vw" }}
+                            quality={100}
                         />
                     ))}
                 </div>
@@ -148,6 +153,7 @@ export default function StripReader({
                 </div>
                 <MangaFooter
                     chapter={chapter}
+                    scanlator={scanlator}
                     toggleReaderMode={toggleReaderMode}
                 />
             </div>

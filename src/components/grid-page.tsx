@@ -4,7 +4,7 @@ import MangaCardSkeleton from "./manga/manga-card-skeleton";
 export const GRID_CLASS =
     "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4";
 
-export async function GridBodySkeleton({
+export function GridBodySkeleton({
     pageSize = 24,
     className,
 }: {
@@ -13,8 +13,8 @@ export async function GridBodySkeleton({
 }) {
     return (
         <div className={cn(GRID_CLASS, className)}>
-            {[...Array(pageSize)].map((_, index) => (
-                <MangaCardSkeleton key={index} />
+            {Array.from({ length: pageSize }, (_, i) => i).map((i) => (
+                <MangaCardSkeleton key={`skeleton-${i}`} />
             ))}
         </div>
     );

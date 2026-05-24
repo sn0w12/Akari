@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -13,8 +11,8 @@ import { useBorderColor } from "@/contexts/border-color-context";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import React, { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import SearchBar from "./search/search-bar";
 
@@ -23,17 +21,14 @@ interface HeaderProps {
 }
 
 export function DesktopHeader({ notification }: HeaderProps) {
-    const pathname = usePathname();
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
     const { data: user } = useUser();
     const { overrides } = useBreadcrumb();
     const { borderClass } = useBorderColor();
     const [segments, setSegments] = useState<string[]>([]);
     const [originalSegments, setOriginalSegments] = useState<string[]>([]);
     const { state: sidebarState } = useSidebar();
-    const isSidebarCollapsed = useMemo(
-        () => sidebarState === "collapsed",
-        [sidebarState],
-    );
+    const isSidebarCollapsed = sidebarState === "collapsed";
 
     const isUUID = (str: string) =>
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -76,17 +71,14 @@ export function DesktopHeader({ notification }: HeaderProps) {
 
     return (
         <header className={cn(`z-50 bg-sidebar border-b-0 h-10`, borderClass)}>
-            <div className="py-1 pr-4 md:pr-7 pl-11 mx-auto flex items-center justify-between">
+            <div className="py-1 pr-4 md:pr-6.5 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (
                     <Badge
-                        variant="positive"
-                        className={cn(
-                            "text-xs font-bold px-2 h-5 dark:text-sidebar",
-                            {
-                                "ml-1": isSidebarCollapsed,
-                            },
-                        )}
+                        variant="success"
+                        className={cn("text-xs font-bold px-2 h-5", {
+                            "ml-1": isSidebarCollapsed,
+                        })}
                     >
                         {notification}
                     </Badge>
@@ -113,22 +105,14 @@ export function DesktopHeader({ notification }: HeaderProps) {
                     <Breadcrumb>
                         <BreadcrumbList>
                             {segments.map((segment, index) => (
-                                <React.Fragment key={index}>
+                                <React.Fragment key={originalSegments.slice(0, index + 1).join("/")}>
                                     {index != 0 && <BreadcrumbSeparator />}
                                     <BreadcrumbItem>
                                         {index != 0 ? (
                                             <BreadcrumbLink
-                                                href={`/${originalSegments
+                                                to={`/${originalSegments
                                                     .slice(0, index + 1)
                                                     .join("/")}`}
-                                                title={getSegmentDisplayName(
-                                                    segment,
-                                                    9999,
-                                                )}
-                                                tabIndex={-1}
-                                                transitionTypes={[
-                                                    "transition-backwards",
-                                                ]}
                                             >
                                                 {getSegmentDisplayName(segment)}
                                             </BreadcrumbLink>

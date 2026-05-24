@@ -1,11 +1,9 @@
-"use client";
-
 import { useBorderColor } from "@/contexts/border-color-context";
 import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
 import { useThrottledCallback } from "@tanstack/react-pacer";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ViewManga } from "./manga-details/view-manga";
 import PageReader from "./manga-reader/readers/page-reader";
@@ -13,9 +11,10 @@ import StripReader from "./manga-reader/readers/strip-reader";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
 }
 
-export function Reader({ chapter }: ReaderProps) {
+export function Reader({ chapter, scanlator }: ReaderProps) {
     const readerModeStorage = useStorage("readerMode", {
         mangaId: chapter.mangaId,
         chapterId: chapter.id,
@@ -74,14 +73,20 @@ export function Reader({ chapter }: ReaderProps) {
         }, 2000);
     }, []);
 
+    const resetInactivityRef = useRef(resetInactivityTimer);
+    useEffect(() => {
+        resetInactivityRef.current = resetInactivityTimer;
+    });
+
     useEffect(() => {
         inactivityTimer.current = setTimeout(() => {
             setIsInactive(true);
         }, 2000);
 
+        const handler = () => resetInactivityRef.current();
         const events = ["mousemove", "scroll", "touchstart"];
         events.forEach((event) => {
-            window.addEventListener(event, resetInactivityTimer);
+            window.addEventListener(event, handler);
         });
 
         return () => {
@@ -89,10 +94,10 @@ export function Reader({ chapter }: ReaderProps) {
                 clearTimeout(inactivityTimer.current);
             }
             events.forEach((event) => {
-                window.removeEventListener(event, resetInactivityTimer);
+                window.removeEventListener(event, handler);
             });
         };
-    }, [resetInactivityTimer]);
+    }, []);
 
     const calculateScrollMetrics = (mainElement: HTMLElement) => {
         const scrollTop = mainElement.scrollTop;
@@ -128,20 +133,20 @@ export function Reader({ chapter }: ReaderProps) {
             {isStripMode ? (
                 <StripReader
                     chapter={chapter}
+                    scanlator={scanlator}
                     scrollMetrics={scrollMetrics}
                     toggleReaderMode={toggleReaderMode}
                     setBookmarkState={setBookmarkState}
                 />
             ) : (
-                <Suspense>
-                    <PageReader
-                        chapter={chapter}
-                        scrollMetrics={scrollMetrics}
-                        toggleReaderMode={toggleReaderMode}
-                        isInactive={isInactive}
-                        setBookmarkState={setBookmarkState}
-                    />
-                </Suspense>
+                <PageReader
+                    chapter={chapter}
+                    scanlator={scanlator}
+                    scrollMetrics={scrollMetrics}
+                    toggleReaderMode={toggleReaderMode}
+                    isInactive={isInactive}
+                    setBookmarkState={setBookmarkState}
+                />
             )}
         </>
     );

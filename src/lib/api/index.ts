@@ -1,11 +1,12 @@
 import { inPreview } from "@/config";
+import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
 import pkg from "../../../package.json";
 
 const apiUrl =
-    process.env.NEXT_PRIVATE_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
+    env("API_URL") ||
+    env("VITE_API_URL") ||
     "http://localhost:5188/";
 
 export function getAuthCookie() {
@@ -29,16 +30,12 @@ export function getAuthCookie() {
         } else {
             // New format: multi-part cookies
             const parts = authCookies
-                .map((row) => {
+                .flatMap((row) => {
                     const [key, value] = row.split("=");
                     const match = key.match(/^sb-db-auth-token\.(\d+)$/);
-                    if (!match) return null;
-                    return { num: parseInt(match[1]), value };
+                    if (!match) return [];
+                    return [{ num: parseInt(match[1]), value }];
                 })
-                .filter(
-                    (item): item is { num: number; value: string } =>
-                        item !== null,
-                )
                 .sort((a, b) => a.num - b.num)
                 .map((p) => p.value);
             if (parts.length === 0) return null;
@@ -75,7 +72,7 @@ export const client = createClient<paths>({
 });
 
 export const serverHeaders = {
-    "X-API-Key": process.env.API_KEY || "",
+    "X-API-Key": env("API_KEY") || "",
     "user-agent": `AkariWebsite/${pkg.version}/${
         inPreview ? "preview" : "production"
     }`,

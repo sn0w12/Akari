@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -8,48 +6,46 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Link, useRouter } from "@tanstack/react-router";
+import { useState, useTransition } from "react";
 import { Providers } from "./auth/oauth";
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const queryClient = useQueryClient();
     const router = useRouter();
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleLogin = async (values: Record<string, unknown>) => {
+        const email = values.email as string;
+        const password = values.password as string;
         const supabase = createClient();
-        setIsLoading(true);
-        setError(null);
+        startTransition(async () => {
+            setError(null);
 
-        try {
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-            if (error) throw error;
-            queryClient.invalidateQueries({ queryKey: ["user"] });
-            router.push("/account");
-        } catch (error: unknown) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+            try {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                queryClient.invalidateQueries({ queryKey: ["user"] });
+                router.navigate({ to: "/account" });
+            } catch (error: unknown) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
+            }
+        });
     };
 
     return (
@@ -62,61 +58,52 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleLogin}>
+                    <Form onFormSubmit={handleLogin}>
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                            <Field name="email">
+                                <FieldLabel>Email</FieldLabel>
                                 <Input
-                                    id="email"
                                     type="email"
                                     placeholder="m@example.com"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
                                 />
-                            </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                <FieldError />
+                            </Field>
+                            <Field name="password">
+                                <div className="flex items-center w-full justify-between">
+                                    <FieldLabel>Password</FieldLabel>
                                     <Link
-                                        href="/auth/forgot-password"
+                                        to="/auth/forgot-password"
                                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                                     >
                                         Forgot your password?
                                     </Link>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                />
-                            </div>
+                                <Input type="password" required />
+                                <FieldError />
+                            </Field>
                             {error && (
                                 <p className="text-sm text-red-500">{error}</p>
                             )}
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading ? "Logging in..." : "Login"}
+                                {isPending ? "Logging in..." : "Login"}
                             </Button>
                             <Providers />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
                             <Link
-                                href="/auth/sign-up"
+                                to="/auth/sign-up"
                                 className="underline underline-offset-4"
                             >
                                 Sign up
                             </Link>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

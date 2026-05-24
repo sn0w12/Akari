@@ -1,4 +1,5 @@
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const BASE58_INDEX = new Map([...BASE58].map((c, i) => [c, i]));
 
 function uuidToBytes(uuid: string): Uint8Array {
     const hex = uuid.replace(/-/g, "");
@@ -48,8 +49,8 @@ export function decompressUUIDBase58(str: string): string {
     let num = 0n;
 
     for (const char of str) {
-        const index = BASE58.indexOf(char);
-        if (index === -1) throw new Error("Invalid Base58");
+        const index = BASE58_INDEX.get(char);
+        if (index === undefined) throw new Error("Invalid Base58");
         num = num * 58n + BigInt(index);
     }
 

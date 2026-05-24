@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -8,43 +6,44 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
 import { client } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
+import { useState, useTransition } from "react";
 
 export function SetupAccountForm() {
-    const [userName, setUserName] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            setIsLoading(true);
-            const { error } = await client.PUT("/v2/user/profile", {
-                body: {
-                    username: userName,
-                    displayName: displayName,
-                },
-            });
+    const handleSubmit = async (values: Record<string, unknown>) => {
+        const userName = values.username as string;
+        const displayName = values.displayName as string;
 
-            if (error) {
-                setError(error.data.message);
-                return;
+        startTransition(async () => {
+            try {
+                const { error } = await client.PUT("/v2/user/profile", {
+                    body: {
+                        username: userName,
+                        displayName: displayName,
+                    },
+                });
+
+                if (error) {
+                    setError(error.data.message);
+                    return;
+                }
+
+                router.navigate({ to: "/account" });
+            } catch (error) {
+                setError(
+                    error instanceof Error ? error.message : "An error occurred",
+                );
             }
-
-            router.push("/account");
-        } catch (error) {
-            setError(
-                error instanceof Error ? error.message : "An error occurred",
-            );
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
     return (
@@ -57,46 +56,41 @@ export function SetupAccountForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit}>
+                    <Form onFormSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    placeholder="username"
-                                    required
-                                    value={userName}
-                                    onChange={(e) =>
-                                        setUserName(e.target.value)
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="display-name">
-                                    Display Name
-                                </Label>
-                                <Input
-                                    id="display-name"
-                                    placeholder="Display Name"
-                                    required
-                                    value={displayName}
-                                    onChange={(e) =>
-                                        setDisplayName(e.target.value)
-                                    }
-                                />
-                            </div>
+                            <Fieldset>
+                                <FieldsetLegend>Profile</FieldsetLegend>
+                                <div className="flex flex-col gap-4">
+                                    <Field name="username">
+                                        <FieldLabel>Username</FieldLabel>
+                                        <Input
+                                            placeholder="username"
+                                            required
+                                        />
+                                        <FieldError />
+                                    </Field>
+                                    <Field name="displayName">
+                                        <FieldLabel>Display Name</FieldLabel>
+                                        <Input
+                                            placeholder="Display Name"
+                                            required
+                                        />
+                                        <FieldError />
+                                    </Field>
+                                </div>
+                            </Fieldset>
                             {error && (
                                 <p className="text-sm text-red-500">{error}</p>
                             )}
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isLoading}
+                                disabled={isPending}
                             >
-                                {isLoading ? "Setting up..." : "Setup Account"}
+                                {isPending ? "Setting up..." : "Setup Account"}
                             </Button>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

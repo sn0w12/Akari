@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Bookmark, Home, List } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { CSSProperties, MouseEvent } from "react";
 
 interface EndOfMangaProps {
@@ -23,7 +23,7 @@ export default function EndOfManga({
     style,
     className = "",
 }: EndOfMangaProps) {
-    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const stopPropagation = (event: MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
     };
 
@@ -37,7 +37,7 @@ export default function EndOfManga({
                     {title}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center flex-grow space-y-6 text-center px-4">
+            <CardContent className="flex flex-col items-center justify-center flex-grow gap-y-6 text-center px-4">
                 <div className="text-xl md:text-2xl font-semibold text-primary">
                     You&apos;ve reached the end!
                 </div>
@@ -46,39 +46,21 @@ export default function EndOfManga({
                     later for updates!
                 </p>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col gap-y-4">
                 <div className="grid grid-cols-1 gap-4 w-full">
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            href="/bookmarks"
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
-                        >
-                            <Bookmark className="mr-2 h-4 w-4" />
-                            Bookmarks
-                        </Link>
+                    <Button variant="outline" render={<Link to="/bookmarks" />} onClick={stopPropagation}>
+                        <Bookmark className="mr-2 size-4" />
+                        Bookmarks
                     </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full">
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            href="/"
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
-                        >
-                            <Home className="mr-2 h-4 w-4" />
-                            Homepage
-                        </Link>
+                    <Button variant="outline" render={<Link to="/" />} onClick={stopPropagation}>
+                        <Home className="mr-2 size-4" />
+                        Homepage
                     </Button>
-                    <Button variant="outline" asChild onClick={handleClick}>
-                        <Link
-                            href={`/manga/${identifier}`}
-                            prefetch={false}
-                            transitionTypes={["transition-backwards"]}
-                        >
-                            <List className="mr-2 h-4 w-4" />
-                            Manga Page
-                        </Link>
+                    <Button variant="outline" render={<Link to="/manga/$mangaId" params={{ mangaId: identifier }} />} onClick={stopPropagation}>
+                        <List className="mr-2 size-4" />
+                        Manga Page
                     </Button>
                 </div>
             </CardFooter>

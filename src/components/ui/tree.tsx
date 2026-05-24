@@ -1,9 +1,7 @@
-"use client";
-
-import * as React from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import * as React from "react";
 
 /**
  * Tree root component.
@@ -96,9 +94,9 @@ export function TreeItem({
                         className={cn("h-4 w-4 min-w-0 shrink-0 rounded p-0")}
                     >
                         {collapsed ? (
-                            <ChevronRight className="h-3 w-3" />
+                            <ChevronRight className="size-3" />
                         ) : (
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="size-3" />
                         )}
                     </Button>
                 ) : null}

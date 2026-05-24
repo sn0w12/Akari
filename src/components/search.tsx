@@ -1,31 +1,30 @@
-"use client";
-
-import { Input } from "@/components/ui/input";
 import { client } from "@/lib/api";
 import { Genre, genres, MANGA_TYPES } from "@/lib/api/search";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useRouterState } from "@tanstack/react-router";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GRID_CLASS } from "./grid-page";
 import MangaCardSkeleton from "./manga/manga-card-skeleton";
 import { MangaGrid } from "./manga/manga-grid";
 import { Filters, SearchFilters } from "./search/filters";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import ClientPagination from "./ui/pagination/client-pagination";
 
 export default function SearchPage() {
-    const searchParams = useSearchParams();
+    const search = useRouterState({ select: (s) => s.location.search });
     const router = useRouter();
 
-    const query = searchParams.get("q") || "";
-    const page = Number(searchParams.get("p")) || 1;
+    const query = search.query || "";
+    const page = parseInt(String(search.page || "1"), 10);
 
     // Parse filters from URL
-    const genresParam = searchParams.get("genres") || "";
-    const typesParam = searchParams.get("types") || "";
-    const excludedGenresParam = searchParams.get("excludedGenres") || "";
-    const excludedTypesParam = searchParams.get("excludedTypes") || "";
-    const sortParam = searchParams.get("sort") || "search";
+    const genresParam = search.genres || "";
+    const typesParam = search.types || "";
+    const excludedGenresParam = search.excludedGenres || "";
+    const excludedTypesParam = search.excludedTypes || "";
+    const sortParam = search.sort || "search";
 
     const selectedGenresFromUrl = genresParam
         ? (genresParam
@@ -82,6 +81,9 @@ export default function SearchPage() {
             params.set("excludedTypes", filters.excludedTypes.join(","));
         if (filters.sort !== "search") params.set("sort", filters.sort);
 
+        if (params.toString().length < 1) {
+            return;
+        }
         window.history.replaceState(null, "", `/search?${params.toString()}`);
     }, [searchQuery, currentPage, filters, router]);
 
@@ -129,13 +131,18 @@ export default function SearchPage() {
     return (
         <div className="px-4 pt-4">
             <div className="flex gap-2 mb-4">
-                <Input
-                    type="search"
-                    value={searchQuery}
-                    placeholder="Search manga..."
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 p-2"
-                />
+                <InputGroup>
+                    <InputGroupInput
+                        type="search"
+                        value={searchQuery}
+                        placeholder="Search manga..."
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1"
+                    />
+                    <InputGroupAddon>
+                        <Search className="size-4.5 sm:size-4" />
+                    </InputGroupAddon>
+                </InputGroup>
                 <Filters filters={filters} onChange={setFilters} />
             </div>
 

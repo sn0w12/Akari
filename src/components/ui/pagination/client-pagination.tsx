@@ -1,5 +1,3 @@
-"use client";
-
 import { BasePagination } from "./base-pagination";
 
 interface PaginationProps {

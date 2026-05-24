@@ -12,13 +12,31 @@ function ContextMenu({
 }
 
 function ContextMenuTrigger({
+    render,
+    children,
     ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
+}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger> & {
+    render?: React.ReactElement;
+}) {
+    if (render) {
+        return (
+            <ContextMenuPrimitive.Trigger
+                data-slot="context-menu-trigger"
+                asChild
+                {...props}
+            >
+                {React.cloneElement(render, undefined, children)}
+            </ContextMenuPrimitive.Trigger>
+        );
+    }
+
     return (
         <ContextMenuPrimitive.Trigger
             data-slot="context-menu-trigger"
             {...props}
-        />
+        >
+            {children}
+        </ContextMenuPrimitive.Trigger>
     );
 }
 
@@ -130,7 +148,7 @@ function ContextMenuItem({
 }) {
     const { confirm } = useConfirm();
 
-    const handleClick = React.useCallback(
+    const handleItemClick = React.useCallback(
         async (event: React.MouseEvent<HTMLDivElement>) => {
             if (variant === "destructive") {
                 event.preventDefault();
@@ -161,7 +179,7 @@ function ContextMenuItem({
                 "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
                 className,
             )}
-            onClick={handleClick}
+            onClick={handleItemClick}
             {...props}
         />
     );

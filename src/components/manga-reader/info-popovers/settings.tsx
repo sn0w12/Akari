@@ -1,11 +1,9 @@
-"use client";
-
 import { useSettings } from "@/hooks/use-settings";
 import { createSettingsMap } from "@/lib/settings";
 import { Settings } from "lucide-react";
 import { SettingsInput } from "../../settings/settings-input";
 import { Button } from "../../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "../../ui/popover";
 
 export function SettingsContent() {
     const { settings, setSettings } = useSettings();
@@ -34,19 +32,25 @@ export function SettingsPopover({
 }) {
     return (
         <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="outline" size="icon" className="h-7.5 md:h-9">
-                    <Settings className="h-4 w-4" />
-                </Button>
+            <PopoverTrigger
+                render={
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-7.5 md:size-9"
+                    />
+                }
+            >
+                <Settings />
             </PopoverTrigger>
-            <PopoverContent
+            <PopoverPopup
                 side={orientation === "vertical" ? "left" : "bottom"}
                 align="start"
                 className="w-screen sm:w-128 max-h-96 overflow-y-auto"
                 data-scrollbar-custom
             >
                 <SettingsContent />
-            </PopoverContent>
+            </PopoverPopup>
         </Popover>
     );
 }

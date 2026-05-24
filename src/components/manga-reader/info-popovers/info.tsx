@@ -1,22 +1,23 @@
-"use client";
-
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
-import Link from "next/link";
 
-import BookmarkButton from "@/components/manga-details/bookmark-button";
+import { BookmarkButton } from "@/components/manga-details/bookmark-button";
 import { Button } from "../../ui/button";
 import { ButtonLink } from "../../ui/button-link";
 import {
-    PopoverDrawer,
-    PopoverDrawerContent,
-    PopoverDrawerTrigger,
-} from "../../ui/popover-drawer";
+    ResponsiveModal,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTrigger,
+} from "../../ui/responsive-modal";
 import { ChapterSelector } from "../chapter-selector";
 
 export function InfoContent({
     chapter,
+    scanlator,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
+    scanlator: string;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
     const nextChapterExists = chapter.nextChapter !== null;
@@ -24,11 +25,11 @@ export function InfoContent({
     return (
         <div className="space-y-4">
             <div className="space-y-2">
-                <h2 className="text-lg font-bold leading-tight text-center md:text-left">
+                <h2 className="text-lg font-semibold leading-tight text-center md:text-left">
                     <Link
-                        href={`/manga/${chapter.mangaId}`}
+                        to="/manga/$mangaId"
+                        params={{ mangaId: chapter.mangaId }}
                         className="text-foreground hover:text-primary transition-colors"
-                        transitionTypes={["transition-backwards"]}
                     >
                         {chapter.mangaTitle}
                     </Link>
@@ -42,33 +43,38 @@ export function InfoContent({
                     <div className="flex items-center gap-2">
                         <BookmarkButton
                             mangaId={chapter.mangaId}
-                            className="w-full order-3 xl:order-2 p-2 h-9"
+                            size="default"
+                            className="w-full order-3 xl:order-2"
                         />
                     </div>
                     <div className="flex items-center gap-2">
                         <ButtonLink
-                            href={`./${chapter.lastChapter}`}
+                            to={
+                                lastChapterExists
+                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}`
+                                    : "#"
+                            }
                             variant="outline"
                             className="flex-1"
                             aria-label="Previous Chapter"
-                            prefetch={false}
                             disabled={!lastChapterExists}
-                            transitionTypes={["transition-backwards"]}
                         >
-                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            <ChevronLeft className="mr-2 size-4" />
                             Previous
                         </ButtonLink>
                         <ButtonLink
-                            href={`./${chapter.nextChapter}`}
+                            to={
+                                nextChapterExists
+                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}`
+                                    : "#"
+                            }
                             variant="outline"
                             className="flex-1"
                             aria-label="Next Chapter"
-                            prefetch={false}
                             disabled={!nextChapterExists}
-                            transitionTypes={["transition-forwards"]}
                         >
                             Next
-                            <ChevronRight className="ml-2 h-4 w-4" />
+                            <ChevronRight className="ml-2 size-4" />
                         </ButtonLink>
                     </div>
                 </div>
@@ -79,25 +85,33 @@ export function InfoContent({
 
 export function InfoPopover({
     chapter,
-    orientation,
+    scanlator,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
-    orientation: "vertical" | "horizontal";
+    scanlator: string;
 }) {
     return (
-        <PopoverDrawer>
-            <PopoverDrawerTrigger>
-                <Button variant="outline" size="icon" className="h-7.5 md:h-9">
-                    <Info className="h-4 w-4" />
-                </Button>
-            </PopoverDrawerTrigger>
-            <PopoverDrawerContent
-                popoverSide={orientation === "vertical" ? "left" : "bottom"}
-                popoverAlign="start"
-                popoverClassName="w-auto sm:w-96 max-h-96 overflow-y-auto"
+        <ResponsiveModal desktop="popover">
+            <ResponsiveModalTrigger
+                render={
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-7.5 md:size-9"
+                    >
+                        <Info />
+                    </Button>
+                }
+            />
+            <ResponsiveModalPopup
+                dialogClassName="w-auto sm:w-96"
+                align="end"
+                side="right"
             >
-                <InfoContent chapter={chapter} />
-            </PopoverDrawerContent>
-        </PopoverDrawer>
+                <ResponsiveModalPanel>
+                    <InfoContent chapter={chapter} scanlator={scanlator} />
+                </ResponsiveModalPanel>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }

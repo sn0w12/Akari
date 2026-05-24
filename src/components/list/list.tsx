@@ -1,12 +1,10 @@
-"use client";
-
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
-import { generateSizes } from "@/lib/utils";
+import { toastManager } from "@/components/ui/toast";
 import { compressUUIDBase58 } from "@/lib/uuid";
 import {
     closestCenter,
@@ -25,8 +23,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GripVertical, Share, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+
+import { Link } from "@tanstack/react-router";
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import ErrorPage from "../error-page";
 import { Avatar } from "../ui/avatar";
@@ -74,11 +72,11 @@ function Entry({
             });
 
             if (error) {
-                new Toast("Failed to remove entry", "error");
+                toastManager.add({ title: "Failed to remove entry", type: "error" });
                 return;
             }
 
-            new Toast("Entry removed successfully", "success");
+            toastManager.add({ title: "Entry removed successfully", type: "success" });
             queryClient.invalidateQueries({ queryKey: ["list", ownerId] });
         } catch (error) {
             console.error("Failed to remove entry:", error);
@@ -97,9 +95,9 @@ function Entry({
                 </div>
             )}
             <Link
-                href={`/manga/${entry.mangaId}`}
+                to="/manga/$mangaId"
+                params={{ mangaId: entry.mangaId }}
                 className="shrink-0"
-                transitionTypes={["transition-forwards"]}
             >
                 <Image
                     src={entry.mangaCover}
@@ -107,17 +105,12 @@ function Entry({
                     className="w-12 h-18 object-cover rounded-md"
                     width={48}
                     height={72}
+                    sizes={{ default: "48px" }}
                     quality={40}
-                    sizes={generateSizes({
-                        default: "48px",
-                    })}
                 />
             </Link>
             <div className="flex-1 min-w-0">
-                <Link
-                    href={`/manga/${entry.mangaId}`}
-                    transitionTypes={["transition-forwards"]}
-                >
+                <Link to="/manga/$mangaId" params={{ mangaId: entry.mangaId }}>
                     <h3 className="font-semibold truncate hover:underline">
                         {entry.mangaTitle}
                     </h3>
@@ -134,7 +127,7 @@ function Entry({
                         size="sm"
                         onClick={handleRemove}
                     >
-                        <X className="w-4 h-4" />
+                        <X className="size-4" />
                     </Button>
                 </div>
             )}
@@ -185,7 +178,7 @@ function SortableEntry({
                         {...listeners}
                         aria-label="Reorder entry"
                     >
-                        <GripVertical className="h-4 w-4" />
+                        <GripVertical className="size-4" />
                     </Button>
                 ) : null
             }
@@ -256,10 +249,7 @@ export function ListComponent({ id }: { id: string }) {
             if (previous) {
                 queryClient.setQueryData(["list", listId], previous);
             }
-            new Toast(
-                error.data?.message || "Failed to update entry order",
-                "error",
-            );
+            toastManager.add({ title: error.data?.message || "Failed to update entry order", type: "error" });
             return;
         }
 
@@ -328,7 +318,7 @@ export function ListComponent({ id }: { id: string }) {
         const compressedId = compressUUIDBase58(id);
         const url = `${window.location.origin}/l/${compressedId}`;
         navigator.clipboard.writeText(url);
-        new Toast("Share URL copied to clipboard", "success");
+        toastManager.add({ title: "Share URL copied to clipboard", type: "success" });
     }
 
     return (
@@ -336,11 +326,11 @@ export function ListComponent({ id }: { id: string }) {
             <div className="flex justify-between items-center">
                 <div>
                     <div className="flex flex-col md:flex-row md:gap-2">
-                        <h1 className="text-2xl font-bold">{data.title}</h1>
+                        <h1 className="text-2xl font-semibold">{data.title}</h1>
                         <Link
-                            href={`/user/${data.user.userId}`}
+                            to="/user/$userId"
+                            params={{ userId: data.user.userId }}
                             className="flex flex-row gap-1 items-center text-lg font-medium hover:underline"
-                            transitionTypes={["transition-backwards"]}
                         >
                             <Avatar name={data.user.username} size={32} />
                             {data.user.displayName}

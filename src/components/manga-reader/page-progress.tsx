@@ -1,9 +1,8 @@
-"use client";
-
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useSidebar } from "../ui/sidebar";
 
 interface PageProgressProps {
     currentPage: number;
@@ -22,6 +21,7 @@ export default function PageProgress({
 }: PageProgressProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [backgroundStyle, setBackgroundStyle] = useState({});
+    const { open } = useSidebar();
     const windowWidth = useWindowWidth();
     const isVisible = useSetting("showPageProgress");
     const readingDir = useSetting("readingDirection");
@@ -35,62 +35,68 @@ export default function PageProgress({
         setCurrentPage(page);
     };
 
-    useEffect(() => {
-        const updateBackgroundStyle = () => {
-            if (containerRef.current) {
-                const offset = 3;
-                const isVertical = windowWidth >= cutoff;
-                const buttons = containerRef.current.querySelectorAll("button");
-                const targetButton = buttons[currentPage];
+    const updateBackgroundStyle = useCallback(() => {
+        if (containerRef.current) {
+            const offset = 3;
+            const isVertical = windowWidth >= cutoff;
+            const buttons = containerRef.current.querySelectorAll("button");
+            const targetButton = buttons[currentPage];
 
-                if (targetButton) {
-                    const containerRect =
-                        containerRef.current.getBoundingClientRect();
-                    const buttonRect = targetButton.getBoundingClientRect();
+            if (targetButton) {
+                const containerRect =
+                    containerRef.current.getBoundingClientRect();
+                const buttonRect = targetButton.getBoundingClientRect();
 
-                    if (isVertical) {
-                        const top = buttonRect.top - containerRect.top;
+                if (isVertical) {
+                    const top = buttonRect.top - containerRect.top;
+                    setBackgroundStyle({
+                        height: `${top + buttonRect.height - offset}px`,
+                        width: "calc(100% - 8px)",
+                    });
+                } else {
+                    if (readingDir === "rtl") {
+                        const right = containerRect.right - buttonRect.right;
                         setBackgroundStyle({
-                            height: `${top + buttonRect.height - offset}px`,
-                            width: "calc(100% - 8px)",
+                            width: `${right + buttonRect.width - offset}px`,
+                            height: "calc(100% - 8px)",
+                            left: "auto",
+                            right: "4px",
                         });
                     } else {
-                        if (readingDir === "rtl") {
-                            const right =
-                                containerRect.right - buttonRect.right;
-                            setBackgroundStyle({
-                                width: `${right + buttonRect.width - offset}px`,
-                                height: "calc(100% - 8px)",
-                                left: "auto",
-                                right: "4px",
-                            });
-                        } else {
-                            const left = buttonRect.left - containerRect.left;
-                            setBackgroundStyle({
-                                width: `${left + buttonRect.width - offset}px`,
-                                height: "calc(100% - 8px)",
-                                left: "4px",
-                                right: "auto",
-                            });
-                        }
+                        const left = buttonRect.left - containerRect.left;
+                        setBackgroundStyle({
+                            width: `${left + buttonRect.width - offset}px`,
+                            height: "calc(100% - 8px)",
+                            left: "4px",
+                            right: "auto",
+                        });
                     }
                 }
             }
-        };
+        }
+    }, [currentPage, readingDir, windowWidth]);
 
+    const backgroundStyleRef = useRef(updateBackgroundStyle);
+    useEffect(() => {
+        backgroundStyleRef.current = updateBackgroundStyle;
+    });
+
+    useEffect(() => {
         updateBackgroundStyle();
-        window.addEventListener("resize", updateBackgroundStyle);
-        return () =>
-            window.removeEventListener("resize", updateBackgroundStyle);
-    }, [currentPage, readingDir, totalPages, windowWidth]);
+        const handler = () => backgroundStyleRef.current();
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
+    }, [updateBackgroundStyle]);
 
     return (
         <div
             className={cn(
-                "flex transition-opacity fixed z-50 left-4 right-4 lg:bottom-4 lg:left-auto lg:right-7 lg:top-auto",
+                "flex transition-[opacity,left] ease-snappy fixed z-50 left-4 lg:bottom-4 lg:top-auto",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,
+                    "lg:left-16": !open,
+                    "lg:left-68": open,
                 },
             )}
             style={
@@ -104,8 +110,15 @@ export default function PageProgress({
         >
             <div
                 ref={containerRef}
+                role="button"
+                tabIndex={0}
                 className="transition-[width] relative p-1 rounded-lg border border-primary/30 bg-transparent h-7.5 w-full lg:w-9 lg:hover:w-18 lg:h-[80vh]"
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.stopPropagation();
+                    }
+                }}
             >
                 <div
                     className={cn(
@@ -132,17 +145,17 @@ export default function PageProgress({
                         },
                     )}
                 >
-                    {Array.from({ length: totalPages }, (_, index) => (
+                    {Array.from({ length: totalPages }).map((_, pageIdx) => (
                         <button
-                            key={index}
-                            onClick={(e) => handleClick(index, e)}
+                            key={`page-${pageIdx}`}
+                            onClick={(e) => handleClick(pageIdx, e)}
                             className={cn("flex-1 transition-colors", {
                                 "bg-accent-positive hover:bg-accent-positive/70":
-                                    index === currentPage,
+                                    pageIdx === currentPage,
                                 "bg-primary hover:bg-primary/80":
-                                    index < currentPage,
+                                    pageIdx < currentPage,
                                 "bg-primary/30 hover:bg-primary/50":
-                                    index > currentPage,
+                                    pageIdx > currentPage,
                                 "first:rounded-l-sm last:rounded-r-sm":
                                     readingDir === "ltr" && totalPages <= 100,
                                 "first:rounded-r-sm last:rounded-l-sm":
@@ -152,7 +165,7 @@ export default function PageProgress({
                                 "md:rounded-[3px] md:first:rounded-[3px] md:last:rounded-[3px]":
                                     totalPages <= 100,
                             })}
-                            aria-label={`Go to page ${index + 1}`}
+                            aria-label={`Go to page ${pageIdx + 1}`}
                         />
                     ))}
                 </div>

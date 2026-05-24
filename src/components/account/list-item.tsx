@@ -1,14 +1,12 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
+import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
-import Link from "next/link";
 
 interface ListItemProps {
     list: components["schemas"]["UserMangaListResponse"];
@@ -38,19 +36,15 @@ export function ListItem({ list, onDelete }: ListItemProps) {
             },
         });
         if (error) {
-            new Toast("Failed to delete list", "error");
+            toastManager.add({ title: "Failed to delete list", type: "error" });
         } else {
-            new Toast("List deleted successfully", "success");
+            toastManager.add({ title: "List deleted successfully", type: "success" });
             onDelete(listId);
         }
     }
 
     return (
-        <Link
-            href={`/lists/${list.id}`}
-            className="block"
-            transitionTypes={["transition-forwards"]}
-        >
+        <Link to="/lists/$listId" params={{ listId: list.id }} className="block">
             <Card className="relative p-0 hover:bg-accent transition-colors">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -80,14 +74,14 @@ export function ListItem({ list, onDelete }: ListItemProps) {
                         <Button
                             variant="destructive"
                             size="sm"
-                            className="absolute top-2 right-2 h-6 w-6 p-0"
+                            className="absolute top-2 right-2 size-6 p-0"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 deleteList(list.id);
                             }}
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                         </Button>
                     )}
                 </CardContent>

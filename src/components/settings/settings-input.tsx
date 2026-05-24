@@ -1,8 +1,5 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/ui/color-picker";
-import { ButtonConfirmDialog } from "@/components/ui/confirm";
 import {
     ContextMenu,
     ContextMenuContent,
@@ -10,7 +7,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Input, NumberInput } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -23,6 +20,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useConfirm } from "@/contexts/confirm-context";
 import {
     type ButtonSetting,
     type CheckboxGroupSetting,
@@ -37,6 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatForDisplay, useHotkeyRecorder } from "@tanstack/react-hotkeys";
 import { Info, RotateCcw } from "lucide-react";
+import { NumberField } from "../ui/number-field";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface SettingsInputProps {
@@ -101,6 +100,8 @@ function SettingInputRenderer({
     setting,
     settingsMap,
 }: SettingsInputProps) {
+    const { confirm } = useConfirm();
+
     switch (setting.type) {
         case "checkbox":
             return (
@@ -122,7 +123,7 @@ function SettingInputRenderer({
                     {checkboxGroupSetting.options.map((option) => (
                         <div
                             key={option.value}
-                            className="flex items-center space-x-2"
+                            className="flex items-center gap-x-2"
                         >
                             <Label htmlFor={`${settingKey}-${option.value}`}>
                                 {option.label}
@@ -161,14 +162,13 @@ function SettingInputRenderer({
             );
         case "number": {
             return (
-                <NumberInput
+                <NumberField
                     id={settingKey}
-                    type={setting.type}
-                    value={getSettingValue(setting) as string}
-                    onChange={(e) => {
-                        setting.onChange?.(e.target.value);
+                    value={getSettingValue(setting) as number}
+                    onValueChange={(value) => {
+                        setting.onChange?.(value ?? 0);
                     }}
-                    wrapperClassName="max-w-xs mb-0"
+                    className="max-w-xs mb-0"
                 />
             );
         }
@@ -192,19 +192,22 @@ function SettingInputRenderer({
         case "select":
             return (
                 <Select
+                    items={setting.options}
                     value={getSettingValue(setting) as string}
                     onValueChange={(value) => {
-                        setting.onChange?.(value);
+                        setting.onChange?.(value ?? "");
                     }}
                 >
                     <ContextMenu>
-                        <ContextMenuTrigger asChild>
-                            <SelectTrigger
-                                id={settingKey}
-                                className="w-48 mb-0"
-                            >
-                                <SelectValue placeholder={"Select an option"} />
-                            </SelectTrigger>
+                        <ContextMenuTrigger
+                            render={
+                                <SelectTrigger
+                                    id={settingKey}
+                                    className="w-48 mb-0"
+                                />
+                            }
+                        >
+                            <SelectValue placeholder="Select an option" />
                         </ContextMenuTrigger>
                         <ContextMenuContent>
                             <ContextMenuItem
@@ -225,9 +228,9 @@ function SettingInputRenderer({
                                     <>
                                         <ContextMenuSeparator />
                                         {setting.contextMenuItems.map(
-                                            (item, index) => (
+                                            (item) => (
                                                 <ContextMenuItem
-                                                    key={index}
+                                                    key={item.label}
                                                     onClick={item.onClick}
                                                     variant={item.variant}
                                                     className="flex gap-2"
@@ -257,12 +260,12 @@ function SettingInputRenderer({
                     onValueChange={(value) => {
                         setting.onChange?.(value);
                     }}
-                    className="flex flex-col space-y-1 mb-0"
+                    className="flex flex-col gap-y-1 mb-0"
                 >
                     {setting.options.map((option) => (
                         <div
                             key={option.value}
-                            className="flex items-center space-x-2"
+                            className="flex items-center gap-x-2"
                         >
                             <RadioGroupItem
                                 value={option.value}
@@ -340,7 +343,11 @@ function SettingInputRenderer({
                         step={sliderSetting.step}
                         value={[value]}
                         onValueChange={(values) => {
-                            setting.onChange?.(values[0].toString());
+                            setting.onChange?.(
+                                typeof values === "number"
+                                    ? values.toString()
+                                    : values[0].toString(),
+                            );
                         }}
                     />
                 </div>
@@ -361,15 +368,21 @@ function SettingInputRenderer({
 
             const variant = buttonSetting.confirmVariant ?? "default";
             return (
-                <ButtonConfirmDialog
-                    triggerButton={
-                        <Button className="mb-0">{buttonSetting.label}</Button>
-                    }
-                    title={"Confirm"}
-                    description={buttonSetting.confirmation ?? ""}
-                    onConfirm={() => buttonSetting.onClick?.()}
-                    variant={variant}
-                />
+                <Button
+                    onClick={async () => {
+                        const confirmed = await confirm({
+                            title: "Confirm",
+                            description: buttonSetting.confirmation ?? "",
+                            variant,
+                        });
+                        if (!confirmed) return;
+
+                        buttonSetting.onClick?.();
+                    }}
+                    className="mb-0"
+                >
+                    {buttonSetting.label}
+                </Button>
             );
         }
         case "color":
@@ -407,7 +420,7 @@ function ShortcutSettingInput({
         : recordedHotkey || (getSettingValue(setting) as string);
 
     return (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-x-2">
             <Input
                 id={settingKey}
                 type="text"
@@ -448,9 +461,7 @@ function SettingsInputWrapper({
                 </div>
                 {setting.tooltip && (
                     <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Info className="size-4" />
-                        </TooltipTrigger>
+                        <TooltipTrigger render={<Info className="size-4" />} />
                         <TooltipContent>{setting.tooltip}</TooltipContent>
                     </Tooltip>
                 )}
@@ -511,9 +522,9 @@ export function SettingsInput({
                     setting.contextMenuItems.length > 0 && (
                         <>
                             <ContextMenuSeparator />
-                            {setting.contextMenuItems.map((item, index) => (
+                            {setting.contextMenuItems.map((item) => (
                                 <ContextMenuItem
-                                    key={index}
+                                    key={item.label}
                                     onClick={item.onClick}
                                     variant={item.variant}
                                     className="flex gap-2"

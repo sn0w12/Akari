@@ -1,11 +1,9 @@
-"use client";
-
 import type { CommentData, VoteType } from "@/components/comments/comment";
 import { CommentList } from "@/components/comments/comment-list";
+import { toastManager } from "@/components/ui/toast";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommentSorting } from "../comments/sorting";
 import { Button } from "../ui/button";
@@ -56,8 +54,10 @@ export function MangaCommentList({
         useState<components["schemas"]["CommentWithRepliesResponse"][]>(
             initialComments,
         );
+
     const { data: user } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
+    const queryClient = useQueryClient();
 
     const handleSortChange = (
         newSort: components["schemas"]["CommentSortOrder"],
@@ -91,9 +91,13 @@ export function MangaCommentList({
                 }));
             setComments((prev) => [...prev, ...newComments]);
             setCurrentPage((prev) => prev + 1);
+            queryClient.invalidateQueries({ queryKey: [mangaId] });
         },
         onError: () => {
-            new Toast("Failed to load more comments.", "error");
+            toastManager.add({
+                title: "Failed to load more comments.",
+                type: "error",
+            });
         },
     });
 
@@ -122,9 +126,13 @@ export function MangaCommentList({
                 }));
             setComments(newComments);
             setCurrentPage(1);
+            queryClient.invalidateQueries({ queryKey: [mangaId] });
         },
         onError: () => {
-            new Toast("Failed to load comments.", "error");
+            toastManager.add({
+                title: "Failed to load comments.",
+                type: "error",
+            });
         },
     });
 
@@ -217,7 +225,10 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to vote. Please try again.", "error");
+            toastManager.add({
+                title: "Failed to vote. Please try again.",
+                type: "error",
+            });
             return;
         }
     };
@@ -242,7 +253,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to post reply. Please try again.", "error", {
+            toastManager.add({
+                title: "Failed to post reply. Please try again.",
+                type: "error",
                 description: error.data.message,
             });
             throw error; // Re-throw so the caller can handle it
@@ -283,7 +296,10 @@ export function MangaCommentList({
             insertReply(prevComments, parentId, data.data),
         );
 
-        new Toast("Reply posted successfully!", "success");
+        toastManager.add({
+            title: "Reply posted successfully!",
+            type: "success",
+        });
         return data.data;
     };
 
@@ -305,7 +321,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to post comment. Please try again.", "error", {
+            toastManager.add({
+                title: "Failed to post comment. Please try again.",
+                type: "error",
                 description: error.data.message,
             });
             return;
@@ -318,7 +336,10 @@ export function MangaCommentList({
 
         setComments((prevComments) => [newComment, ...prevComments]);
 
-        new Toast("Comment posted successfully!", "success");
+        toastManager.add({
+            title: "Comment posted successfully!",
+            type: "success",
+        });
     };
 
     const handleEdit = async (
@@ -337,7 +358,9 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to edit comment. Please try again.", "error", {
+            toastManager.add({
+                title: "Failed to edit comment. Please try again.",
+                type: "error",
                 description: error.data.message,
             });
             return;
@@ -347,7 +370,10 @@ export function MangaCommentList({
             updateCommentContent(prevComments, commentId, content),
         );
 
-        new Toast("Comment edited successfully!", "success");
+        toastManager.add({
+            title: "Comment edited successfully!",
+            type: "success",
+        });
     };
 
     const handleDelete = async (commentId: string): Promise<void> => {
@@ -360,7 +386,10 @@ export function MangaCommentList({
         });
 
         if (error) {
-            new Toast("Failed to delete comment. Please try again.", "error");
+            toastManager.add({
+                title: "Failed to delete comment. Please try again.",
+                type: "error",
+            });
             return;
         }
 
@@ -368,16 +397,19 @@ export function MangaCommentList({
             updateCommentContent(prevComments, commentId, "[deleted]"),
         );
 
-        new Toast("Comment deleted successfully!", "success");
+        toastManager.add({
+            title: "Comment deleted successfully!",
+            type: "success",
+        });
     };
 
     return (
         <>
             <div
-                className="flex flex-row justify-between mb-2 pb-2 border-b"
+                className="flex flex-row justify-between my-2 pb-2 border-b"
                 id="comments"
             >
-                <h2 className="text-2xl font-bold">Comments</h2>
+                <h2 className="text-2xl font-semibold">Comments</h2>
                 <CommentSorting
                     sort={sortOrder}
                     onSortChange={handleSortChange}

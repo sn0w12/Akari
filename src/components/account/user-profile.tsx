@@ -1,15 +1,12 @@
-"use client";
-
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useConfirm } from "@/contexts/confirm-context";
 import { logOut } from "@/lib/auth/akari";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ButtonConfirmDialog } from "../ui/confirm";
 
 export function UserProfile({
     user,
@@ -18,11 +15,22 @@ export function UserProfile({
 }) {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { confirm } = useConfirm();
 
     const handleLogout = async () => {
+        const confirmed = await confirm({
+            title: "Confirm Logout",
+            description:
+                "Are you sure you want to logout from all accounts? This will also disconnect all linked services.",
+            confirmText: "Logout",
+            cancelText: "Cancel",
+            variant: "destructive",
+        });
+        if (!confirmed) return;
+
         await logOut(SECONDARY_ACCOUNTS);
         queryClient.invalidateQueries({ queryKey: ["user"] });
-        router.push("/");
+        router.navigate({ to: "/" });
     };
 
     return (
@@ -32,10 +40,7 @@ export function UserProfile({
                     <Avatar name={user.username} size={64} />
 
                     <div>
-                        <Link
-                            href={`/user/${user.userId}`}
-                            transitionTypes={["transition-forwards"]}
-                        >
+                        <Link to="/user/$userId" params={{ userId: user.userId }}>
                             <h2 className="text-xl font-semibold text-foreground hover:underline">
                                 {user.displayName}
                             </h2>
@@ -49,20 +54,10 @@ export function UserProfile({
                     </div>
                 </div>
 
-                <ButtonConfirmDialog
-                    triggerButton={
-                        <Button variant="destructive">
-                            <LogOut className="h-4 w-4" />
-                            Logout
-                        </Button>
-                    }
-                    title="Confirm Logout"
-                    description="Are you sure you want to logout from all accounts? This will also disconnect all linked services."
-                    confirmText="Logout"
-                    cancelText="Cancel"
-                    variant="destructive"
-                    onConfirm={handleLogout}
-                />
+                <Button variant="destructive" onClick={handleLogout}>
+                    <LogOut className="size-4" />
+                    Logout
+                </Button>
             </div>
         </Card>
     );

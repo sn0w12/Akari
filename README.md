@@ -2,7 +2,7 @@
   <img src="./public/screenshots/AkariGradient.png" alt="Icon" width="450" style="border-radius: 12px" />
 </p>
 
-<h1 align="center">灯 - Akari</h1>
+<h1 align="center">Akari</h1>
 
 <div align="center">
     <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/sn0w12/Akari/build.yml">
@@ -11,7 +11,7 @@
     <img alt="License" src="https://img.shields.io/github/license/sn0w12/Akari">
 </div>
 
-Akari is a high-quality, open-source manga reader built with Next.js. It provides an enhanced reading experience, allowing users to manage bookmarks and reading history seamlessly.
+Akari is a high-quality, open-source manga reader built with [Tanstack Start](https://tanstack.com/start/latest). It provides an enhanced reading experience, allowing users to manage bookmarks and reading history seamlessly.
 
 ## Table of Contents
 
@@ -111,18 +111,18 @@ If you prefer to run Akari locally, follow these steps. Your akari account will 
     Edit `.env` and configure the following variables:
 
     **Required:**
-    - `NEXT_PUBLIC_API_URL` - The API endpoint for fetching manga content, unless you know what you are doing, set it to `https://api.akarimanga.dpdns.org`
+    - `VITE_API_URL` - The API endpoint for fetching manga content, unless you know what you are doing, set it to `https://api.akarimanga.dpdns.org`
 
     **Optional:**
-    - `NEXT_PUBLIC_HOST` - Your website host (e.g., `akari.mydomain.com`) used for metadata
-    - `NEXT_PUBLIC_ANI_CLIENT_ID` - AniList client ID for AniList integration
-    - `NEXT_PUBLIC_MAL_CLIENT_ID` - MyAnimeList client ID for MAL integration
-    - `NEXT_PUBLIC_PLAUSIBLE_ENDPOINT` - Your Plausible Analytics endpoint (e.g., `https://plausible.yourdomain.com/api/event`)
+    - `VITE_HOST` - Your website host (e.g., `akari.mydomain.com`) used for metadata
+    - `VITE_ANI_CLIENT_ID` - AniList client ID for AniList integration
+    - `VITE_MAL_CLIENT_ID` - MyAnimeList client ID for MAL integration
+    - `VITE_PLAUSIBLE_ENDPOINT` - Your Plausible Analytics endpoint (e.g., `https://plausible.yourdomain.com/api/event`)
     - `DISABLE_STATIC_GENERATION` - Set to `1` to disable static generation (default: `0`)
     - `GENERATE_SITEMAP` - Set to `1` to enable sitemap generation (default: `0`)
-    - `NEXT_PUBLIC_VAPID_PUBLIC_KEY` - VAPID public key for web push notifications
-    - `NEXT_PUBLIC_SUPABASE_URL` - Supabase URL for account functionality
-    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY` - Supabase publishable/anon key for accounts
+    - `VITE_VAPID_PUBLIC_KEY` - VAPID public key for web push notifications
+    - `VITE_SUPABASE_URL` - Supabase URL for account functionality
+    - `VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY` - Supabase publishable/anon key for accounts
 
 3. Install dependencies:
 
@@ -151,23 +151,23 @@ npm run start
 
 ### Front Page
 
-![FrontPage](./public/screenshots/wide/Homepage.webp)
+![FrontPage](./public/screenshots/wide/Homepage.png)
 
 ### Bookmarks
 
-![Bookmarks](./public/screenshots/wide/Bookmarks.webp)
+![Bookmarks](./public/screenshots/wide/Bookmarks.png)
 
 ### Manga
 
-![Manga](./public/screenshots/wide/Manga.webp)
+![Manga](./public/screenshots/wide/Manga.png)
 
 ### Author
 
-![Author](./public/screenshots/wide/Author.webp)
+![Author](./public/screenshots/wide/Author.png)
 
 ### Genre
 
-![Genre](./public/screenshots/wide/Genre.webp)
+![Genre](./public/screenshots/wide/Genre.png)
 
 </details>
 

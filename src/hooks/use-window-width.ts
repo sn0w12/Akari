@@ -8,16 +8,10 @@ export function useWindowWidth() {
 
     useEffect(() => {
         setWindowWidth(window.innerWidth);
-        const controller = new AbortController();
-        window.addEventListener(
-            "resize",
-            () => setWindowWidth(window.innerWidth),
-            {
-                signal: controller.signal,
-            },
-        );
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
 
-        return () => controller.abort();
+        return () => window.removeEventListener("resize", handleResize);
     }, [setWindowWidth]);
 
     return windowWidth;

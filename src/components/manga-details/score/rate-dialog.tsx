@@ -1,12 +1,12 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    ResponsiveModal,
+    ResponsiveModalFooter,
+    ResponsiveModalHeader,
+    ResponsiveModalPanel,
+    ResponsiveModalPopup,
+    ResponsiveModalTitle,
+} from "@/components/ui/responsive-modal";
 import {
     Select,
     SelectContent,
@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/select";
 import { useUser } from "@/hooks/use-user";
 import { client } from "@/lib/api";
-import Toast from "@/lib/toast-wrapper";
+import { toastManager } from "@/components/ui/toast";
 import { cn, formatNumberShort } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const RATINGS = [
     { label: "Remove Rating", value: -1 },
@@ -69,7 +69,6 @@ export function RateDialog({
     const { data: user } = useUser();
     const queryClient = useQueryClient();
     const [selectedRating, setSelectedRating] = useState<number>(initialRating);
-
     const { data: userScore } = useQuery({
         queryKey: ["user-score", mangaId],
         queryFn: () => getUserScore(mangaId),
@@ -84,11 +83,11 @@ export function RateDialog({
         });
 
         if (error) {
-            new Toast("Failed to remove rating. Please try again.", "error");
+            toastManager.add({ title: "Failed to remove rating. Please try again.", type: "error" });
             return false;
         }
 
-        new Toast("Rating removed successfully!", "success");
+        toastManager.add({ title: "Rating removed successfully!", type: "success" });
         queryClient.invalidateQueries({ queryKey: ["user-score", mangaId] });
         return true;
     }
@@ -106,66 +105,77 @@ export function RateDialog({
         });
 
         if (error) {
-            new Toast("Failed to submit rating. Please try again.", "error");
+            toastManager.add({ title: "Failed to submit rating. Please try again.", type: "error" });
             return;
         }
 
-        new Toast("Rating submitted successfully!", "success");
+        toastManager.add({ title: "Rating submitted successfully!", type: "success" });
         queryClient.invalidateQueries({ queryKey: ["user-score", mangaId] });
         onOpenChange(false);
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="gap-2 p-4">
-                <DialogHeader>
-                    <DialogTitle>
+        <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+            <ResponsiveModalPopup>
+                <ResponsiveModalHeader>
+                    <ResponsiveModalTitle>
                         Rate this Manga{" "}
                         {userScore && (
                             <span className="border-l pl-1">{userScore}</span>
                         )}
-                    </DialogTitle>
-                </DialogHeader>
-                <ScoreGraph rating={rating} userScore={userScore} />
-                <div className="flex flex-col sm:flex-row gap-2">
+                    </ResponsiveModalTitle>
+                </ResponsiveModalHeader>
+                <ResponsiveModalPanel>
+                    <ScoreGraph rating={rating} userScore={userScore} />
+                </ResponsiveModalPanel>
+                <ResponsiveModalFooter className="flex-col">
                     <Select
-                        value={selectedRating.toString()}
-                        onValueChange={(value) =>
-                            setSelectedRating(parseFloat(value))
-                        }
+                        items={RATINGS}
+                        value={selectedRating}
+                        onValueChange={(value) => {
+                            if (!value) return;
+                            setSelectedRating(value);
+                        }}
                     >
                         <SelectTrigger className="w-full sm:w-38">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent align="center">
-                            {RATINGS.filter(
-                                (rating) =>
-                                    rating.value !== -1 || userScore !== null,
-                            ).map((rating) => (
-                                <SelectItem
-                                    key={rating.value}
-                                    className={cn("", {
-                                        "bg-destructive/70 dark:bg-destructive/70 border border-destructive text-white hover:bg-destructive/90 dark:hover:bg-destructive/90 focus-visible:ring-destructive/20":
-                                            rating.value === -1,
-                                    })}
-                                    value={rating.value.toString()}
-                                >
-                                    {rating.label}
-                                </SelectItem>
-                            ))}
+                            {RATINGS.reduce<React.ReactNode[]>(
+                                (acc, rating) => {
+                                    if (
+                                        rating.value !== -1 ||
+                                        userScore !== null
+                                    ) {
+                                        acc.push(
+                                            <SelectItem
+                                                key={rating.value}
+                                                className={cn("", {
+                                                    "bg-destructive/70 dark:bg-destructive/70 border border-destructive text-white hover:bg-destructive/90 dark:hover:bg-destructive/90 focus-visible:ring-destructive/20":
+                                                        rating.value === -1,
+                                                })}
+                                                value={rating.value}
+                                            >
+                                                {rating.label}
+                                            </SelectItem>,
+                                        );
+                                    }
+                                    return acc;
+                                },
+                                [],
+                            )}
                         </SelectContent>
                     </Select>
                     <Button
-                        className="flex-1"
                         onClick={async () => {
                             await handleSubmitRating(selectedRating);
                         }}
                     >
                         Submit Rating
                     </Button>
-                </div>
-            </DialogContent>
-        </Dialog>
+                </ResponsiveModalFooter>
+            </ResponsiveModalPopup>
+        </ResponsiveModal>
     );
 }
 

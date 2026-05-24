@@ -1,15 +1,12 @@
-"use client";
-
-import type React from "react";
-
+import { Image } from "@/components/image";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError } from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { generateSizes } from "@/lib/utils";
 import { X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
-import { ButtonGroup } from "../ui/button-group";
+import { ButtonGroup } from "../ui/group";
 import { AttachmentPopover } from "./attachment-popover";
 
 interface CommentFormProps {
@@ -29,7 +26,6 @@ export function CommentForm({
     placeholder = "Write a comment...",
     submitLabel = "Comment",
     onCancel,
-    autoFocus = false,
     currentUser,
 }: CommentFormProps) {
     const [content, setContent] = useState("");
@@ -38,9 +34,9 @@ export function CommentForm({
         components["schemas"]["UploadResponse"] | undefined
     >(undefined);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!content.trim() || isSubmitting) return;
+    const handleSubmit = async (values: Record<string, unknown>) => {
+        const content = values.content as string;
+        if (!content?.trim() || isSubmitting) return;
 
         setIsSubmitting(true);
         try {
@@ -55,32 +51,32 @@ export function CommentForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
+        <Form onFormSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
             <Avatar name={currentUser?.username || ""} />
             <div className="flex-1 space-y-2">
-                <Textarea
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder={placeholder}
-                    className="min-h-[80px] resize-none text-base"
-                    autoFocus={autoFocus}
-                    disabled={
-                        isSubmitting || !currentUser || currentUser.banned
-                    }
-                />
+                <Field name="content">
+                    <Textarea
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder={placeholder}
+                        className="min-h-[80px] resize-none text-base"
+                        disabled={
+                            isSubmitting || !currentUser || currentUser.banned
+                        }
+                    />
+                    <FieldError />
+                </Field>
 
                 {selectedAttachment && (
                     <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
                         <Image
                             src={selectedAttachment.url!}
                             alt="Selected attachment"
-                            className="h-10 w-10 object-cover rounded"
+                            className="size-10 object-cover rounded"
                             height={40}
                             width={40}
+                            sizes={{ default: "40px" }}
                             quality={60}
-                            sizes={generateSizes({
-                                default: "48px",
-                            })}
                         />
                         <span className="text-sm text-muted-foreground flex-1">
                             Attached image
@@ -90,9 +86,9 @@ export function CommentForm({
                             variant="destructive"
                             size="sm"
                             onClick={() => setSelectedAttachment(undefined)}
-                            className="h-6 w-6 p-0"
+                            className="size-6 p-0"
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                         </Button>
                     </div>
                 )}
@@ -105,7 +101,7 @@ export function CommentForm({
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="w-18"
+                                className="w-24 md:w-18"
                                 onClick={onCancel}
                                 disabled={isSubmitting}
                             >
@@ -115,7 +111,7 @@ export function CommentForm({
                         <Button
                             type="submit"
                             size="sm"
-                            className="w-18"
+                            className="w-24 md:w-18"
                             disabled={
                                 !content.trim() ||
                                 isSubmitting ||
@@ -128,6 +124,6 @@ export function CommentForm({
                     </ButtonGroup>
                 </div>
             </div>
-        </form>
+        </Form>
     );
 }

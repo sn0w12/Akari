@@ -1,4 +1,4 @@
-name: Next.js Build
+name: Build
 
 on:
     pull_request:
@@ -23,9 +23,9 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Build Next.js project
+            - name: Build project
               run: npm run build
               env:
-                  NEXT_PUBLIC_API_URL: "https://api.akarimanga.dpdns.org"
-                  NEXT_PUBLIC_HOST: "akarimanga.dpdns.org"
+                  VITE_API_URL: "https://api.akarimanga.dpdns.org"
+                  VITE_HOST: "akarimanga.dpdns.org"
                   DISABLE_STATIC_GENERATION: "1"
