@@ -1,7 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Suspense } from "react";
 import CallbackPage from "@/components/callback";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_auth/auth/callback")({
     component: Callback,
@@ -13,9 +12,7 @@ export const Route = createFileRoute("/_auth/auth/callback")({
 function Callback() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <Suspense fallback={null}>
-                <CallbackPage />
-            </Suspense>
+            <CallbackPage />
         </div>
     );
 }

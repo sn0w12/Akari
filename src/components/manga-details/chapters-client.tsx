@@ -7,7 +7,7 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpDown } from "lucide-react";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
 import {
@@ -278,12 +278,7 @@ export function ChaptersSection({
                             >
                                 Pages: {chapter.pages}
                             </p>
-                            <Suspense fallback={null}>
-                                <Released
-                                    chapter={chapter}
-                                    lastRead={lastRead}
-                                />
-                            </Suspense>
+                            <Released chapter={chapter} lastRead={lastRead} />
                         </CardContent>
                     </Card>
                 ))}

@@ -3,7 +3,7 @@ import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
 import { useThrottledCallback } from "@tanstack/react-pacer";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ViewManga } from "./manga-details/view-manga";
 import PageReader from "./manga-reader/readers/page-reader";
@@ -139,16 +139,14 @@ export function Reader({ chapter, scanlator }: ReaderProps) {
                     setBookmarkState={setBookmarkState}
                 />
             ) : (
-                <Suspense>
-                    <PageReader
-                        chapter={chapter}
-                        scanlator={scanlator}
-                        scrollMetrics={scrollMetrics}
-                        toggleReaderMode={toggleReaderMode}
-                        isInactive={isInactive}
-                        setBookmarkState={setBookmarkState}
-                    />
-                </Suspense>
+                <PageReader
+                    chapter={chapter}
+                    scanlator={scanlator}
+                    scrollMetrics={scrollMetrics}
+                    toggleReaderMode={toggleReaderMode}
+                    isInactive={isInactive}
+                    setBookmarkState={setBookmarkState}
+                />
             )}
         </>
     );

@@ -1,5 +1,4 @@
 import { useRouterState } from "@tanstack/react-router";
-import { Suspense } from "react";
 import { BasePagination } from "./base-pagination";
 
 interface PaginationElementProps {
@@ -16,23 +15,12 @@ export function ServerPagination({
     href,
 }: PaginationElementProps) {
     return (
-        <Suspense
-            fallback={
-                <ServerPaginationFallback
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    className={className}
-                    href={href}
-                />
-            }
-        >
-            <ServerPaginationContent
-                currentPage={currentPage}
-                totalPages={totalPages}
-                className={className}
-                href={href}
-            />
-        </Suspense>
+        <ServerPaginationContent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            className={className}
+            href={href}
+        />
     );
 }
 
@@ -68,25 +56,6 @@ function ServerPaginationContent({
             totalPages={totalPages}
             className={className}
             getPageUrl={createPageUrl}
-            onPrefetch={() => {}}
-        />
-    );
-}
-
-function ServerPaginationFallback({
-    currentPage,
-    totalPages,
-    className,
-    href,
-}: PaginationElementProps) {
-    return (
-        <BasePagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            className={className}
-            getPageUrl={() => {
-                return href;
-            }}
             onPrefetch={() => {}}
         />
     );
