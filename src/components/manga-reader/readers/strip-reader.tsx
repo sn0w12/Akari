@@ -9,154 +9,126 @@ import MangaFooter from "../manga-footer";
 import StripPageProgress from "../strip-page-progress";
 
 interface StripReaderProps {
-    chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
-    scrollMetrics: {
-        pixels: number;
-        percentage: number;
-        clientHeight: number;
-    };
-    toggleReaderMode: () => void;
-    setBookmarkState: (state: boolean | null) => void;
+  chapter: components["schemas"]["ChapterResponse"];
+  scanlator: string;
+  scrollMetrics: {
+    pixels: number;
+    percentage: number;
+    clientHeight: number;
+  };
+  toggleReaderMode: () => void;
+  setBookmarkState: (state: boolean | null) => void;
 }
 
 export default function StripReader({
-    chapter,
-    scanlator,
-    scrollMetrics,
-    toggleReaderMode,
-    setBookmarkState,
+  chapter,
+  scanlator,
+  scrollMetrics,
+  toggleReaderMode,
+  setBookmarkState,
 }: StripReaderProps) {
-    const stripWidth = useSetting("stripWidth");
-    const bookmarkUpdatedRef = useRef(false);
-    const hasPrefetchedRef = useRef(false);
-    const mountTimeRef = useRef<number>(0);
-    const queryClient = useQueryClient();
-    const lastImageRef = useRef<HTMLImageElement>(null);
-    const readerRef = useRef<HTMLDivElement>(null);
-    const [progress, setProgress] = useState(0);
-    const imagesLoadedRef = useRef(0);
+  const stripWidth = useSetting("stripWidth");
+  const bookmarkUpdatedRef = useRef(false);
+  const hasPrefetchedRef = useRef(false);
+  const mountTimeRef = useRef<number>(0);
+  const queryClient = useQueryClient();
+  const lastImageRef = useRef<HTMLImageElement>(null);
+  const readerRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const imagesLoadedRef = useRef(0);
 
-    useEffect(() => {
-        mountTimeRef.current = Date.now();
-    }, []);
+  useEffect(() => {
+    mountTimeRef.current = Date.now();
+  }, []);
 
-    const pixels = scrollMetrics.pixels;
-    const clientHeight = scrollMetrics.clientHeight;
-    useEffect(() => {
-        if (
-            !lastImageRef.current ||
-            !readerRef.current ||
-            imagesLoadedRef.current !== chapter.images.length
-        )
-            return;
-        const firstImage = readerRef.current.querySelector(
-            "img",
-        ) as HTMLImageElement;
-        if (!firstImage) return;
-        const firstImageTop = firstImage.offsetTop;
-        const lastImage = lastImageRef.current;
-        const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
-        const totalHeight = lastImageBottom - clientHeight - firstImageTop;
-        const currentPosition = pixels - firstImageTop;
-        const newProgress = Math.max(
-            0,
-            Math.min(1, currentPosition / totalHeight),
-        );
+  const pixels = scrollMetrics.pixels;
+  const clientHeight = scrollMetrics.clientHeight;
+  useEffect(() => {
+    if (
+      !lastImageRef.current ||
+      !readerRef.current ||
+      imagesLoadedRef.current !== chapter.images.length
+    )
+      return;
+    const firstImage = readerRef.current.querySelector("img") as HTMLImageElement;
+    if (!firstImage) return;
+    const firstImageTop = firstImage.offsetTop;
+    const lastImage = lastImageRef.current;
+    const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
+    const totalHeight = lastImageBottom - clientHeight - firstImageTop;
+    const currentPosition = pixels - firstImageTop;
+    const newProgress = Math.max(0, Math.min(1, currentPosition / totalHeight));
 
-        queueMicrotask(() => {
-            setProgress(newProgress);
-        });
-    }, [pixels, clientHeight, chapter.images.length]);
+    queueMicrotask(() => {
+      setProgress(newProgress);
+    });
+  }, [pixels, clientHeight, chapter.images.length]);
 
-    const chapterRef = useRef(chapter);
-    chapterRef.current = chapter;
-    const imagesLength = chapter.images.length;
-    const nextChapter = chapter.nextChapter;
-    useEffect(() => {
-        if (!chapterRef.current) return;
-        const halfWay = progress > 0.5;
-        const prefetch = progress > 0.8;
-        const currentTime = Date.now();
-        const timeElapsed = currentTime - mountTimeRef.current;
-        const minSyncTime = 5000;
+  const chapterRef = useRef(chapter);
+  chapterRef.current = chapter;
+  const imagesLength = chapter.images.length;
+  const nextChapter = chapter.nextChapter;
+  useEffect(() => {
+    if (!chapterRef.current) return;
+    const halfWay = progress > 0.5;
+    const prefetch = progress > 0.8;
+    const currentTime = Date.now();
+    const timeElapsed = currentTime - mountTimeRef.current;
+    const minSyncTime = 5000;
 
-        if (
-            halfWay &&
-            !bookmarkUpdatedRef.current &&
-            timeElapsed >= minSyncTime
-        ) {
-            syncAllServices(chapterRef.current).then((success) => {
-                setBookmarkState(success);
-                if (success) {
-                    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
-                }
-            });
-            bookmarkUpdatedRef.current = true;
+    if (halfWay && !bookmarkUpdatedRef.current && timeElapsed >= minSyncTime) {
+      void syncAllServices(chapterRef.current).then((success) => {
+        setBookmarkState(success);
+        if (success) {
+          void queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
         }
+      });
+      bookmarkUpdatedRef.current = true;
+    }
 
-        if (prefetch && nextChapter && !hasPrefetchedRef.current) {
-            hasPrefetchedRef.current = true;
-        }
-    }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
+    if (prefetch && nextChapter && !hasPrefetchedRef.current) {
+      hasPrefetchedRef.current = true;
+    }
+  }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
 
-    return (
-        <>
-            <ChapterInfo
-                chapter={chapter}
-                scanlator={scanlator}
-                hidden={progress === 1}
+  return (
+    <>
+      <ChapterInfo chapter={chapter} scanlator={scanlator} hidden={progress === 1} />
+      <div>
+        <div
+          id="reader"
+          ref={readerRef}
+          className={`flex flex-col items-center transition-colors duration-500`}
+        >
+          {chapter.images.map((img, index) => (
+            <Image
+              key={img}
+              ref={index === chapter.images.length - 1 ? lastImageRef : null}
+              src={img}
+              alt={`${chapter.title} - ${chapter.title} Page ${index + 1}`}
+              width={720}
+              height={1500}
+              className={cn("object-contain z-20 relative max-w-full", {
+                "rounded-t": index === 0,
+                "rounded-b": index === chapter.images.length - 1,
+              })}
+              style={{
+                width: `calc(var(--spacing) * ${stripWidth})`,
+              }}
+              fetchPriority={index === 0 ? "high" : "auto"}
+              onLoad={() => {
+                imagesLoadedRef.current += 1;
+              }}
+              sizes={{ default: "100vw" }}
+              quality={100}
             />
-            <div>
-                <div
-                    id="reader"
-                    ref={readerRef}
-                    className={`flex flex-col items-center transition-colors duration-500`}
-                >
-                    {chapter.images.map((img, index) => (
-                        <Image
-                            key={img}
-                            ref={
-                                index === chapter.images.length - 1
-                                    ? lastImageRef
-                                    : null
-                            }
-                            src={img}
-                            alt={`${chapter.title} - ${chapter.title} Page ${
-                                index + 1
-                            }`}
-                            width={720}
-                            height={1500}
-                            className={cn(
-                                "object-contain z-20 relative max-w-full",
-                                {
-                                    "rounded-t": index === 0,
-                                    "rounded-b":
-                                        index === chapter.images.length - 1,
-                                },
-                            )}
-                            style={{
-                                width: `calc(var(--spacing) * ${stripWidth})`,
-                            }}
-                            fetchPriority={index === 0 ? "high" : "auto"}
-                            onLoad={() => { imagesLoadedRef.current += 1; }}
-                            sizes={{ default: "100vw" }}
-                            quality={100}
-                        />
-                    ))}
-                </div>
-                <div className={`sm:opacity-0 lg:opacity-100`}>
-                    <StripPageProgress
-                        progress={progress}
-                        hidden={progress === 1}
-                    />
-                </div>
-                <MangaFooter
-                    chapter={chapter}
-                    scanlator={scanlator}
-                    toggleReaderMode={toggleReaderMode}
-                />
-            </div>
-        </>
-    );
+          ))}
+        </div>
+        <div className={`sm:opacity-0 lg:opacity-100`}>
+          <StripPageProgress progress={progress} hidden={progress === 1} />
+        </div>
+        <MangaFooter chapter={chapter} scanlator={scanlator} toggleReaderMode={toggleReaderMode} />
+      </div>
+    </>
+  );
 }
