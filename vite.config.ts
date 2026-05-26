@@ -4,6 +4,9 @@ import { defineConfig } from "vite-plus";
 import viteReact from "@vitejs/plugin-react";
 
 export default defineConfig({
+    staged: {
+        "*": "vp check --fix",
+    },
     lint: {
         plugins: ["oxc", "typescript", "unicorn", "react"],
         categories: {
@@ -95,6 +98,13 @@ export default defineConfig({
                 specifier: "vite-plus/oxlint-plugin",
             },
         ],
+    },
+    fmt: {
+        tabWidth: 4,
+        useTabs: false,
+        printWidth: 80,
+        sortPackageJson: false,
+        ignorePatterns: [],
     },
     server: { port: 3000 },
     resolve: {
