@@ -1,5 +1,5 @@
 import ErrorPage from "@/components/error-page";
-import { client, getAuthCookie, serverHeaders } from "@/lib/api";
+import { client, getAuthSession, serverHeaders } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
@@ -12,7 +12,7 @@ export function AccountBody() {
     const { data, error, isLoading } = useQuery({
         queryKey: ["account"],
         queryFn: async () => {
-            const session = getAuthCookie();
+            const session = await getAuthSession();
             if (!session?.access_token) throw new Error("Not authenticated");
 
             const headers = {

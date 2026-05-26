@@ -1,4 +1,5 @@
 import { inPreview } from "@/config";
+import { createClient as createAuthClient } from "@/lib/auth/client";
 import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
@@ -9,51 +10,27 @@ const apiUrl =
     env("VITE_API_URL") ||
     "http://localhost:5188/";
 
-export function getAuthCookie() {
+export async function getAuthSession() {
     if (typeof document === "undefined") {
         return null;
     }
 
-    const authCookies = document.cookie
-        .split("; ")
-        .filter((row) => row.startsWith("sb-db-auth-token"));
-    if (authCookies.length === 0) {
+    const {
+        data: { session },
+        error,
+    } = await createAuthClient().auth.getSession();
+
+    if (error) {
+        console.error("Failed to restore auth session:", error);
         return null;
     }
 
-    try {
-        const singleCookie = authCookies.find((row) => !row.includes("."));
-        if (singleCookie) {
-            // Old format: single cookie
-            const value = singleCookie.split("=")[1];
-            return JSON.parse(atob(value.replace("base64-", "")));
-        } else {
-            // New format: multi-part cookies
-            const parts = authCookies
-                .flatMap((row) => {
-                    const [key, value] = row.split("=");
-                    const match = key.match(/^sb-db-auth-token\.(\d+)$/);
-                    if (!match) return [];
-                    return [{ num: parseInt(match[1]), value }];
-                })
-                .sort((a, b) => a.num - b.num)
-                .map((p) => p.value);
-            if (parts.length === 0) return null;
-            const fullValue = parts.join("");
-            const base64 = fullValue.startsWith("base64-")
-                ? fullValue.replace("base64-", "")
-                : fullValue;
-            return JSON.parse(atob(base64));
-        }
-    } catch (error) {
-        console.error("Failed to parse auth cookie:", error);
-        return null;
-    }
+    return session;
 }
 
 const authenticatedFetch = async (input: Request): Promise<Response> => {
     const request = input.clone();
-    const session = getAuthCookie();
+    const session = await getAuthSession();
 
     if (
         session?.access_token &&
