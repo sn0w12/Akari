@@ -150,10 +150,10 @@ export function PullToRefresh({
         (event: React.TouchEvent<HTMLElement>): void => {
             if (!isEnabled || isRefreshing || !canPullRef.current || !isAtTopRef.current) return;
 
-            // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
+            // Prevent pull-to-refresh when a Base UI modal or menu is open.
             if (
                 typeof document !== "undefined" &&
-                document.querySelector("[data-radix-focus-guard]")
+                document.querySelector("[data-base-ui-focus-guard]")
             )
                 return;
 
@@ -172,10 +172,10 @@ export function PullToRefresh({
         (event: React.TouchEvent<HTMLElement>): void => {
             if (!isEnabled || isRefreshing || !isDragging || !canPullRef.current) return;
 
-            // Prevent pull-to-refresh when a modal or overlay is open (e.g., Radix focus guard)
+            // Prevent pull-to-refresh when a Base UI modal or menu is open.
             if (
                 typeof document !== "undefined" &&
-                document.querySelector("[data-radix-focus-guard]")
+                document.querySelector("[data-base-ui-focus-guard]")
             )
                 return;
 
