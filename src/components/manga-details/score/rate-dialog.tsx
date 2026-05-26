@@ -83,12 +83,20 @@ export function RateDialog({
     });
 
     if (error) {
-      toastManager.add({ title: "Failed to remove rating. Please try again.", type: "error" });
+      toastManager.add({
+        title: "Failed to remove rating. Please try again.",
+        type: "error",
+      });
       return false;
     }
 
-    toastManager.add({ title: "Rating removed successfully!", type: "success" });
-    void queryClient.invalidateQueries({ queryKey: ["user-score", mangaId] });
+    toastManager.add({
+      title: "Rating removed successfully!",
+      type: "success",
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ["user-score", mangaId],
+    });
     return true;
   }
 
@@ -105,12 +113,20 @@ export function RateDialog({
     });
 
     if (error) {
-      toastManager.add({ title: "Failed to submit rating. Please try again.", type: "error" });
+      toastManager.add({
+        title: "Failed to submit rating. Please try again.",
+        type: "error",
+      });
       return;
     }
 
-    toastManager.add({ title: "Rating submitted successfully!", type: "success" });
-    void queryClient.invalidateQueries({ queryKey: ["user-score", mangaId] });
+    toastManager.add({
+      title: "Rating submitted successfully!",
+      type: "success",
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ["user-score", mangaId],
+    });
     onOpenChange(false);
   }
 

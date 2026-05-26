@@ -80,7 +80,9 @@ export default function StripReader({
       void syncAllServices(chapterRef.current).then((success) => {
         setBookmarkState(success);
         if (success) {
-          void queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+          void queryClient.invalidateQueries({
+            queryKey: ["bookmarks"],
+          });
         }
       });
       bookmarkUpdatedRef.current = true;

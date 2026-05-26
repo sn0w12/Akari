@@ -32,7 +32,12 @@ function ToastTestPage() {
   const [description, setDescription] = useState("");
 
   const showToast = () => {
-    toastManager.add({ title: message, type, timeout: duration, description });
+    toastManager.add({
+      title: message,
+      type,
+      timeout: duration,
+      description,
+    });
   };
 
   return (

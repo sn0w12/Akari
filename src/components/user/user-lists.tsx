@@ -40,7 +40,9 @@ export function UserLists({ userId, initialData }: UserListsProps) {
   });
 
   const handleDelete = () => {
-    void queryClient.invalidateQueries({ queryKey: ["user-lists", userId] });
+    void queryClient.invalidateQueries({
+      queryKey: ["user-lists", userId],
+    });
   };
 
   if (isLoading || !data) {

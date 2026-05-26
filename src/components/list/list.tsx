@@ -67,11 +67,17 @@ function Entry({
       });
 
       if (error) {
-        toastManager.add({ title: "Failed to remove entry", type: "error" });
+        toastManager.add({
+          title: "Failed to remove entry",
+          type: "error",
+        });
         return;
       }
 
-      toastManager.add({ title: "Entry removed successfully", type: "success" });
+      toastManager.add({
+        title: "Entry removed successfully",
+        type: "success",
+      });
       void queryClient.invalidateQueries({ queryKey: ["list", ownerId] });
     } catch (error) {
       console.error("Failed to remove entry:", error);
@@ -292,7 +298,10 @@ export function ListComponent({ id }: { id: string }) {
     const compressedId = compressUUIDBase58(id);
     const url = `${window.location.origin}/l/${compressedId}`;
     void navigator.clipboard.writeText(url);
-    toastManager.add({ title: "Share URL copied to clipboard", type: "success" });
+    toastManager.add({
+      title: "Share URL copied to clipboard",
+      type: "success",
+    });
   }
 
   return (

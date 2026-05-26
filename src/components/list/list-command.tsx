@@ -58,11 +58,17 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
     });
 
     if (error) {
-      toastManager.add({ title: error.data?.message || "Failed to add to list", type: "error" });
+      toastManager.add({
+        title: error.data?.message || "Failed to add to list",
+        type: "error",
+      });
       return;
     }
 
-    toastManager.add({ title: "Added to list successfully", type: "success" });
+    toastManager.add({
+      title: "Added to list successfully",
+      type: "success",
+    });
     void queryClient.invalidateQueries({ queryKey: ["list", listId] });
     setOpen(false);
     setQuery("");

@@ -75,7 +75,10 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
       return;
     }
 
-    toastManager.add({ title: "Added to list successfully", type: "success" });
+    toastManager.add({
+      title: "Added to list successfully",
+      type: "success",
+    });
     void queryClient.invalidateQueries({ queryKey: ["existing-lists"] });
   }
 

@@ -37,7 +37,10 @@ export function ListItem({ list, onDelete }: ListItemProps) {
     if (error) {
       toastManager.add({ title: "Failed to delete list", type: "error" });
     } else {
-      toastManager.add({ title: "List deleted successfully", type: "success" });
+      toastManager.add({
+        title: "List deleted successfully",
+        type: "success",
+      });
       onDelete(listId);
     }
   }

@@ -115,7 +115,10 @@ export default function BookmarksHeader() {
   }
 
   const handleSelect = (result: BookmarkResult) => {
-    void router.navigate({ to: "/manga/$mangaId", params: { mangaId: result.mangaId } });
+    void router.navigate({
+      to: "/manga/$mangaId",
+      params: { mangaId: result.mangaId },
+    });
   };
 
   let status: ReactNode;
