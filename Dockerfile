@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm install && npm cache clean --force
+RUN npm ci --ignore-scripts && npm cache clean --force
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -15,7 +15,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build:sw && npm exec --yes vp build
 
 # Production image, copy all the files and run the server
 FROM node:25-alpine AS runner
@@ -29,7 +29,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Copy production dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --no-optional && npm cache clean --force
+RUN npm ci --omit=dev --no-optional --ignore-scripts && npm cache clean --force
 
 # Copy built server output and bootstrap entry
 COPY --from=builder /app/dist ./dist
