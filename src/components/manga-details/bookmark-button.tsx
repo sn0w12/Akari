@@ -143,7 +143,7 @@ export function BookmarkButton({
   );
 
   const buttonClass = cn(
-    `relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
+    `border border-input relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
       isBookmarked
         ? "bg-accent-positive hover:bg-negative"
         : "bg-background hover:bg-accent-positive"
