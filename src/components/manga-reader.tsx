@@ -10,144 +10,139 @@ import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
 
 interface ReaderProps {
-    chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
+  chapter: components["schemas"]["ChapterResponse"];
+  scanlator: string;
 }
 
 export function Reader({ chapter, scanlator }: ReaderProps) {
-    const readerModeStorage = useStorage("readerMode", {
-        mangaId: chapter.mangaId,
-        chapterId: chapter.id,
-    });
-    const { flashColor } = useBorderColor();
-    const [isStripMode, setIsStripMode] = useState<boolean>(() => {
-        const stored = readerModeStorage.get();
-        if (stored && typeof stored.isStripMode === "boolean") {
-            return stored.isStripMode;
-        }
-
-        const readerType = getSetting("readerType");
-        if (readerType === "page") return false;
-        if (readerType === "strip") return true;
-
-        return ["Manhwa", "Manhua"].includes(chapter.type);
-    });
-    const [isInactive, setIsInactive] = useState(false);
-    const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
-
-    const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
-    useEffect(() => {
-        if (bookmarkState !== null) {
-            flashColor(
-                bookmarkState ? "border-accent-positive" : "border-destructive",
-            );
-        }
-    }, [bookmarkState, flashColor]);
-
-    const [scrollMetrics, setScrollMetrics] = useState({
-        pixels: 0,
-        percentage: 0,
-        clientHeight: 0,
-    });
-
-    async function setReaderMode(isStrip: boolean) {
-        setIsStripMode(isStrip);
-        readerModeStorage.set({ isStripMode: isStrip });
+  const readerModeStorage = useStorage("readerMode", {
+    mangaId: chapter.mangaId,
+    chapterId: chapter.id,
+  });
+  const { flashColor } = useBorderColor();
+  const [isStripMode, setIsStripMode] = useState<boolean>(() => {
+    const stored = readerModeStorage.get();
+    if (stored && typeof stored.isStripMode === "boolean") {
+      return stored.isStripMode;
     }
 
-    function toggleReaderMode(override: boolean = true) {
-        if (isStripMode !== undefined) {
-            setReaderMode(!isStripMode);
-        } else {
-            setReaderMode(override);
-        }
+    const readerType = getSetting("readerType");
+    if (readerType === "page") return false;
+    if (readerType === "strip") return true;
+
+    return ["Manhwa", "Manhua"].includes(chapter.type);
+  });
+  const [isInactive, setIsInactive] = useState(false);
+  const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (bookmarkState !== null) {
+      flashColor(bookmarkState ? "border-accent-positive" : "border-destructive");
     }
+  }, [bookmarkState, flashColor]);
 
-    const resetInactivityTimer = useCallback(() => {
-        if (inactivityTimer.current) {
-            clearTimeout(inactivityTimer.current);
-        }
-        setIsInactive(false);
-        inactivityTimer.current = setTimeout(() => {
-            setIsInactive(true);
-        }, 2000);
-    }, []);
+  const [scrollMetrics, setScrollMetrics] = useState({
+    pixels: 0,
+    percentage: 0,
+    clientHeight: 0,
+  });
 
-    const resetInactivityRef = useRef(resetInactivityTimer);
-    useEffect(() => {
-        resetInactivityRef.current = resetInactivityTimer;
+  async function setReaderMode(isStrip: boolean) {
+    setIsStripMode(isStrip);
+    readerModeStorage.set({ isStripMode: isStrip });
+  }
+
+  function toggleReaderMode(override: boolean = true) {
+    if (isStripMode !== undefined) {
+      void setReaderMode(!isStripMode);
+    } else {
+      void setReaderMode(override);
+    }
+  }
+
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimer.current) {
+      clearTimeout(inactivityTimer.current);
+    }
+    setIsInactive(false);
+    inactivityTimer.current = setTimeout(() => {
+      setIsInactive(true);
+    }, 2000);
+  }, []);
+
+  const resetInactivityRef = useRef(resetInactivityTimer);
+  useEffect(() => {
+    resetInactivityRef.current = resetInactivityTimer;
+  });
+
+  useEffect(() => {
+    inactivityTimer.current = setTimeout(() => {
+      setIsInactive(true);
+    }, 2000);
+
+    const handler = () => resetInactivityRef.current();
+    const events = ["mousemove", "scroll", "touchstart"];
+    events.forEach((event) => {
+      window.addEventListener(event, handler);
     });
 
-    useEffect(() => {
-        inactivityTimer.current = setTimeout(() => {
-            setIsInactive(true);
-        }, 2000);
-
-        const handler = () => resetInactivityRef.current();
-        const events = ["mousemove", "scroll", "touchstart"];
-        events.forEach((event) => {
-            window.addEventListener(event, handler);
-        });
-
-        return () => {
-            if (inactivityTimer.current) {
-                clearTimeout(inactivityTimer.current);
-            }
-            events.forEach((event) => {
-                window.removeEventListener(event, handler);
-            });
-        };
-    }, []);
-
-    const calculateScrollMetrics = (mainElement: HTMLElement) => {
-        const scrollTop = mainElement.scrollTop;
-        const scrollHeight = mainElement.scrollHeight;
-        const clientHeight = mainElement.clientHeight;
-
-        // Calculate percentage
-        const percentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
-        setScrollMetrics({
-            pixels: scrollTop,
-            percentage: Math.min(100, Math.max(0, percentage)),
-            clientHeight,
-        });
+    return () => {
+      if (inactivityTimer.current) {
+        clearTimeout(inactivityTimer.current);
+      }
+      events.forEach((event) => {
+        window.removeEventListener(event, handler);
+      });
     };
+  }, []);
 
-    const handleScroll = useThrottledCallback(
-        (mainElement: HTMLElement) => {
-            calculateScrollMetrics(mainElement);
-        },
-        {
-            wait: 100,
-        },
-    );
-    useBodyScrollListener(handleScroll);
+  const calculateScrollMetrics = (mainElement: HTMLElement) => {
+    const scrollTop = mainElement.scrollTop;
+    const scrollHeight = mainElement.scrollHeight;
+    const clientHeight = mainElement.clientHeight;
 
-    return (
-        <>
-            <BreadcrumbSetter
-                orig={chapter.mangaId}
-                title={chapter.mangaTitle}
-            />
-            <ViewManga mangaId={chapter.mangaId} />
-            {isStripMode ? (
-                <StripReader
-                    chapter={chapter}
-                    scanlator={scanlator}
-                    scrollMetrics={scrollMetrics}
-                    toggleReaderMode={toggleReaderMode}
-                    setBookmarkState={setBookmarkState}
-                />
-            ) : (
-                <PageReader
-                    chapter={chapter}
-                    scanlator={scanlator}
-                    scrollMetrics={scrollMetrics}
-                    toggleReaderMode={toggleReaderMode}
-                    isInactive={isInactive}
-                    setBookmarkState={setBookmarkState}
-                />
-            )}
-        </>
-    );
+    // Calculate percentage
+    const percentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
+    setScrollMetrics({
+      pixels: scrollTop,
+      percentage: Math.min(100, Math.max(0, percentage)),
+      clientHeight,
+    });
+  };
+
+  const handleScroll = useThrottledCallback(
+    (mainElement: HTMLElement) => {
+      calculateScrollMetrics(mainElement);
+    },
+    {
+      wait: 100,
+    },
+  );
+  useBodyScrollListener(handleScroll);
+
+  return (
+    <>
+      <BreadcrumbSetter orig={chapter.mangaId} title={chapter.mangaTitle} />
+      <ViewManga mangaId={chapter.mangaId} />
+      {isStripMode ? (
+        <StripReader
+          chapter={chapter}
+          scanlator={scanlator}
+          scrollMetrics={scrollMetrics}
+          toggleReaderMode={toggleReaderMode}
+          setBookmarkState={setBookmarkState}
+        />
+      ) : (
+        <PageReader
+          chapter={chapter}
+          scanlator={scanlator}
+          scrollMetrics={scrollMetrics}
+          toggleReaderMode={toggleReaderMode}
+          isInactive={isInactive}
+          setBookmarkState={setBookmarkState}
+        />
+      )}
+    </>
+  );
 }
