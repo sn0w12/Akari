@@ -138,7 +138,7 @@ export function BookmarkButton({
                         }`}
                     />
                     <span
-                        className={`absolute transition-all duration-300 ease-in-out -translate-x-6.5 ${
+                        className={`absolute transition-all duration-300 ease-in-out -translate-x-8.5 ${
                             isBookmarked && hovered
                                 ? "opacity-100"
                                 : "opacity-0"
@@ -149,11 +149,18 @@ export function BookmarkButton({
                     <span
                         className={`ml-2 transition-all duration-300 ease-in-out ${
                             isBookmarked && hovered
-                                ? "translate-x-7"
+                                ? "translate-x-7.5"
                                 : "translate-x-0"
                         }`}
                     >
-                        Bookmark
+                        <span>Bookmark</span>
+                        <span
+                            className={cn("opacity-100 transition-opacity", {
+                                "opacity-0": isBookmarked && hovered,
+                            })}
+                        >
+                            ed
+                        </span>
                     </span>
                 </>
             ) : (
