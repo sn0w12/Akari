@@ -21,6 +21,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@plausible-analytics/tracker": "^0.4.4",
+        "@rolldown/plugin-babel": "^0.2.3",
         "@supabase/ssr": "^0.10.0",
         "@supabase/supabase-js": "^2.101.1",
         "@tailwindcss/vite": "^4.3.0",
