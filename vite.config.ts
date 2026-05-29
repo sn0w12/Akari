@@ -22,6 +22,7 @@ export default defineConfig({
             ".output/**",
             "dist/**",
             "node_modules/**",
+            "src/routeTree.gen.ts",
         ],
         rules: {
             "no-array-constructor": "error",
