@@ -4400,7 +4400,12 @@ export interface components {
             data: components["schemas"]["ChapterResponse"];
         };
         /** @enum {string} */
-        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
+        CommentReportReason:
+            | "spam"
+            | "harassment"
+            | "inappropriate"
+            | "hate_speech"
+            | "other";
         CommentResponse: {
             /** Format: uuid */
             id: string;
@@ -5235,7 +5240,14 @@ export interface components {
         /** @enum {string} */
         UserRole: "user" | "admin" | "moderator" | "owner";
         /** @enum {string} */
-        UserSortBy: "CreatedAt" | "Username" | "TotalComments" | "TotalUpvotes" | "TotalBookmarks" | "TotalUploads" | "TotalLists";
+        UserSortBy:
+            | "CreatedAt"
+            | "Username"
+            | "TotalComments"
+            | "TotalUpvotes"
+            | "TotalBookmarks"
+            | "TotalUploads"
+            | "TotalLists";
         ViewMangaRequest: {
             saveUserId?: boolean;
         };
