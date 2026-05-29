@@ -34,6 +34,7 @@ RUN npm ci --omit=dev --no-optional --ignore-scripts && npm cache clean --force
 # Copy built server output and bootstrap entry
 COPY --from=builder /app/dist ./dist
 COPY server-entry.mjs ./server-entry.mjs
+COPY scripts/purge_cf.sh ./scripts/purge_cf.sh
 
 # Expose the port the app will run on
 EXPOSE 3000
