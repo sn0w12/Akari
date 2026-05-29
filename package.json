@@ -4,7 +4,7 @@
     "homepage": "https://github.com/sn0w12/Akari#readme",
     "type": "module",
     "scripts": {
-        "dev": "vp dev",
+        "dev": "vite dev",
         "build:sw": "tsc -p src/sw/tsconfig.json",
         "build": "npm run build:sw && vp build",
         "preview": "vp preview",
