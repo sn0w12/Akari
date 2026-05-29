@@ -105,7 +105,7 @@ export default defineConfig({
         useTabs: false,
         printWidth: 80,
         sortPackageJson: false,
-        ignorePatterns: [],
+        ignorePatterns: ["src/routeTree.gen.ts"],
     },
     server: { port: 3000 },
     resolve: {
