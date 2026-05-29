@@ -1,7 +1,7 @@
 type PathsWithMethod<Paths, Method extends string> = keyof {
-  [Path in keyof Paths as Paths[Path] extends { [M in Method]: unknown }
-    ? Path
-    : never]: Paths[Path];
+    [Path in keyof Paths as Paths[Path] extends { [M in Method]: unknown }
+        ? Path
+        : never]: Paths[Path];
 };
 
 export type GetPaths = PathsWithMethod<paths, "get">;
@@ -15,9 +15,9 @@ export type OptionsPaths = PathsWithMethod<paths, "options">;
 export type AllPaths = GetPaths | PostPaths | PutPaths | DeletePaths;
 
 export interface PaginatedResponse<T> {
-  items: T[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
+    items: T[];
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+    pageSize: number;
 }

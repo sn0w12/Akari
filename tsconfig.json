@@ -19,10 +19,6 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true
     },
-    "include": [
-        "src/types/global.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-    ],
+    "include": ["src/types/global.d.ts", "**/*.ts", "**/*.tsx"],
     "exclude": ["node_modules", "src/sw/sw.ts"]
 }

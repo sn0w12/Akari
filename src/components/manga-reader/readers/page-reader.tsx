@@ -10,6 +10,21 @@ import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
 import PageProgress from "../page-progress";
 
+function getInitialPage(
+    chapter: PageReaderProps["chapter"],
+    pageParam: string | number | undefined,
+) {
+    if (!chapter || !pageParam) return 0;
+    if (pageParam === "last") return chapter.images.length - 1;
+    if (typeof pageParam === "string") return 0;
+
+    return isNaN(pageParam) ||
+        pageParam < 1 ||
+        pageParam > chapter.images.length
+        ? 0
+        : pageParam - 1;
+}
+
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
     scanlator: string;
@@ -35,19 +50,9 @@ export default function PageReader({
     const readingDir = useSetting("readingDirection");
     const continueAfterChapter = useSetting("continueAfterChapter");
     const windowWidth = useWindowWidth();
-    const [currentPage, setCurrentPage] = useState(() => {
-        const pageParam = searchParams.page;
-        if (!chapter) return 0;
-        if (!pageParam) return 0;
-        if (pageParam === "last") return chapter.images.length - 1;
-        if (typeof pageParam === "string") return 0;
-
-        return isNaN(pageParam) ||
-            pageParam < 1 ||
-            pageParam > chapter.images.length
-            ? 0
-            : pageParam - 1;
-    });
+    const [currentPage, setCurrentPage] = useState(() =>
+        getInitialPage(chapter, searchParams.page),
+    );
     const pageHeightStyle = "var(--visible-height)";
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
@@ -56,6 +61,12 @@ export default function PageReader({
     chapterRef.current = chapter;
     const imagesLength = chapter.images.length;
     const nextChapter = chapter.nextChapter;
+
+    useEffect(() => {
+        setCurrentPage(getInitialPage(chapter, searchParams.page));
+        bookmarkUpdatedRef.current = false;
+        hasPrefetchedRef.current = false;
+    }, [chapter]);
 
     useEffect(() => {
         if (!chapterRef.current) return;
@@ -100,7 +111,10 @@ export default function PageReader({
             chapter.nextChapter &&
             continueAfterChapter
         ) {
-            void router.navigate({ to: `./${chapter.nextChapter}` });
+            void navigate({
+                to: `../${chapter.nextChapter}`,
+                viewTransition: false,
+            });
             return;
         }
 
@@ -111,7 +125,7 @@ export default function PageReader({
         currentPage,
         chapter.images.length,
         chapter.nextChapter,
-        router,
+        navigate,
         continueAfterChapter,
         setPageWithUrlUpdate,
     ]);

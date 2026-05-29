@@ -1,10 +1,10 @@
 {
     "name": "akari",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "homepage": "https://github.com/sn0w12/Akari#readme",
     "type": "module",
     "scripts": {
-        "dev": "vp dev",
+        "dev": "vite dev",
         "build:sw": "tsc -p src/sw/tsconfig.json",
         "build": "npm run build:sw && vp build",
         "preview": "vp preview",
@@ -21,6 +21,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@plausible-analytics/tracker": "^0.4.4",
+        "@rolldown/plugin-babel": "^0.2.3",
         "@supabase/ssr": "^0.10.0",
         "@supabase/supabase-js": "^2.101.1",
         "@tailwindcss/vite": "^4.3.0",

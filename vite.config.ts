@@ -1,7 +1,8 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite-plus";
-import viteReact from "@vitejs/plugin-react";
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
 
 export default defineConfig({
     staged: {
@@ -22,6 +23,7 @@ export default defineConfig({
             ".output/**",
             "dist/**",
             "node_modules/**",
+            "src/routeTree.gen.ts",
         ],
         rules: {
             "no-array-constructor": "error",
@@ -104,11 +106,18 @@ export default defineConfig({
         useTabs: false,
         printWidth: 80,
         sortPackageJson: false,
-        ignorePatterns: [],
+        ignorePatterns: ["src/routeTree.gen.ts"],
     },
     server: { port: 3000 },
     resolve: {
         tsconfigPaths: true,
     },
-    plugins: [tailwindcss(), tanstackStart(), viteReact()],
+    plugins: [
+        tailwindcss(),
+        tanstackStart(),
+        viteReact(),
+        babel({
+            presets: [reactCompilerPreset()],
+        }),
+    ],
 });
