@@ -1,6 +1,6 @@
 {
     "name": "akari",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "homepage": "https://github.com/sn0w12/Akari#readme",
     "type": "module",
     "scripts": {
