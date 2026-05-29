@@ -11,7 +11,8 @@ import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export interface BookmarkButtonProps extends ButtonProps {
     mangaId: string;
@@ -32,6 +33,7 @@ export function BookmarkButton({
     const queryClient = useQueryClient();
     const [hovered, setHovered] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const canHover = useMediaQuery("(hover: hover)");
     const fancyAnimationsEnabled = useSetting("fancyAnimations");
     const { data: user } = useUser();
     const { confirm } = useConfirm();
@@ -107,6 +109,7 @@ export function BookmarkButton({
         event,
     ) => {
         onMouseEnter?.(event);
+        if (!canHover) return;
         setHovered(true);
     };
 
@@ -116,6 +119,12 @@ export function BookmarkButton({
         onMouseLeave?.(event);
         setHovered(false);
     };
+
+    useEffect(() => {
+        if (!canHover && hovered) {
+            setHovered(false);
+        }
+    }, [canHover, hovered]);
 
     const buttonContent = (
         <div className="relative flex h-full w-full items-center justify-center">
