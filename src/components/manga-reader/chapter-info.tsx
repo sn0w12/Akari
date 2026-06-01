@@ -8,11 +8,9 @@ import { useSidebar } from "../ui/sidebar";
 
 export function ChapterInfo({
     chapter,
-    scanlator,
     hidden,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
     hidden: boolean;
 }) {
     const { open } = useSidebar();
@@ -60,11 +58,11 @@ export function ChapterInfo({
             <ButtonGroup orientation={orientation}>
                 {orientation === "vertical" ? (
                     <>
-                        <InfoPopover chapter={chapter} scanlator={scanlator} />
+                        <InfoPopover chapter={chapter} />
                         <SettingsPopover orientation={orientation} />
                     </>
                 ) : (
-                    <InfoPopover chapter={chapter} scanlator={scanlator} />
+                    <InfoPopover chapter={chapter} />
                 )}
                 <CommentsButton mangaType={chapter.type} />
             </ButtonGroup>

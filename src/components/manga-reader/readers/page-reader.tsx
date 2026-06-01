@@ -27,7 +27,6 @@ function getInitialPage(
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
     scrollMetrics: { pixels: number; percentage: number };
     toggleReaderMode: () => void;
     isInactive: boolean;
@@ -36,7 +35,6 @@ interface PageReaderProps {
 
 export default function PageReader({
     chapter,
-    scanlator,
     scrollMetrics,
     toggleReaderMode,
     isInactive,
@@ -181,7 +179,6 @@ export default function PageReader({
         <>
             <ChapterInfo
                 chapter={chapter}
-                scanlator={scanlator}
                 hidden={scrollMetrics.pixels >= 50}
             />
             <div

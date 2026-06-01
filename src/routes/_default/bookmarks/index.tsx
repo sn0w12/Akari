@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_default/bookmarks/")({
 
 function Bookmarks() {
     const { page = 1 } = Route.useSearch();
-    const { data, error, isLoading } = useQuery({
+    const { data, error, isLoading, isRefetching, refetch } = useQuery({
         queryKey: ["bookmarks", page],
         queryFn: async () => {
             const { data: result, error: err } = await client.GET(
@@ -37,7 +37,12 @@ function Bookmarks() {
 
     return (
         <div className="flex-1 p-4">
-            <BookmarksHeader />
+            <BookmarksHeader
+                isRefreshing={isRefetching}
+                onRefresh={() => {
+                    void refetch();
+                }}
+            />
             {isLoading ? <BookmarksSkeleton /> : null}
             {error ? <ErrorPage error={error as never} /> : null}
             {data && data.items.length === 0 ? (

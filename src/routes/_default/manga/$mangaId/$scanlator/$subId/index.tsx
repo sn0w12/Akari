@@ -142,7 +142,7 @@ function MangaReaderBody({
     return (
         <>
             <JsonLd data={jsonLd} />
-            <Reader chapter={data} scanlator={params.scanlator} />
+            <Reader chapter={data} />
         </>
     );
 }

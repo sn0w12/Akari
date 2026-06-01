@@ -11,10 +11,9 @@ import StripReader from "./manga-reader/readers/strip-reader";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
 }
 
-export function Reader({ chapter, scanlator }: ReaderProps) {
+export function Reader({ chapter }: ReaderProps) {
     const readerModeStorage = useStorage("readerMode", {
         mangaId: chapter.mangaId,
         chapterId: chapter.id,
@@ -133,7 +132,6 @@ export function Reader({ chapter, scanlator }: ReaderProps) {
             {isStripMode ? (
                 <StripReader
                     chapter={chapter}
-                    scanlator={scanlator}
                     scrollMetrics={scrollMetrics}
                     toggleReaderMode={toggleReaderMode}
                     setBookmarkState={setBookmarkState}
@@ -141,7 +139,6 @@ export function Reader({ chapter, scanlator }: ReaderProps) {
             ) : (
                 <PageReader
                     chapter={chapter}
-                    scanlator={scanlator}
                     scrollMetrics={scrollMetrics}
                     toggleReaderMode={toggleReaderMode}
                     isInactive={isInactive}

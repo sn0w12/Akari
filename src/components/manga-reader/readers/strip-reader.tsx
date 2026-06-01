@@ -11,7 +11,6 @@ import { useRouter } from "@tanstack/react-router";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
     scrollMetrics: {
         pixels: number;
         percentage: number;
@@ -23,7 +22,6 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
-    scanlator,
     scrollMetrics,
     toggleReaderMode,
     setBookmarkState,
@@ -37,11 +35,30 @@ export default function StripReader({
     const lastImageRef = useRef<HTMLImageElement>(null);
     const readerRef = useRef<HTMLDivElement>(null);
     const [progress, setProgress] = useState(0);
+    const [loadedImages, setLoadedImages] = useState(0);
     const imagesLoadedRef = useRef(0);
 
     useEffect(() => {
         mountTimeRef.current = Date.now();
-    }, []);
+        bookmarkUpdatedRef.current = false;
+        hasPrefetchedRef.current = false;
+        imagesLoadedRef.current = 0;
+        setLoadedImages(0);
+        setProgress(0);
+    }, [chapter.id]);
+
+    useEffect(() => {
+        if (!readerRef.current) return;
+
+        const completeImages = Array.from(
+            readerRef.current.querySelectorAll("img"),
+        ).filter((img) => img.complete).length;
+
+        imagesLoadedRef.current = completeImages;
+        if (completeImages > 0) {
+            setLoadedImages(completeImages);
+        }
+    }, [chapter.id, chapter.images.length]);
 
     const pixels = scrollMetrics.pixels;
     const clientHeight = scrollMetrics.clientHeight;
@@ -49,7 +66,7 @@ export default function StripReader({
         if (
             !lastImageRef.current ||
             !readerRef.current ||
-            imagesLoadedRef.current !== chapter.images.length
+            loadedImages !== chapter.images.length
         )
             return;
         const firstImage = readerRef.current.querySelector(
@@ -69,7 +86,7 @@ export default function StripReader({
         queueMicrotask(() => {
             setProgress(newProgress);
         });
-    }, [pixels, clientHeight, chapter.images.length]);
+    }, [pixels, clientHeight, loadedImages, chapter.images.length]);
 
     const chapterRef = useRef(chapter);
     chapterRef.current = chapter;
@@ -110,15 +127,18 @@ export default function StripReader({
             });
             hasPrefetchedRef.current = true;
         }
-    }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
+    }, [
+        progress,
+        imagesLength,
+        nextChapter,
+        queryClient,
+        router,
+        setBookmarkState,
+    ]);
 
     return (
         <>
-            <ChapterInfo
-                chapter={chapter}
-                scanlator={scanlator}
-                hidden={progress === 1}
-            />
+            <ChapterInfo chapter={chapter} hidden={progress === 1} />
             <div>
                 <div
                     id="reader"
@@ -150,13 +170,17 @@ export default function StripReader({
                             }}
                             fetchPriority={index === 0 ? "high" : "auto"}
                             onLoad={() => {
-                                imagesLoadedRef.current += 1;
+                                imagesLoadedRef.current = Math.min(
+                                    chapter.images.length,
+                                    imagesLoadedRef.current + 1,
+                                );
+                                setLoadedImages(imagesLoadedRef.current);
                             }}
                             unOptimized
                         />
                     ))}
                 </div>
-                <div className={`sm:opacity-0 lg:opacity-100`}>
+                <div>
                     <StripPageProgress
                         progress={progress}
                         hidden={progress === 1}
