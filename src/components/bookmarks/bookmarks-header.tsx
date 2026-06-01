@@ -12,15 +12,26 @@ import { toastManager } from "@/components/ui/toast";
 import { client } from "@/lib/api";
 import { exportBookmarks } from "@/lib/manga/export-bookmarks";
 import { useRouter } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Download, RefreshCw, Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useReducer, useState, useTransition } from "react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "../ui/tooltip";
 
 type BookmarkResult = {
     mangaId: string;
     title: string;
     cover: string;
     type: string;
+};
+
+type BookmarksHeaderProps = {
+    onRefresh: () => void;
+    isRefreshing?: boolean;
 };
 
 type SearchState = {
@@ -47,7 +58,10 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
     }
 }
 
-export default function BookmarksHeader() {
+export default function BookmarksHeader({
+    onRefresh,
+    isRefreshing = false,
+}: BookmarksHeaderProps) {
     const router = useRouter();
     const [searchValue, setSearchValue] = useState("");
     const [isPending, startTransition] = useTransition();
@@ -151,16 +165,47 @@ export default function BookmarksHeader() {
 
     return (
         <div className="relative mb-4">
-            <div className="flex flex-row gap-2 md:gap-4">
-                <Button
-                    variant="outline"
-                    size="lg"
-                    className="hidden md:flex w-auto md:h-auto items-center justify-center px-4"
-                    loading={isExporting}
-                    onClick={handleExportBookmarks}
-                >
-                    Export Bookmarks
-                </Button>
+            <div className="flex flex-row gap-0 md:gap-4">
+                <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger
+                                render={
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="hidden md:flex w-auto items-center justify-center px-4"
+                                        loading={isRefreshing}
+                                        onClick={onRefresh}
+                                    >
+                                        <RefreshCw />
+                                    </Button>
+                                }
+                            />
+                            <TooltipContent side="bottom">
+                                Refresh Bookmarks
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger
+                                render={
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="hidden md:flex w-auto items-center justify-center px-4"
+                                        loading={isExporting}
+                                        onClick={handleExportBookmarks}
+                                    >
+                                        <Download />
+                                    </Button>
+                                }
+                            />
+                            <TooltipContent side="bottom">
+                                Export Bookmarks
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
                 <Autocomplete
                     autoHighlight
                     filter={null}
