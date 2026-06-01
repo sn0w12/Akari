@@ -32,20 +32,20 @@ interface ConfirmContextType {
         target?: ConfirmTarget,
     ) => Promise<boolean>;
     registerHost: (hostId: string) => () => void;
-    isHostRegistered: (hostId: string) => boolean;
+    registerMountedHost: (hostId: string) => () => void;
     settleHostRequest: (hostId: string, id: number, value: boolean) => void;
     getHostRequest: (hostId: string) => ConfirmRequest | undefined;
 }
 
 type ConfirmHostProps = {
     hostId: string;
-    onMountChange?: (mounted: boolean) => void;
 };
 
 const ConfirmContext = React.createContext<ConfirmContextType | undefined>(
     undefined,
 );
-const ConfirmVersionContext = React.createContext(0);
+const useSafeLayoutEffect =
+    typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
 function getTargetHostId(options: ConfirmOptions, target?: ConfirmTarget) {
     if (typeof target === "string") return target;
@@ -53,7 +53,7 @@ function getTargetHostId(options: ConfirmOptions, target?: ConfirmTarget) {
 }
 
 function useConfirmContext() {
-    const context = React.use(ConfirmContext);
+    const context = React.useContext(ConfirmContext);
     if (!context) {
         throw new Error("useConfirm must be used within a ConfirmProvider");
     }
@@ -63,22 +63,16 @@ function useConfirmContext() {
 export function useConfirm() {
     const context = useConfirmContext();
     const localHostId = React.useId();
-    const isLocalHostMountedRef = React.useRef(false);
 
-    const handleLocalHostMountChange = React.useCallback((mounted: boolean) => {
-        isLocalHostMountedRef.current = mounted;
-    }, []);
+    useSafeLayoutEffect(() => {
+        return context.registerHost(localHostId);
+    }, [context, localHostId]);
 
     const confirm = React.useCallback(
         (options: ConfirmOptions, target?: ConfirmTarget) => {
-            const requestedHostId = getTargetHostId(options, target);
-            const hostId =
-                requestedHostId ??
-                (isLocalHostMountedRef.current
-                    ? localHostId
-                    : DEFAULT_CONFIRM_HOST_ID);
-
-            return context.confirm(options, { hostId });
+            return context.confirm(options, {
+                hostId: getTargetHostId(options, target) ?? localHostId,
+            });
         },
         [context, localHostId],
     );
@@ -86,22 +80,12 @@ export function useConfirm() {
     return {
         confirm,
         ConfirmHost: React.useCallback(
-            () => (
-                <ConfirmHost
-                    hostId={localHostId}
-                    onMountChange={handleLocalHostMountChange}
-                />
-            ),
-            [handleLocalHostMountChange, localHostId],
+            () => <ConfirmHost hostId={localHostId} />,
+            [localHostId],
         ),
         ConfirmDialog: React.useCallback(
-            () => (
-                <ConfirmHost
-                    hostId={localHostId}
-                    onMountChange={handleLocalHostMountChange}
-                />
-            ),
-            [handleLocalHostMountChange, localHostId],
+            () => <ConfirmHost hostId={localHostId} />,
+            [localHostId],
         ),
         hostId: localHostId,
     };
@@ -110,58 +94,55 @@ export function useConfirm() {
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     const requestIdRef = React.useRef(0);
     const hostCountsRef = React.useRef(new Map<string, number>());
-    const requestsRef = React.useRef<Record<string, ConfirmRequest[]>>({});
-    const [version, forceUpdate] = React.useReducer(
-        (value: number) => value + 1,
-        0,
-    );
+    const mountedHostCountsRef = React.useRef(new Map<string, number>());
+    const [requests, setRequests] = React.useState<
+        Record<string, ConfirmRequest[]>
+    >({});
+    const [, forceUpdate] = React.useReducer((value: number) => value + 1, 0);
 
-    const flushHost = React.useCallback((hostId: string) => {
-        const requests = requestsRef.current[hostId] ?? [];
-        delete requestsRef.current[hostId];
-        for (const request of requests) {
-            request.resolve(false);
-        }
+    const registerHost = React.useCallback((hostId: string) => {
+        hostCountsRef.current.set(
+            hostId,
+            (hostCountsRef.current.get(hostId) ?? 0) + 1,
+        );
         forceUpdate();
+
+        return () => {
+            const nextCount = (hostCountsRef.current.get(hostId) ?? 1) - 1;
+
+            if (nextCount > 0) {
+                hostCountsRef.current.set(hostId, nextCount);
+            } else {
+                hostCountsRef.current.delete(hostId);
+            }
+            forceUpdate();
+        };
     }, []);
 
-    const registerHost = React.useCallback(
-        (hostId: string) => {
-            hostCountsRef.current.set(
-                hostId,
-                (hostCountsRef.current.get(hostId) ?? 0) + 1,
-            );
+    const registerMountedHost = React.useCallback((hostId: string) => {
+        mountedHostCountsRef.current.set(
+            hostId,
+            (mountedHostCountsRef.current.get(hostId) ?? 0) + 1,
+        );
+        forceUpdate();
+
+        return () => {
+            const nextCount =
+                (mountedHostCountsRef.current.get(hostId) ?? 1) - 1;
+
+            if (nextCount > 0) {
+                mountedHostCountsRef.current.set(hostId, nextCount);
+            } else {
+                mountedHostCountsRef.current.delete(hostId);
+            }
             forceUpdate();
-
-            return () => {
-                const nextCount = (hostCountsRef.current.get(hostId) ?? 1) - 1;
-
-                if (nextCount > 0) {
-                    hostCountsRef.current.set(hostId, nextCount);
-                } else {
-                    hostCountsRef.current.delete(hostId);
-                    if (hostId !== DEFAULT_CONFIRM_HOST_ID) {
-                        flushHost(hostId);
-                    }
-                }
-                forceUpdate();
-            };
-        },
-        [flushHost],
-    );
-
-    const isHostRegistered = React.useCallback((hostId: string) => {
-        if (hostId === DEFAULT_CONFIRM_HOST_ID) return true;
-        return hostCountsRef.current.has(hostId);
+        };
     }, []);
 
     const confirm = React.useCallback(
         (options: ConfirmOptions, target?: ConfirmTarget) => {
-            const requestedHostId = getTargetHostId(options, target);
             const hostId =
-                requestedHostId && isHostRegistered(requestedHostId)
-                    ? requestedHostId
-                    : DEFAULT_CONFIRM_HOST_ID;
+                getTargetHostId(options, target) ?? DEFAULT_CONFIRM_HOST_ID;
 
             return new Promise<boolean>((resolve) => {
                 const request = {
@@ -171,60 +152,85 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                     resolve,
                 };
 
-                requestsRef.current = {
-                    ...requestsRef.current,
-                    [hostId]: [...(requestsRef.current[hostId] ?? []), request],
-                };
-                forceUpdate();
+                setRequests((currentRequests) => ({
+                    ...currentRequests,
+                    [hostId]: [...(currentRequests[hostId] ?? []), request],
+                }));
             });
-        },
-        [isHostRegistered],
-    );
-
-    const settleHostRequest = React.useCallback(
-        (hostId: string, id: number, value: boolean) => {
-            const requests = requestsRef.current[hostId] ?? [];
-            const request = requests.find((item) => item.id === id);
-            if (!request) return;
-
-            const nextRequests = requests.filter((item) => item.id !== id);
-            requestsRef.current = {
-                ...requestsRef.current,
-                [hostId]: nextRequests,
-            };
-            request.resolve(value);
-            forceUpdate();
         },
         [],
     );
 
-    const getHostRequest = React.useCallback((hostId: string) => {
-        return requestsRef.current[hostId]?.[0];
-    }, []);
+    const settleHostRequest = React.useCallback(
+        (hostId: string, id: number, value: boolean) => {
+            let resolvedRequest: ConfirmRequest | undefined;
+
+            setRequests((currentRequests) => {
+                const hostRequests = currentRequests[hostId] ?? [];
+                const request = hostRequests.find((item) => item.id === id);
+                if (!request) return currentRequests;
+
+                resolvedRequest = request;
+                const nextHostRequests = hostRequests.filter(
+                    (item) => item.id !== id,
+                );
+
+                if (nextHostRequests.length === 0) {
+                    const nextRequests = { ...currentRequests };
+                    delete nextRequests[hostId];
+                    return nextRequests;
+                }
+
+                return {
+                    ...currentRequests,
+                    [hostId]: nextHostRequests,
+                };
+            });
+
+            resolvedRequest?.resolve(value);
+        },
+        [],
+    );
+
+    const getHostRequest = React.useCallback(
+        (hostId: string) => {
+            return requests[hostId]?.[0];
+        },
+        [requests],
+    );
 
     const value = React.useMemo(
         () => ({
             confirm,
             registerHost,
-            isHostRegistered,
+            registerMountedHost,
             settleHostRequest,
             getHostRequest,
         }),
         [
             confirm,
             getHostRequest,
-            isHostRegistered,
             registerHost,
+            registerMountedHost,
             settleHostRequest,
         ],
     );
 
+    const fallbackHostIds = Array.from(
+        new Set([...hostCountsRef.current.keys(), ...Object.keys(requests)]),
+    ).filter(
+        (hostId) =>
+            hostId !== DEFAULT_CONFIRM_HOST_ID &&
+            !mountedHostCountsRef.current.has(hostId),
+    );
+
     return (
         <ConfirmContext.Provider value={value}>
-            <ConfirmVersionContext.Provider value={version}>
-                {children}
-                <DefaultConfirmHost />
-            </ConfirmVersionContext.Provider>
+            {children}
+            <DefaultConfirmHost />
+            {fallbackHostIds.map((hostId) => (
+                <ConfirmRenderer key={hostId} hostId={hostId} />
+            ))}
         </ConfirmContext.Provider>
     );
 }
@@ -233,32 +239,65 @@ function DefaultConfirmHost() {
     return <ConfirmHost hostId={DEFAULT_CONFIRM_HOST_ID} />;
 }
 
-function ConfirmHost({ hostId, onMountChange }: ConfirmHostProps) {
+function ConfirmHost({ hostId }: ConfirmHostProps) {
     const context = useConfirmContext();
 
-    React.useEffect(() => {
-        onMountChange?.(true);
-        const unregisterHost = context.registerHost(hostId);
+    useSafeLayoutEffect(() => {
+        const unregisterHost = context.registerMountedHost(hostId);
         return () => {
-            onMountChange?.(false);
             unregisterHost();
         };
-    }, [context, hostId, onMountChange]);
+    }, [context, hostId]);
 
     return <ConfirmRenderer hostId={hostId} />;
 }
 
 function ConfirmRenderer({ hostId }: { hostId: string }) {
     const context = useConfirmContext();
-    React.use(ConfirmVersionContext);
     const request = context.getHostRequest(hostId);
+    const [displayedRequest, setDisplayedRequest] = React.useState<
+        ConfirmRequest | undefined
+    >(request);
+    const clearDisplayedRequestTimeoutRef = React.useRef<
+        ReturnType<typeof setTimeout> | undefined
+    >(undefined);
+
+    React.useEffect(() => {
+        if (request) {
+            if (clearDisplayedRequestTimeoutRef.current) {
+                clearTimeout(clearDisplayedRequestTimeoutRef.current);
+                clearDisplayedRequestTimeoutRef.current = undefined;
+            }
+            setDisplayedRequest(request);
+            return;
+        }
+
+        if (!displayedRequest || clearDisplayedRequestTimeoutRef.current) {
+            return;
+        }
+
+        clearDisplayedRequestTimeoutRef.current = setTimeout(() => {
+            setDisplayedRequest(undefined);
+            clearDisplayedRequestTimeoutRef.current = undefined;
+        }, 200);
+    }, [displayedRequest, request]);
+
+    React.useEffect(() => {
+        return () => {
+            if (clearDisplayedRequestTimeoutRef.current) {
+                clearTimeout(clearDisplayedRequestTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const activeRequest = request ?? displayedRequest;
 
     const settle = React.useCallback(
         (value: boolean) => {
-            if (!request) return;
-            context.settleHostRequest(hostId, request.id, value);
+            if (!activeRequest) return;
+            context.settleHostRequest(hostId, activeRequest.id, value);
         },
-        [context, hostId, request],
+        [activeRequest, context, hostId],
     );
 
     return (
@@ -267,11 +306,11 @@ function ConfirmRenderer({ hostId }: { hostId: string }) {
             onOpenChange={(open) => {
                 if (!open) settle(false);
             }}
-            title={request?.title ?? ""}
-            description={request?.description}
-            confirmText={request?.confirmText ?? "Confirm"}
-            cancelText={request?.cancelText ?? "Cancel"}
-            variant={request?.variant ?? "default"}
+            title={activeRequest?.title ?? ""}
+            description={activeRequest?.description}
+            confirmText={activeRequest?.confirmText ?? "Confirm"}
+            cancelText={activeRequest?.cancelText ?? "Cancel"}
+            variant={activeRequest?.variant ?? "default"}
             onConfirm={() => settle(true)}
             onCancel={() => settle(false)}
         />
