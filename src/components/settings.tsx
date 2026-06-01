@@ -2,11 +2,7 @@ import { SettingsInput } from "@/components/settings/settings-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tree, TreeItem } from "@/components/ui/tree";
 import { APP_SETTINGS, inDevelopment } from "@/config";
@@ -324,15 +320,13 @@ export default function SettingsPage() {
                                                 >
                                                     <TableOfContents className="size-4" />
                                                 </PopoverTrigger>
-                                                <PopoverContent
+                                                <PopoverPopup
                                                     className="w-64 p-0"
                                                     align="end"
                                                     side="bottom"
                                                 >
-                                                    <div className="p-2">
-                                                        <Tree>{tocTree}</Tree>
-                                                    </div>
-                                                </PopoverContent>
+                                                    <Tree>{tocTree}</Tree>
+                                                </PopoverPopup>
                                             </Popover>
                                         ) : null}
                                     </CardHeader>

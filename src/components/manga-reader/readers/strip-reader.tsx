@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChapterInfo } from "../chapter-info";
 import MangaFooter from "../manga-footer";
 import StripPageProgress from "../strip-page-progress";
+import { useRouter } from "@tanstack/react-router";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -27,6 +28,7 @@ export default function StripReader({
     toggleReaderMode,
     setBookmarkState,
 }: StripReaderProps) {
+    const router = useRouter();
     const stripWidth = useSetting("stripWidth");
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
@@ -98,6 +100,14 @@ export default function StripReader({
         }
 
         if (prefetch && nextChapter && !hasPrefetchedRef.current) {
+            router.preloadRoute({
+                to: `/manga/$mangaId/$scanlator/$subId`,
+                params: {
+                    mangaId: chapterRef.current.mangaId,
+                    scanlator,
+                    subId: chapterRef.current.nextChapter!.toString(),
+                },
+            });
             hasPrefetchedRef.current = true;
         }
     }, [progress, imagesLength, nextChapter, setBookmarkState, queryClient]);
