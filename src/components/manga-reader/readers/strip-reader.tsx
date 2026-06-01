@@ -152,8 +152,7 @@ export default function StripReader({
                             onLoad={() => {
                                 imagesLoadedRef.current += 1;
                             }}
-                            sizes={{ default: "100vw" }}
-                            quality={100}
+                            unOptimized
                         />
                     ))}
                 </div>

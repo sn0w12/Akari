@@ -76,8 +76,7 @@ export const Route = createFileRoute(
             preloadImages: [
                 {
                     src: chapter.images[0],
-                    sizes: { default: "100vw" },
-                    quality: 100,
+                    unOptimized: true,
                 },
             ],
         });

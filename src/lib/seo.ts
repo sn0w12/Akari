@@ -100,8 +100,9 @@ export interface HeadData {
 
 interface ImagePreloadOptions {
     src: string | undefined;
-    sizes: SizesConfig;
+    sizes?: SizesConfig;
     quality?: number;
+    unOptimized?: boolean;
 }
 
 interface MetadataOptions {
@@ -230,8 +231,25 @@ export function createImagePreloadLink({
     src,
     sizes,
     quality,
+    unOptimized,
 }: ImagePreloadOptions): Record<string, string> {
     if (!src) return {};
+
+    if (unOptimized) {
+        return {
+            rel: "preload",
+            as: "image",
+            fetchPriority: "high",
+            href: src,
+        };
+    }
+
+    if (!sizes) {
+        console.warn(
+            "createImagePreloadLink: No sizes provided for image preload, defaulting to 100vw. This may lead to suboptimal image loading on different screen sizes. Consider providing a sizes property for better performance.",
+        );
+        sizes = { default: "100vw" };
+    }
     return {
         rel: "preload",
         as: "image",
