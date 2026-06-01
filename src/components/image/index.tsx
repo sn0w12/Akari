@@ -14,8 +14,9 @@ export interface ImageProps extends Omit<
     "src" | "srcSet" | "sizes"
 > {
     src: string;
-    sizes: SizesConfig;
+    sizes?: SizesConfig;
     quality?: number;
+    unOptimized?: boolean;
 }
 
 const DEFAULT_WIDTHS = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
@@ -67,9 +68,28 @@ export function buildImageUrlWithQuality(
 }
 
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
-    { src, alt, className, quality, sizes, ...props },
+    { src, alt, className, quality, sizes, unOptimized, ...props },
     ref,
 ) {
+    if (unOptimized) {
+        return (
+            <img
+                ref={ref}
+                src={src}
+                alt={alt}
+                className={className}
+                {...props}
+            />
+        );
+    }
+
+    if (!sizes) {
+        console.warn(
+            "Image component: No sizes provided, defaulting to 100vw. This may lead to suboptimal image loading on different screen sizes. Consider providing a sizes prop for better performance.",
+        );
+        sizes = { default: "100vw" };
+    }
+
     return (
         <img
             ref={ref}

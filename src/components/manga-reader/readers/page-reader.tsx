@@ -220,9 +220,8 @@ export default function PageReader({
                                 }}
                                 width={720}
                                 height={1500}
-                                quality={100}
                                 fetchPriority="high"
-                                sizes={{ default: "100vw" }}
+                                unOptimized
                             />
                         )}
                         <EndOfManga
@@ -245,8 +244,7 @@ export default function PageReader({
                             }}
                             width={720}
                             height={1500}
-                            quality={100}
-                            sizes={{ default: "100vw" }}
+                            unOptimized
                         />
                     )}
                 </div>
