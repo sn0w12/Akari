@@ -18,7 +18,7 @@ import { useRouter } from "@tanstack/react-router";
 import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 
 interface ChapterSelectorProps {
-    chapters: { value: string; label: string }[];
+    chapters: { value: string; label: string; scanlatorId: number }[];
     value: string;
     className?: string;
 }
@@ -37,7 +37,11 @@ export function ChapterSelector({
     );
 
     const onChange = (newValue: string) => {
-        void router.navigate({ to: `../${newValue}` });
+        const newChapter = chapters.find((c) => c.value === newValue);
+        if (!newChapter) return;
+        void router.navigate({
+            to: `../../${newChapter.scanlatorId}/${newChapter.value}`,
+        });
     };
 
     return (
@@ -95,7 +99,11 @@ export function ChapterSelector({
                         </div>
                         <ComboboxEmpty>No chapter found.</ComboboxEmpty>
                         <ComboboxList>
-                            {(chapter: { value: string; label: string }) => (
+                            {(chapter: {
+                                value: string;
+                                label: string;
+                                scanlatorId: number;
+                            }) => (
                                 <ComboboxItem
                                     key={chapter.value}
                                     value={chapter}

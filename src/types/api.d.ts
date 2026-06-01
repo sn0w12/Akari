@@ -4365,9 +4365,17 @@ export interface components {
             /** Format: int32 */
             chaptersBehind: number;
         };
+        ChapterNavigation: {
+            /** Format: float */
+            number: number;
+            /** Format: int32 */
+            scanlatorId: number;
+        };
         ChapterOption: {
             label: string;
             value: string;
+            /** Format: int32 */
+            scanlatorId: number;
         };
         ChapterResponse: {
             /** Format: uuid */
@@ -4383,10 +4391,8 @@ export interface components {
             /** Format: uuid */
             mangaId: string;
             mangaTitle: string;
-            /** Format: float */
-            lastChapter?: number | null;
-            /** Format: float */
-            nextChapter?: number | null;
+            lastChapter?: components["schemas"]["ChapterNavigation"];
+            nextChapter?: components["schemas"]["ChapterNavigation"];
             /** Format: int32 */
             malId?: number | null;
             /** Format: int32 */

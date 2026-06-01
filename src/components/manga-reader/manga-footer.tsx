@@ -7,11 +7,9 @@ import { ChapterSelector } from "./chapter-selector";
 
 export default function MangaFooter({
     chapter,
-    scanlator,
     toggleReaderMode,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
     toggleReaderMode: () => void;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
@@ -42,8 +40,9 @@ export default function MangaFooter({
                             params={
                                 {
                                     mangaId: chapter.mangaId,
-                                    scanlator,
-                                    subId: chapter.lastChapter!.toString(),
+                                    scanlator:
+                                        chapter.lastChapter!.scanlatorId.toString(),
+                                    subId: chapter.lastChapter!.number.toString(),
                                 } as never
                             }
                             variant="outline"
@@ -70,8 +69,9 @@ export default function MangaFooter({
                             params={
                                 {
                                     mangaId: chapter.mangaId,
-                                    scanlator,
-                                    subId: chapter.nextChapter!.toString(),
+                                    scanlator:
+                                        chapter.nextChapter!.scanlatorId.toString(),
+                                    subId: chapter.nextChapter!.number.toString(),
                                 } as never
                             }
                             className="w-full order-1 xl:order-4"

@@ -59,9 +59,32 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
         },
     });
 
-    const filteredChapters = useMemo(() => {
+    const visibleChapters = useMemo(() => {
         if (!data?.chapters) return [];
-        return data.chapters.filter((c) => c.scanlatorId === scanlatorId);
+
+        const chaptersByNumber = new Map<
+            string,
+            components["schemas"]["MangaChapter"]
+        >();
+
+        for (const chapter of data.chapters) {
+            const key = String(chapter.number);
+            const selectedChapter = chaptersByNumber.get(key);
+
+            if (!selectedChapter) {
+                chaptersByNumber.set(key, chapter);
+                continue;
+            }
+
+            if (
+                selectedChapter.scanlatorId !== scanlatorId &&
+                chapter.scanlatorId === scanlatorId
+            ) {
+                chaptersByNumber.set(key, chapter);
+            }
+        }
+
+        return Array.from(chaptersByNumber.values());
     }, [data, scanlatorId]);
 
     return (
@@ -89,7 +112,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                     {open ? (
                         <ChaptersList
                             isLoading={isLoading}
-                            chapters={filteredChapters}
+                            chapters={visibleChapters}
                             estimatedChapters={estimatedChapters}
                             mangaId={mangaId}
                             lastReadChapter={lastReadChapter}
