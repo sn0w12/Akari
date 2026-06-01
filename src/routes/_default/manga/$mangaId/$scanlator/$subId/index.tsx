@@ -64,12 +64,12 @@ export const Route = createFileRoute(
             pagination: {
                 ...(chapter.lastChapter
                     ? {
-                          previous: `/manga/${params.mangaId}/${params.scanlator}/${chapter.lastChapter}`,
+                          previous: `/manga/${params.mangaId}/${chapter.lastChapter.scanlatorId}/${chapter.lastChapter.number}`,
                       }
                     : {}),
                 ...(chapter.nextChapter
                     ? {
-                          next: `/manga/${params.mangaId}/${params.scanlator}/${chapter.nextChapter}`,
+                          next: `/manga/${params.mangaId}/${chapter.nextChapter.scanlatorId}/${chapter.nextChapter.number}`,
                       }
                     : {}),
             },

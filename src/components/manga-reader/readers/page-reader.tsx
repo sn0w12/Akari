@@ -90,8 +90,9 @@ export default function PageReader({
                     to: `/manga/$mangaId/$scanlator/$subId`,
                     params: {
                         mangaId: chapterRef.current.mangaId,
-                        scanlator,
-                        subId: chapterRef.current.nextChapter!.toString(),
+                        scanlator:
+                            chapterRef.current.nextChapter!.scanlatorId.toString(),
+                        subId: chapterRef.current.nextChapter!.number.toString(),
                     },
                 });
                 hasPrefetchedRef.current = true;
@@ -123,8 +124,8 @@ export default function PageReader({
                 to: `/manga/$mangaId/$scanlator/$subId`,
                 params: {
                     mangaId: chapter.mangaId,
-                    scanlator,
-                    subId: chapter.nextChapter!.toString(),
+                    scanlator: chapter.nextChapter!.scanlatorId.toString(),
+                    subId: chapter.nextChapter!.number.toString(),
                 },
                 viewTransition: false,
             });
@@ -270,7 +271,6 @@ export default function PageReader({
             </div>
             <MangaFooter
                 chapter={chapter}
-                scanlator={scanlator}
                 toggleReaderMode={toggleReaderMode}
             />
         </>
