@@ -200,7 +200,7 @@ export function MangaDetailsComponent({
                 {/* Card with flex layout to lock title and buttons */}
                 <div className="flex flex-col justify-between flex-grow bg-background gap-0 lg:col-start-2 lg:row-start-2 lg:max-h-[600px]">
                     {/* Middle section grows as needed */}
-                    <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 flex-grow">
                         {/* Left section for the manga details */}
                         <div className="lg:w-1/2 flex flex-col justify-between">
                             <div className="grid grid-cols-2 gap-2 mb-2">
