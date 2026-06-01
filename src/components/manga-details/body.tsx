@@ -34,7 +34,7 @@ export function MangaDetailsBody({
             className="w-full p-0"
         >
             <TabsList
-                className={cn("bg-background py-0 gap-2", {
+                className={cn("bg-background py-0 gap-2 w-full md:w-fit", {
                     "mb-1": activeTab === "chapters",
                     "mb-0": activeTab === "recommendations",
                 })}
