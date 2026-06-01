@@ -86,6 +86,14 @@ export default function PageReader({
             );
 
             if (currentPage >= threshold) {
+                router.preloadRoute({
+                    to: `/manga/$mangaId/$scanlator/$subId`,
+                    params: {
+                        mangaId: chapterRef.current.mangaId,
+                        scanlator,
+                        subId: chapterRef.current.nextChapter!.toString(),
+                    },
+                });
                 hasPrefetchedRef.current = true;
             }
         }
@@ -112,7 +120,12 @@ export default function PageReader({
             continueAfterChapter
         ) {
             void navigate({
-                to: `../${chapter.nextChapter}`,
+                to: `/manga/$mangaId/$scanlator/$subId`,
+                params: {
+                    mangaId: chapter.mangaId,
+                    scanlator,
+                    subId: chapter.nextChapter!.toString(),
+                },
                 viewTransition: false,
             });
             return;
