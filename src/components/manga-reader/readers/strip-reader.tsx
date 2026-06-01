@@ -11,7 +11,6 @@ import { useRouter } from "@tanstack/react-router";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
     scrollMetrics: {
         pixels: number;
         percentage: number;
@@ -23,7 +22,6 @@ interface StripReaderProps {
 
 export default function StripReader({
     chapter,
-    scanlator,
     scrollMetrics,
     toggleReaderMode,
     setBookmarkState,
@@ -114,11 +112,7 @@ export default function StripReader({
 
     return (
         <>
-            <ChapterInfo
-                chapter={chapter}
-                scanlator={scanlator}
-                hidden={progress === 1}
-            />
+            <ChapterInfo chapter={chapter} hidden={progress === 1} />
             <div>
                 <div
                     id="reader"

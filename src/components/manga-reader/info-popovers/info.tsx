@@ -14,10 +14,8 @@ import { ChapterSelector } from "../chapter-selector";
 
 export function InfoContent({
     chapter,
-    scanlator,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
     const nextChapterExists = chapter.nextChapter !== null;
@@ -51,7 +49,7 @@ export function InfoContent({
                         <ButtonLink
                             to={
                                 lastChapterExists
-                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.lastChapter}`
+                                    ? `/manga/${chapter.mangaId}/${chapter.lastChapter?.scanlatorId}/${chapter.lastChapter?.number}`
                                     : "#"
                             }
                             variant="outline"
@@ -65,7 +63,7 @@ export function InfoContent({
                         <ButtonLink
                             to={
                                 nextChapterExists
-                                    ? `/manga/${chapter.mangaId}/${scanlator}/${chapter.nextChapter}`
+                                    ? `/manga/${chapter.mangaId}/${chapter.nextChapter?.scanlatorId}/${chapter.nextChapter?.number}`
                                     : "#"
                             }
                             variant="outline"
@@ -85,10 +83,8 @@ export function InfoContent({
 
 export function InfoPopover({
     chapter,
-    scanlator,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
-    scanlator: string;
 }) {
     return (
         <ResponsiveModal desktop="popover">
@@ -109,7 +105,7 @@ export function InfoPopover({
                 side="right"
             >
                 <ResponsiveModalPanel>
-                    <InfoContent chapter={chapter} scanlator={scanlator} />
+                    <InfoContent chapter={chapter} />
                 </ResponsiveModalPanel>
             </ResponsiveModalPopup>
         </ResponsiveModal>
