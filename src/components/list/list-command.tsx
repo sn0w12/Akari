@@ -10,7 +10,7 @@ import {
     CommandList,
     CommandPanel,
 } from "@/components/ui/command";
-import Spinner from "@/components/ui/puff-loader";
+import { Spinner } from "@/components/ui/spinner";
 import { client } from "@/lib/api";
 import { getSearchResults } from "@/lib/api/search";
 import { toastManager } from "@/components/ui/toast";

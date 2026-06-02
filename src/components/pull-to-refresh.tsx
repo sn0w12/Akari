@@ -13,7 +13,7 @@ import React, {
     useState,
 } from "react";
 import { useWebHaptics } from "web-haptics/react";
-import Spinner from "./ui/puff-loader";
+import { Spinner } from "@/components/ui/spinner";
 
 export interface PullToRefreshProps {
     children: ReactNode;
@@ -282,7 +282,7 @@ export function PullToRefresh({
             >
                 <div className="flex items-center gap-2 text-xs">
                     {isRefreshing ? (
-                        <Spinner size={24} />
+                        <Spinner />
                     ) : pullDistance > 0 && IndicatorIcon ? (
                         <IndicatorIcon
                             className="size-4 transition-transform"
