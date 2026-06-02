@@ -49,7 +49,7 @@ export function BaseLayout({
     );
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="isolate relative flex flex-col w-full">
             <HeaderComponent notification={notification} />
             <div className="bg-background md:bg-sidebar flex flex-1 h-full">
                 <Sidebar collapsible="icon" aria-label="Main navigation">

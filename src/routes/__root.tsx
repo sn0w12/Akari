@@ -245,7 +245,7 @@ function RootDocument({ children }: { children: ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="antialiased bg-background md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0! mb-[var(--header-height)] md:mb-0 md:overflow-hidden">
+            <body className="relative antialiased bg-background md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0! mb-[var(--header-height)] md:mb-0 md:overflow-hidden">
                 {children}
                 <Scripts />
             </body>
