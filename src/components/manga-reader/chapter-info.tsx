@@ -39,7 +39,7 @@ export function ChapterInfo({
     return (
         <div
             className={cn(
-                `flex fixed z-50 bottom-16 left-auto right-4 h-fit md:left-16 md:top-14 transition-[opacity,left] ease-snappy`,
+                `flex fixed z-50 bottom-16 left-auto h-fit md:left-16 md:top-14 transition-[opacity,left] ease-snappy`,
                 {
                     "opacity-0 pointer-events-none": hidden,
                     "opacity-100": !hidden,

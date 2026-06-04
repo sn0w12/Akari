@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/puff-loader";
 import {
     ResponsiveModal,
     ResponsiveModalDescription,
@@ -63,9 +62,9 @@ function ConfirmActions({
             <Button
                 variant={variant === "destructive" ? "destructive" : "default"}
                 onClick={handleConfirm}
-                disabled={loading}
+                loading={loading}
             >
-                {loading ? <Spinner size={30} /> : confirmText}
+                {confirmText}
             </Button>
         </>
     );

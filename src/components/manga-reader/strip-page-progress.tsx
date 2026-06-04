@@ -25,7 +25,7 @@ export default function StripPageProgress({
     return (
         <div
             className={cn(
-                "flex transition-[opacity,left] ease-snappy fixed z-50 left-4 right-4 lg:bottom-4 lg:top-auto w-[calc(100%-118px)] lg:w-9",
+                "flex transition-[opacity,left] ease-snappy fixed z-50 left-4 lg:bottom-4 lg:top-auto w-[calc(100%-118px)] lg:w-9",
                 {
                     "opacity-100": isVisible && !hidden,
                     "opacity-0 pointer-events-none": !isVisible || hidden,

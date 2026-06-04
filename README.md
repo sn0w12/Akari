@@ -78,10 +78,6 @@ Akari is a high-quality, open-source manga reader built with [Tanstack Start](ht
 
 ## Getting Started
 
-### Online Usage
-
-Visit the [Akari Website](https://akarimanga.dpdns.org/) to start reading manga instantly.
-
 ### Local Installation
 
 If you prefer to run Akari locally, follow these steps. Your akari account will not be available if running locally.
@@ -111,7 +107,7 @@ If you prefer to run Akari locally, follow these steps. Your akari account will 
     Edit `.env` and configure the following variables:
 
     **Required:**
-    - `VITE_API_URL` - The API endpoint for fetching manga content, unless you know what you are doing, set it to `https://api.akarimanga.dpdns.org`
+    - `VITE_API_URL` - The API endpoint for fetching manga content.
 
     **Optional:**
     - `VITE_HOST` - Your website host (e.g., `akari.mydomain.com`) used for metadata
@@ -173,4 +169,6 @@ npm run start
 
 ## Disclaimer
 
-The developers of this application do not have any affiliation with the content available in the app. It collects content from sources that are freely available through any web browser.
+This project is provided for learning and educational purposes.
+
+Akari is not functional out of the box without the user supplying their own data, services, and configuration where required.

@@ -176,6 +176,7 @@ export default function BookmarksHeader({
                                         size="icon"
                                         className="hidden md:flex w-auto items-center justify-center px-4"
                                         loading={isRefreshing}
+                                        loadingIcon={<RefreshCw />}
                                         onClick={onRefresh}
                                     >
                                         <RefreshCw />
