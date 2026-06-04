@@ -24,8 +24,32 @@ export const Route = createRootRoute({
                 content: "black-translucent",
             },
             { name: "apple-mobile-web-app-title", content: "Akari" },
+            { name: "application-name", content: "Akari" },
+            {
+                name: "format-detection",
+                content: "telephone=no, date=no, address=no, email=no",
+            },
+            {
+                name: "theme-color",
+                media: "(prefers-color-scheme: light)",
+                content: "#fafafa",
+            },
+            {
+                name: "theme-color",
+                media: "(prefers-color-scheme: dark)",
+                content: "#0f0f0f",
+            },
+            {
+                name: "referrer",
+                content: "strict-origin-when-cross-origin",
+            },
         ],
         links: [
+            {
+                rel: "apple-touch-icon",
+                sizes: "180x180",
+                href: "/pwa/apple-icon-180.png",
+            },
             {
                 rel: "apple-touch-startup-image",
                 href: "/pwa/apple-splash-2048-2732.jpg",
