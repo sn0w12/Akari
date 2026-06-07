@@ -66,7 +66,7 @@ export default function StripReader({
         if (
             !lastImageRef.current ||
             !readerRef.current ||
-            loadedImages !== chapter.images.length
+            imagesLoadedRef.current !== chapter.images.length
         )
             return;
         const firstImage = readerRef.current.querySelector(
@@ -83,9 +83,7 @@ export default function StripReader({
             Math.min(1, currentPosition / totalHeight),
         );
 
-        queueMicrotask(() => {
-            setProgress(newProgress);
-        });
+        setProgress(newProgress);
     }, [pixels, clientHeight, loadedImages, chapter.images.length]);
 
     const chapterRef = useRef(chapter);
