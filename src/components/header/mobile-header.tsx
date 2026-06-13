@@ -26,7 +26,7 @@ export function MobileHeader() {
                     onClick={toggleSidebar}
                     active={
                         pathname === "/settings" ||
-                        pathname === "/account" ||
+                        pathname.startsWith("/account") ||
                         pathname.startsWith("/genre/")
                     }
                     className={borderClass}
@@ -44,7 +44,7 @@ export function MobileHeader() {
                 <TabBarTrigger
                     aria-label="Home"
                     href="/"
-                    active={pathname === "/" || pathname.startsWith("/latest")}
+                    active={pathname === "/" || pathname === "/latest"}
                     className={borderClass}
                 >
                     <HomeIcon className="size-6" />

@@ -1,6 +1,6 @@
 import { useUser } from "@/hooks/use-user";
 import { useSetting, useShortcutSetting } from "@/lib/settings";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, useRouterState } from "@tanstack/react-router";
 import { User } from "lucide-react";
 import { Avatar } from "../ui/avatar";
 import { KeyboardShortcut } from "../ui/keyboard-shortcut";
@@ -14,6 +14,8 @@ export function AccountButton({
     const { data: user } = useUser();
     const openAccount = useSetting("openAccount");
     const router = useRouter();
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
+
     useShortcutSetting(
         "openAccount",
         () => router.navigate({ to: "/account" }),
@@ -25,7 +27,11 @@ export function AccountButton({
     return (
         <>
             {user ? (
-                <SidebarMenuLink tooltip="Account" to="/account">
+                <SidebarMenuLink
+                    tooltip="Account"
+                    to="/account"
+                    active={pathname.startsWith("/account")}
+                >
                     <Avatar name={user.username} size={24} />
                     <span>Account</span>
                     <KeyboardShortcut
@@ -36,7 +42,11 @@ export function AccountButton({
                     />
                 </SidebarMenuLink>
             ) : (
-                <SidebarMenuLink tooltip="Login" to="/auth/login">
+                <SidebarMenuLink
+                    tooltip="Login"
+                    to="/auth/login"
+                    active={pathname.startsWith("/auth")}
+                >
                     <User />
                     <span>Login</span>
                     <KeyboardShortcut

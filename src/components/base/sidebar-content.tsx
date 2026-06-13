@@ -7,7 +7,7 @@ import {
     SidebarSection,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { GENRE_CATEGORIES } from "@/lib/api/search";
+import { Genre, GENRE_CATEGORIES } from "@/lib/api/search";
 import { useSetting } from "@/lib/settings";
 import {
     BadgeAlert,
@@ -25,6 +25,7 @@ import {
 import { AccountButton } from "../account/account-button";
 import { KeyboardShortcut } from "../ui/keyboard-shortcut";
 import { Separator } from "../ui/separator";
+import { useRouterState } from "@tanstack/react-router";
 
 const categoryIcons: Record<string, React.ReactNode> = {
     Demographics: <Users />,
@@ -37,6 +38,17 @@ const categoryIcons: Record<string, React.ReactNode> = {
 export function BaseSidebarContent({ notification }: { notification: string }) {
     const { state: sidebarState } = useSidebar();
     const isSidebarCollapsed = sidebarState === "collapsed";
+    const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+    function isCategoryActive(genres: readonly Genre[]): boolean {
+        const paths = pathname.split("/").filter(Boolean);
+        return genres.includes(paths[paths.length - 1] as Genre);
+    }
+
+    function isGenreActive(genre: string): boolean {
+        const paths = pathname.split("/").filter(Boolean);
+        return paths[0] === "genre" && paths[paths.length - 1] === genre;
+    }
 
     return (
         <>
@@ -48,7 +60,11 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                     <Separator className="hidden md:block" />
 
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink tooltip="Home" to="/">
+                        <SidebarMenuLink
+                            tooltip="Home"
+                            to="/"
+                            active={pathname === "/" || pathname === "/latest"}
+                        >
                             <HomeIcon />
                             <span>Home</span>
                         </SidebarMenuLink>
@@ -58,6 +74,7 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                             tooltip={`Bookmarks${notification ? " •" : ""} ${notification}`}
                             to="/bookmarks"
                             aria-label={`${notification} Unread Bookmarks`}
+                            active={pathname === "/bookmarks"}
                         >
                             <Bookmark />
                             <span>Bookmarks</span>
@@ -72,13 +89,21 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                         </SidebarMenuLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink tooltip="Popular" to="/popular">
+                        <SidebarMenuLink
+                            tooltip="Popular"
+                            to="/popular"
+                            active={pathname === "/popular"}
+                        >
                             <TrendingUp />
                             <span>Popular</span>
                         </SidebarMenuLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="hidden md:block">
-                        <SidebarMenuLink tooltip="Search" to="/search">
+                        <SidebarMenuLink
+                            tooltip="Search"
+                            to="/search"
+                            active={pathname === "/search"}
+                        >
                             <Search />
                             <span>Search</span>
                         </SidebarMenuLink>
@@ -96,9 +121,8 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
                                     name: genre,
                                     id: genre,
                                 }))}
-                                basePath="/genre"
-                                isActive={false}
-                                isItemActive={(): boolean => false}
+                                active={isCategoryActive(genres)}
+                                isItemActive={isGenreActive}
                             />
                         ),
                     )}
@@ -107,7 +131,11 @@ export function BaseSidebarContent({ notification }: { notification: string }) {
             <SidebarFooter className="mb-[var(--safe-bottom)] md:mb-0">
                 <Separator />
                 <SidebarMenuItem>
-                    <SidebarMenuLink tooltip="Settings" to="/settings">
+                    <SidebarMenuLink
+                        tooltip="Settings"
+                        to="/settings"
+                        active={pathname === "/settings"}
+                    >
                         <SettingsIcon />
                         <span>Settings</span>
                         <KeyboardShortcut
