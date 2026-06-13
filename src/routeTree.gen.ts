@@ -45,6 +45,7 @@ import { Route as DefaultAuthLoginIndexRouteImport } from './routes/_default/aut
 import { Route as DefaultAuthForgotPasswordIndexRouteImport } from './routes/_default/auth/forgot-password/index'
 import { Route as DefaultAuthErrorIndexRouteImport } from './routes/_default/auth/error/index'
 import { Route as DefaultAccountSetupIndexRouteImport } from './routes/_default/account/setup/index'
+import { Route as DefaultAccountHistoryIndexRouteImport } from './routes/_default/account/history/index'
 import { Route as DefaultMangaMangaIdScanlatorSubIdIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/index'
 import { Route as DefaultMangaMangaIdScanlatorSubIdCommentsIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/comments/index'
 
@@ -233,6 +234,12 @@ const DefaultAccountSetupIndexRoute =
     path: '/account/setup/',
     getParentRoute: () => DefaultRoute,
   } as any)
+const DefaultAccountHistoryIndexRoute =
+  DefaultAccountHistoryIndexRouteImport.update({
+    id: '/account/history/',
+    path: '/account/history/',
+    getParentRoute: () => DefaultRoute,
+  } as any)
 const DefaultMangaMangaIdScanlatorSubIdIndexRoute =
   DefaultMangaMangaIdScanlatorSubIdIndexRouteImport.update({
     id: '/manga/$mangaId/$scanlator/$subId/',
@@ -266,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof DefaultSettingsIndexRoute
   '/terms/': typeof DefaultTermsIndexRoute
   '/user/': typeof DefaultUserIndexRoute
+  '/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/auth/error/': typeof DefaultAuthErrorIndexRoute
   '/auth/forgot-password/': typeof DefaultAuthForgotPasswordIndexRoute
@@ -304,6 +312,7 @@ export interface FileRoutesByTo {
   '/settings': typeof DefaultSettingsIndexRoute
   '/terms': typeof DefaultTermsIndexRoute
   '/user': typeof DefaultUserIndexRoute
+  '/account/history': typeof DefaultAccountHistoryIndexRoute
   '/account/setup': typeof DefaultAccountSetupIndexRoute
   '/auth/error': typeof DefaultAuthErrorIndexRoute
   '/auth/forgot-password': typeof DefaultAuthForgotPasswordIndexRoute
@@ -345,6 +354,7 @@ export interface FileRoutesById {
   '/_default/settings/': typeof DefaultSettingsIndexRoute
   '/_default/terms/': typeof DefaultTermsIndexRoute
   '/_default/user/': typeof DefaultUserIndexRoute
+  '/_default/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/_default/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/_default/auth/error/': typeof DefaultAuthErrorIndexRoute
   '/_default/auth/forgot-password/': typeof DefaultAuthForgotPasswordIndexRoute
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/terms/'
     | '/user/'
+    | '/account/history/'
     | '/account/setup/'
     | '/auth/error/'
     | '/auth/forgot-password/'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/terms'
     | '/user'
+    | '/account/history'
     | '/account/setup'
     | '/auth/error'
     | '/auth/forgot-password'
@@ -463,6 +475,7 @@ export interface FileRouteTypes {
     | '/_default/settings/'
     | '/_default/terms/'
     | '/_default/user/'
+    | '/_default/account/history/'
     | '/_default/account/setup/'
     | '/_default/auth/error/'
     | '/_default/auth/forgot-password/'
@@ -745,6 +758,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultAccountSetupIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
+    '/_default/account/history/': {
+      id: '/_default/account/history/'
+      path: '/account/history'
+      fullPath: '/account/history/'
+      preLoaderRoute: typeof DefaultAccountHistoryIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
     '/_default/manga/$mangaId/$scanlator/$subId/': {
       id: '/_default/manga/$mangaId/$scanlator/$subId/'
       path: '/manga/$mangaId/$scanlator/$subId'
@@ -789,6 +809,7 @@ interface DefaultRouteChildren {
   DefaultSettingsIndexRoute: typeof DefaultSettingsIndexRoute
   DefaultTermsIndexRoute: typeof DefaultTermsIndexRoute
   DefaultUserIndexRoute: typeof DefaultUserIndexRoute
+  DefaultAccountHistoryIndexRoute: typeof DefaultAccountHistoryIndexRoute
   DefaultAccountSetupIndexRoute: typeof DefaultAccountSetupIndexRoute
   DefaultAuthErrorIndexRoute: typeof DefaultAuthErrorIndexRoute
   DefaultAuthForgotPasswordIndexRoute: typeof DefaultAuthForgotPasswordIndexRoute
@@ -821,6 +842,7 @@ const DefaultRouteChildren: DefaultRouteChildren = {
   DefaultSettingsIndexRoute: DefaultSettingsIndexRoute,
   DefaultTermsIndexRoute: DefaultTermsIndexRoute,
   DefaultUserIndexRoute: DefaultUserIndexRoute,
+  DefaultAccountHistoryIndexRoute: DefaultAccountHistoryIndexRoute,
   DefaultAccountSetupIndexRoute: DefaultAccountSetupIndexRoute,
   DefaultAuthErrorIndexRoute: DefaultAuthErrorIndexRoute,
   DefaultAuthForgotPasswordIndexRoute: DefaultAuthForgotPasswordIndexRoute,

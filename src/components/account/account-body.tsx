@@ -1,5 +1,5 @@
 import ErrorPage from "@/components/error-page";
-import { client, getAuthSession, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
@@ -12,19 +12,10 @@ export function AccountBody() {
     const { data, error, isLoading } = useQuery({
         queryKey: ["account"],
         queryFn: async () => {
-            const session = await getAuthSession();
-            if (!session?.access_token) throw new Error("Not authenticated");
-
-            const headers = {
-                Authorization: `Bearer ${session.access_token}`,
-                ...serverHeaders,
-            };
-
             const [userRes, listsRes] = await Promise.all([
-                client.GET("/v2/user/me", { headers }),
+                client.GET("/v2/user/me"),
                 client.GET("/v2/lists/user/me", {
                     params: { query: { pageSize: 100 } },
-                    headers,
                 }),
             ]);
 
