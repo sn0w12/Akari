@@ -7,7 +7,8 @@ import type {
     NameType,
     ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import * as RechartsPrimitive from "recharts";
+import type * as RechartsPrimitive from "recharts";
+import { Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
@@ -42,7 +43,7 @@ function ChartTooltipContent({
     selected,
     roundness = "lg",
     variant = "default",
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: React.ComponentProps<typeof Tooltip> &
     React.ComponentProps<"div"> & {
         hideLabel?: boolean;
         hideIndicator?: boolean;
@@ -245,11 +246,8 @@ function getIndicatorColorStyle(
 const ChartTooltip = ({
     animationDuration = 200,
     ...props
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip>) => (
-    <RechartsPrimitive.Tooltip
-        animationDuration={animationDuration}
-        {...props}
-    />
+}: React.ComponentProps<typeof Tooltip>) => (
+    <Tooltip animationDuration={animationDuration} {...props} />
 );
 
 export { ChartTooltip, ChartTooltipContent };
