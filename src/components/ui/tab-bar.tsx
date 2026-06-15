@@ -29,7 +29,7 @@ function TabBar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             className={cn(
-                "block md:hidden fixed bottom-0 left-0 right-0 z-50 tabbar py-4 px-6",
+                "block md:hidden fixed bottom-0 left-0 right-0 z-50 tabbar pt-4 px-6",
                 className,
             )}
             {...props}
@@ -44,7 +44,7 @@ function TabBarList({
     return (
         <Card
             className={cn(
-                "flex flex-row h-14 items-center justify-around bg-sidebar mb-[var(--safe-bottom)]",
+                "flex flex-row h-14 items-center justify-around bg-sidebar mb-[max(var(--safe-bottom),calc(var(--spacing)*2))]",
                 className,
             )}
             render={<nav />}
