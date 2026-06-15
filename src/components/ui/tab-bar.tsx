@@ -3,16 +3,19 @@ import { useRender } from "@base-ui/react/use-render";
 import { Link } from "@tanstack/react-router";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
+import { Card } from "./card";
+import { Button } from "./button";
+import { ButtonGroup } from "./group";
 
 const tabBarTriggerVariants = cva(
-    "w-full h-full flex flex-col items-center justify-center gap-1 p-2 text-xs transition-colors focus:outline-none border-t",
+    "w-full h-full flex flex-col items-center justify-center gap-1 p-2 text-xs transition-colors focus:outline-none rounded-lg",
     {
         variants: {
             variant: {
                 default: "text-muted-foreground hover:text-foreground",
             },
             active: {
-                true: "border-primary text-foreground",
+                true: "border-primary text-foreground bg-sidebar-accent",
                 false: "border-border",
             },
         },
@@ -26,7 +29,7 @@ function TabBar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 bg-sidebar tabbar",
+                "block md:hidden fixed bottom-0 left-0 right-0 z-50 tabbar py-4 px-6",
                 className,
             )}
             {...props}
@@ -39,8 +42,12 @@ function TabBarList({
     ...props
 }: React.HTMLAttributes<HTMLElement>) {
     return (
-        <nav
-            className={cn("flex h-14 items-center justify-around", className)}
+        <Card
+            className={cn(
+                "flex flex-row h-14 items-center justify-around bg-sidebar mb-[var(--safe-bottom)]",
+                className,
+            )}
+            render={<nav />}
             {...props}
         />
     );
@@ -63,22 +70,18 @@ function TabBarTrigger({
 }: TabBarTriggerProps) {
     const isActive = active ?? false;
 
-    if (href) {
-        return (
-            <Link
-                to={href}
-                className={cn(
-                    tabBarTriggerVariants({ variant, active: isActive }),
-                    className,
-                )}
-                {...props}
-            >
-                {children}
-            </Link>
-        );
-    }
-
-    return (
+    const content = href ? (
+        <Link
+            to={href}
+            className={cn(
+                tabBarTriggerVariants({ variant, active: isActive }),
+                className,
+            )}
+            {...props}
+        >
+            {children}
+        </Link>
+    ) : (
         <button
             className={cn(
                 tabBarTriggerVariants({ variant, active: isActive }),
@@ -89,6 +92,49 @@ function TabBarTrigger({
             {children as React.ReactNode}
         </button>
     );
+
+    return <div className="p-2">{content}</div>;
 }
 
-export { TabBar, TabBarList, TabBarTrigger, tabBarTriggerVariants };
+function TabBarAdditionList({
+    className,
+    ...props
+}: React.ComponentProps<typeof ButtonGroup>) {
+    return (
+        <div
+            className={cn(
+                "flex md:hidden flex-row fixed bottom-15 left-0 right-0 z-40 tabbar py-4 px-9 items-center justify-end tabbar-addition-list mb-[var(--safe-bottom)]",
+                className,
+            )}
+        >
+            <ButtonGroup
+                className="rounded-3xl bg-sidebar [&_button:last-child]:pr-3.5 [&_button:first-child]:pl-3.5"
+                orientation="horizontal"
+                {...props}
+            />
+        </div>
+    );
+}
+
+function TabBarAdditionTrigger({
+    className,
+    ...props
+}: React.ComponentProps<typeof Button>) {
+    return (
+        <Button
+            size="pill"
+            variant="outline"
+            className={className}
+            {...props}
+        />
+    );
+}
+
+export {
+    TabBar,
+    TabBarList,
+    TabBarTrigger,
+    TabBarAdditionList,
+    TabBarAdditionTrigger,
+    tabBarTriggerVariants,
+};

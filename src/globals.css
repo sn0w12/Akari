@@ -187,6 +187,11 @@ body {
     --sidebar-ring: var(--color-neutral-400);
 }
 
+.debug {
+    --safe-top: 2rem;
+    --safe-bottom: 3rem;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
@@ -452,4 +457,33 @@ header {
     position: fixed !important;
     top: 0 !important;
     left: 0;
+}
+
+.tabbar-addition-list {
+    view-transition-name: tabbar-addition-list;
+}
+::view-transition-group(tabbar-addition-list) {
+    z-index: 40;
+    animation-timing-function: var(--ease-snappy);
+}
+::view-transition-old(tabbar-addition-list) {
+    animation: tabbar-addition-list-exit 150ms ease-out forwards;
+}
+::view-transition-new(tabbar-addition-list) {
+    animation: tabbar-addition-list-enter 200ms ease-out forwards;
+}
+
+@keyframes tabbar-addition-list-exit {
+    to {
+        transform: translateY(calc(var(--spacing) * 13));
+        filter: blur(3px);
+        opacity: 0;
+    }
+}
+@keyframes tabbar-addition-list-enter {
+    from {
+        transform: translateY(calc(var(--spacing) * 13));
+        filter: blur(3px);
+        opacity: 0;
+    }
 }

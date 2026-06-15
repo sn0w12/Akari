@@ -19,8 +19,8 @@ export function MobileHeader() {
     const pathname = useRouterState({ select: (s) => s.location.pathname });
 
     return (
-        <TabBar className="block md:hidden">
-            <TabBarList className="mb-[var(--safe-bottom)]">
+        <TabBar>
+            <TabBarList>
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}
