@@ -71,7 +71,14 @@ body {
 }
 
 :root {
-    --radius: 0.625rem;
+    --radius: 0.5rem;
+    --radius-sm: calc(var(--radius) * 0.5);
+    --radius-md: calc(var(--radius) * 0.75);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.5);
+    --radius-2xl: calc(var(--radius) * 2);
+    --radius-3xl: calc(var(--radius) * 3);
+
     --background: var(--color-white);
     --foreground: var(--color-neutral-800);
     --card: var(--color-white);
@@ -485,5 +492,17 @@ header {
         transform: translateY(calc(var(--spacing) * 13));
         filter: blur(3px);
         opacity: 0;
+    }
+}
+
+@supports (corner-shape: squircle) {
+    :root {
+        --radius: 0.9rem;
+    }
+
+    *,
+    *::before,
+    *::after {
+        corner-shape: squircle;
     }
 }
