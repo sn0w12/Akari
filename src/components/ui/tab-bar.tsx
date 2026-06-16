@@ -103,7 +103,7 @@ function TabBarAdditionList({
     return (
         <div
             className={cn(
-                "flex md:hidden flex-row fixed bottom-15 left-0 right-0 z-40 tabbar py-4 px-9 items-center justify-end tabbar-addition-list mb-[var(--safe-bottom)]",
+                "flex md:hidden flex-row fixed bottom-15 left-0 right-0 z-40 tabbar pt-4 px-9 items-center justify-end tabbar-addition-list mb-[max(var(--safe-bottom),calc(var(--spacing)*2))]",
                 className,
             )}
         >
