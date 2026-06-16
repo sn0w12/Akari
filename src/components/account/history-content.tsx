@@ -31,7 +31,7 @@ import type { ChartConfig } from "@/components/evilcharts/ui/chart";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 type HistoryBucket = components["schemas"]["HistoryBucket"];
 
@@ -203,7 +203,10 @@ function padDayOfWeek(
     entries: components["schemas"]["DayOfWeekReadCount"][],
 ): { day: string; count: number }[] {
     const map = new Map(entries.map((e) => [e.dayOfWeek, e.count]));
-    return DAY_LABELS.map((day, i) => ({ day, count: map.get(i) ?? 0 }));
+    return DAY_LABELS.map((day, i) => ({
+        day,
+        count: map.get((i + 1) % 7) ?? 0,
+    }));
 }
 
 function padHour(
@@ -211,7 +214,7 @@ function padHour(
 ): { hour: string; count: number }[] {
     const map = new Map(entries.map((e) => [e.hour, e.count]));
     return Array.from({ length: 24 }, (_, i) => ({
-        hour: `${i}`,
+        hour: `${i + 1}`,
         count: map.get(i) ?? 0,
     }));
 }
@@ -468,7 +471,7 @@ export function HistoryContent() {
                                 width={120}
                             />
                             <BarTooltip />
-                            <Bar dataKey="count" variant="hatched" />
+                            <Bar dataKey="count" />
                         </EvilBarChart>
                     </CardContent>
                 </Card>
