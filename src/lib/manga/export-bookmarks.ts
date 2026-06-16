@@ -6,7 +6,8 @@ type Bookmark = components["schemas"]["BookmarkListResponse"]["items"][number];
 
 export async function exportBookmarks() {
     const bookmarks = await fetchAllBookmarks();
-    const bookmarksBlob = new Blob([JSON.stringify(bookmarks, null, 2)], {
+    const simplified = bookmarks.map(simplifyBookmark);
+    const bookmarksBlob = new Blob([JSON.stringify(simplified, null, 2)], {
         type: "application/json",
     });
     const url = URL.createObjectURL(bookmarksBlob);
@@ -20,7 +21,7 @@ export async function exportBookmarks() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    return bookmarks.length;
+    return simplified.length;
 }
 
 async function fetchAllBookmarks() {
@@ -65,4 +66,22 @@ async function fetchAllBookmarks() {
     }
 
     return allBookmarks;
+}
+
+function simplifyBookmark(b: Bookmark) {
+    return {
+        mangaId: b.mangaId,
+        title: b.title,
+        alternativeTitles: b.alternativeTitles,
+        authors: b.authors,
+        genres: b.genres,
+        malId: b.malId,
+        aniId: b.aniId,
+        lastReadChapter: b.lastReadChapter
+            ? {
+                  number: b.lastReadChapter.number,
+                  title: b.lastReadChapter.title,
+              }
+            : null,
+    };
 }
