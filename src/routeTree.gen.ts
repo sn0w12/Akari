@@ -9,12 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShortcutRouteImport } from './routes/_shortcut'
 import { Route as DefaultRouteImport } from './routes/_default'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as DefaultIndexRouteImport } from './routes/_default/index'
-import { Route as MalMalIdRouteImport } from './routes/mal.$malId'
-import { Route as LListIdRouteImport } from './routes/l.$listId'
-import { Route as AniAniIdRouteImport } from './routes/ani.$aniId'
 import { Route as DefaultUserIndexRouteImport } from './routes/_default/user/index'
 import { Route as DefaultTermsIndexRouteImport } from './routes/_default/terms/index'
 import { Route as DefaultSettingsIndexRouteImport } from './routes/_default/settings/index'
@@ -30,6 +28,9 @@ import { Route as ApiV1RevalidateRouteImport } from './routes/api.v1.revalidate'
 import { Route as AuthAuthOauthRouteImport } from './routes/_auth/auth/oauth'
 import { Route as AuthAuthConfirmRouteImport } from './routes/_auth/auth/confirm'
 import { Route as AuthAuthCallbackRouteImport } from './routes/_auth/auth/callback'
+import { Route as ShortcutMalMalIdIndexRouteImport } from './routes/_shortcut/mal/$malId/index'
+import { Route as ShortcutLListIdIndexRouteImport } from './routes/_shortcut/l/$listId/index'
+import { Route as ShortcutAniAniIdIndexRouteImport } from './routes/_shortcut/ani/$aniId/index'
 import { Route as DefaultUserUserIdIndexRouteImport } from './routes/_default/user/$userId/index'
 import { Route as DefaultSyncMalIndexRouteImport } from './routes/_default/sync/mal/index'
 import { Route as DefaultSyncAniIndexRouteImport } from './routes/_default/sync/ani/index'
@@ -49,6 +50,10 @@ import { Route as DefaultAccountHistoryIndexRouteImport } from './routes/_defaul
 import { Route as DefaultMangaMangaIdScanlatorSubIdIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/index'
 import { Route as DefaultMangaMangaIdScanlatorSubIdCommentsIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/comments/index'
 
+const ShortcutRoute = ShortcutRouteImport.update({
+  id: '/_shortcut',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DefaultRoute = DefaultRouteImport.update({
   id: '/_default',
   getParentRoute: () => rootRouteImport,
@@ -61,21 +66,6 @@ const DefaultIndexRoute = DefaultIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DefaultRoute,
-} as any)
-const MalMalIdRoute = MalMalIdRouteImport.update({
-  id: '/mal/$malId',
-  path: '/mal/$malId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LListIdRoute = LListIdRouteImport.update({
-  id: '/l/$listId',
-  path: '/l/$listId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AniAniIdRoute = AniAniIdRouteImport.update({
-  id: '/ani/$aniId',
-  path: '/ani/$aniId',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const DefaultUserIndexRoute = DefaultUserIndexRouteImport.update({
   id: '/user/',
@@ -151,6 +141,21 @@ const AuthAuthCallbackRoute = AuthAuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
   getParentRoute: () => AuthRoute,
+} as any)
+const ShortcutMalMalIdIndexRoute = ShortcutMalMalIdIndexRouteImport.update({
+  id: '/mal/$malId/',
+  path: '/mal/$malId/',
+  getParentRoute: () => ShortcutRoute,
+} as any)
+const ShortcutLListIdIndexRoute = ShortcutLListIdIndexRouteImport.update({
+  id: '/l/$listId/',
+  path: '/l/$listId/',
+  getParentRoute: () => ShortcutRoute,
+} as any)
+const ShortcutAniAniIdIndexRoute = ShortcutAniAniIdIndexRouteImport.update({
+  id: '/ani/$aniId/',
+  path: '/ani/$aniId/',
+  getParentRoute: () => ShortcutRoute,
 } as any)
 const DefaultUserUserIdIndexRoute = DefaultUserUserIdIndexRouteImport.update({
   id: '/user/$userId/',
@@ -255,9 +260,6 @@ const DefaultMangaMangaIdScanlatorSubIdCommentsIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof DefaultIndexRoute
-  '/ani/$aniId': typeof AniAniIdRoute
-  '/l/$listId': typeof LListIdRoute
-  '/mal/$malId': typeof MalMalIdRoute
   '/auth/callback': typeof AuthAuthCallbackRoute
   '/auth/confirm': typeof AuthAuthConfirmRoute
   '/auth/oauth': typeof AuthAuthOauthRoute
@@ -289,14 +291,14 @@ export interface FileRoutesByFullPath {
   '/sync/ani/': typeof DefaultSyncAniIndexRoute
   '/sync/mal/': typeof DefaultSyncMalIndexRoute
   '/user/$userId/': typeof DefaultUserUserIdIndexRoute
+  '/ani/$aniId/': typeof ShortcutAniAniIdIndexRoute
+  '/l/$listId/': typeof ShortcutLListIdIndexRoute
+  '/mal/$malId/': typeof ShortcutMalMalIdIndexRoute
   '/manga/$mangaId/$scanlator/$subId/': typeof DefaultMangaMangaIdScanlatorSubIdIndexRoute
   '/manga/$mangaId/$scanlator/$subId/comments/': typeof DefaultMangaMangaIdScanlatorSubIdCommentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof DefaultIndexRoute
-  '/ani/$aniId': typeof AniAniIdRoute
-  '/l/$listId': typeof LListIdRoute
-  '/mal/$malId': typeof MalMalIdRoute
   '/auth/callback': typeof AuthAuthCallbackRoute
   '/auth/confirm': typeof AuthAuthConfirmRoute
   '/auth/oauth': typeof AuthAuthOauthRoute
@@ -328,6 +330,9 @@ export interface FileRoutesByTo {
   '/sync/ani': typeof DefaultSyncAniIndexRoute
   '/sync/mal': typeof DefaultSyncMalIndexRoute
   '/user/$userId': typeof DefaultUserUserIdIndexRoute
+  '/ani/$aniId': typeof ShortcutAniAniIdIndexRoute
+  '/l/$listId': typeof ShortcutLListIdIndexRoute
+  '/mal/$malId': typeof ShortcutMalMalIdIndexRoute
   '/manga/$mangaId/$scanlator/$subId': typeof DefaultMangaMangaIdScanlatorSubIdIndexRoute
   '/manga/$mangaId/$scanlator/$subId/comments': typeof DefaultMangaMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -335,9 +340,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
   '/_default': typeof DefaultRouteWithChildren
-  '/ani/$aniId': typeof AniAniIdRoute
-  '/l/$listId': typeof LListIdRoute
-  '/mal/$malId': typeof MalMalIdRoute
+  '/_shortcut': typeof ShortcutRouteWithChildren
   '/_default/': typeof DefaultIndexRoute
   '/_auth/auth/callback': typeof AuthAuthCallbackRoute
   '/_auth/auth/confirm': typeof AuthAuthConfirmRoute
@@ -370,6 +373,9 @@ export interface FileRoutesById {
   '/_default/sync/ani/': typeof DefaultSyncAniIndexRoute
   '/_default/sync/mal/': typeof DefaultSyncMalIndexRoute
   '/_default/user/$userId/': typeof DefaultUserUserIdIndexRoute
+  '/_shortcut/ani/$aniId/': typeof ShortcutAniAniIdIndexRoute
+  '/_shortcut/l/$listId/': typeof ShortcutLListIdIndexRoute
+  '/_shortcut/mal/$malId/': typeof ShortcutMalMalIdIndexRoute
   '/_default/manga/$mangaId/$scanlator/$subId/': typeof DefaultMangaMangaIdScanlatorSubIdIndexRoute
   '/_default/manga/$mangaId/$scanlator/$subId/comments/': typeof DefaultMangaMangaIdScanlatorSubIdCommentsIndexRoute
 }
@@ -377,9 +383,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/ani/$aniId'
-    | '/l/$listId'
-    | '/mal/$malId'
     | '/auth/callback'
     | '/auth/confirm'
     | '/auth/oauth'
@@ -411,14 +414,14 @@ export interface FileRouteTypes {
     | '/sync/ani/'
     | '/sync/mal/'
     | '/user/$userId/'
+    | '/ani/$aniId/'
+    | '/l/$listId/'
+    | '/mal/$malId/'
     | '/manga/$mangaId/$scanlator/$subId/'
     | '/manga/$mangaId/$scanlator/$subId/comments/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/ani/$aniId'
-    | '/l/$listId'
-    | '/mal/$malId'
     | '/auth/callback'
     | '/auth/confirm'
     | '/auth/oauth'
@@ -450,15 +453,16 @@ export interface FileRouteTypes {
     | '/sync/ani'
     | '/sync/mal'
     | '/user/$userId'
+    | '/ani/$aniId'
+    | '/l/$listId'
+    | '/mal/$malId'
     | '/manga/$mangaId/$scanlator/$subId'
     | '/manga/$mangaId/$scanlator/$subId/comments'
   id:
     | '__root__'
     | '/_auth'
     | '/_default'
-    | '/ani/$aniId'
-    | '/l/$listId'
-    | '/mal/$malId'
+    | '/_shortcut'
     | '/_default/'
     | '/_auth/auth/callback'
     | '/_auth/auth/confirm'
@@ -491,6 +495,9 @@ export interface FileRouteTypes {
     | '/_default/sync/ani/'
     | '/_default/sync/mal/'
     | '/_default/user/$userId/'
+    | '/_shortcut/ani/$aniId/'
+    | '/_shortcut/l/$listId/'
+    | '/_shortcut/mal/$malId/'
     | '/_default/manga/$mangaId/$scanlator/$subId/'
     | '/_default/manga/$mangaId/$scanlator/$subId/comments/'
   fileRoutesById: FileRoutesById
@@ -498,14 +505,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   DefaultRoute: typeof DefaultRouteWithChildren
-  AniAniIdRoute: typeof AniAniIdRoute
-  LListIdRoute: typeof LListIdRoute
-  MalMalIdRoute: typeof MalMalIdRoute
+  ShortcutRoute: typeof ShortcutRouteWithChildren
   ApiV1RevalidateRoute: typeof ApiV1RevalidateRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_shortcut': {
+      id: '/_shortcut'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ShortcutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_default': {
       id: '/_default'
       path: ''
@@ -526,27 +538,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof DefaultIndexRouteImport
       parentRoute: typeof DefaultRoute
-    }
-    '/mal/$malId': {
-      id: '/mal/$malId'
-      path: '/mal/$malId'
-      fullPath: '/mal/$malId'
-      preLoaderRoute: typeof MalMalIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/l/$listId': {
-      id: '/l/$listId'
-      path: '/l/$listId'
-      fullPath: '/l/$listId'
-      preLoaderRoute: typeof LListIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ani/$aniId': {
-      id: '/ani/$aniId'
-      path: '/ani/$aniId'
-      fullPath: '/ani/$aniId'
-      preLoaderRoute: typeof AniAniIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_default/user/': {
       id: '/_default/user/'
@@ -652,6 +643,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthAuthCallbackRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_shortcut/mal/$malId/': {
+      id: '/_shortcut/mal/$malId/'
+      path: '/mal/$malId'
+      fullPath: '/mal/$malId/'
+      preLoaderRoute: typeof ShortcutMalMalIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
+    }
+    '/_shortcut/l/$listId/': {
+      id: '/_shortcut/l/$listId/'
+      path: '/l/$listId'
+      fullPath: '/l/$listId/'
+      preLoaderRoute: typeof ShortcutLListIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
+    }
+    '/_shortcut/ani/$aniId/': {
+      id: '/_shortcut/ani/$aniId/'
+      path: '/ani/$aniId'
+      fullPath: '/ani/$aniId/'
+      preLoaderRoute: typeof ShortcutAniAniIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
     }
     '/_default/user/$userId/': {
       id: '/_default/user/$userId/'
@@ -867,12 +879,26 @@ const DefaultRouteChildren: DefaultRouteChildren = {
 const DefaultRouteWithChildren =
   DefaultRoute._addFileChildren(DefaultRouteChildren)
 
+interface ShortcutRouteChildren {
+  ShortcutAniAniIdIndexRoute: typeof ShortcutAniAniIdIndexRoute
+  ShortcutLListIdIndexRoute: typeof ShortcutLListIdIndexRoute
+  ShortcutMalMalIdIndexRoute: typeof ShortcutMalMalIdIndexRoute
+}
+
+const ShortcutRouteChildren: ShortcutRouteChildren = {
+  ShortcutAniAniIdIndexRoute: ShortcutAniAniIdIndexRoute,
+  ShortcutLListIdIndexRoute: ShortcutLListIdIndexRoute,
+  ShortcutMalMalIdIndexRoute: ShortcutMalMalIdIndexRoute,
+}
+
+const ShortcutRouteWithChildren = ShortcutRoute._addFileChildren(
+  ShortcutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   DefaultRoute: DefaultRouteWithChildren,
-  AniAniIdRoute: AniAniIdRoute,
-  LListIdRoute: LListIdRoute,
-  MalMalIdRoute: MalMalIdRoute,
+  ShortcutRoute: ShortcutRouteWithChildren,
   ApiV1RevalidateRoute: ApiV1RevalidateRoute,
 }
 export const routeTree = rootRouteImport
