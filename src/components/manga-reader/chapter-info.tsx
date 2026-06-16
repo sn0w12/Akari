@@ -6,6 +6,9 @@ import { InfoPopover } from "./info-popovers/info";
 import { SettingsPopover } from "./info-popovers/settings";
 import { useSidebar } from "../ui/sidebar";
 
+export const READER_BOTTOM_OFFSET =
+    "calc(calc(var(--spacing) * 18) + var(--safe-bottom))";
+
 export function ChapterInfo({
     chapter,
     hidden,
@@ -50,7 +53,7 @@ export function ChapterInfo({
             style={
                 orientation === "horizontal"
                     ? {
-                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
+                          bottom: READER_BOTTOM_OFFSET,
                       }
                     : {}
             }

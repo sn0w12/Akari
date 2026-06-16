@@ -3,6 +3,7 @@ import { useSetting } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import React, { useRef } from "react";
 import { useSidebar } from "../ui/sidebar";
+import { READER_BOTTOM_OFFSET } from "./chapter-info";
 
 interface PageProgressProps {
     progress: number;
@@ -36,7 +37,7 @@ export default function StripPageProgress({
             style={
                 windowWidth <= cutoff
                     ? {
-                          bottom: "calc(calc(var(--spacing) * 16) + var(--safe-bottom))",
+                          bottom: READER_BOTTOM_OFFSET,
                       }
                     : {}
             }

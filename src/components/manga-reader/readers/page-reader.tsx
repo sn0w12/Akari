@@ -51,7 +51,7 @@ export default function PageReader({
     const [currentPage, setCurrentPage] = useState(() =>
         getInitialPage(chapter, searchParams.page),
     );
-    const pageHeightStyle = "var(--visible-height)";
+    const pageHeightStyle = "100dvh";
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
@@ -186,9 +186,7 @@ export default function PageReader({
                 style={{ height: pageHeightStyle }}
             >
                 <div className="flex flex-col h-full">
-                    {/* Spacer for 1/3 of available space at the top */}
                     <div className="flex-1"></div>
-                    {/* Content container: image or end-of-manga, no shrinking/growing */}
                     <div
                         className="flex-shrink-0"
                         role="button"
@@ -228,8 +226,7 @@ export default function PageReader({
                             className={`${currentPage !== chapter.images.length ? "hidden" : ""}`}
                         />
                     </div>
-                    {/* Spacer for 2/3 of available space at the bottom */}
-                    <div style={{ flex: 2 }}></div>
+                    <div style={{ flex: 4 }}></div>
                 </div>
                 <div className={"hidden"}>
                     {typeof chapter.images[currentPage + 1] === "string" && (
