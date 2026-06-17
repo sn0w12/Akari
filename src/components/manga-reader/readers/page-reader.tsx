@@ -51,7 +51,8 @@ export default function PageReader({
     const [currentPage, setCurrentPage] = useState(() =>
         getInitialPage(chapter, searchParams.page),
     );
-    const pageHeightStyle = "100dvh";
+    const pageHeightClass =
+        "max-h-[100dvh] md:max-h-[calc(100dvh-var(--header-height))]";
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
@@ -182,10 +183,12 @@ export default function PageReader({
                 hidden={scrollMetrics.pixels >= 50}
             />
             <div
-                className="w-full h-full flex flex-col relative"
-                style={{ height: pageHeightStyle }}
+                className={cn(
+                    "w-full h-full flex flex-col relative",
+                    pageHeightClass,
+                )}
             >
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-[calc(100%-var(--header-height)-var(--safe-top)-var(--safe-bottom))]">
                     <div className="flex-1"></div>
                     <div
                         className="flex-shrink-0"
@@ -203,17 +206,20 @@ export default function PageReader({
                             <Image
                                 src={chapter.images[currentPage]}
                                 alt={`Page ${currentPage + 1}`}
-                                className={cn("w-full h-auto object-contain", {
-                                    "cursor-none":
-                                        isInactive &&
-                                        currentPage !== chapter.images.length,
-                                    "cursor-pointer":
-                                        !isInactive &&
-                                        currentPage !== chapter.images.length,
-                                })}
-                                style={{
-                                    maxHeight: pageHeightStyle,
-                                }}
+                                className={cn(
+                                    "w-full h-auto object-contain",
+                                    pageHeightClass,
+                                    {
+                                        "cursor-none":
+                                            isInactive &&
+                                            currentPage !==
+                                                chapter.images.length,
+                                        "cursor-pointer":
+                                            !isInactive &&
+                                            currentPage !==
+                                                chapter.images.length,
+                                    },
+                                )}
                                 width={720}
                                 height={1500}
                                 fetchPriority="high"
@@ -233,10 +239,10 @@ export default function PageReader({
                         <Image
                             src={chapter.images[currentPage + 1] as string}
                             alt={`Page ${currentPage + 2}`}
-                            className="w-full h-auto max-h-screen object-contain"
-                            style={{
-                                maxHeight: pageHeightStyle,
-                            }}
+                            className={cn(
+                                "w-full h-auto max-h-screen object-contain",
+                                pageHeightClass,
+                            )}
                             width={720}
                             height={1500}
                             unOptimized

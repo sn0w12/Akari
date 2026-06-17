@@ -126,10 +126,8 @@ body {
     --safe-top: env(safe-area-inset-top);
     --safe-bottom: env(safe-area-inset-bottom);
 
-    --header-height: calc(
-        calc(var(--spacing) * 14) +
-            max(var(--safe-bottom), calc(var(--spacing) * 2))
-    );
+    --header-offset: max(var(--safe-bottom), calc(var(--spacing) * 2));
+    --header-height: calc(calc(var(--spacing) * 14) + var(--header-offset));
     --reader-offset: calc(
         calc(var(--spacing) * 14) + var(--safe-top) + var(--safe-bottom)
     );
