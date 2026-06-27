@@ -1,8 +1,6 @@
 import { useBorderColor } from "@/contexts/border-color-context";
-import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
-import { useThrottledCallback } from "@tanstack/react-pacer";
 import { useEffect, useState } from "react";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ViewManga } from "./manga-details/view-manga";
@@ -41,12 +39,6 @@ export function Reader({ chapter }: ReaderProps) {
         }
     }, [bookmarkState, flashColor]);
 
-    const [scrollMetrics, setScrollMetrics] = useState({
-        pixels: 0,
-        percentage: 0,
-        clientHeight: 0,
-    });
-
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);
         readerModeStorage.set({ isStripMode: isStrip });
@@ -60,30 +52,6 @@ export function Reader({ chapter }: ReaderProps) {
         }
     }
 
-    const calculateScrollMetrics = (mainElement: HTMLElement) => {
-        const scrollTop = mainElement.scrollTop;
-        const scrollHeight = mainElement.scrollHeight;
-        const clientHeight = mainElement.clientHeight;
-
-        // Calculate percentage
-        const percentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
-        setScrollMetrics({
-            pixels: scrollTop,
-            percentage: Math.min(100, Math.max(0, percentage)),
-            clientHeight,
-        });
-    };
-
-    const handleScroll = useThrottledCallback(
-        (mainElement: HTMLElement) => {
-            calculateScrollMetrics(mainElement);
-        },
-        {
-            wait: 100,
-        },
-    );
-    useBodyScrollListener(handleScroll);
-
     return (
         <>
             <BreadcrumbSetter
@@ -94,7 +62,6 @@ export function Reader({ chapter }: ReaderProps) {
             {isStripMode ? (
                 <StripReader
                     chapter={chapter}
-                    scrollMetrics={scrollMetrics}
                     toggleReaderMode={toggleReaderMode}
                     setBookmarkState={setBookmarkState}
                 />
