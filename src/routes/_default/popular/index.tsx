@@ -11,7 +11,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 const getPopularData = createServerFn({ method: "GET" })
-    .inputValidator(
+    .validator(
         (d: { page: number; days: number; excludedGenres?: string[] }) => d,
     )
     .handler(async ({ data }) => {

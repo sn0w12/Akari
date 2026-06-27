@@ -14,7 +14,7 @@ import { UserListsSkeleton } from "@/components/user/user-lists-skeleton";
 import { UserLists } from "@/components/user/user-lists";
 
 const loadUserPage = createServerFn({ method: "GET" })
-    .inputValidator((d: string) => d)
+    .validator((d: string) => d)
     .handler(async ({ data: userId }) => {
         const token = await getAuthToken();
 

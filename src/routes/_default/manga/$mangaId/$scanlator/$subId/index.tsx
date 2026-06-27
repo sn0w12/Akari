@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { ComicSeries, ComicStory } from "schema-dts";
 
 const loadChapter = createServerFn({ method: "GET" })
-    .inputValidator((d: { id: string; subId: number; scanlator: number }) => d)
+    .validator((d: { id: string; subId: number; scanlator: number }) => d)
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET(
             "/v2/manga/{id}/{subId}",
