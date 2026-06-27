@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardPanel } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/group";
-import { useLongPress } from "@/hooks/use-long-press";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
@@ -89,17 +88,6 @@ interface ActionButtonProps {
 
 function ActionButton({ bookmark, className }: ActionButtonProps) {
     const [open, setOpen] = useState(false);
-    const { release, handlers, style } = useLongPress(
-        () => setOpen(true),
-        500,
-        {
-            controlledAfterPress: true,
-        },
-    );
-
-    useEffect(() => {
-        if (!open) release();
-    }, [open, release]);
 
     // Check if user is caught up (read the latest chapter)
     const isCaughtUp = bookmark.chaptersBehind === 0;
@@ -114,8 +102,6 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     size="sm"
                     className="flex-1 w-full"
                     disabled
-                    {...handlers}
-                    style={style}
                 >
                     All caught up!
                 </Button>
@@ -133,7 +119,6 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     }
                     size="sm"
                     className="flex-1 w-full"
-                    {...handlers}
                 >
                     <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                     {bookmark.latestChapter.number}
@@ -151,7 +136,6 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     variant="outline"
                     size="sm"
                     className="flex-1 w-full group"
-                    {...handlers}
                 >
                     <p className="hidden md:inline">Continue Reading • </p>
                     Ch. {bookmark.nextChapter.number}
