@@ -3,7 +3,7 @@ import { useBodyScrollListener } from "@/hooks/use-body-scroll-listener";
 import { getSetting } from "@/lib/settings";
 import { useStorage } from "@/lib/storage";
 import { useThrottledCallback } from "@tanstack/react-pacer";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ViewManga } from "./manga-details/view-manga";
 import PageReader from "./manga-reader/readers/page-reader";
@@ -31,8 +31,6 @@ export function Reader({ chapter }: ReaderProps) {
 
         return ["Manhwa", "Manhua"].includes(chapter.type);
     });
-    const [isInactive, setIsInactive] = useState(false);
-    const inactivityTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
     useEffect(() => {
@@ -61,42 +59,6 @@ export function Reader({ chapter }: ReaderProps) {
             void setReaderMode(override);
         }
     }
-
-    const resetInactivityTimer = useCallback(() => {
-        if (inactivityTimer.current) {
-            clearTimeout(inactivityTimer.current);
-        }
-        setIsInactive(false);
-        inactivityTimer.current = setTimeout(() => {
-            setIsInactive(true);
-        }, 2000);
-    }, []);
-
-    const resetInactivityRef = useRef(resetInactivityTimer);
-    useEffect(() => {
-        resetInactivityRef.current = resetInactivityTimer;
-    });
-
-    useEffect(() => {
-        inactivityTimer.current = setTimeout(() => {
-            setIsInactive(true);
-        }, 2000);
-
-        const handler = () => resetInactivityRef.current();
-        const events = ["mousemove", "scroll", "touchstart"];
-        events.forEach((event) => {
-            window.addEventListener(event, handler);
-        });
-
-        return () => {
-            if (inactivityTimer.current) {
-                clearTimeout(inactivityTimer.current);
-            }
-            events.forEach((event) => {
-                window.removeEventListener(event, handler);
-            });
-        };
-    }, []);
 
     const calculateScrollMetrics = (mainElement: HTMLElement) => {
         const scrollTop = mainElement.scrollTop;
@@ -139,9 +101,7 @@ export function Reader({ chapter }: ReaderProps) {
             ) : (
                 <PageReader
                     chapter={chapter}
-                    scrollMetrics={scrollMetrics}
                     toggleReaderMode={toggleReaderMode}
-                    isInactive={isInactive}
                     setBookmarkState={setBookmarkState}
                 />
             )}

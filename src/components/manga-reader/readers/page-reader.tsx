@@ -9,6 +9,7 @@ import { ChapterInfo } from "../chapter-info";
 import EndOfManga from "../end-of-manga";
 import MangaFooter from "../manga-footer";
 import PageProgress from "../page-progress";
+import { useIsVisible } from "@/hooks/use-is-visible";
 
 function getInitialPage(
     chapter: PageReaderProps["chapter"],
@@ -27,17 +28,16 @@ function getInitialPage(
 
 interface PageReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scrollMetrics: { pixels: number; percentage: number };
     toggleReaderMode: () => void;
-    isInactive: boolean;
     setBookmarkState: (state: boolean | null) => void;
 }
 
+const pageHeightClass =
+    "max-h-[100dvh] md:max-h-[calc(100dvh-var(--header-height))]";
+
 export default function PageReader({
     chapter,
-    scrollMetrics,
     toggleReaderMode,
-    isInactive,
     setBookmarkState,
 }: PageReaderProps) {
     const router = useRouter();
@@ -45,21 +45,22 @@ export default function PageReader({
         from: "/manga/$mangaId/$scanlator/$subId/",
     });
     const searchParams = useRouterState({ select: (s) => s.location.search });
-    const readingDir = useSetting("readingDirection");
-    const continueAfterChapter = useSetting("continueAfterChapter");
-    const windowWidth = useWindowWidth();
     const [currentPage, setCurrentPage] = useState(() =>
         getInitialPage(chapter, searchParams.page),
     );
-    const pageHeightClass =
-        "max-h-[100dvh] md:max-h-[calc(100dvh-var(--header-height))]";
+    const { ref: footerRef, isVisible: isFooterVisible } = useIsVisible({
+        threshold: 0.5,
+    });
+
+    const readingDir = useSetting("readingDirection");
+    const continueAfterChapter = useSetting("continueAfterChapter");
+
+    const windowWidth = useWindowWidth();
     const bookmarkUpdatedRef = useRef(false);
     const hasPrefetchedRef = useRef(false);
 
     const chapterRef = useRef(chapter);
     chapterRef.current = chapter;
-    const imagesLength = chapter.images.length;
-    const nextChapter = chapter.nextChapter;
 
     useEffect(() => {
         setCurrentPage(getInitialPage(chapter, searchParams.page));
@@ -69,6 +70,9 @@ export default function PageReader({
 
     useEffect(() => {
         if (!chapterRef.current) return;
+
+        const nextChapter = chapterRef.current.nextChapter;
+        const imagesLength = chapterRef.current.images.length;
 
         const isHalfwayThrough = currentPage >= Math.floor(imagesLength / 2);
         if (isHalfwayThrough && !bookmarkUpdatedRef.current) {
@@ -89,15 +93,14 @@ export default function PageReader({
                     to: `/manga/$mangaId/$scanlator/$subId`,
                     params: {
                         mangaId: chapterRef.current.mangaId,
-                        scanlator:
-                            chapterRef.current.nextChapter!.scanlatorId.toString(),
-                        subId: chapterRef.current.nextChapter!.number.toString(),
+                        scanlator: nextChapter.scanlatorId.toString(),
+                        subId: nextChapter.number.toString(),
                     },
                 });
                 hasPrefetchedRef.current = true;
             }
         }
-    }, [currentPage, imagesLength, nextChapter, router, setBookmarkState]);
+    }, [currentPage, router, setBookmarkState]);
 
     const setPageWithUrlUpdate = useCallback(
         (newPage: number) => {
@@ -178,10 +181,7 @@ export default function PageReader({
 
     return (
         <>
-            <ChapterInfo
-                chapter={chapter}
-                hidden={scrollMetrics.pixels >= 50}
-            />
+            <ChapterInfo chapter={chapter} hidden={isFooterVisible} />
             <div
                 className={cn(
                     "w-full h-full flex flex-col relative",
@@ -210,14 +210,9 @@ export default function PageReader({
                                     "w-full h-auto object-contain",
                                     pageHeightClass,
                                     {
-                                        "cursor-none":
-                                            isInactive &&
-                                            currentPage !==
-                                                chapter.images.length,
                                         "cursor-pointer":
-                                            !isInactive &&
                                             currentPage !==
-                                                chapter.images.length,
+                                            chapter.images.length,
                                     },
                                 )}
                                 width={720}
@@ -266,10 +261,11 @@ export default function PageReader({
                     setCurrentPage={(page) => {
                         setPageWithUrlUpdate(page);
                     }}
-                    hidden={scrollMetrics.pixels >= 50}
+                    hidden={isFooterVisible}
                 />
             </div>
             <MangaFooter
+                ref={footerRef}
                 chapter={chapter}
                 toggleReaderMode={toggleReaderMode}
             />

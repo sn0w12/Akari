@@ -8,15 +8,20 @@ import { ChapterSelector } from "./chapter-selector";
 export default function MangaFooter({
     chapter,
     toggleReaderMode,
+    ref,
 }: {
     chapter: components["schemas"]["ChapterResponse"];
     toggleReaderMode: () => void;
+    ref?: React.RefObject<HTMLDivElement | null>;
 }) {
     const lastChapterExists = chapter.lastChapter !== null;
     const nextChapterExists = chapter.nextChapter !== null;
 
     return (
-        <div className="bg-background border-t border-b border-border px-4 py-3">
+        <div
+            className="bg-background border-t border-b border-border px-4 py-3"
+            ref={ref}
+        >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                 <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                     <h2 className="text-lg font-semibold">
