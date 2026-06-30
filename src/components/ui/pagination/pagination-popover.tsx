@@ -83,7 +83,7 @@ export function JumpToPagePopover({
                             >
                                 <NumberFieldGroup>
                                     <NumberFieldDecrement />
-                                    <NumberFieldInput autoFocus />
+                                    <NumberFieldInput autoFocus type="number" />
                                     <NumberFieldIncrement />
                                 </NumberFieldGroup>
                             </NumberField>
