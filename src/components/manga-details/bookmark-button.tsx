@@ -38,11 +38,7 @@ export function BookmarkButton({
     const { data: user } = useUser();
     const { confirm } = useConfirm();
 
-    const {
-        data: isBookmarked,
-        isLoading: isQueryLoading,
-        refetch,
-    } = useQuery({
+    const { data: isBookmarked, isLoading: isQueryLoading } = useQuery({
         queryKey: ["bookmark", mangaId],
         queryFn: () => checkIfBookmarked(mangaId),
         enabled: !!mangaId && !!user,
@@ -51,13 +47,14 @@ export function BookmarkButton({
     const handleBookmarkClick = () => {
         if (!mangaId || isBookmarked === null || isBookmarked) return;
 
+        queryClient.setQueryData(["bookmark", mangaId], true);
         startTransition(async () => {
             try {
                 const data = await bookmarkManga(mangaId);
                 if (!data) {
+                    queryClient.setQueryData(["bookmark", mangaId], false);
                     throw new Error("Failed to bookmark manga");
                 }
-                await refetch();
                 void queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
                 toastManager.add({
                     title: "Manga bookmarked",
@@ -79,13 +76,17 @@ export function BookmarkButton({
         });
         if (!confirmed) return;
 
+        queryClient.setQueryData(["bookmark", mangaId], false);
         startTransition(async () => {
             try {
                 const result = await removeBookmark(mangaId);
-                if (!result) return;
-                await refetch();
+                if (!result) {
+                    queryClient.setQueryData(["bookmark", mangaId], true);
+                    return;
+                }
                 void queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
             } catch (error) {
+                queryClient.setQueryData(["bookmark", mangaId], true);
                 console.error("Failed to remove bookmark:", error);
             }
         });
