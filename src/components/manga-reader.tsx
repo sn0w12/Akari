@@ -6,6 +6,7 @@ import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { ViewManga } from "./manga-details/view-manga";
 import PageReader from "./manga-reader/readers/page-reader";
 import StripReader from "./manga-reader/readers/strip-reader";
+import { useSensory } from "@/hooks/use-sensory";
 
 interface ReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
@@ -17,6 +18,7 @@ export function Reader({ chapter }: ReaderProps) {
         chapterId: chapter.id,
     });
     const { flashColor } = useBorderColor();
+    const { trigger } = useSensory();
     const [isStripMode, setIsStripMode] = useState<boolean>(() => {
         const stored = readerModeStorage.get();
         if (stored && typeof stored.isStripMode === "boolean") {
@@ -32,10 +34,16 @@ export function Reader({ chapter }: ReaderProps) {
 
     const [bookmarkState, setBookmarkState] = useState<boolean | null>(null);
     useEffect(() => {
-        if (bookmarkState !== null) {
-            flashColor(
-                bookmarkState ? "border-accent-positive" : "border-destructive",
-            );
+        if (bookmarkState === null) return;
+
+        flashColor(
+            bookmarkState ? "border-accent-positive" : "border-destructive",
+        );
+
+        if (bookmarkState) {
+            trigger("success");
+        } else {
+            trigger("error");
         }
     }, [bookmarkState, flashColor]);
 
