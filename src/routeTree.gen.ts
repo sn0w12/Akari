@@ -9,57 +9,57 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ShortcutRouteImport } from './routes/_shortcut'
-import { Route as DefaultRouteImport } from './routes/_default'
 import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as DefaultRouteImport } from './routes/_default'
+import { Route as ShortcutRouteImport } from './routes/_shortcut'
 import { Route as DefaultIndexRouteImport } from './routes/_default/index'
-import { Route as DefaultUserIndexRouteImport } from './routes/_default/user/index'
-import { Route as DefaultTermsIndexRouteImport } from './routes/_default/terms/index'
-import { Route as DefaultSettingsIndexRouteImport } from './routes/_default/settings/index'
-import { Route as DefaultSearchIndexRouteImport } from './routes/_default/search/index'
-import { Route as DefaultPrivacyIndexRouteImport } from './routes/_default/privacy/index'
-import { Route as DefaultPopularIndexRouteImport } from './routes/_default/popular/index'
-import { Route as DefaultMangaIndexRouteImport } from './routes/_default/manga/index'
-import { Route as DefaultLatestIndexRouteImport } from './routes/_default/latest/index'
-import { Route as DefaultBookmarksIndexRouteImport } from './routes/_default/bookmarks/index'
-import { Route as DefaultAccountIndexRouteImport } from './routes/_default/account/index'
-import { Route as DefaultAboutIndexRouteImport } from './routes/_default/about/index'
-import { Route as ApiV1RevalidateRouteImport } from './routes/api.v1.revalidate'
-import { Route as AuthAuthOauthRouteImport } from './routes/_auth/auth/oauth'
-import { Route as AuthAuthConfirmRouteImport } from './routes/_auth/auth/confirm'
 import { Route as AuthAuthCallbackRouteImport } from './routes/_auth/auth/callback'
-import { Route as ShortcutMalMalIdIndexRouteImport } from './routes/_shortcut/mal/$malId/index'
-import { Route as ShortcutLListIdIndexRouteImport } from './routes/_shortcut/l/$listId/index'
-import { Route as ShortcutAniAniIdIndexRouteImport } from './routes/_shortcut/ani/$aniId/index'
-import { Route as DefaultUserUserIdIndexRouteImport } from './routes/_default/user/$userId/index'
-import { Route as DefaultSyncMalIndexRouteImport } from './routes/_default/sync/mal/index'
-import { Route as DefaultSyncAniIndexRouteImport } from './routes/_default/sync/ani/index'
-import { Route as DefaultMangaMangaIdIndexRouteImport } from './routes/_default/manga/$mangaId/index'
-import { Route as DefaultListsListIdIndexRouteImport } from './routes/_default/lists/$listId/index'
-import { Route as DefaultGenreGenreIdIndexRouteImport } from './routes/_default/genre/$genreId/index'
-import { Route as DefaultDevToastIndexRouteImport } from './routes/_default/dev/toast/index'
-import { Route as DefaultAuthorAuthorIdIndexRouteImport } from './routes/_default/author/$authorId/index'
-import { Route as DefaultAuthUpdatePasswordIndexRouteImport } from './routes/_default/auth/update-password/index'
-import { Route as DefaultAuthSignUpIndexRouteImport } from './routes/_default/auth/sign-up/index'
-import { Route as DefaultAuthSignUpSuccessIndexRouteImport } from './routes/_default/auth/sign-up-success/index'
-import { Route as DefaultAuthLoginIndexRouteImport } from './routes/_default/auth/login/index'
-import { Route as DefaultAuthForgotPasswordIndexRouteImport } from './routes/_default/auth/forgot-password/index'
-import { Route as DefaultAuthErrorIndexRouteImport } from './routes/_default/auth/error/index'
-import { Route as DefaultAccountSetupIndexRouteImport } from './routes/_default/account/setup/index'
+import { Route as AuthAuthConfirmRouteImport } from './routes/_auth/auth/confirm'
+import { Route as AuthAuthOauthRouteImport } from './routes/_auth/auth/oauth'
+import { Route as DefaultAboutIndexRouteImport } from './routes/_default/about/index'
+import { Route as DefaultAccountIndexRouteImport } from './routes/_default/account/index'
+import { Route as DefaultBookmarksIndexRouteImport } from './routes/_default/bookmarks/index'
+import { Route as DefaultLatestIndexRouteImport } from './routes/_default/latest/index'
+import { Route as DefaultMangaIndexRouteImport } from './routes/_default/manga/index'
+import { Route as DefaultPopularIndexRouteImport } from './routes/_default/popular/index'
+import { Route as DefaultPrivacyIndexRouteImport } from './routes/_default/privacy/index'
+import { Route as DefaultSearchIndexRouteImport } from './routes/_default/search/index'
+import { Route as DefaultSettingsIndexRouteImport } from './routes/_default/settings/index'
+import { Route as DefaultTermsIndexRouteImport } from './routes/_default/terms/index'
+import { Route as DefaultUserIndexRouteImport } from './routes/_default/user/index'
+import { Route as ApiV1RevalidateRouteImport } from './routes/api.v1.revalidate'
 import { Route as DefaultAccountHistoryIndexRouteImport } from './routes/_default/account/history/index'
+import { Route as DefaultAccountSetupIndexRouteImport } from './routes/_default/account/setup/index'
+import { Route as DefaultAuthErrorIndexRouteImport } from './routes/_default/auth/error/index'
+import { Route as DefaultAuthForgotPasswordIndexRouteImport } from './routes/_default/auth/forgot-password/index'
+import { Route as DefaultAuthLoginIndexRouteImport } from './routes/_default/auth/login/index'
+import { Route as DefaultAuthSignUpSuccessIndexRouteImport } from './routes/_default/auth/sign-up-success/index'
+import { Route as DefaultAuthSignUpIndexRouteImport } from './routes/_default/auth/sign-up/index'
+import { Route as DefaultAuthUpdatePasswordIndexRouteImport } from './routes/_default/auth/update-password/index'
+import { Route as DefaultAuthorAuthorIdIndexRouteImport } from './routes/_default/author/$authorId/index'
+import { Route as DefaultDevToastIndexRouteImport } from './routes/_default/dev/toast/index'
+import { Route as DefaultGenreGenreIdIndexRouteImport } from './routes/_default/genre/$genreId/index'
+import { Route as DefaultListsListIdIndexRouteImport } from './routes/_default/lists/$listId/index'
+import { Route as DefaultMangaMangaIdIndexRouteImport } from './routes/_default/manga/$mangaId/index'
+import { Route as DefaultSyncAniIndexRouteImport } from './routes/_default/sync/ani/index'
+import { Route as DefaultSyncMalIndexRouteImport } from './routes/_default/sync/mal/index'
+import { Route as DefaultUserUserIdIndexRouteImport } from './routes/_default/user/$userId/index'
+import { Route as ShortcutAniAniIdIndexRouteImport } from './routes/_shortcut/ani/$aniId/index'
+import { Route as ShortcutLListIdIndexRouteImport } from './routes/_shortcut/l/$listId/index'
+import { Route as ShortcutMalMalIdIndexRouteImport } from './routes/_shortcut/mal/$malId/index'
 import { Route as DefaultMangaMangaIdScanlatorSubIdIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/index'
 import { Route as DefaultMangaMangaIdScanlatorSubIdCommentsIndexRouteImport } from './routes/_default/manga/$mangaId/$scanlator/$subId/comments/index'
 
-const ShortcutRoute = ShortcutRouteImport.update({
-  id: '/_shortcut',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DefaultRoute = DefaultRouteImport.update({
   id: '/_default',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const ShortcutRoute = ShortcutRouteImport.update({
+  id: '/_shortcut',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DefaultIndexRoute = DefaultIndexRouteImport.update({
@@ -67,69 +67,9 @@ const DefaultIndexRoute = DefaultIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultUserIndexRoute = DefaultUserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultTermsIndexRoute = DefaultTermsIndexRouteImport.update({
-  id: '/terms/',
-  path: '/terms/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultSettingsIndexRoute = DefaultSettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultSearchIndexRoute = DefaultSearchIndexRouteImport.update({
-  id: '/search/',
-  path: '/search/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultPrivacyIndexRoute = DefaultPrivacyIndexRouteImport.update({
-  id: '/privacy/',
-  path: '/privacy/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultPopularIndexRoute = DefaultPopularIndexRouteImport.update({
-  id: '/popular/',
-  path: '/popular/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultMangaIndexRoute = DefaultMangaIndexRouteImport.update({
-  id: '/manga/',
-  path: '/manga/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultLatestIndexRoute = DefaultLatestIndexRouteImport.update({
-  id: '/latest/',
-  path: '/latest/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultBookmarksIndexRoute = DefaultBookmarksIndexRouteImport.update({
-  id: '/bookmarks/',
-  path: '/bookmarks/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultAccountIndexRoute = DefaultAccountIndexRouteImport.update({
-  id: '/account/',
-  path: '/account/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultAboutIndexRoute = DefaultAboutIndexRouteImport.update({
-  id: '/about/',
-  path: '/about/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const ApiV1RevalidateRoute = ApiV1RevalidateRouteImport.update({
-  id: '/api/v1/revalidate',
-  path: '/api/v1/revalidate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthAuthOauthRoute = AuthAuthOauthRouteImport.update({
-  id: '/auth/oauth',
-  path: '/auth/oauth',
+const AuthAuthCallbackRoute = AuthAuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthAuthConfirmRoute = AuthAuthConfirmRouteImport.update({
@@ -137,89 +77,86 @@ const AuthAuthConfirmRoute = AuthAuthConfirmRouteImport.update({
   path: '/auth/confirm',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthAuthCallbackRoute = AuthAuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
+const AuthAuthOauthRoute = AuthAuthOauthRouteImport.update({
+  id: '/auth/oauth',
+  path: '/auth/oauth',
   getParentRoute: () => AuthRoute,
 } as any)
-const ShortcutMalMalIdIndexRoute = ShortcutMalMalIdIndexRouteImport.update({
-  id: '/mal/$malId/',
-  path: '/mal/$malId/',
-  getParentRoute: () => ShortcutRoute,
-} as any)
-const ShortcutLListIdIndexRoute = ShortcutLListIdIndexRouteImport.update({
-  id: '/l/$listId/',
-  path: '/l/$listId/',
-  getParentRoute: () => ShortcutRoute,
-} as any)
-const ShortcutAniAniIdIndexRoute = ShortcutAniAniIdIndexRouteImport.update({
-  id: '/ani/$aniId/',
-  path: '/ani/$aniId/',
-  getParentRoute: () => ShortcutRoute,
-} as any)
-const DefaultUserUserIdIndexRoute = DefaultUserUserIdIndexRouteImport.update({
-  id: '/user/$userId/',
-  path: '/user/$userId/',
+const DefaultAboutIndexRoute = DefaultAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultSyncMalIndexRoute = DefaultSyncMalIndexRouteImport.update({
-  id: '/sync/mal/',
-  path: '/sync/mal/',
+const DefaultAccountIndexRoute = DefaultAccountIndexRouteImport.update({
+  id: '/account/',
+  path: '/account/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultSyncAniIndexRoute = DefaultSyncAniIndexRouteImport.update({
-  id: '/sync/ani/',
-  path: '/sync/ani/',
+const DefaultBookmarksIndexRoute = DefaultBookmarksIndexRouteImport.update({
+  id: '/bookmarks/',
+  path: '/bookmarks/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultMangaMangaIdIndexRoute =
-  DefaultMangaMangaIdIndexRouteImport.update({
-    id: '/manga/$mangaId/',
-    path: '/manga/$mangaId/',
+const DefaultLatestIndexRoute = DefaultLatestIndexRouteImport.update({
+  id: '/latest/',
+  path: '/latest/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultMangaIndexRoute = DefaultMangaIndexRouteImport.update({
+  id: '/manga/',
+  path: '/manga/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultPopularIndexRoute = DefaultPopularIndexRouteImport.update({
+  id: '/popular/',
+  path: '/popular/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultPrivacyIndexRoute = DefaultPrivacyIndexRouteImport.update({
+  id: '/privacy/',
+  path: '/privacy/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultSearchIndexRoute = DefaultSearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultSettingsIndexRoute = DefaultSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultTermsIndexRoute = DefaultTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultUserIndexRoute = DefaultUserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const ApiV1RevalidateRoute = ApiV1RevalidateRouteImport.update({
+  id: '/api/v1/revalidate',
+  path: '/api/v1/revalidate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DefaultAccountHistoryIndexRoute =
+  DefaultAccountHistoryIndexRouteImport.update({
+    id: '/account/history/',
+    path: '/account/history/',
     getParentRoute: () => DefaultRoute,
   } as any)
-const DefaultListsListIdIndexRoute = DefaultListsListIdIndexRouteImport.update({
-  id: '/lists/$listId/',
-  path: '/lists/$listId/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultGenreGenreIdIndexRoute =
-  DefaultGenreGenreIdIndexRouteImport.update({
-    id: '/genre/$genreId/',
-    path: '/genre/$genreId/',
+const DefaultAccountSetupIndexRoute =
+  DefaultAccountSetupIndexRouteImport.update({
+    id: '/account/setup/',
+    path: '/account/setup/',
     getParentRoute: () => DefaultRoute,
   } as any)
-const DefaultDevToastIndexRoute = DefaultDevToastIndexRouteImport.update({
-  id: '/dev/toast/',
-  path: '/dev/toast/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultAuthorAuthorIdIndexRoute =
-  DefaultAuthorAuthorIdIndexRouteImport.update({
-    id: '/author/$authorId/',
-    path: '/author/$authorId/',
-    getParentRoute: () => DefaultRoute,
-  } as any)
-const DefaultAuthUpdatePasswordIndexRoute =
-  DefaultAuthUpdatePasswordIndexRouteImport.update({
-    id: '/auth/update-password/',
-    path: '/auth/update-password/',
-    getParentRoute: () => DefaultRoute,
-  } as any)
-const DefaultAuthSignUpIndexRoute = DefaultAuthSignUpIndexRouteImport.update({
-  id: '/auth/sign-up/',
-  path: '/auth/sign-up/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultAuthSignUpSuccessIndexRoute =
-  DefaultAuthSignUpSuccessIndexRouteImport.update({
-    id: '/auth/sign-up-success/',
-    path: '/auth/sign-up-success/',
-    getParentRoute: () => DefaultRoute,
-  } as any)
-const DefaultAuthLoginIndexRoute = DefaultAuthLoginIndexRouteImport.update({
-  id: '/auth/login/',
-  path: '/auth/login/',
+const DefaultAuthErrorIndexRoute = DefaultAuthErrorIndexRouteImport.update({
+  id: '/auth/error/',
+  path: '/auth/error/',
   getParentRoute: () => DefaultRoute,
 } as any)
 const DefaultAuthForgotPasswordIndexRoute =
@@ -228,23 +165,86 @@ const DefaultAuthForgotPasswordIndexRoute =
     path: '/auth/forgot-password/',
     getParentRoute: () => DefaultRoute,
   } as any)
-const DefaultAuthErrorIndexRoute = DefaultAuthErrorIndexRouteImport.update({
-  id: '/auth/error/',
-  path: '/auth/error/',
+const DefaultAuthLoginIndexRoute = DefaultAuthLoginIndexRouteImport.update({
+  id: '/auth/login/',
+  path: '/auth/login/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultAccountSetupIndexRoute =
-  DefaultAccountSetupIndexRouteImport.update({
-    id: '/account/setup/',
-    path: '/account/setup/',
+const DefaultAuthSignUpSuccessIndexRoute =
+  DefaultAuthSignUpSuccessIndexRouteImport.update({
+    id: '/auth/sign-up-success/',
+    path: '/auth/sign-up-success/',
     getParentRoute: () => DefaultRoute,
   } as any)
-const DefaultAccountHistoryIndexRoute =
-  DefaultAccountHistoryIndexRouteImport.update({
-    id: '/account/history/',
-    path: '/account/history/',
+const DefaultAuthSignUpIndexRoute = DefaultAuthSignUpIndexRouteImport.update({
+  id: '/auth/sign-up/',
+  path: '/auth/sign-up/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultAuthUpdatePasswordIndexRoute =
+  DefaultAuthUpdatePasswordIndexRouteImport.update({
+    id: '/auth/update-password/',
+    path: '/auth/update-password/',
     getParentRoute: () => DefaultRoute,
   } as any)
+const DefaultAuthorAuthorIdIndexRoute =
+  DefaultAuthorAuthorIdIndexRouteImport.update({
+    id: '/author/$authorId/',
+    path: '/author/$authorId/',
+    getParentRoute: () => DefaultRoute,
+  } as any)
+const DefaultDevToastIndexRoute = DefaultDevToastIndexRouteImport.update({
+  id: '/dev/toast/',
+  path: '/dev/toast/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultGenreGenreIdIndexRoute =
+  DefaultGenreGenreIdIndexRouteImport.update({
+    id: '/genre/$genreId/',
+    path: '/genre/$genreId/',
+    getParentRoute: () => DefaultRoute,
+  } as any)
+const DefaultListsListIdIndexRoute = DefaultListsListIdIndexRouteImport.update({
+  id: '/lists/$listId/',
+  path: '/lists/$listId/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultMangaMangaIdIndexRoute =
+  DefaultMangaMangaIdIndexRouteImport.update({
+    id: '/manga/$mangaId/',
+    path: '/manga/$mangaId/',
+    getParentRoute: () => DefaultRoute,
+  } as any)
+const DefaultSyncAniIndexRoute = DefaultSyncAniIndexRouteImport.update({
+  id: '/sync/ani/',
+  path: '/sync/ani/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultSyncMalIndexRoute = DefaultSyncMalIndexRouteImport.update({
+  id: '/sync/mal/',
+  path: '/sync/mal/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const DefaultUserUserIdIndexRoute = DefaultUserUserIdIndexRouteImport.update({
+  id: '/user/$userId/',
+  path: '/user/$userId/',
+  getParentRoute: () => DefaultRoute,
+} as any)
+const ShortcutAniAniIdIndexRoute = ShortcutAniAniIdIndexRouteImport.update({
+  id: '/ani/$aniId/',
+  path: '/ani/$aniId/',
+  getParentRoute: () => ShortcutRoute,
+} as any)
+const ShortcutLListIdIndexRoute = ShortcutLListIdIndexRouteImport.update({
+  id: '/l/$listId/',
+  path: '/l/$listId/',
+  getParentRoute: () => ShortcutRoute,
+} as any)
+const ShortcutMalMalIdIndexRoute = ShortcutMalMalIdIndexRouteImport.update({
+  id: '/mal/$malId/',
+  path: '/mal/$malId/',
+  getParentRoute: () => ShortcutRoute,
+} as any)
 const DefaultMangaMangaIdScanlatorSubIdIndexRoute =
   DefaultMangaMangaIdScanlatorSubIdIndexRouteImport.update({
     id: '/manga/$mangaId/$scanlator/$subId/',
@@ -511,11 +511,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_shortcut': {
-      id: '/_shortcut'
+    '/_auth': {
+      id: '/_auth'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof ShortcutRouteImport
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_default': {
@@ -525,11 +525,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth': {
-      id: '/_auth'
+    '/_shortcut': {
+      id: '/_shortcut'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthRouteImport
+      preLoaderRoute: typeof ShortcutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_default/': {
@@ -539,95 +539,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/user/': {
-      id: '/_default/user/'
-      path: '/user'
-      fullPath: '/user/'
-      preLoaderRoute: typeof DefaultUserIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/terms/': {
-      id: '/_default/terms/'
-      path: '/terms'
-      fullPath: '/terms/'
-      preLoaderRoute: typeof DefaultTermsIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/settings/': {
-      id: '/_default/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof DefaultSettingsIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/search/': {
-      id: '/_default/search/'
-      path: '/search'
-      fullPath: '/search/'
-      preLoaderRoute: typeof DefaultSearchIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/privacy/': {
-      id: '/_default/privacy/'
-      path: '/privacy'
-      fullPath: '/privacy/'
-      preLoaderRoute: typeof DefaultPrivacyIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/popular/': {
-      id: '/_default/popular/'
-      path: '/popular'
-      fullPath: '/popular/'
-      preLoaderRoute: typeof DefaultPopularIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/manga/': {
-      id: '/_default/manga/'
-      path: '/manga'
-      fullPath: '/manga/'
-      preLoaderRoute: typeof DefaultMangaIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/latest/': {
-      id: '/_default/latest/'
-      path: '/latest'
-      fullPath: '/latest/'
-      preLoaderRoute: typeof DefaultLatestIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/bookmarks/': {
-      id: '/_default/bookmarks/'
-      path: '/bookmarks'
-      fullPath: '/bookmarks/'
-      preLoaderRoute: typeof DefaultBookmarksIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/account/': {
-      id: '/_default/account/'
-      path: '/account'
-      fullPath: '/account/'
-      preLoaderRoute: typeof DefaultAccountIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/about/': {
-      id: '/_default/about/'
-      path: '/about'
-      fullPath: '/about/'
-      preLoaderRoute: typeof DefaultAboutIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/api/v1/revalidate': {
-      id: '/api/v1/revalidate'
-      path: '/api/v1/revalidate'
-      fullPath: '/api/v1/revalidate'
-      preLoaderRoute: typeof ApiV1RevalidateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth/auth/oauth': {
-      id: '/_auth/auth/oauth'
-      path: '/auth/oauth'
-      fullPath: '/auth/oauth'
-      preLoaderRoute: typeof AuthAuthOauthRouteImport
+    '/_auth/auth/callback': {
+      id: '/_auth/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthAuthCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/auth/confirm': {
@@ -637,130 +553,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthConfirmRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/auth/callback': {
-      id: '/_auth/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthAuthCallbackRouteImport
+    '/_auth/auth/oauth': {
+      id: '/_auth/auth/oauth'
+      path: '/auth/oauth'
+      fullPath: '/auth/oauth'
+      preLoaderRoute: typeof AuthAuthOauthRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_shortcut/mal/$malId/': {
-      id: '/_shortcut/mal/$malId/'
-      path: '/mal/$malId'
-      fullPath: '/mal/$malId/'
-      preLoaderRoute: typeof ShortcutMalMalIdIndexRouteImport
-      parentRoute: typeof ShortcutRoute
-    }
-    '/_shortcut/l/$listId/': {
-      id: '/_shortcut/l/$listId/'
-      path: '/l/$listId'
-      fullPath: '/l/$listId/'
-      preLoaderRoute: typeof ShortcutLListIdIndexRouteImport
-      parentRoute: typeof ShortcutRoute
-    }
-    '/_shortcut/ani/$aniId/': {
-      id: '/_shortcut/ani/$aniId/'
-      path: '/ani/$aniId'
-      fullPath: '/ani/$aniId/'
-      preLoaderRoute: typeof ShortcutAniAniIdIndexRouteImport
-      parentRoute: typeof ShortcutRoute
-    }
-    '/_default/user/$userId/': {
-      id: '/_default/user/$userId/'
-      path: '/user/$userId'
-      fullPath: '/user/$userId/'
-      preLoaderRoute: typeof DefaultUserUserIdIndexRouteImport
+    '/_default/about/': {
+      id: '/_default/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof DefaultAboutIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/sync/mal/': {
-      id: '/_default/sync/mal/'
-      path: '/sync/mal'
-      fullPath: '/sync/mal/'
-      preLoaderRoute: typeof DefaultSyncMalIndexRouteImport
+    '/_default/account/': {
+      id: '/_default/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof DefaultAccountIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/sync/ani/': {
-      id: '/_default/sync/ani/'
-      path: '/sync/ani'
-      fullPath: '/sync/ani/'
-      preLoaderRoute: typeof DefaultSyncAniIndexRouteImport
+    '/_default/bookmarks/': {
+      id: '/_default/bookmarks/'
+      path: '/bookmarks'
+      fullPath: '/bookmarks/'
+      preLoaderRoute: typeof DefaultBookmarksIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/manga/$mangaId/': {
-      id: '/_default/manga/$mangaId/'
-      path: '/manga/$mangaId'
-      fullPath: '/manga/$mangaId/'
-      preLoaderRoute: typeof DefaultMangaMangaIdIndexRouteImport
+    '/_default/latest/': {
+      id: '/_default/latest/'
+      path: '/latest'
+      fullPath: '/latest/'
+      preLoaderRoute: typeof DefaultLatestIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/lists/$listId/': {
-      id: '/_default/lists/$listId/'
-      path: '/lists/$listId'
-      fullPath: '/lists/$listId/'
-      preLoaderRoute: typeof DefaultListsListIdIndexRouteImport
+    '/_default/manga/': {
+      id: '/_default/manga/'
+      path: '/manga'
+      fullPath: '/manga/'
+      preLoaderRoute: typeof DefaultMangaIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/genre/$genreId/': {
-      id: '/_default/genre/$genreId/'
-      path: '/genre/$genreId'
-      fullPath: '/genre/$genreId/'
-      preLoaderRoute: typeof DefaultGenreGenreIdIndexRouteImport
+    '/_default/popular/': {
+      id: '/_default/popular/'
+      path: '/popular'
+      fullPath: '/popular/'
+      preLoaderRoute: typeof DefaultPopularIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/dev/toast/': {
-      id: '/_default/dev/toast/'
-      path: '/dev/toast'
-      fullPath: '/dev/toast/'
-      preLoaderRoute: typeof DefaultDevToastIndexRouteImport
+    '/_default/privacy/': {
+      id: '/_default/privacy/'
+      path: '/privacy'
+      fullPath: '/privacy/'
+      preLoaderRoute: typeof DefaultPrivacyIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/author/$authorId/': {
-      id: '/_default/author/$authorId/'
-      path: '/author/$authorId'
-      fullPath: '/author/$authorId/'
-      preLoaderRoute: typeof DefaultAuthorAuthorIdIndexRouteImport
+    '/_default/search/': {
+      id: '/_default/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof DefaultSearchIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/auth/update-password/': {
-      id: '/_default/auth/update-password/'
-      path: '/auth/update-password'
-      fullPath: '/auth/update-password/'
-      preLoaderRoute: typeof DefaultAuthUpdatePasswordIndexRouteImport
+    '/_default/settings/': {
+      id: '/_default/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof DefaultSettingsIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/auth/sign-up/': {
-      id: '/_default/auth/sign-up/'
-      path: '/auth/sign-up'
-      fullPath: '/auth/sign-up/'
-      preLoaderRoute: typeof DefaultAuthSignUpIndexRouteImport
+    '/_default/terms/': {
+      id: '/_default/terms/'
+      path: '/terms'
+      fullPath: '/terms/'
+      preLoaderRoute: typeof DefaultTermsIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/auth/sign-up-success/': {
-      id: '/_default/auth/sign-up-success/'
-      path: '/auth/sign-up-success'
-      fullPath: '/auth/sign-up-success/'
-      preLoaderRoute: typeof DefaultAuthSignUpSuccessIndexRouteImport
+    '/_default/user/': {
+      id: '/_default/user/'
+      path: '/user'
+      fullPath: '/user/'
+      preLoaderRoute: typeof DefaultUserIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/auth/login/': {
-      id: '/_default/auth/login/'
-      path: '/auth/login'
-      fullPath: '/auth/login/'
-      preLoaderRoute: typeof DefaultAuthLoginIndexRouteImport
-      parentRoute: typeof DefaultRoute
+    '/api/v1/revalidate': {
+      id: '/api/v1/revalidate'
+      path: '/api/v1/revalidate'
+      fullPath: '/api/v1/revalidate'
+      preLoaderRoute: typeof ApiV1RevalidateRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_default/auth/forgot-password/': {
-      id: '/_default/auth/forgot-password/'
-      path: '/auth/forgot-password'
-      fullPath: '/auth/forgot-password/'
-      preLoaderRoute: typeof DefaultAuthForgotPasswordIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/auth/error/': {
-      id: '/_default/auth/error/'
-      path: '/auth/error'
-      fullPath: '/auth/error/'
-      preLoaderRoute: typeof DefaultAuthErrorIndexRouteImport
+    '/_default/account/history/': {
+      id: '/_default/account/history/'
+      path: '/account/history'
+      fullPath: '/account/history/'
+      preLoaderRoute: typeof DefaultAccountHistoryIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
     '/_default/account/setup/': {
@@ -770,12 +658,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultAccountSetupIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/account/history/': {
-      id: '/_default/account/history/'
-      path: '/account/history'
-      fullPath: '/account/history/'
-      preLoaderRoute: typeof DefaultAccountHistoryIndexRouteImport
+    '/_default/auth/error/': {
+      id: '/_default/auth/error/'
+      path: '/auth/error'
+      fullPath: '/auth/error/'
+      preLoaderRoute: typeof DefaultAuthErrorIndexRouteImport
       parentRoute: typeof DefaultRoute
+    }
+    '/_default/auth/forgot-password/': {
+      id: '/_default/auth/forgot-password/'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password/'
+      preLoaderRoute: typeof DefaultAuthForgotPasswordIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/auth/login/': {
+      id: '/_default/auth/login/'
+      path: '/auth/login'
+      fullPath: '/auth/login/'
+      preLoaderRoute: typeof DefaultAuthLoginIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/auth/sign-up-success/': {
+      id: '/_default/auth/sign-up-success/'
+      path: '/auth/sign-up-success'
+      fullPath: '/auth/sign-up-success/'
+      preLoaderRoute: typeof DefaultAuthSignUpSuccessIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/auth/sign-up/': {
+      id: '/_default/auth/sign-up/'
+      path: '/auth/sign-up'
+      fullPath: '/auth/sign-up/'
+      preLoaderRoute: typeof DefaultAuthSignUpIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/auth/update-password/': {
+      id: '/_default/auth/update-password/'
+      path: '/auth/update-password'
+      fullPath: '/auth/update-password/'
+      preLoaderRoute: typeof DefaultAuthUpdatePasswordIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/author/$authorId/': {
+      id: '/_default/author/$authorId/'
+      path: '/author/$authorId'
+      fullPath: '/author/$authorId/'
+      preLoaderRoute: typeof DefaultAuthorAuthorIdIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/dev/toast/': {
+      id: '/_default/dev/toast/'
+      path: '/dev/toast'
+      fullPath: '/dev/toast/'
+      preLoaderRoute: typeof DefaultDevToastIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/genre/$genreId/': {
+      id: '/_default/genre/$genreId/'
+      path: '/genre/$genreId'
+      fullPath: '/genre/$genreId/'
+      preLoaderRoute: typeof DefaultGenreGenreIdIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/lists/$listId/': {
+      id: '/_default/lists/$listId/'
+      path: '/lists/$listId'
+      fullPath: '/lists/$listId/'
+      preLoaderRoute: typeof DefaultListsListIdIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/manga/$mangaId/': {
+      id: '/_default/manga/$mangaId/'
+      path: '/manga/$mangaId'
+      fullPath: '/manga/$mangaId/'
+      preLoaderRoute: typeof DefaultMangaMangaIdIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/sync/ani/': {
+      id: '/_default/sync/ani/'
+      path: '/sync/ani'
+      fullPath: '/sync/ani/'
+      preLoaderRoute: typeof DefaultSyncAniIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/sync/mal/': {
+      id: '/_default/sync/mal/'
+      path: '/sync/mal'
+      fullPath: '/sync/mal/'
+      preLoaderRoute: typeof DefaultSyncMalIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_default/user/$userId/': {
+      id: '/_default/user/$userId/'
+      path: '/user/$userId'
+      fullPath: '/user/$userId/'
+      preLoaderRoute: typeof DefaultUserUserIdIndexRouteImport
+      parentRoute: typeof DefaultRoute
+    }
+    '/_shortcut/ani/$aniId/': {
+      id: '/_shortcut/ani/$aniId/'
+      path: '/ani/$aniId'
+      fullPath: '/ani/$aniId/'
+      preLoaderRoute: typeof ShortcutAniAniIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
+    }
+    '/_shortcut/l/$listId/': {
+      id: '/_shortcut/l/$listId/'
+      path: '/l/$listId'
+      fullPath: '/l/$listId/'
+      preLoaderRoute: typeof ShortcutLListIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
+    }
+    '/_shortcut/mal/$malId/': {
+      id: '/_shortcut/mal/$malId/'
+      path: '/mal/$malId'
+      fullPath: '/mal/$malId/'
+      preLoaderRoute: typeof ShortcutMalMalIdIndexRouteImport
+      parentRoute: typeof ShortcutRoute
     }
     '/_default/manga/$mangaId/$scanlator/$subId/': {
       id: '/_default/manga/$mangaId/$scanlator/$subId/'

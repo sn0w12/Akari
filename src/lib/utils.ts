@@ -45,16 +45,43 @@ export type CookieConsent = {
 
 export type CookieCategory = keyof CookieConsent;
 
-export const setCookie = (
+/**
+ * Set a cookie value.
+ */
+export function setCookie(
     name: string,
     value: string,
     _category: CookieCategory,
     maxAge = 31536000,
-) => {
+) {
     if (typeof window === "undefined") return false;
     document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
     return true;
-};
+}
+
+/**
+ * Get a cookie value by name.
+ * Returns undefined if not found.
+ */
+export function getCookie(name: string): string | undefined {
+    const match = document.cookie.match(
+        new RegExp("(^| )" + name + "=([^;]+)"),
+    );
+    return match ? decodeURIComponent(match[2]) : undefined;
+}
+
+/**
+ * Remove a cookie by name (defaults to current path).
+ * You can optionally pass path and domain to match the cookie's settings.
+ */
+export function removeCookie(
+    name: string,
+    options?: { path?: string; domain?: string },
+): void {
+    const path = options?.path ?? "/";
+    const domain = options?.domain ? `; domain=${options.domain}` : "";
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}${domain}`;
+}
 
 export function formatRelativeDate(dateString: string): string {
     const date = new Date(dateString);
