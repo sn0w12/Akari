@@ -9,6 +9,7 @@ export function ScrollArea({
     children,
     scrollFade = false,
     scrollbarGutter = false,
+    ref,
     ...props
 }: ScrollAreaPrimitive.Root.Props & {
     scrollFade?: boolean;
@@ -27,6 +28,7 @@ export function ScrollArea({
                     scrollbarGutter &&
                         "data-has-overflow-y:pe-2.5 data-has-overflow-x:pb-2.5",
                 )}
+                ref={ref}
                 data-slot="scroll-area-viewport"
             >
                 {children}
