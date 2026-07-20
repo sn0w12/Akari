@@ -54,7 +54,7 @@ export default function StripReader({
         }
     }, [chapter.id, chapter.images.length]);
 
-    const SENTINEL_COUNT = 50;
+    const SENTINEL_COUNT = 100;
 
     useEffect(() => {
         if (loadedImages !== chapter.images.length || !readerRef.current)
@@ -77,7 +77,9 @@ export default function StripReader({
                 for (const [pct, visible] of visibility) {
                     if (visible && pct > maxVisible) maxVisible = pct;
                 }
-                setProgress(maxVisible);
+                if (maxVisible > 0 || visibility.get(0)) {
+                    setProgress(maxVisible);
+                }
             },
             { threshold: 0 },
         );
