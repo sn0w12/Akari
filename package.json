@@ -36,6 +36,7 @@
         "boring-avatars": "^2.0.4",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "cuelume": "^0.1.2",
         "embla-carousel-react": "^8.6.0",
         "lucide-react": "^1.16.0",
         "next-themes": "^0.4.6",
@@ -46,7 +47,8 @@
         "recharts": "^3.8.1",
         "schema-dts": "^2.0.0",
         "tailwind-merge": "^3.6.0",
-        "vite": "npm:@voidzero-dev/vite-plus-core@latest"
+        "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+        "web-haptics": "^0.0.6"
     },
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.19",

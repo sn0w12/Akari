@@ -73,6 +73,22 @@ export const APP_SETTINGS = {
                 default: true,
                 groups: ["Privacy"],
             },
+            hapticFeedback: {
+                label: "Haptic Feedback",
+                description:
+                    "Vibrate on interactions such as page turns and toggles.",
+                type: "checkbox",
+                default: false,
+                groups: ["Sensory"],
+            },
+            soundFeedback: {
+                label: "Sound Effects",
+                description:
+                    "Play sounds for page turns, notifications, and other actions.",
+                type: "checkbox",
+                default: false,
+                groups: ["Sensory"],
+            },
         },
     },
     manga: {
