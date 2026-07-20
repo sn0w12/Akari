@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 import type React from "react";
+import { useIsWebKit } from "@/hooks/use-is-webkit";
 
 export function ScrollArea({
     className,
@@ -15,6 +16,25 @@ export function ScrollArea({
     scrollFade?: boolean;
     scrollbarGutter?: boolean;
 }): React.ReactElement {
+    const isWebkit = useIsWebKit();
+
+    if (isWebkit) {
+        return (
+            <div
+                className={cn(
+                    "size-full overflow-scroll min-h-0",
+                    scrollFade && "fade",
+                    scrollbarGutter && "scrollbar-gutter-stable",
+                    className,
+                )}
+                ref={ref}
+                {...(props as React.ComponentProps<"div">)}
+            >
+                {children}
+            </div>
+        );
+    }
+
     return (
         <ScrollAreaPrimitive.Root
             className={cn("size-full min-h-0", className)}
