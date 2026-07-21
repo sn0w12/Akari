@@ -19,11 +19,10 @@ function getInitialPage(
     if (pageParam === "last") return chapter.images.length - 1;
     if (typeof pageParam === "string") return 0;
 
-    return isNaN(pageParam) ||
-        pageParam < 1 ||
-        pageParam > chapter.images.length
-        ? 0
-        : pageParam - 1;
+    if (isNaN(pageParam) || pageParam < 1) return 0;
+    if (pageParam > chapter.images.length) return chapter.images.length;
+
+    return pageParam - 1;
 }
 
 interface PageReaderProps {
@@ -66,7 +65,7 @@ export default function PageReader({
         setCurrentPage(getInitialPage(chapter, searchParams.page));
         bookmarkUpdatedRef.current = false;
         hasPrefetchedRef.current = false;
-    }, [chapter]);
+    }, [chapter, searchParams.page]);
 
     useEffect(() => {
         if (!chapterRef.current) return;
@@ -89,7 +88,7 @@ export default function PageReader({
             );
 
             if (currentPage >= threshold) {
-                router.preloadRoute({
+                void router.preloadRoute({
                     to: `/manga/$mangaId/$scanlator/$subId`,
                     params: {
                         mangaId: chapterRef.current.mangaId,
@@ -139,6 +138,7 @@ export default function PageReader({
         }
     }, [
         currentPage,
+        chapter.mangaId,
         chapter.images.length,
         chapter.nextChapter,
         navigate,

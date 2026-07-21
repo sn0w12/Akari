@@ -9,7 +9,7 @@ interface UseIsVisibleOptions {
 }
 
 export function useIsVisible(options: UseIsVisibleOptions = {}) {
-    const { once = false, ...observerOptions } = options;
+    const { once = false, root, rootMargin, threshold } = options;
 
     const [isVisible, setIsVisible] = useState(false);
     const elementRef = useRef<HTMLDivElement | null>(null);
@@ -35,10 +35,11 @@ export function useIsVisible(options: UseIsVisibleOptions = {}) {
         const element = elementRef.current;
         if (!element) return;
 
-        const observer = new IntersectionObserver(
-            handleIntersection,
-            observerOptions,
-        );
+        const observer = new IntersectionObserver(handleIntersection, {
+            root,
+            rootMargin,
+            threshold,
+        });
         observer.observe(element);
         observerRef.current = observer;
 
@@ -48,12 +49,7 @@ export function useIsVisible(options: UseIsVisibleOptions = {}) {
                 observerRef.current = null;
             }
         };
-    }, [
-        handleIntersection,
-        observerOptions.root,
-        observerOptions.rootMargin,
-        observerOptions.threshold,
-    ]);
+    }, [handleIntersection, root, rootMargin, threshold]);
 
     return { ref: elementRef, isVisible };
 }

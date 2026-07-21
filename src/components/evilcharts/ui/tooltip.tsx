@@ -65,7 +65,7 @@ function ChartTooltipContent({
         }
 
         const [item] = payload;
-        const key = `${labelKey ?? item?.dataKey ?? item?.name ?? "value"}`;
+        const key = `${String(labelKey ?? item?.dataKey ?? item?.name ?? "value")}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
         const value =
             !labelKey && typeof label === "string"
@@ -125,7 +125,17 @@ function ChartTooltipContent({
                                       nameKey
                                   ]
                                 : undefined;
-                        const key = `${payloadName ?? item.name ?? item.dataKey ?? "value"}`;
+                        const key =
+                            typeof payloadName === "string" ||
+                            typeof payloadName === "number"
+                                ? String(payloadName)
+                                : typeof item.name === "string" ||
+                                    typeof item.name === "number"
+                                  ? String(item.name)
+                                  : typeof item.dataKey === "string" ||
+                                      typeof item.dataKey === "number"
+                                    ? String(item.dataKey)
+                                    : "value";
                         const itemConfig = getPayloadConfigFromPayload(
                             config,
                             item,

@@ -121,12 +121,13 @@ export default function StripReader({
         }
 
         if (prefetch && nextChapter && !hasPrefetchedRef.current) {
-            router.preloadRoute({
+            void router.preloadRoute({
                 to: `/manga/$mangaId/$scanlator/$subId`,
                 params: {
-                    mangaId: chapter.mangaId,
-                    scanlator: chapter.nextChapter!.scanlatorId.toString(),
-                    subId: chapter.nextChapter!.number.toString(),
+                    mangaId: chapterRef.current.mangaId,
+                    scanlator:
+                        chapterRef.current.nextChapter!.scanlatorId.toString(),
+                    subId: chapterRef.current.nextChapter!.number.toString(),
                 },
             });
             hasPrefetchedRef.current = true;

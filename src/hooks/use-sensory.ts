@@ -47,10 +47,10 @@ export function useSensory() {
             if (!canHaptic && !canSound) return;
 
             const preset = sensoryToPreset[interaction];
-            if (canHaptic) triggerHaptic(preset.haptic);
+            if (canHaptic) void triggerHaptic(preset.haptic);
             if (canSound) triggerSound(preset.sound);
         },
-        [canHaptic, canSound],
+        [canHaptic, canSound, triggerHaptic],
     );
 
     return { trigger };

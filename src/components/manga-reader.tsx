@@ -45,7 +45,7 @@ export function Reader({ chapter }: ReaderProps) {
         } else {
             trigger("error");
         }
-    }, [bookmarkState, flashColor]);
+    }, [bookmarkState, flashColor, trigger]);
 
     async function setReaderMode(isStrip: boolean) {
         setIsStripMode(isStrip);

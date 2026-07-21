@@ -62,7 +62,17 @@ function ChartLegendContent({
                         nameKey && item.payload
                             ? (item.payload as Record<string, unknown>)[nameKey]
                             : undefined;
-                    const key = `${payloadName ?? item.value ?? item.dataKey ?? "value"}`;
+                    const key =
+                        typeof payloadName === "string" ||
+                        typeof payloadName === "number"
+                            ? String(payloadName)
+                            : typeof item.value === "string" ||
+                                typeof item.value === "number"
+                              ? String(item.value)
+                              : typeof item.dataKey === "string" ||
+                                  typeof item.dataKey === "number"
+                                ? String(item.dataKey)
+                                : "value";
                     const itemConfig = getPayloadConfigFromPayload(
                         config,
                         item,
