@@ -129,7 +129,7 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 <Image
                     src={manga.cover}
                     alt={manga.title}
-                    className="h-auto w-full sm:w-64 object-cover rounded-l-lg rounded-r-lg sm:rounded-r-none"
+                    className="h-auto w-full sm:w-64 object-cover rounded-l-2xl rounded-r-2xl sm:rounded-r-none"
                     width={160}
                     height={240}
                     fetchPriority={priority ? "high" : "auto"}

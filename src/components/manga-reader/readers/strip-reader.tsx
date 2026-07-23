@@ -11,18 +11,12 @@ import { useRouter } from "@tanstack/react-router";
 
 interface StripReaderProps {
     chapter: components["schemas"]["ChapterResponse"];
-    scrollMetrics: {
-        pixels: number;
-        percentage: number;
-        clientHeight: number;
-    };
     toggleReaderMode: () => void;
     setBookmarkState: (state: boolean | null) => void;
 }
 
 export default function StripReader({
     chapter,
-    scrollMetrics,
     toggleReaderMode,
     setBookmarkState,
 }: StripReaderProps) {
@@ -60,33 +54,43 @@ export default function StripReader({
         }
     }, [chapter.id, chapter.images.length]);
 
-    const pixels = scrollMetrics.pixels;
-    const clientHeight = scrollMetrics.clientHeight;
+    const SENTINEL_COUNT = 100;
+
     useEffect(() => {
-        if (
-            !lastImageRef.current ||
-            !readerRef.current ||
-            loadedImages !== chapter.images.length
-        )
+        if (loadedImages !== chapter.images.length || !readerRef.current)
             return;
-        const firstImage = readerRef.current.querySelector(
-            "img",
-        ) as HTMLImageElement;
-        if (!firstImage) return;
-        const firstImageTop = firstImage.offsetTop;
-        const lastImage = lastImageRef.current;
-        const lastImageBottom = lastImage.offsetTop + lastImage.offsetHeight;
-        const totalHeight = lastImageBottom - clientHeight - firstImageTop;
-        const currentPosition = pixels - firstImageTop;
-        const newProgress = Math.max(
-            0,
-            Math.min(1, currentPosition / totalHeight),
+
+        const sentinels =
+            readerRef.current.querySelectorAll<HTMLElement>("[data-sentinel]");
+        const visibility = new Map<number, boolean>();
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    const pct = Number(
+                        entry.target.getAttribute("data-progress"),
+                    );
+                    visibility.set(pct, entry.isIntersecting);
+                }
+
+                let maxVisible = 0;
+                for (const [pct, visible] of visibility) {
+                    if (visible && pct > maxVisible) maxVisible = pct;
+                }
+                if (maxVisible > 0 || visibility.get(0)) {
+                    setProgress(maxVisible);
+                }
+            },
+            { threshold: 0 },
         );
 
-        queueMicrotask(() => {
-            setProgress(newProgress);
-        });
-    }, [pixels, clientHeight, loadedImages, chapter.images.length]);
+        sentinels.forEach((s) => observer.observe(s));
+
+        return () => {
+            observer.disconnect();
+            visibility.clear();
+        };
+    }, [loadedImages, chapter.images.length, chapter.id]);
 
     const chapterRef = useRef(chapter);
     chapterRef.current = chapter;
@@ -117,12 +121,13 @@ export default function StripReader({
         }
 
         if (prefetch && nextChapter && !hasPrefetchedRef.current) {
-            router.preloadRoute({
+            void router.preloadRoute({
                 to: `/manga/$mangaId/$scanlator/$subId`,
                 params: {
-                    mangaId: chapter.mangaId,
-                    scanlator: chapter.nextChapter!.scanlatorId.toString(),
-                    subId: chapter.nextChapter!.number.toString(),
+                    mangaId: chapterRef.current.mangaId,
+                    scanlator:
+                        chapterRef.current.nextChapter!.scanlatorId.toString(),
+                    subId: chapterRef.current.nextChapter!.number.toString(),
                 },
             });
             hasPrefetchedRef.current = true;
@@ -143,7 +148,7 @@ export default function StripReader({
                 <div
                     id="reader"
                     ref={readerRef}
-                    className={`flex flex-col items-center transition-colors duration-500`}
+                    className="flex flex-col items-center transition-colors duration-500 relative"
                 >
                     {chapter.images.map((img, index) => (
                         <Image
@@ -179,6 +184,18 @@ export default function StripReader({
                             unOptimized
                         />
                     ))}
+                    {loadedImages === chapter.images.length &&
+                        Array.from({ length: SENTINEL_COUNT + 1 }, (_, i) => (
+                            <div
+                                key={`sentinel-${i}`}
+                                data-sentinel
+                                data-progress={i / SENTINEL_COUNT}
+                                className="absolute w-px h-px opacity-0 pointer-events-none"
+                                style={{
+                                    top: `${(i / SENTINEL_COUNT) * 100}%`,
+                                }}
+                            />
+                        ))}
                 </div>
                 <div>
                     <StripPageProgress

@@ -7,10 +7,14 @@ import {
     InfoIcon,
     LoaderCircleIcon,
     TriangleAlertIcon,
+    Trash2Icon,
 } from "lucide-react";
+import { useSensory, type Interactions } from "@/hooks/use-sensory";
+import { useEffect, useRef } from "react";
 import type React from "react";
 
 const TOAST_ICONS = {
+    destructive: Trash2Icon,
     error: CircleAlertIcon,
     info: InfoIcon,
     loading: LoaderCircleIcon,
@@ -49,6 +53,40 @@ function upsertReplayClassName(toast: {
     return isEven ? "animate-toast-success-even" : "animate-toast-success-odd";
 }
 
+function useToastSensory(
+    toasts: readonly { id: string; type?: string }[],
+    trigger: (interaction: Interactions) => void,
+) {
+    const seenToastIdsRef = useRef(new Set<string>());
+
+    useEffect(() => {
+        for (const toast of toasts) {
+            if (seenToastIdsRef.current.has(toast.id)) continue;
+            seenToastIdsRef.current.add(toast.id);
+
+            if (!toast.type || toast.type === "loading") continue;
+
+            switch (toast.type) {
+                case "destructive":
+                    trigger("destructive");
+                    break;
+                case "error":
+                    trigger("error");
+                    break;
+                case "warning":
+                    trigger("warning");
+                    break;
+                case "success":
+                    trigger("success");
+                    break;
+                case "info":
+                    trigger("info");
+                    break;
+            }
+        }
+    }, [toasts, trigger]);
+}
+
 function Toasts({
     position,
     portalProps,
@@ -58,6 +96,8 @@ function Toasts({
 }): React.ReactElement {
     const { toasts } = Toast.useToastManager();
     const swipeDirection = getSwipeDirection(position);
+    const { trigger } = useSensory();
+    useToastSensory(toasts, trigger);
 
     return (
         <Toast.Portal data-slot="toast-portal" {...portalProps}>
@@ -136,7 +176,7 @@ function Toasts({
                                             className="[&>svg]:h-lh [&>svg]:w-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
                                             data-slot="toast-icon"
                                         >
-                                            <Icon className="in-data-[type=loading]:animate-spin in-data-[type=error]:text-destructive in-data-[type=info]:text-info in-data-[type=success]:text-success in-data-[type=warning]:text-warning in-data-[type=loading]:opacity-80" />
+                                            <Icon className="in-data-[type=loading]:animate-spin in-data-[type=destructive]:text-destructive in-data-[type=error]:text-destructive in-data-[type=info]:text-info in-data-[type=success]:text-success in-data-[type=warning]:text-warning in-data-[type=loading]:opacity-80" />
                                         </div>
                                     )}
 
@@ -176,6 +216,8 @@ function AnchoredToasts({
     portalProps?: React.ComponentProps<typeof Toast.Portal>;
 }): React.ReactElement {
     const { toasts } = Toast.useToastManager();
+    const { trigger } = useSensory();
+    useToastSensory(toasts, trigger);
 
     return (
         <Toast.Portal data-slot="toast-portal-anchored" {...portalProps}>
@@ -227,7 +269,7 @@ function AnchoredToasts({
                                                     className="[&>svg]:h-lh [&>svg]:w-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
                                                     data-slot="toast-icon"
                                                 >
-                                                    <Icon className="in-data-[type=loading]:animate-spin in-data-[type=error]:text-destructive in-data-[type=info]:text-info in-data-[type=success]:text-success in-data-[type=warning]:text-warning in-data-[type=loading]:opacity-80" />
+                                                    <Icon className="in-data-[type=loading]:animate-spin in-data-[type=destructive]:text-destructive in-data-[type=error]:text-destructive in-data-[type=info]:text-info in-data-[type=success]:text-success in-data-[type=warning]:text-warning in-data-[type=loading]:opacity-80" />
                                                 </div>
                                             )}
 

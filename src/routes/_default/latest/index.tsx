@@ -10,7 +10,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { CollectionPage, ComicSeries, ListItem } from "schema-dts";
 
 const getLatestData = createServerFn({ method: "GET" })
-    .inputValidator((d: { page: number }) => d)
+    .validator((d: { page: number }) => d)
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET("/v2/manga/list", {
             params: { query: { page: data.page, pageSize: 24 } },

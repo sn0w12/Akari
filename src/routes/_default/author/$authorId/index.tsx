@@ -10,7 +10,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { Person } from "schema-dts";
 
 const getAuthorData = createServerFn({ method: "GET" })
-    .inputValidator((d: { name: string; page: number }) => d)
+    .validator((d: { name: string; page: number }) => d)
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET("/v2/author/{name}", {
             params: {

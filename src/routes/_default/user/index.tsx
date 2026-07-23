@@ -10,7 +10,7 @@ import { client, serverHeaders } from "@/lib/api";
 import { capitalize } from "@/lib/utils";
 
 const getUsers = createServerFn({ method: "GET" })
-    .inputValidator(() => undefined)
+    .validator(() => undefined)
     .handler(async () => {
         const { data, error } = await client.GET("/v2/user", {
             params: {

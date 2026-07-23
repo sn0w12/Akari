@@ -18,7 +18,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
 
 const getPopularSection = createServerFn({ method: "GET" })
-    .inputValidator(() => undefined)
+    .validator(() => undefined)
     .handler(async () => {
         const { data, error } = await client.GET("/v2/manga/list/popular", {
             params: {
@@ -35,7 +35,7 @@ const getPopularSection = createServerFn({ method: "GET" })
     });
 
 const getLatestSection = createServerFn({ method: "GET" })
-    .inputValidator(() => undefined)
+    .validator(() => undefined)
     .handler(async () => {
         const { data, error } = await client.GET("/v2/manga/list", {
             params: { query: { page: 1, pageSize: 24 } },

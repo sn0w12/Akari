@@ -20,16 +20,15 @@ export function MobileHeader() {
 
     return (
         <TabBar>
-            <TabBarList className="mb-[var(--safe-bottom)]">
+            <TabBarList className={borderClass}>
                 <TabBarTrigger
                     aria-label="Open Sidebar"
                     onClick={toggleSidebar}
                     active={
                         pathname === "/settings" ||
-                        pathname === "/account" ||
+                        pathname.startsWith("/account") ||
                         pathname.startsWith("/genre/")
                     }
-                    className={borderClass}
                 >
                     <Menu className="size-6" />
                 </TabBarTrigger>
@@ -37,15 +36,13 @@ export function MobileHeader() {
                     aria-label="Popular Manga"
                     href="/popular"
                     active={pathname === "/popular"}
-                    className={borderClass}
                 >
                     <TrendingUp className="size-6" />
                 </TabBarTrigger>
                 <TabBarTrigger
                     aria-label="Home"
                     href="/"
-                    active={pathname === "/" || pathname.startsWith("/latest")}
-                    className={borderClass}
+                    active={pathname === "/" || pathname === "/latest"}
                 >
                     <HomeIcon className="size-6" />
                 </TabBarTrigger>
@@ -53,7 +50,6 @@ export function MobileHeader() {
                     aria-label="Search"
                     href="/search"
                     active={pathname === "/search"}
-                    className={borderClass}
                 >
                     <SearchIcon className="size-6" />
                 </TabBarTrigger>
@@ -62,7 +58,6 @@ export function MobileHeader() {
                         aria-label="Bookmarks"
                         href="/bookmarks"
                         active={pathname === "/bookmarks"}
-                        className={borderClass}
                         viewTransition={{
                             types: ({ pathChanged, toLocation }) => {
                                 if (!pathChanged) return false;
@@ -86,7 +81,6 @@ export function MobileHeader() {
                         aria-label="Login to view bookmarks"
                         href="/auth/login"
                         active={pathname === "/auth/login"}
-                        className={borderClass}
                         viewTransition={{
                             types: ({ pathChanged, toLocation }) => {
                                 if (!pathChanged) return false;

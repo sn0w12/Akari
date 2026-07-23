@@ -12,7 +12,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
 
 const loadMangaPage = createServerFn({ method: "GET" })
-    .inputValidator((d: string) => d)
+    .validator((d: string) => d)
     .handler(async ({ data: id }) => {
         const [mangaRes, chaptersRes] = await Promise.all([
             client.GET("/v2/manga/{id}", {

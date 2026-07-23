@@ -8,6 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { ReactNode } from "react";
+import { Frame } from "../ui/frame";
 
 interface SyncBodyProps<T> {
     title: string;
@@ -31,7 +32,7 @@ export function SyncBody<T>({
     data,
 }: SyncBodyProps<T>) {
     return (
-        <div className="flex-1 container mx-auto p-4">
+        <div className="flex-1 max-w-6xl mx-auto w-full p-4 pt-0">
             {loading ? (
                 <div className="flex flex-col items-center justify-center h-64 gap-4">
                     <p className="text-lg">Loading data&hellip;</p>
@@ -41,24 +42,33 @@ export function SyncBody<T>({
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-row justify-between gap-2">
-                        <h1 className="text-2xl font-semibold mb-4">
-                            {title} - {data.length} items
-                        </h1>
-                        <Button onClick={onButtonClick}>{buttonText}</Button>
+                    <div className="flex flex-row justify-between gap-2 pt-2">
+                        <h1 className="text-2xl font-semibold mb-2">{title}</h1>
+                        <Button size="sm" onClick={onButtonClick}>
+                            {buttonText}
+                        </Button>
                     </div>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                {tableHeaders.map((header) => (
-                                    <TableHead key={header}>{header}</TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((item, index) => renderRow(item, index))}
-                        </TableBody>
-                    </Table>
+                    <Frame className="w-full">
+                        <Table
+                            variant="card"
+                            className="w-full overflow-hidden"
+                        >
+                            <TableHeader>
+                                <TableRow>
+                                    {tableHeaders.map((header) => (
+                                        <TableHead key={header}>
+                                            {header}
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {data.map((item, index) =>
+                                    renderRow(item, index),
+                                )}
+                            </TableBody>
+                        </Table>
+                    </Frame>
                 </>
             )}
         </div>

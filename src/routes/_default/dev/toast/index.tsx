@@ -80,6 +80,9 @@ function ToastTestPage() {
                                 <SelectItem value="error">Error</SelectItem>
                                 <SelectItem value="info">Info</SelectItem>
                                 <SelectItem value="warning">Warning</SelectItem>
+                                <SelectItem value="destructive">
+                                    Destructive
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

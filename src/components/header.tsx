@@ -1,5 +1,4 @@
 import { useUser } from "@/hooks/use-user";
-import { useWindowWidth } from "@/hooks/use-window-width";
 import { validateSecondaryAccounts } from "@/lib/auth/secondary-accounts";
 import { useSetting, useSettingsChange } from "@/lib/settings";
 import { toastManager } from "@/components/ui/toast";
@@ -15,7 +14,6 @@ interface HeaderProps {
 export function HeaderComponent({ notification }: HeaderProps) {
     const { data: user } = useUser();
     const { setTheme } = useTheme();
-    const windowWidth = useWindowWidth();
     const validNotifs = useSetting("groupLoginToasts") as string[];
 
     useSettingsChange((event) => {
@@ -46,11 +44,8 @@ export function HeaderComponent({ notification }: HeaderProps) {
 
     return (
         <>
-            {windowWidth < 768 && windowWidth !== 0 ? (
-                <MobileHeader />
-            ) : (
-                <DesktopHeader notification={notification} />
-            )}
+            <MobileHeader />
+            <DesktopHeader notification={notification} />
         </>
     );
 }

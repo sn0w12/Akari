@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 
 const loadManga = createServerFn({ method: "GET" })
-    .inputValidator((d: string) => d)
+    .validator((d: string) => d)
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET("/v2/manga/{id}", {
             params: { path: { id: data } },

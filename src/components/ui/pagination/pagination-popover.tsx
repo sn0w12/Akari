@@ -12,6 +12,9 @@ import {
     ResponsiveModalPopup,
     ResponsiveModalTrigger,
 } from "../responsive-modal";
+import { Form } from "../form";
+import { Field, FieldLabel } from "../field";
+import { FormEvent } from "react";
 
 interface JumpToPagePopoverProps {
     currentPage: number;
@@ -32,8 +35,10 @@ export function JumpToPagePopover({
     isPopoverOpen,
     setIsPopoverOpen,
 }: JumpToPagePopoverProps) {
-    const handleJumpToPage = () => {
-        const page = jumpToPage;
+    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const page = Number(formData.get("page"));
         if (page >= 1 && page <= totalPages) {
             handlePageChange(page);
             setIsPopoverOpen(false);
@@ -60,27 +65,32 @@ export function JumpToPagePopover({
             </ResponsiveModalTrigger>
             <ResponsiveModalPopup dialogClassName="w-42">
                 <ResponsiveModalPanel>
-                    <p className="text-xs text-muted-foreground text-center">
-                        Jump to page
-                    </p>
-                    <div className="flex flex-col gap-1">
-                        <NumberField
-                            min={1}
-                            max={totalPages}
-                            value={jumpToPage}
-                            onValueChange={(value) => setJumpToPage(value || 1)}
-                            size="sm"
-                            className="md:text-xs"
-                        >
-                            <NumberFieldGroup>
-                                <NumberFieldDecrement />
-                                <NumberFieldInput autoFocus />
-                                <NumberFieldIncrement />
-                            </NumberFieldGroup>
-                        </NumberField>
+                    <Form className="flex flex-col gap-1" onSubmit={onSubmit}>
+                        <Field name="page" className="gap-1">
+                            <FieldLabel className="block w-full text-center md:text-xs">
+                                Jump to page
+                            </FieldLabel>
+                            <NumberField
+                                min={1}
+                                max={totalPages}
+                                value={jumpToPage}
+                                onValueChange={(value) =>
+                                    setJumpToPage(value || 1)
+                                }
+                                size="sm"
+                                className="md:text-xs"
+                                required
+                            >
+                                <NumberFieldGroup>
+                                    <NumberFieldDecrement />
+                                    <NumberFieldInput autoFocus type="number" />
+                                    <NumberFieldIncrement />
+                                </NumberFieldGroup>
+                            </NumberField>
+                        </Field>
                         <Button
                             size="sm"
-                            onClick={handleJumpToPage}
+                            type="submit"
                             disabled={
                                 !jumpToPage ||
                                 jumpToPage < 1 ||
@@ -89,7 +99,7 @@ export function JumpToPagePopover({
                         >
                             Go
                         </Button>
-                    </div>
+                    </Form>
                 </ResponsiveModalPanel>
             </ResponsiveModalPopup>
         </ResponsiveModal>

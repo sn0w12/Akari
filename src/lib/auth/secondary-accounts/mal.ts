@@ -1,8 +1,7 @@
 import { client } from "@/lib/api";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { env } from "@/lib/env";
-import { setCookie } from "@/lib/utils";
-import Cookies from "js-cookie";
+import { getCookie, removeCookie, setCookie } from "@/lib/utils";
 import { SecondaryAccountBase } from "./general";
 
 export class MalAccount extends SecondaryAccountBase {
@@ -83,7 +82,7 @@ export class MalAccount extends SecondaryAccountBase {
         origin: string,
     ): Promise<boolean> {
         const code = params.code;
-        const codeVerifier = Cookies.get("pkce_code_verifier");
+        const codeVerifier = getCookie("pkce_code_verifier");
 
         if (!code || !codeVerifier) {
             return false;
@@ -102,7 +101,7 @@ export class MalAccount extends SecondaryAccountBase {
             return false;
         }
 
-        Cookies.remove("pkce_code_verifier");
+        removeCookie("pkce_code_verifier");
         this.updateLoginToastSetting();
         return true;
     }

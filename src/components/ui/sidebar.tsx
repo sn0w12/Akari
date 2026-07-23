@@ -593,7 +593,7 @@ const sidebarMenuButtonVariants = cva(
 
 function SidebarMenuButton({
     asChild = false,
-    isActive = false,
+    active = false,
     variant = "default",
     size = "default",
     tooltip,
@@ -603,7 +603,7 @@ function SidebarMenuButton({
     ...props
 }: React.ComponentProps<"button"> & {
     asChild?: boolean;
-    isActive?: boolean;
+    active?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipPopup>;
     labelClassName?: string;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
@@ -631,7 +631,7 @@ function SidebarMenuButton({
             "data-slot": "sidebar-menu-button",
             "data-sidebar": "menu-button",
             "data-size": size,
-            "data-active": isActive,
+            "data-active": active,
             className: cn(
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
@@ -655,7 +655,7 @@ function SidebarMenuButton({
 }
 
 function SidebarMenuLink<const TTo extends string | undefined = undefined>({
-    isActive = false,
+    active = false,
     variant = "default",
     size = "default",
     tooltip,
@@ -664,7 +664,7 @@ function SidebarMenuLink<const TTo extends string | undefined = undefined>({
     labelClassName,
     ...props
 }: LinkComponentProps<"a", RegisteredRouter, string, TTo> & {
-    isActive?: boolean;
+    active?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipPopup>;
     className?: string;
     labelClassName?: string;
@@ -688,7 +688,7 @@ function SidebarMenuLink<const TTo extends string | undefined = undefined>({
             data-slot="sidebar-menu-link"
             data-sidebar="menu-button"
             data-size={size}
-            data-active={isActive}
+            data-active={active}
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
@@ -879,7 +879,7 @@ interface SidebarSectionProps {
     title: string;
     icon: React.ReactNode;
     items: SectionItem[];
-    isActive: boolean;
+    active: boolean;
     isItemActive: (itemId: string) => boolean;
 }
 
@@ -887,12 +887,12 @@ function SidebarSection({
     title,
     icon,
     items,
-    isActive,
+    active,
     isItemActive,
 }: SidebarSectionProps): React.JSX.Element {
     const isMobile = useIsMobile();
     const { setOpen, state } = useSidebar();
-    const [isExpanded, setIsExpanded] = React.useState<boolean>(isActive);
+    const [isExpanded, setIsExpanded] = React.useState<boolean>(active);
 
     const handleSectionToggle = (e: React.MouseEvent): void => {
         e.stopPropagation();
@@ -914,7 +914,7 @@ function SidebarSection({
         <SidebarMenuItem>
             <SidebarMenuButton
                 onClick={handleSectionToggle}
-                isActive={isActive}
+                active={active}
                 tooltip={title}
                 labelClassName={
                     state === "collapsed" ? "" : "w-full justify-between"
@@ -945,7 +945,7 @@ function SidebarSection({
                             key={item.id}
                             to="/genre/$genreId"
                             params={{ genreId: item.id }}
-                            isActive={isItemActive(item.id)}
+                            active={isItemActive(item.id)}
                             tooltip={item.name}
                             size="sm"
                             className="relative z-10 px-3 text-base md:text-sm hover:bg-accent"

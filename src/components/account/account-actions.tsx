@@ -7,12 +7,10 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { toastManager } from "@/components/ui/toast";
-import { env } from "@/lib/env";
 import { exportBookmarks } from "@/lib/manga/export-bookmarks";
-import { registerAndSubscribe } from "@/lib/notifications/subscribe";
-import { StorageManager } from "@/lib/storage";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bell, Clipboard, Download, RefreshCcw } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Clipboard, Download, History, RefreshCcw } from "lucide-react";
 import { useState } from "react";
 
 type User = components["schemas"]["UserResponse"];
@@ -24,8 +22,6 @@ interface AccountActionsProps {
 export function AccountActions({ user }: AccountActionsProps) {
     const queryClient = useQueryClient();
     const [isExportingBookmarks, setIsExportingBookmarks] = useState(false);
-    const [isEnablingNotifications, setIsEnablingNotifications] =
-        useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     async function handleExportBookmarks() {
@@ -47,52 +43,6 @@ export function AccountActions({ user }: AccountActionsProps) {
             });
         } finally {
             setIsExportingBookmarks(false);
-        }
-    }
-
-    async function handleEnableNotifications() {
-        setIsEnablingNotifications(true);
-
-        try {
-            const result = await registerAndSubscribe(
-                env("VITE_VAPID_PUBLIC_KEY") || "",
-            );
-            const storage = StorageManager.get("pushNotifications");
-
-            if (result.status === "subscribed") {
-                storage.update({
-                    declined: false,
-                    enabled: true,
-                    pending: false,
-                });
-                toastManager.add({
-                    title: "Notifications enabled",
-                    description:
-                        "Akari will notify you when bookmarked manga update.",
-                    type: "success",
-                });
-            } else {
-                storage.update({
-                    declined: false,
-                    pending: true,
-                });
-                toastManager.add({
-                    title: "Notifications pending",
-                    description:
-                        "Akari will finish setup when push keys are available.",
-                    type: "info",
-                });
-            }
-        } catch (error) {
-            const message =
-                error instanceof Error ? error.message : "Setup failed";
-            toastManager.add({
-                title: "Notifications unavailable",
-                description: message,
-                type: "error",
-            });
-        } finally {
-            setIsEnablingNotifications(false);
         }
     }
 
@@ -153,11 +103,10 @@ export function AccountActions({ user }: AccountActionsProps) {
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={handleEnableNotifications}
-                        loading={isEnablingNotifications}
+                        render={<Link to="/account/history" />}
                     >
-                        <Bell className="size-4" />
-                        Enable Notifications
+                        <History className="size-4" />
+                        History
                     </Button>
                     <Button variant="outline" onClick={handleCopyProfileLink}>
                         <Clipboard className="size-4" />

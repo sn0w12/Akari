@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { BaseSidebarContent } from "./base/sidebar-content";
 import { HeaderComponent } from "./header";
-import { PullToRefresh } from "./pull-to-refresh";
 
 export function BaseLayout({
     children,
@@ -28,10 +27,6 @@ export function BaseLayout({
         queryFn: fetchNotification,
         enabled: !!user,
     });
-
-    const handleRefresh = async (): Promise<void> => {
-        await router.invalidate();
-    };
 
     const handleSettingsClick = () => {
         void router.navigate({ to: "/settings" });
@@ -55,9 +50,7 @@ export function BaseLayout({
                 <Sidebar collapsible="icon" aria-label="Main navigation">
                     <BaseSidebarContent notification={notification} />
                 </Sidebar>
-                <PullToRefresh
-                    as="main"
-                    onRefresh={handleRefresh}
+                <main
                     className={cn(
                         "bg-background min-h-[var(--visible-height)] md:min-h-none h-full w-full flex flex-col md:border-t md:rounded-tl-xl md:border-l md:overflow-y-auto",
                         borderClass,
@@ -71,7 +64,7 @@ export function BaseLayout({
                     id="scroll-element"
                 >
                     <ErrorProvider>{children}</ErrorProvider>
-                </PullToRefresh>
+                </main>
             </div>
         </div>
     );

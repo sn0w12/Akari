@@ -663,6 +663,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/bookmarks/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get reading history timeline for charts */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Time bucket: Hour, Day, Week, Month, Year */
+                    bucket?: components["schemas"]["HistoryBucket"];
+                    /** @description Number of buckets to look back */
+                    range?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReadingHistoryTimelineEntryListSuccessResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/bookmarks/history/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get reading history stats for charts */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Time bucket: Hour, Day, Week, Month, Year */
+                    bucket?: components["schemas"]["HistoryBucket"];
+                    /** @description Number of buckets to look back */
+                    range?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReadingHistoryStatsResponseSuccessResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/bookmarks/batch": {
         parameters: {
             query?: never;
@@ -4406,12 +4524,7 @@ export interface components {
             data: components["schemas"]["ChapterResponse"];
         };
         /** @enum {string} */
-        CommentReportReason:
-            | "spam"
-            | "harassment"
-            | "inappropriate"
-            | "hate_speech"
-            | "other";
+        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
         CommentResponse: {
             /** Format: uuid */
             id: string;
@@ -4507,6 +4620,12 @@ export interface components {
             description?: string | null;
             isPublic?: boolean;
         };
+        DayOfWeekReadCount: {
+            /** Format: int32 */
+            dayOfWeek: number;
+            /** Format: int32 */
+            count: number;
+        };
         ErrorData: {
             message: string;
             details?: string | null;
@@ -4528,12 +4647,25 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        GenreReadCount: {
+            genre: string;
+            /** Format: int32 */
+            count: number;
+        };
         GuidListSuccessResponse: {
             /** @enum {string} */
             result: "Success";
             /** Format: int32 */
             status: number;
             data: string[];
+        };
+        /** @enum {string} */
+        HistoryBucket: "Hour" | "Day" | "Week" | "Month" | "Year";
+        HourReadCount: {
+            /** Format: int32 */
+            hour: number;
+            /** Format: int32 */
+            count: number;
         };
         Int32NullableSuccessResponse: {
             /** @enum {string} */
@@ -4920,6 +5052,41 @@ export interface components {
             /** Format: int32 */
             rating: number;
         };
+        ReadingHistoryStatsResponse: {
+            /** Format: int32 */
+            totalReads: number;
+            /** Format: int32 */
+            uniqueManga: number;
+            /** Format: double */
+            avgPerDay: number;
+            /** Format: int32 */
+            currentStreak: number;
+            /** Format: int32 */
+            longestStreak: number;
+            topGenres: components["schemas"]["GenreReadCount"][];
+            readsByDayOfWeek: components["schemas"]["DayOfWeekReadCount"][];
+            readsByHour: components["schemas"]["HourReadCount"][];
+        };
+        ReadingHistoryStatsResponseSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["ReadingHistoryStatsResponse"];
+        };
+        ReadingHistoryTimelineEntry: {
+            /** Format: date-time */
+            date: string;
+            /** Format: int32 */
+            reads: number;
+        };
+        ReadingHistoryTimelineEntryListSuccessResponse: {
+            /** @enum {string} */
+            result: "Success";
+            /** Format: int32 */
+            status: number;
+            data: components["schemas"]["ReadingHistoryTimelineEntry"][];
+        };
         ReportCommentRequest: {
             reason: components["schemas"]["CommentReportReason"];
             description?: string | null;
@@ -5246,14 +5413,7 @@ export interface components {
         /** @enum {string} */
         UserRole: "user" | "admin" | "moderator" | "owner";
         /** @enum {string} */
-        UserSortBy:
-            | "CreatedAt"
-            | "Username"
-            | "TotalComments"
-            | "TotalUpvotes"
-            | "TotalBookmarks"
-            | "TotalUploads"
-            | "TotalLists";
+        UserSortBy: "CreatedAt" | "Username" | "TotalComments" | "TotalUpvotes" | "TotalBookmarks" | "TotalUploads" | "TotalLists";
         ViewMangaRequest: {
             saveUserId?: boolean;
         };

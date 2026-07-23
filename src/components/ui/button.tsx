@@ -24,6 +24,7 @@ export const buttonVariants = cva(
                 "icon-xs":
                     "size-7 rounded-md before:rounded-[calc(var(--radius-md)-1px)] sm:size-6 not-in-data-[slot=input-group]:[&_svg:not([class*='size-'])]:size-4 sm:not-in-data-[slot=input-group]:[&_svg:not([class*='size-'])]:size-3.5",
                 lg: "h-10 px-[calc(--spacing(3.5)-1px)] sm:h-9",
+                pill: "h-10 rounded-full px-[calc(--spacing(3)-1px)] before:rounded-full sm:h-8",
                 sm: "h-8 gap-1.5 px-[calc(--spacing(2.5)-1px)] sm:h-7",
                 xl: "h-11 px-[calc(--spacing(4)-1px)] text-lg sm:h-10 sm:text-base [&_svg:not([class*='size-'])]:size-5 sm:[&_svg:not([class*='size-'])]:size-4.5",
                 xs: "h-7 gap-1 rounded-md px-[calc(--spacing(2)-1px)] text-sm before:rounded-[calc(var(--radius-md)-1px)] sm:h-6 sm:text-xs [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-3.5",

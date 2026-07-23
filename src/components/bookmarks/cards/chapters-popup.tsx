@@ -8,6 +8,7 @@ import {
     ResponsiveModalTitle,
     ResponsiveModalTrigger,
 } from "@/components/ui/responsive-modal";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { client } from "@/lib/api";
 import { cn, formatRelativeDate } from "@/lib/utils";
@@ -108,7 +109,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                         </ResponsiveModalTitle>
                     </ResponsiveModalHeader>
                 </ResponsiveModalDrawerOnly>
-                <ResponsiveModalPanel>
+                <ResponsiveModalPanel scrollable={false}>
                     {open ? (
                         <ChaptersList
                             isLoading={isLoading}
@@ -150,10 +151,11 @@ function ChaptersList({
     });
 
     return (
-        <div
+        <ScrollArea
             ref={parentRef}
-            className="h-96 overflow-y-auto md:h-64"
-            data-scrollbar-custom
+            className="h-96 md:h-64"
+            scrollFade
+            scrollbarGutter
         >
             {isLoading ? (
                 <div className="space-y-2 py-2">
@@ -209,7 +211,7 @@ function ChaptersList({
                     No chapters available
                 </div>
             )}
-        </div>
+        </ScrollArea>
     );
 }
 

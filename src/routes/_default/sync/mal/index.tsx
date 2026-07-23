@@ -392,8 +392,9 @@ function SyncMalPage() {
             <TableCell className="min-w-[100px]">
                 <Badge
                     variant={getStatusVariant(item.listStatus?.status || null)}
+                    className="capitalize"
                 >
-                    {item.listStatus?.status || "Unknown"}
+                    {item.listStatus?.status?.replaceAll("_", " ") || "Unknown"}
                 </Badge>
             </TableCell>
             <TableCell className="w-12">

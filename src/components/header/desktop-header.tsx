@@ -70,7 +70,12 @@ export function DesktopHeader({ notification }: HeaderProps) {
     };
 
     return (
-        <header className={cn(`z-50 bg-sidebar border-b-0 h-10`, borderClass)}>
+        <header
+            className={cn(
+                `z-50 bg-sidebar border-b-0 h-10 hidden md:block`,
+                borderClass,
+            )}
+        >
             <div className="py-1 pr-4 md:pr-6.5 pl-11 mx-auto flex items-center justify-between">
                 <SidebarTrigger className="absolute left-4 md:left-2" />
                 {notification && notification !== "0" ? (

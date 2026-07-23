@@ -6,6 +6,7 @@ import {
     createRootRoute,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { inDevelopment } from "@/config";
 
 export const Route = createRootRoute({
     head: () => ({
@@ -267,6 +268,9 @@ function RootDocument({ children }: { children: ReactNode }) {
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
+                {inDevelopment && (
+                    <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+                )}
                 <HeadContent />
             </head>
             <body className="relative antialiased bg-background md:h-screen flex flex-col antialiased bg-background overflow-y-auto pt-[var(--safe-top)]! md:pt-0! mb-[var(--header-height)] md:mb-0 md:overflow-hidden">
