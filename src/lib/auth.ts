@@ -24,6 +24,14 @@ function toFullUrl(host: string) {
     return `https://${host}`;
 }
 
+function toHost(url: string | undefined) {
+    if (!url) return undefined;
+    return url
+        .replace("http://", "")
+        .replace("https://", "")
+        .replace(/^\/|\/+$/g, "");
+}
+
 export const auth = betterAuth({
     database: pool,
     emailAndPassword: {
@@ -31,6 +39,23 @@ export const auth = betterAuth({
     },
     plugins: [username(), passkey(), tanstackStartCookies()],
     baseURL: toFullUrl(env("VITE_HOST") ?? "localhost:3000"),
+    allowedHosts: [toHost(env("VITE_HOST")), toHost(env("VITE_API_URL"))],
+    user: {
+        additionalFields: {
+            role: {
+                type: ["user", "admin", "owner"],
+                required: false,
+                defaultValue: "user",
+                input: false,
+            },
+            banned: {
+                type: "boolean",
+                required: false,
+                defaultValue: false,
+                input: false,
+            },
+        },
+    },
 });
 
 export async function getAuthToken() {
