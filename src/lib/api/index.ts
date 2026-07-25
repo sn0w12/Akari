@@ -1,9 +1,9 @@
 import { inPreview } from "@/config";
-import { createClient as createAuthClient } from "@/lib/auth/client";
 import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
 import pkg from "../../../package.json";
+import { authClient } from "@/lib/auth/client";
 
 const apiUrl =
     env("API_URL") || env("VITE_API_URL") || "http://localhost:5188/";
@@ -13,28 +13,22 @@ export async function getAuthSession() {
         return null;
     }
 
-    const {
-        data: { session },
-        error,
-    } = await createAuthClient().auth.getSession();
+    const { data, error } = await authClient.getSession();
 
     if (error) {
         console.error("Failed to restore auth session:", error);
         return null;
     }
 
-    return session;
+    return data?.session ?? null;
 }
 
 const authenticatedFetch = async (input: Request): Promise<Response> => {
     const request = input.clone();
     const session = await getAuthSession();
 
-    if (
-        session?.access_token &&
-        request.headers.get("Authorization") === null
-    ) {
-        request.headers.set("Authorization", `Bearer ${session.access_token}`);
+    if (session?.token && request.headers.get("Authorization") === null) {
+        request.headers.set("Authorization", `Bearer ${session.token}`);
     }
 
     return fetch(request);

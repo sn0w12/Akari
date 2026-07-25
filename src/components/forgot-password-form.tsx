@@ -9,7 +9,7 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/auth/client";
+import { requestPasswordReset } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { useState, useTransition } from "react";
@@ -24,18 +24,14 @@ export function ForgotPasswordForm({
 
     const handleForgotPassword = async (values: Record<string, unknown>) => {
         const email = values.email as string;
-        const supabase = createClient();
         startTransition(async () => {
             setError(null);
 
             try {
-                // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
-                const { error } = await supabase.auth.resetPasswordForEmail(
+                const { error } = await requestPasswordReset({
                     email,
-                    {
-                        redirectTo: `${window.location.origin}/auth/update-password`,
-                    },
-                );
+                    redirectTo: `${window.location.origin}/auth/update-password`,
+                });
                 if (error) throw error;
                 setSuccess(true);
             } catch (error: unknown) {

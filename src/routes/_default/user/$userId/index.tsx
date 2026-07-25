@@ -5,7 +5,7 @@ import { capitalize } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
-import { getAuthToken } from "@/lib/auth/server";
+import { getAuthToken } from "@/lib/auth";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_VARIANT_MAP } from "@/components/user/users-header";

@@ -9,7 +9,7 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/auth/client";
+import { resetPassword } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@tanstack/react-router";
 import { useState, useTransition } from "react";
@@ -24,12 +24,13 @@ export function UpdatePasswordForm({
 
     const handleUpdatePassword = async (values: Record<string, unknown>) => {
         const password = values.password as string;
-        const supabase = createClient();
         startTransition(async () => {
             setError(null);
 
             try {
-                const { error } = await supabase.auth.updateUser({ password });
+                const { error } = await resetPassword({
+                    newPassword: password,
+                });
                 if (error) throw error;
                 void router.navigate({ to: "/account" });
             } catch (error: unknown) {

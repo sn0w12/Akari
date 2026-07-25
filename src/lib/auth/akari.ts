@@ -1,4 +1,4 @@
-import { createClient } from "./client";
+import { authClient } from "./client";
 import { SecondaryAccount } from "./secondary-accounts";
 
 export async function logOut(secondaryAccounts: SecondaryAccount[]) {
@@ -9,6 +9,5 @@ export async function logOut(secondaryAccounts: SecondaryAccount[]) {
         }),
     );
 
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await authClient.signOut();
 }

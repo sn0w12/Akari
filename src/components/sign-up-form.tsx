@@ -10,11 +10,10 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Fieldset } from "@/components/ui/fieldset";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/auth/client";
+import { signUp } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useState, useTransition } from "react";
-import { Providers } from "./auth/oauth";
 
 export function SignUpForm({
     className,
@@ -36,21 +35,16 @@ export function SignUpForm({
             return;
         }
 
-        const supabase = createClient();
         startTransition(async () => {
             setError(null);
 
             try {
-                const { error } = await supabase.auth.signUp({
+                const { error } = await signUp.email({
                     email,
                     password,
-                    options: {
-                        emailRedirectTo: `${window.location.origin}/account`,
-                        data: {
-                            username: userName,
-                            display_name: displayName,
-                        },
-                    },
+                    name: displayName,
+                    username: userName,
+                    displayUsername: displayName,
                 });
                 if (error) throw error;
                 void router.navigate({ to: "/auth/sign-up-success" });
@@ -119,7 +113,6 @@ export function SignUpForm({
                                     ? "Creating an account..."
                                     : "Sign up"}
                             </Button>
-                            <Providers />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Already have an account?{" "}

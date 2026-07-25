@@ -2,7 +2,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useConfirm } from "@/contexts/confirm-context";
-import { logOut } from "@/lib/auth/akari";
+import { authClient } from "@/lib/auth/client";
 import { SECONDARY_ACCOUNTS } from "@/lib/auth/secondary-accounts";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -28,7 +28,13 @@ export function UserProfile({
         });
         if (!confirmed) return;
 
-        await logOut(SECONDARY_ACCOUNTS);
+        await Promise.all(
+            SECONDARY_ACCOUNTS.map(async (account) => {
+                await account.logOut();
+                account.invalidate();
+            }),
+        );
+        await authClient.signOut();
         void queryClient.invalidateQueries({ queryKey: ["user"] });
         void router.navigate({ to: "/" });
     };

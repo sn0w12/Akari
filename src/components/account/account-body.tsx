@@ -6,6 +6,7 @@ import { Skeleton } from "../ui/skeleton";
 import { AccountActions } from "./account-actions";
 import { ConnectedAccounts } from "./connected-accounts";
 import { UserMangaLists } from "./lists";
+import { PasskeySection } from "./passkeys";
 import { UserProfile } from "./user-profile";
 
 export function AccountBody() {
@@ -43,6 +44,7 @@ export function AccountBody() {
         <div className="space-y-4">
             <UserProfile user={data.user} />
             <AccountActions user={data.user} />
+            <PasskeySection />
             <ConnectedAccounts />
             <UserMangaLists initialLists={data.lists} />
         </div>
