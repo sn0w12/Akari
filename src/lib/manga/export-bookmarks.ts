@@ -75,8 +75,7 @@ function simplifyBookmark(b: Bookmark) {
         alternativeTitles: b.alternativeTitles,
         authors: b.authors,
         genres: b.genres,
-        malId: b.malId,
-        aniId: b.aniId,
+        trackers: b.trackers,
         lastReadChapter: b.lastReadChapter
             ? {
                   number: b.lastReadChapter.number,

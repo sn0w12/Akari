@@ -1004,6 +1004,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AlternativeTitle: {
+            languageCode: string;
+            title: string;
+            titleType: string;
+        };
         AniEntry: {
             /** Format: int64 */
             id: number;
@@ -1092,9 +1097,7 @@ export interface components {
             updatedAt: string;
         };
         BookmarkResponse: {
-            alternativeTitles?: string[];
-            /** Format: int32 */
-            aniId?: number | null;
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
             /** Format: date-time */
             bookmarkCreatedAt: string;
@@ -1109,8 +1112,6 @@ export interface components {
             genres: string[];
             lastReadChapter: components["schemas"]["MangaChapter"];
             latestChapter: components["schemas"]["MangaChapter"];
-            /** Format: int32 */
-            malId?: number | null;
             /** Format: date-time */
             mangaCreatedAt: string;
             /** Format: uuid */
@@ -1122,6 +1123,7 @@ export interface components {
             score: number;
             status: string;
             title: string;
+            trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
             /** Format: int32 */
             views: number;
@@ -1148,15 +1150,11 @@ export interface components {
             value: string;
         };
         ChapterResponse: {
-            /** Format: int32 */
-            aniId?: number | null;
             chapters: components["schemas"]["ChapterOption"][];
             /** Format: uuid */
             id: string;
             images: string[];
             lastChapter?: null | components["schemas"]["ChapterNavigation"];
-            /** Format: int32 */
-            malId?: number | null;
             /** Format: uuid */
             mangaId: string;
             mangaTitle: string;
@@ -1166,6 +1164,7 @@ export interface components {
             /** Format: int32 */
             pages: number;
             title: string;
+            trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
         };
         /** @enum {string} */
@@ -1374,9 +1373,7 @@ export interface components {
         };
         /** @description MangaDetailResponse extends MangaResponse (all manga fields) + chapters */
         MangaDetailResponse: {
-            alternativeTitles?: string[];
-            /** Format: int32 */
-            aniId?: number | null;
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
             chapters: components["schemas"]["MangaChapter"][];
             cover: string;
@@ -1387,12 +1384,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
             preferredScanlatorId?: number | null;
             rating: components["schemas"]["MangaRatingResponse"];
             status: string;
             title: string;
+            trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
             /** Format: date-time */
             updatedAt: string;
@@ -1440,9 +1436,7 @@ export interface components {
             total: number;
         };
         MangaResponse: {
-            alternativeTitles?: string[];
-            /** Format: int32 */
-            aniId?: number | null;
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
             cover: string;
             /** Format: date-time */
@@ -1452,12 +1446,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
             preferredScanlatorId?: number | null;
             rating: components["schemas"]["MangaRatingResponse"];
             status: string;
             title: string;
+            trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
             /** Format: date-time */
             updatedAt: string;
@@ -1465,9 +1458,7 @@ export interface components {
             views: number;
         };
         MangaSearchResponse: {
-            alternativeTitles?: string[];
-            /** Format: int32 */
-            aniId?: number | null;
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
             cover: string;
             /** Format: date-time */
@@ -1477,14 +1468,13 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
             preferredScanlatorId?: number | null;
             /** Format: double */
             rank: number;
             rating: components["schemas"]["MangaRatingResponse"];
             status: string;
             title: string;
+            trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
             /** Format: date-time */
             updatedAt: string;
@@ -1623,15 +1613,11 @@ export interface components {
         };
         SuccessResponse_ChapterResponse: {
             data: {
-                /** Format: int32 */
-                aniId?: number | null;
                 chapters: components["schemas"]["ChapterOption"][];
                 /** Format: uuid */
                 id: string;
                 images: string[];
                 lastChapter?: null | components["schemas"]["ChapterNavigation"];
-                /** Format: int32 */
-                malId?: number | null;
                 /** Format: uuid */
                 mangaId: string;
                 mangaTitle: string;
@@ -1641,6 +1627,7 @@ export interface components {
                 /** Format: int32 */
                 pages: number;
                 title: string;
+                trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];
             };
             result: string;
@@ -1705,9 +1692,7 @@ export interface components {
         SuccessResponse_ItemsResponse_MangaResponse: {
             data: {
                 items: {
-                    alternativeTitles?: string[];
-                    /** Format: int32 */
-                    aniId?: number | null;
+                    alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                     authors: string[];
                     cover: string;
                     /** Format: date-time */
@@ -1717,12 +1702,11 @@ export interface components {
                     /** Format: uuid */
                     id: string;
                     /** Format: int32 */
-                    malId?: number | null;
-                    /** Format: int32 */
                     preferredScanlatorId?: number | null;
                     rating: components["schemas"]["MangaRatingResponse"];
                     status: string;
                     title: string;
+                    trackers: components["schemas"]["TrackerItem"][];
                     type: components["schemas"]["WorkFormat"];
                     /** Format: date-time */
                     updatedAt: string;
@@ -1818,9 +1802,7 @@ export interface components {
         SuccessResponse_MangaDetailResponse: {
             /** @description MangaDetailResponse extends MangaResponse (all manga fields) + chapters */
             data: {
-                alternativeTitles?: string[];
-                /** Format: int32 */
-                aniId?: number | null;
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
                 chapters: components["schemas"]["MangaChapter"][];
                 cover: string;
@@ -1831,12 +1813,11 @@ export interface components {
                 /** Format: uuid */
                 id: string;
                 /** Format: int32 */
-                malId?: number | null;
-                /** Format: int32 */
                 preferredScanlatorId?: number | null;
                 rating: components["schemas"]["MangaRatingResponse"];
                 status: string;
                 title: string;
+                trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];
                 /** Format: date-time */
                 updatedAt: string;
@@ -1865,9 +1846,7 @@ export interface components {
         };
         SuccessResponse_MangaResponse: {
             data: {
-                alternativeTitles?: string[];
-                /** Format: int32 */
-                aniId?: number | null;
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
                 cover: string;
                 /** Format: date-time */
@@ -1877,12 +1856,11 @@ export interface components {
                 /** Format: uuid */
                 id: string;
                 /** Format: int32 */
-                malId?: number | null;
-                /** Format: int32 */
                 preferredScanlatorId?: number | null;
                 rating: components["schemas"]["MangaRatingResponse"];
                 status: string;
                 title: string;
+                trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];
                 /** Format: date-time */
                 updatedAt: string;
@@ -1950,9 +1928,7 @@ export interface components {
                 /** Format: int32 */
                 currentPage: number;
                 items: {
-                    alternativeTitles?: string[];
-                    /** Format: int32 */
-                    aniId?: number | null;
+                    alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                     authors: string[];
                     cover: string;
                     /** Format: date-time */
@@ -1962,12 +1938,11 @@ export interface components {
                     /** Format: uuid */
                     id: string;
                     /** Format: int32 */
-                    malId?: number | null;
-                    /** Format: int32 */
                     preferredScanlatorId?: number | null;
                     rating: components["schemas"]["MangaRatingResponse"];
                     status: string;
                     title: string;
+                    trackers: components["schemas"]["TrackerItem"][];
                     type: components["schemas"]["WorkFormat"];
                     /** Format: date-time */
                     updatedAt: string;
@@ -2162,9 +2137,7 @@ export interface components {
         };
         SuccessResponse_Vec_MangaResponse: {
             data: {
-                alternativeTitles?: string[];
-                /** Format: int32 */
-                aniId?: number | null;
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
                 cover: string;
                 /** Format: date-time */
@@ -2174,12 +2147,11 @@ export interface components {
                 /** Format: uuid */
                 id: string;
                 /** Format: int32 */
-                malId?: number | null;
-                /** Format: int32 */
                 preferredScanlatorId?: number | null;
                 rating: components["schemas"]["MangaRatingResponse"];
                 status: string;
                 title: string;
+                trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];
                 /** Format: date-time */
                 updatedAt: string;
@@ -2192,9 +2164,7 @@ export interface components {
         };
         SuccessResponse_Vec_MangaSearchResponse: {
             data: {
-                alternativeTitles?: string[];
-                /** Format: int32 */
-                aniId?: number | null;
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
                 cover: string;
                 /** Format: date-time */
@@ -2204,14 +2174,13 @@ export interface components {
                 /** Format: uuid */
                 id: string;
                 /** Format: int32 */
-                malId?: number | null;
-                /** Format: int32 */
                 preferredScanlatorId?: number | null;
                 /** Format: double */
                 rank: number;
                 rating: components["schemas"]["MangaRatingResponse"];
                 status: string;
                 title: string;
+                trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];
                 /** Format: date-time */
                 updatedAt: string;
@@ -2257,6 +2226,10 @@ export interface components {
             result: string;
             /** Format: int32 */
             status: number;
+        };
+        TrackerItem: {
+            code: string;
+            id: string;
         };
         UpdateCommentBody: {
             content: string;

@@ -164,3 +164,21 @@ export function generateSizes(options: {
 
     return sizes.join(", ");
 }
+
+type TrackerCode =
+    | "anilist"
+    | "myanimelist"
+    | "mangaupdates"
+    | "kitsu"
+    | "mangadex"
+    | "mangabaka";
+
+/**
+ * Get a trackers id from a manga by the trackers code
+ */
+export function getTrackerId(
+    trackers: components["schemas"]["TrackerItem"][],
+    code: TrackerCode,
+): string | undefined {
+    return trackers.find((t) => t.code === code)?.id;
+}

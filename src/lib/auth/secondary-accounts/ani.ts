@@ -1,6 +1,7 @@
 import { client } from "@/lib/api";
 import { env } from "@/lib/env";
 import { SecondaryAccountBase } from "./general";
+import { getTrackerId } from "@/lib/utils";
 
 export class AniAccount extends SecondaryAccountBase {
     readonly id = "ani";
@@ -42,13 +43,14 @@ export class AniAccount extends SecondaryAccountBase {
     async sync(
         manga: components["schemas"]["ChapterResponse"],
     ): Promise<boolean> {
-        if (!manga.aniId) {
+        const aniId = Number(getTrackerId(manga.trackers, "anilist"));
+        if (!aniId) {
             return false;
         }
 
         const { error } = await client.POST("/v2/ani/mangalist", {
             body: {
-                mediaId: manga.aniId,
+                mediaId: aniId,
                 progress: manga.number,
             },
         });

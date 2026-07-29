@@ -6,6 +6,7 @@ import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { StorageManager } from "@/lib/storage";
+import { getTrackerId } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
 import { useEffect, useReducer } from "react";
@@ -203,7 +204,11 @@ function SyncAniPage() {
 
         const aniDataToSync = aniData.filter((item) => {
             const media = item.media;
-            return !bookmarks.some((bookmark) => bookmark.aniId === media.id);
+            return !bookmarks.some(
+                (bookmark) =>
+                    Number(getTrackerId(bookmark.trackers, "anilist")) ===
+                    media.id,
+            );
         });
 
         if (aniDataToSync.length === 0) {
@@ -244,8 +249,11 @@ function SyncAniPage() {
                 .map((item) => item.media.id);
             const batchSet = new Set(batchIds);
             const bookmarkRatings = bookmarks.flatMap((bookmark) => {
-                if (!bookmark.aniId || !batchSet.has(bookmark.aniId)) return [];
-                const aniItem = aniDataById.get(bookmark.aniId);
+                const aniId = Number(
+                    getTrackerId(bookmark.trackers, "anilist"),
+                );
+                if (!aniId || !batchSet.has(aniId)) return [];
+                const aniItem = aniDataById.get(aniId);
                 const rating = aniItem?.score;
                 if (typeof rating === "number" && rating > 0) {
                     return [{ mangaId: bookmark.mangaId, rating }];
@@ -291,8 +299,9 @@ function SyncAniPage() {
         for (const data of batchResults) {
             if (!data) continue;
             for (const manga of data) {
-                if (!manga.aniId) continue;
-                const aniItem = aniDataToSyncById.get(manga.aniId);
+                const aniId = Number(getTrackerId(manga.trackers, "anilist"));
+                if (!aniId) continue;
+                const aniItem = aniDataToSyncById.get(aniId);
                 if (aniItem) {
                     updateItems.push({
                         mangaId: manga.id,
@@ -369,7 +378,9 @@ function SyncAniPage() {
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.aniId === item.media.id,
+                    (bookmark) =>
+                        Number(getTrackerId(bookmark.trackers, "anilist")) ===
+                        item.media.id,
                 ) ? (
                     <Check className="size-4 text-green-600" />
                 ) : (
