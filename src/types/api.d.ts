@@ -287,7 +287,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** GET /v2/comment/list/{target_type}/{target_id} */
+        /** GET /v2/comments/{id} */
         get: operations["list_comments"];
         put?: never;
         /** POST /v2/comments/{id} */

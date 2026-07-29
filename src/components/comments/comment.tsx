@@ -171,10 +171,10 @@ export function Comment({
         ("replies" in comment && comment.replies && comment.replies.length > 0);
 
     let replyCount = 0;
-    if ("replies" in comment) {
-        replyCount = comment.replies.length;
-    } else if ("replyCount" in comment) {
+    if ("replyCount" in comment) {
         replyCount = comment.replyCount ?? 0;
+    } else if ("replies" in comment) {
+        replyCount = comment.replies.length;
     }
 
     const handleShowReplies = async () => {
