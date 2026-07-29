@@ -4,7 +4,7 @@ import ErrorPage from "@/components/error-page";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Skeleton } from "@/components/ui/skeleton";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createMetadata, createOgImage } from "@/lib/seo";
 import { generateSizes } from "@/lib/utils";
 import { Suspense } from "react";
@@ -15,7 +15,6 @@ const loadManga = createServerFn({ method: "GET" })
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET("/v2/manga/{id}", {
             params: { path: { id: data } },
-            headers: serverHeaders,
         });
         return { data: result, error };
     });

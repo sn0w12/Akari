@@ -1,12 +1,13 @@
-import { inPreview } from "@/config";
 import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
-import pkg from "../../../package.json";
 import { authClient } from "@/lib/auth/client";
 
 const apiUrl =
     env("API_URL") || env("VITE_API_URL") || "http://localhost:5188/";
+const serverHeaders = {
+    "X-API-Key": env("API_KEY") || "",
+} as const;
 
 export async function getAuthSession() {
     if (typeof document === "undefined") {
@@ -30,6 +31,12 @@ const authenticatedFetch = async (input: Request): Promise<Response> => {
     if (session?.token && request.headers.get("Authorization") === null) {
         request.headers.set("Authorization", `Bearer ${session.token}`);
     }
+    Object.keys(serverHeaders).forEach((key) => {
+        request.headers.set(
+            key,
+            serverHeaders[key as keyof typeof serverHeaders],
+        );
+    });
 
     return fetch(request);
 };
@@ -39,8 +46,3 @@ export const client = createClient<paths>({
     credentials: "include",
     fetch: authenticatedFetch,
 });
-
-export const serverHeaders = {
-    "X-API-Key": env("API_KEY") || "",
-    "user-agent": `AkariWebsite/${pkg.version}/${inPreview ? "preview" : "production"}`,
-};

@@ -1,9 +1,9 @@
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { MangaCommentList } from "./manga-comment-list";
 import { useQuery } from "@tanstack/react-query";
 
-function getMangaComments(id: string) {
-    return client.GET("/v2/comments/{id}", {
+async function getMangaComments(id: string) {
+    return await client.GET("/v2/comments/{id}", {
         params: {
             path: {
                 id: id,
@@ -14,11 +14,10 @@ function getMangaComments(id: string) {
                 sort: "Upvoted",
             },
         },
-        headers: serverHeaders,
     });
 }
 
-export type CommentTarget = "manga" | "chapter";
+export type CommentTarget = "work" | "chapter";
 
 export function MangaComments({
     id,

@@ -3,7 +3,7 @@ import ErrorPage from "@/components/error-page";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -17,7 +17,6 @@ const getAuthorData = createServerFn({ method: "GET" })
                 path: { name: data.name },
                 query: { page: data.page, pageSize: 24 },
             },
-            headers: serverHeaders,
         });
         if (error) return { data: null, error };
         return { data: result, error: null };

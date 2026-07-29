@@ -1,6 +1,6 @@
 import ErrorPage from "@/components/error-page";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { capitalize } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -26,10 +26,7 @@ const loadUserPage = createServerFn({ method: "GET" })
     .handler(async ({ data: userId }) => {
         const token = await getAuthToken();
 
-        const headers = {
-            ...serverHeaders,
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        };
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [userResponse, listsResponse] = await Promise.all([
             client.GET("/v2/user/{userId}", {

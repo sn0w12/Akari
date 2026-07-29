@@ -2,7 +2,7 @@ import { JsonLd } from "@/components/json-ld";
 import ErrorPage from "@/components/error-page";
 import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Reader } from "@/components/manga-reader";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createJsonLd, createMetadata, createOgImage } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
@@ -20,7 +20,6 @@ const loadChapter = createServerFn({ method: "GET" })
                     path: { id: data.id, subId: data.subId },
                     query: { scanlatorId: data.scanlator },
                 },
-                headers: serverHeaders,
             },
         );
         if (error) return { data: null, error };

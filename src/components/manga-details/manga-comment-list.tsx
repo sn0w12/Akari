@@ -248,7 +248,7 @@ export function MangaCommentList({
                 },
             },
             body: {
-                targetType: "manga",
+                targetType: "work",
                 content: content,
                 parentId: parentId,
             },

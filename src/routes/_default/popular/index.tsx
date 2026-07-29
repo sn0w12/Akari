@@ -4,7 +4,7 @@ import { GridSortSelect } from "@/components/grid/grid-sort";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -26,7 +26,6 @@ const getPopularData = createServerFn({ method: "GET" })
                         excludedGenres: data.excludedGenres ?? [],
                     },
                 },
-                headers: serverHeaders,
             },
         );
         return { data: result, error };
