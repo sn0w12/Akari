@@ -126,7 +126,7 @@ export function AlternativeTitlesPopover({
                             return (
                                 <li
                                     key={title.title}
-                                    className="flex items-baseline gap-2 rounded-sm px-2 py-1"
+                                    className="flex items-center gap-2 rounded-sm px-2 py-1"
                                 >
                                     <Badge size="sm" variant="default">
                                         {lang.label}
