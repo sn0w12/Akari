@@ -6,7 +6,7 @@ import ClientPagination from "../ui/pagination/client-pagination";
 import { UserListsSkeleton } from "./user-lists-skeleton";
 
 type UserListsResponse =
-    components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
+    components["schemas"]["SuccessResponse_PaginatedResponse_UserListResponse"];
 
 interface UserListsProps {
     userId: string;

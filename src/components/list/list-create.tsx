@@ -12,9 +12,13 @@ import { CreateListForm } from "../account/create-list-form";
 
 interface ListCreateProps {
     setLists?: React.Dispatch<
-        React.SetStateAction<components["schemas"]["UserMangaListResponse"][]>
+        React.SetStateAction<
+            components["schemas"]["SuccessResponse_UserListResponse"]["data"][]
+        >
     >;
-    onSuccess?: (list: components["schemas"]["UserMangaListResponse"]) => void;
+    onSuccess?: (
+        list: components["schemas"]["SuccessResponse_UserListResponse"]["data"],
+    ) => void;
     className?: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -41,7 +45,7 @@ export function ListCreate({
     }
 
     function handleSuccess(
-        list: components["schemas"]["UserMangaListResponse"],
+        list: components["schemas"]["SuccessResponse_UserListResponse"]["data"],
     ) {
         if (setLists) {
             setLists((prev) => [...prev, list]);

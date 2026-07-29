@@ -7,11 +7,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { Suspense } from "react";
 import { getAuthToken } from "@/lib/auth";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ROLE_VARIANT_MAP } from "@/components/user/users-header";
+import { Badge, BadgeVariantProps } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { UserListsSkeleton } from "@/components/user/user-lists-skeleton";
 import { UserLists } from "@/components/user/user-lists";
+
+export const ROLE_VARIANT_MAP: Record<
+    components["schemas"]["UserRole"],
+    BadgeVariantProps["variant"]
+> = {
+    user: "default",
+    admin: "success",
+    owner: "warning",
+};
 
 const loadUserPage = createServerFn({ method: "GET" })
     .validator((d: string) => d)

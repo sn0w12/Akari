@@ -40,7 +40,7 @@ function Entry({
     setNodeRef,
     style,
 }: {
-    entry: components["schemas"]["UserMangaListEntryResponse"];
+    entry: components["schemas"]["ListEntryResponse"];
     userId: string | undefined;
     ownerId: string;
     dragHandle?: ReactNode;
@@ -147,7 +147,7 @@ function SortableEntry({
     ownerId,
     isDraggable,
 }: {
-    entry: components["schemas"]["UserMangaListEntryResponse"];
+    entry: components["schemas"]["ListEntryResponse"];
     userId: string | undefined;
     ownerId: string;
     isDraggable: boolean;

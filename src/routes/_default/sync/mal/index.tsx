@@ -13,7 +13,7 @@ const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
 
 type SyncState = {
     malData: components["schemas"]["MalMangaListItem"][];
-    bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
+    bookmarks: components["schemas"]["BookmarkResponse"][];
     malLoading: boolean;
     bookmarksLoading: boolean;
     bookmarksProgress: number;
@@ -24,7 +24,7 @@ type SyncAction =
     | { type: "MAL_ERROR" }
     | {
           type: "BOOKMARKS";
-          data: components["schemas"]["BookmarkListResponse"]["items"];
+          data: components["schemas"]["BookmarkResponse"][];
       }
     | { type: "BOOKMARKS_ERROR" }
     | { type: "BOOKMARKS_PROGRESS"; progress: number };
@@ -64,7 +64,7 @@ function SyncMalPage() {
         dispatch,
     ] = useReducer(syncReducer, {
         malData: [] as components["schemas"]["MalMangaListItem"][],
-        bookmarks: [] as components["schemas"]["BookmarkListResponse"]["items"],
+        bookmarks: [] as components["schemas"]["BookmarkResponse"][],
         malLoading: true,
         bookmarksLoading: true,
         bookmarksProgress: 0,
@@ -149,8 +149,7 @@ function SyncMalPage() {
         }
 
         async function fetchAllBookmarks() {
-            let allData: components["schemas"]["BookmarkListResponse"]["items"] =
-                [];
+            let allData: components["schemas"]["BookmarkResponse"][] = [];
             let page: number = 1;
             let totalPages = 0;
 
@@ -247,7 +246,7 @@ function SyncMalPage() {
         });
 
         const batchSize = 50;
-        const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
+        const updateItems: components["schemas"]["BookmarkBatchBody"]["items"] =
             [];
         let errorCount = 0;
 

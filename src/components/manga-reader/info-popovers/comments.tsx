@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "../../ui/button";
 
 interface CommentsButtonProps {
-    mangaType: components["schemas"]["MangaType"];
+    mangaType: components["schemas"]["WorkFormat"];
 }
 
 export function CommentsButton({ mangaType }: CommentsButtonProps) {

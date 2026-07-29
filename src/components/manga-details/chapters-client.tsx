@@ -34,7 +34,10 @@ interface ChaptersControlsProps {
     scanlatorOptions: { value: number; label: string }[];
     setScanlatorId: (id: number) => void;
     isLoading: boolean;
-    latestData: components["schemas"]["LastReadResponse"] | undefined | null;
+    latestData:
+        | components["schemas"]["SuccessResponse_BookmarkDetailResponse"]["data"]
+        | undefined
+        | null;
     firstChapterNumber: number;
 }
 
@@ -168,7 +171,7 @@ export function ChaptersSection({
             });
             return;
         }
-        const chapterIndex = getSortedChapters(data.scanlatorId).findIndex(
+        const chapterIndex = getSortedChapters(data.scanlatorId ?? 0).findIndex(
             (chapter) => chapter.id === lastRead,
         );
 
@@ -182,7 +185,7 @@ export function ChaptersSection({
 
         const pageNumber = Math.floor(chapterIndex / 24) + 1;
         setCurrentPage(pageNumber);
-        setCurrentScanlatorId(data.scanlatorId);
+        setCurrentScanlatorId(data.scanlatorId ?? 0);
 
         setTimeout(() => {
             const chapterElement = document.getElementById(lastRead);

@@ -14,9 +14,6 @@ export default function MangaFooter({
     toggleReaderMode: () => void;
     ref?: React.RefObject<HTMLDivElement | null>;
 }) {
-    const lastChapterExists = chapter.lastChapter !== null;
-    const nextChapterExists = chapter.nextChapter !== null;
-
     return (
         <div
             className="bg-background border-t border-b border-border px-4 py-3"
@@ -39,15 +36,15 @@ export default function MangaFooter({
                     />
                 </div>
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">
-                    {lastChapterExists ? (
+                    {chapter.lastChapter ? (
                         <ButtonLink
                             to="/manga/$mangaId/$scanlator/$subId"
                             params={
                                 {
                                     mangaId: chapter.mangaId,
                                     scanlator:
-                                        chapter.lastChapter!.scanlatorId.toString(),
-                                    subId: chapter.lastChapter!.number.toString(),
+                                        chapter.lastChapter.scanlatorId.toString(),
+                                    subId: chapter.lastChapter.number.toString(),
                                 } as never
                             }
                             variant="outline"
@@ -68,15 +65,15 @@ export default function MangaFooter({
                             Previous
                         </ButtonLink>
                     )}
-                    {nextChapterExists ? (
+                    {chapter.nextChapter ? (
                         <ButtonLink
                             to="/manga/$mangaId/$scanlator/$subId"
                             params={
                                 {
                                     mangaId: chapter.mangaId,
                                     scanlator:
-                                        chapter.nextChapter!.scanlatorId.toString(),
-                                    subId: chapter.nextChapter!.number.toString(),
+                                        chapter.nextChapter.scanlatorId.toString(),
+                                    subId: chapter.nextChapter.number.toString(),
                                 } as never
                             }
                             className="w-full order-1 xl:order-4"

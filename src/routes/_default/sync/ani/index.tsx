@@ -12,7 +12,7 @@ import { useEffect, useReducer } from "react";
 
 type SyncState = {
     aniData: components["schemas"]["AniEntry"][];
-    bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
+    bookmarks: components["schemas"]["BookmarkResponse"][];
     aniLoading: boolean;
     bookmarksLoading: boolean;
     bookmarksProgress: number;
@@ -23,7 +23,7 @@ type SyncAction =
     | { type: "ANI_ERROR" }
     | {
           type: "BOOKMARKS";
-          data: components["schemas"]["BookmarkListResponse"]["items"];
+          data: components["schemas"]["BookmarkResponse"][];
       }
     | { type: "BOOKMARKS_ERROR" }
     | { type: "BOOKMARKS_PROGRESS"; progress: number };
@@ -63,7 +63,7 @@ function SyncAniPage() {
         dispatch,
     ] = useReducer(syncReducer, {
         aniData: [] as components["schemas"]["AniEntry"][],
-        bookmarks: [] as components["schemas"]["BookmarkListResponse"]["items"],
+        bookmarks: [] as components["schemas"]["BookmarkResponse"][],
         aniLoading: true,
         bookmarksLoading: true,
         bookmarksProgress: 0,
@@ -126,8 +126,7 @@ function SyncAniPage() {
         }
 
         async function fetchAllBookmarks() {
-            let allData: components["schemas"]["BookmarkListResponse"]["items"] =
-                [];
+            let allData: components["schemas"]["BookmarkResponse"][] = [];
             let page: number = 1;
             let totalPages = 0;
 
@@ -227,7 +226,7 @@ function SyncAniPage() {
         });
 
         const batchSize = 50;
-        const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
+        const updateItems: components["schemas"]["BookmarkBatchBody"]["items"] =
             [];
         let errorCount = 0;
 

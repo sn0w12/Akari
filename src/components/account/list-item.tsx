@@ -9,7 +9,7 @@ import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 
 interface ListItemProps {
-    list: components["schemas"]["UserMangaListResponse"];
+    list: components["schemas"]["SuccessResponse_UserListResponse"]["data"];
     onDelete: (listId: string) => void;
 }
 

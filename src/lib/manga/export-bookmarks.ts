@@ -2,7 +2,7 @@ import { client } from "@/lib/api";
 
 const PAGE_SIZE = 100;
 
-type Bookmark = components["schemas"]["BookmarkListResponse"]["items"][number];
+type Bookmark = components["schemas"]["BookmarkResponse"][][number];
 
 export async function exportBookmarks() {
     const bookmarks = await fetchAllBookmarks();

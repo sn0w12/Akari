@@ -11,7 +11,7 @@ import { ChaptersPopup } from "./chapters-popup";
 import { ConfirmDialogs } from "./confirm-dialogs";
 
 interface BookmarkCardProps {
-    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    bookmark: components["schemas"]["BookmarkResponse"][][number];
 }
 
 export function BookmarkCard({ bookmark }: BookmarkCardProps) {
@@ -82,7 +82,7 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
 }
 
 interface ActionButtonProps {
-    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    bookmark: components["schemas"]["BookmarkResponse"][][number];
     className?: string;
 }
 
@@ -105,7 +105,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                 >
                     All caught up!
                 </Button>
-            ) : shouldReadLatest ? (
+            ) : shouldReadLatest && bookmark.latestChapter ? (
                 <ButtonLink
                     to="/manga/$mangaId/$scanlator/$subId"
                     params={
@@ -123,7 +123,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                     <p className="hidden md:inline">Read Latest • </p>Ch.{" "}
                     {bookmark.latestChapter.number}
                 </ButtonLink>
-            ) : (
+            ) : bookmark.nextChapter ? (
                 <ButtonLink
                     to="/manga/$mangaId/$scanlator/$subId"
                     params={
@@ -146,7 +146,7 @@ function ActionButton({ bookmark, className }: ActionButtonProps) {
                         {bookmark.chaptersBehind} new
                     </Badge>
                 </ButtonLink>
-            )}
+            ) : null}
             <ChaptersPopup
                 open={open}
                 setOpen={setOpen}

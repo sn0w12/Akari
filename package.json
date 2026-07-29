@@ -10,7 +10,7 @@
         "preview": "vp preview",
         "start": "node server-entry.mjs",
         "lint": "vp lint",
-        "gen:types": "openapi-typescript http://localhost:5188/swagger/v2/swagger.json --output ./src/types/api.d.ts",
+        "gen:types": "openapi-typescript http://localhost:3001/v2/openapi.json --output ./src/types/api.d.ts",
         "gen:settings-md": "npx tsx ./scripts/generate-settings-md.ts",
         "gen:emails": "npx tsx ./scripts/compile-email.ts",
         "prepare": "vp config"

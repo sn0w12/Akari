@@ -20,7 +20,7 @@ import { useState } from "react";
 export function ConfirmDialogs({
     bookmark,
 }: {
-    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    bookmark: components["schemas"]["BookmarkResponse"][][number];
 }) {
     const [open, setOpen] = useState(false);
     const { confirm, ConfirmHost } = useConfirm();
@@ -181,7 +181,7 @@ function BookmarkDrawerContent({
     updateBookmark,
     removeBookmark,
 }: {
-    bookmark: components["schemas"]["BookmarkListResponse"]["items"][number];
+    bookmark: components["schemas"]["BookmarkResponse"][][number];
     updateBookmark: (
         id: string,
         subId: number,

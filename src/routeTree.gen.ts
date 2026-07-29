@@ -24,7 +24,6 @@ import { Route as DefaultPrivacyIndexRouteImport } from './routes/_default/priva
 import { Route as DefaultSearchIndexRouteImport } from './routes/_default/search/index'
 import { Route as DefaultSettingsIndexRouteImport } from './routes/_default/settings/index'
 import { Route as DefaultTermsIndexRouteImport } from './routes/_default/terms/index'
-import { Route as DefaultUserIndexRouteImport } from './routes/_default/user/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiV1RevalidateRouteImport } from './routes/api.v1.revalidate'
 import { Route as DefaultAccountHistoryIndexRouteImport } from './routes/_default/account/history/index'
@@ -119,11 +118,6 @@ const DefaultSettingsIndexRoute = DefaultSettingsIndexRouteImport.update({
 const DefaultTermsIndexRoute = DefaultTermsIndexRouteImport.update({
   id: '/terms/',
   path: '/terms/',
-  getParentRoute: () => DefaultRoute,
-} as any)
-const DefaultUserIndexRoute = DefaultUserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
   getParentRoute: () => DefaultRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -267,7 +261,6 @@ export interface FileRoutesByFullPath {
   '/search/': typeof DefaultSearchIndexRoute
   '/settings/': typeof DefaultSettingsIndexRoute
   '/terms/': typeof DefaultTermsIndexRoute
-  '/user/': typeof DefaultUserIndexRoute
   '/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/auth/error/': typeof DefaultAuthErrorIndexRoute
@@ -305,7 +298,6 @@ export interface FileRoutesByTo {
   '/search': typeof DefaultSearchIndexRoute
   '/settings': typeof DefaultSettingsIndexRoute
   '/terms': typeof DefaultTermsIndexRoute
-  '/user': typeof DefaultUserIndexRoute
   '/account/history': typeof DefaultAccountHistoryIndexRoute
   '/account/setup': typeof DefaultAccountSetupIndexRoute
   '/auth/error': typeof DefaultAuthErrorIndexRoute
@@ -347,7 +339,6 @@ export interface FileRoutesById {
   '/_default/search/': typeof DefaultSearchIndexRoute
   '/_default/settings/': typeof DefaultSettingsIndexRoute
   '/_default/terms/': typeof DefaultTermsIndexRoute
-  '/_default/user/': typeof DefaultUserIndexRoute
   '/_default/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/_default/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/_default/auth/error/': typeof DefaultAuthErrorIndexRoute
@@ -387,7 +378,6 @@ export interface FileRouteTypes {
     | '/search/'
     | '/settings/'
     | '/terms/'
-    | '/user/'
     | '/account/history/'
     | '/account/setup/'
     | '/auth/error/'
@@ -425,7 +415,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/terms'
-    | '/user'
     | '/account/history'
     | '/account/setup'
     | '/auth/error'
@@ -466,7 +455,6 @@ export interface FileRouteTypes {
     | '/_default/search/'
     | '/_default/settings/'
     | '/_default/terms/'
-    | '/_default/user/'
     | '/_default/account/history/'
     | '/_default/account/setup/'
     | '/_default/auth/error/'
@@ -603,13 +591,6 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms/'
       preLoaderRoute: typeof DefaultTermsIndexRouteImport
-      parentRoute: typeof DefaultRoute
-    }
-    '/_default/user/': {
-      id: '/_default/user/'
-      path: '/user'
-      fullPath: '/user/'
-      preLoaderRoute: typeof DefaultUserIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
     '/api/auth/$': {
@@ -798,7 +779,6 @@ interface DefaultRouteChildren {
   DefaultSearchIndexRoute: typeof DefaultSearchIndexRoute
   DefaultSettingsIndexRoute: typeof DefaultSettingsIndexRoute
   DefaultTermsIndexRoute: typeof DefaultTermsIndexRoute
-  DefaultUserIndexRoute: typeof DefaultUserIndexRoute
   DefaultAccountHistoryIndexRoute: typeof DefaultAccountHistoryIndexRoute
   DefaultAccountSetupIndexRoute: typeof DefaultAccountSetupIndexRoute
   DefaultAuthErrorIndexRoute: typeof DefaultAuthErrorIndexRoute
@@ -831,7 +811,6 @@ const DefaultRouteChildren: DefaultRouteChildren = {
   DefaultSearchIndexRoute: DefaultSearchIndexRoute,
   DefaultSettingsIndexRoute: DefaultSettingsIndexRoute,
   DefaultTermsIndexRoute: DefaultTermsIndexRoute,
-  DefaultUserIndexRoute: DefaultUserIndexRoute,
   DefaultAccountHistoryIndexRoute: DefaultAccountHistoryIndexRoute,
   DefaultAccountSetupIndexRoute: DefaultAccountSetupIndexRoute,
   DefaultAuthErrorIndexRoute: DefaultAuthErrorIndexRoute,
