@@ -32,7 +32,8 @@ export default function MangaFooter({
                     </h2>
                     <ChapterSelector
                         chapters={chapter.chapters}
-                        value={chapter.number.toString()}
+                        scanlatorId={chapter.scanlator?.id || 0}
+                        value={chapter.id}
                     />
                 </div>
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 w-full sm:w-90 xl:w-180">

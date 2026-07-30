@@ -1082,6 +1082,8 @@ export interface components {
             mangaId: string;
         };
         BookmarkDetailResponse: {
+            /** Format: uuid */
+            chapterId?: string | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: uuid */
@@ -1143,14 +1145,8 @@ export interface components {
             /** Format: int32 */
             scanlatorId: number;
         };
-        ChapterOption: {
-            label: string;
-            /** Format: int32 */
-            scanlatorId: number;
-            value: string;
-        };
         ChapterResponse: {
-            chapters: components["schemas"]["ChapterOption"][];
+            chapters: components["schemas"]["MangaChapter"][];
             /** Format: uuid */
             id: string;
             images: string[];
@@ -1163,6 +1159,7 @@ export interface components {
             number: number;
             /** Format: int32 */
             pages: number;
+            scanlator?: null | components["schemas"]["Scanlator"];
             title: string;
             trackers: components["schemas"]["TrackerItem"][];
             type: components["schemas"]["WorkFormat"];
@@ -1593,6 +1590,8 @@ export interface components {
         };
         SuccessResponse_BookmarkDetailResponse: {
             data: {
+                /** Format: uuid */
+                chapterId?: string | null;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: uuid */
@@ -1613,7 +1612,7 @@ export interface components {
         };
         SuccessResponse_ChapterResponse: {
             data: {
-                chapters: components["schemas"]["ChapterOption"][];
+                chapters: components["schemas"]["MangaChapter"][];
                 /** Format: uuid */
                 id: string;
                 images: string[];
@@ -1626,6 +1625,7 @@ export interface components {
                 number: number;
                 /** Format: int32 */
                 pages: number;
+                scanlator?: null | components["schemas"]["Scanlator"];
                 title: string;
                 trackers: components["schemas"]["TrackerItem"][];
                 type: components["schemas"]["WorkFormat"];

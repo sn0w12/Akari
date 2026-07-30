@@ -16,31 +16,37 @@ import { useWindowWidth } from "@/hooks/use-window-width";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@tanstack/react-router";
 import { NativeSelect, NativeSelectOption } from "../ui/native-select";
+import { fillChapterGaps } from "@/lib/manga/chapters";
 
 interface ChapterSelectorProps {
-    chapters: { value: string; label: string; scanlatorId: number }[];
+    chapters: components["schemas"]["MangaChapter"][];
     value: string;
+    scanlatorId: number;
     className?: string;
 }
 
 export function ChapterSelector({
     chapters,
     value,
+    scanlatorId,
     className,
 }: ChapterSelectorProps) {
     const width = useWindowWidth();
     const router = useRouter();
 
+    const filledChapters = useMemo(() => {
+        return fillChapterGaps(scanlatorId, chapters);
+    }, [chapters, scanlatorId]);
     const selectedChapter = useMemo(
-        () => chapters.find((c) => c.value === value),
-        [chapters, value],
+        () => filledChapters.find((c) => c.id === value),
+        [filledChapters, value],
     );
 
     const onChange = (newValue: string) => {
-        const newChapter = chapters.find((c) => c.value === newValue);
+        const newChapter = chapters.find((c) => c.id === newValue);
         if (!newChapter) return;
         void router.navigate({
-            to: `../../${newChapter.scanlatorId}/${newChapter.value}`,
+            to: `../../${newChapter.scanlatorId}/${newChapter.number}`,
         });
     };
 
@@ -56,21 +62,20 @@ export function ChapterSelector({
                     className={cn("h-9 w-auto w-full", className)}
                 >
                     {chapters.map((chapter) => (
-                        <NativeSelectOption
-                            key={chapter.value}
-                            value={chapter.value}
-                        >
-                            {chapter.label}
+                        <NativeSelectOption key={chapter.id} value={chapter.id}>
+                            {chapter.title}
                         </NativeSelectOption>
                     ))}
                 </NativeSelect>
             ) : (
                 <Combobox
                     value={selectedChapter ?? null}
+                    itemToStringLabel={(chapter) => {
+                        return chapter.title;
+                    }}
                     items={chapters}
-                    isItemEqualToValue={(a, b) => a.value === b.value}
                     onValueChange={(chapter) => {
-                        if (chapter) onChange(chapter.value);
+                        if (chapter) onChange(chapter.id);
                     }}
                 >
                     <ComboboxTrigger
@@ -100,15 +105,12 @@ export function ChapterSelector({
                         <ComboboxEmpty>No chapter found.</ComboboxEmpty>
                         <ComboboxList>
                             {(chapter: {
-                                value: string;
-                                label: string;
+                                id: string;
+                                title: string;
                                 scanlatorId: number;
                             }) => (
-                                <ComboboxItem
-                                    key={chapter.value}
-                                    value={chapter}
-                                >
-                                    {chapter.label}
+                                <ComboboxItem key={chapter.id} value={chapter}>
+                                    {chapter.title}
                                 </ComboboxItem>
                             )}
                         </ComboboxList>

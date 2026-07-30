@@ -35,7 +35,7 @@ export function ChaptersSectionServer({
             <JsonLd data={chapterListJsonLd} />
             <ChaptersSection
                 mangaId={mangaId}
-                chapters={chapters.chapters}
+                rawChapters={chapters.chapters}
                 preferredScanlator={preferredScanlator}
                 scanlators={chapters.scanlators}
             />

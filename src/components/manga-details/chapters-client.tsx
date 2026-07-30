@@ -6,7 +6,7 @@ import { getLatestReadChapter } from "@/lib/manga/bookmarks";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, BookOpen, Clock } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "../ui/button-link";
 import ClientPagination from "../ui/pagination/client-pagination";
@@ -17,12 +17,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
+import { fillChapterGaps } from "@/lib/manga/chapters";
+import { Badge } from "../ui/badge";
 
 interface ChaptersSectionProps {
     mangaId: string;
     preferredScanlator: number;
     scanlators: components["schemas"]["Scanlator"][];
-    chapters: components["schemas"]["MangaChapter"][];
+    rawChapters: components["schemas"]["MangaChapter"][];
 }
 
 interface ChaptersControlsProps {
@@ -119,13 +121,16 @@ export function ChaptersSection({
     mangaId,
     preferredScanlator,
     scanlators,
-    chapters,
+    rawChapters,
 }: ChaptersSectionProps) {
     const { data: user } = useUser();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentScanlatorId, setCurrentScanlatorId] =
         useState<number>(preferredScanlator);
     const [currentPage, setCurrentPage] = useState(1);
+    const chapters = useMemo(() => {
+        return fillChapterGaps(currentScanlatorId, rawChapters);
+    }, [rawChapters, currentScanlatorId]);
 
     const { data, isLoading } = useQuery({
         queryKey: ["last-read", mangaId],
@@ -133,7 +138,7 @@ export function ChaptersSection({
         enabled: !!mangaId && !!user,
     });
 
-    const lastRead = data?.id;
+    const lastRead = data?.chapterId;
 
     useEffect(() => {
         if (!data) return;
@@ -147,21 +152,16 @@ export function ChaptersSection({
         });
     }, [data, chapters]);
 
-    const getSortedChapters = useCallback(
-        (scanlatorId: number) => {
-            return [...(chapters || [])]
-                .filter((chapter) => chapter.scanlatorId === scanlatorId)
-                .sort((a, b) => {
-                    if (a.number === undefined || b.number === undefined) {
-                        return 0;
-                    }
-                    return sortOrder === "asc"
-                        ? a.number - b.number
-                        : b.number - a.number;
-                });
-        },
-        [chapters, sortOrder],
-    );
+    const getSortedChapters = useCallback(() => {
+        return [...(chapters || [])].sort((a, b) => {
+            if (a.number === undefined || b.number === undefined) {
+                return 0;
+            }
+            return sortOrder === "asc"
+                ? a.number - b.number
+                : b.number - a.number;
+        });
+    }, [chapters, sortOrder]);
 
     const navigateToLastRead = () => {
         if (!lastRead || !mangaId) {
@@ -171,13 +171,13 @@ export function ChaptersSection({
             });
             return;
         }
-        const chapterIndex = getSortedChapters(data.scanlatorId ?? 0).findIndex(
+        const chapterIndex = getSortedChapters().findIndex(
             (chapter) => chapter.id === lastRead,
         );
 
         if (chapterIndex === -1 || chapterIndex === undefined) {
             toastManager.add({
-                title: "Last read chapter not found",
+                title: `Last read chapter (${lastRead}) not found`,
                 type: "error",
             });
             return;
@@ -203,14 +203,14 @@ export function ChaptersSection({
     }, [chapters]);
 
     const totalPages = useMemo(() => {
-        const sortedChapters = getSortedChapters(currentScanlatorId);
+        const sortedChapters = getSortedChapters();
         return Math.ceil(sortedChapters.length / 24);
-    }, [getSortedChapters, currentScanlatorId]);
+    }, [getSortedChapters]);
 
     const currentChapters = useMemo(() => {
-        const sortedChapters = getSortedChapters(currentScanlatorId);
+        const sortedChapters = getSortedChapters();
         return sortedChapters.slice((currentPage - 1) * 24, currentPage * 24);
-    }, [getSortedChapters, currentScanlatorId, currentPage]);
+    }, [getSortedChapters, currentPage]);
 
     const scanlatorOptions = useMemo(() => {
         const uniqueScanlators = new Map();
@@ -247,11 +247,13 @@ export function ChaptersSection({
                 {currentChapters?.map((chapter) => (
                     <Card
                         key={chapter.id}
-                        className={`h-full transition-colors p-0 ${
-                            chapter.id === lastRead
-                                ? "bg-accent-positive hover:bg-accent-positive/70"
-                                : "hover:bg-card/70"
-                        }`}
+                        className={cn(
+                            "h-full transition-colors p-0",
+                            chapter.id === lastRead &&
+                                "bg-accent-positive hover:bg-accent-positive/70",
+                            chapter.id !== lastRead && "hover:bg-card/70",
+                            chapter.isGapFill && "border-dashed",
+                        )}
                         render={
                             <Link
                                 to="/manga/$mangaId/$scanlator/$subId"
@@ -277,13 +279,41 @@ export function ChaptersSection({
                                 {chapter.title}
                             </h3>
                             <p
-                                className={cn("text-sm text-muted-foreground", {
-                                    "text-background": chapter.id === lastRead,
-                                })}
+                                className={cn(
+                                    "text-sm text-muted-foreground flex gap-1 items-center",
+                                    {
+                                        "text-background":
+                                            chapter.id === lastRead,
+                                    },
+                                )}
                             >
-                                Pages: {chapter.pages}
+                                <BookOpen className="size-3.5" />{" "}
+                                {chapter.pages}
                             </p>
-                            <Released chapter={chapter} lastRead={lastRead} />
+                            <div className="flex w-full min-w-0 items-center gap-1">
+                                <Released
+                                    chapter={chapter}
+                                    lastRead={lastRead || undefined}
+                                />
+                                <Badge
+                                    variant={
+                                        chapter.scanlatorId ===
+                                        currentScanlatorId
+                                            ? "default"
+                                            : "outline"
+                                    }
+                                    size="sm"
+                                    className="truncate block max-w-full shrink"
+                                >
+                                    {
+                                        scanlators.find(
+                                            (scanlator) =>
+                                                scanlator.id ===
+                                                chapter.scanlatorId,
+                                        )?.name
+                                    }
+                                </Badge>
+                            </div>
                         </CardContent>
                     </Card>
                 ))}
@@ -310,11 +340,15 @@ function Released({
 }) {
     return (
         <p
-            className={cn("text-sm text-muted-foreground", {
-                "text-background": chapter.id === lastRead,
-            })}
+            className={cn(
+                "min-w-fit flex-1 overflow-hidden text-nowrap text-sm text-muted-foreground flex items-center gap-1",
+                {
+                    "text-background": chapter.id === lastRead,
+                },
+            )}
         >
-            Released: {formatRelativeDate(chapter.createdAt)}
+            <Clock className="size-3.5" />{" "}
+            {formatRelativeDate(chapter.createdAt)}
         </p>
     );
 }

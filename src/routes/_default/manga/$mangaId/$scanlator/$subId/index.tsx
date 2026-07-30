@@ -128,13 +128,12 @@ function MangaReaderBody({
         url: `/manga/${data.mangaId}/${params.scanlator}/${data.number}`,
         name: data.mangaTitle,
         image: createOgImage("manga", data.mangaId),
-        hasPart: data.chapters.map(
-            (chapter: { value: string; label: string }) =>
-                createJsonLd<ComicStory>({
-                    "@type": "ComicStory",
-                    url: `/manga/${data.mangaId}/${params.scanlator}/${chapter.value}`,
-                    name: chapter.label,
-                }),
+        hasPart: data.chapters.map((chapter) =>
+            createJsonLd<ComicStory>({
+                "@type": "ComicStory",
+                url: `/manga/${data.mangaId}/${params.scanlator}/${chapter.number}`,
+                name: chapter.title,
+            }),
         ),
     });
 
