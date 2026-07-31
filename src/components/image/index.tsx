@@ -1,6 +1,15 @@
 import { cn } from "@/lib/utils";
-import { forwardRef, useMemo, useState, type ImgHTMLAttributes } from "react";
+import {
+    forwardRef,
+    useMemo,
+    useState,
+    type ImgHTMLAttributes,
+    type MouseEvent,
+} from "react";
 import { thumbHashToDataURL } from "thumbhash";
+import { Button } from "../ui/button";
+import { RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export interface SizesConfig {
     default?: string;
@@ -9,17 +18,6 @@ export interface SizesConfig {
     lg?: ImageWidths;
     xl?: ImageWidths;
     "2xl"?: ImageWidths;
-}
-
-export interface ImageProps extends Omit<
-    ImgHTMLAttributes<HTMLImageElement>,
-    "src" | "srcSet" | "sizes"
-> {
-    src: string;
-    sizes?: SizesConfig;
-    quality?: number;
-    unOptimized?: boolean;
-    thumbHash?: string | null;
 }
 
 const DEFAULT_WIDTHS = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
@@ -88,11 +86,25 @@ export function buildImageUrlWithQuality(
     return buildImageUrl(src, 1920, quality);
 }
 
+export interface ImageProps extends Omit<
+    ImgHTMLAttributes<HTMLImageElement>,
+    "src" | "srcSet" | "sizes"
+> {
+    src: string;
+    sizes?: SizesConfig;
+    quality?: number;
+    unOptimized?: boolean;
+    thumbHash?: string | null;
+}
+
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     { src, alt, className, quality, sizes, unOptimized, thumbHash, ...props },
     ref,
 ) {
     const [loaded, setLoaded] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [reloadKey, setReloadKey] = useState(0);
+
     const placeholderSrc = useMemo(() => {
         if (!thumbHash) return null;
         try {
@@ -106,60 +118,122 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
         }
     }, [thumbHash]);
 
-    if (unOptimized) {
-        return (
-            <img
-                ref={ref}
-                src={src}
-                alt={alt}
-                className={className}
-                {...props}
-            />
-        );
-    }
+    const handleRetry = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setHasError(false);
+        setLoaded(false);
+        setReloadKey((prev) => prev + 1);
+    };
 
-    if (!sizes) {
+    if (!sizes && !unOptimized) {
         console.warn(
             "Image component: No sizes provided, defaulting to 100vw. This may lead to suboptimal image loading on different screen sizes. Consider providing a sizes prop for better performance.",
         );
-        sizes = { default: "100vw" };
     }
 
     // If we have no thumbhash, instruct proxy to generate and insert
     const query = thumbHash ? undefined : { gen: 1 };
     const finalSrc = buildImageUrl(src, 1920, quality, query);
     const srcSet = buildSrcSet(src, quality, query);
-    const sizeAttr = buildSizes(sizes);
+    const sizeAttr = buildSizes(sizes ?? { default: "100vw" });
 
     return (
-        <div className="relative overflow-hidden">
-            {/* Placeholder image (hidden when main image is loaded) */}
-            {placeholderSrc && (
-                <img
-                    src={placeholderSrc}
-                    alt=""
-                    className={cn(
-                        "absolute inset-0 w-full h-full object-cover transition-opacity ease-snappy pointer-events-none opacity-100",
-                        loaded && "opacity-0",
-                        className,
+        <>
+            {unOptimized ? (
+                <>
+                    {!hasError ? (
+                        <img
+                            ref={ref}
+                            key={reloadKey}
+                            src={src}
+                            alt={alt}
+                            className={className}
+                            onLoad={() => setLoaded(true)}
+                            onError={() => setHasError(true)}
+                            {...props}
+                        />
+                    ) : (
+                        <ReloadCard
+                            handleReload={handleRetry}
+                            className={className}
+                        />
                     )}
-                />
+                </>
+            ) : (
+                <div
+                    className={cn(
+                        "relative overflow-hidden",
+                        hasError && "h-full w-full",
+                    )}
+                >
+                    {/* Placeholder image (hidden when main image is loaded) */}
+                    {placeholderSrc && (
+                        <img
+                            src={placeholderSrc}
+                            alt=""
+                            className={cn(
+                                "absolute inset-0 w-full h-full object-cover transition-opacity ease-snappy pointer-events-none opacity-100",
+                                loaded && "opacity-0",
+                                className,
+                            )}
+                        />
+                    )}
+                    {/* Main image */}
+                    {!hasError ? (
+                        <img
+                            ref={ref}
+                            key={reloadKey}
+                            src={finalSrc}
+                            srcSet={srcSet}
+                            sizes={sizeAttr}
+                            alt={alt}
+                            className={cn(
+                                "block w-full h-auto transition-opacity ease-snappy opacity-0",
+                                loaded && "opacity-100",
+                                className,
+                            )}
+                            onLoad={() => setLoaded(true)}
+                            onError={() => setHasError(true)}
+                            {...props}
+                        />
+                    ) : (
+                        <ReloadCard
+                            handleReload={handleRetry}
+                            className={cn("block w-full h-auto", className)}
+                        />
+                    )}
+                </div>
             )}
-            {/* Main image */}
-            <img
-                ref={ref}
-                src={finalSrc}
-                srcSet={srcSet}
-                sizes={sizeAttr}
-                alt={alt}
-                className={cn(
-                    "block w-full h-auto transition-opacity ease-snappy opacity-0",
-                    loaded && "opacity-100",
-                    className,
-                )}
-                onLoad={() => setLoaded(true)}
-                {...props}
-            />
-        </div>
+        </>
     );
 });
+
+function ReloadCard({
+    handleReload,
+    className,
+}: {
+    handleReload: (e: MouseEvent<HTMLButtonElement>) => void;
+    className?: string;
+}) {
+    return (
+        <div
+            className={cn(
+                "w-full h-full",
+                className,
+                "flex justify-center items-center",
+            )}
+        >
+            <Tooltip>
+                <TooltipTrigger
+                    render={
+                        <Button size="icon-lg" onClick={handleReload}>
+                            <RotateCcw />
+                        </Button>
+                    }
+                />
+                <TooltipContent>Reload Image</TooltipContent>
+            </Tooltip>
+        </div>
+    );
+}
