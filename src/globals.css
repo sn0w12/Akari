@@ -122,6 +122,18 @@ body {
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
 
+    --scrollbar-track: transparent;
+    --scrollbar-handle: color-mix(
+        in oklab,
+        var(--foreground) 94%,
+        var(--foreground)
+    );
+    --scrollbar-handle-hover: color-mix(
+        in oklab,
+        var(--scrollbar-handle) 80%,
+        transparent
+    );
+
     --safe-top: env(safe-area-inset-top);
     --safe-bottom: env(safe-area-inset-bottom);
 
@@ -188,6 +200,8 @@ body {
     --sidebar-accent-foreground: var(--color-neutral-100);
     --sidebar-border: --alpha(var(--color-white) / 5%);
     --sidebar-ring: var(--color-neutral-400);
+
+    --scrollbar-handle: color-mix(in oklab, var(--card) 94%, var(--foreground));
 }
 
 .debug {
@@ -267,48 +281,38 @@ li {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: calc(var(--spacing) * 2.5);
+    width: calc(var(--spacing) * 1.5);
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
-    background-color: var(--background);
+    background-color: var(--scrollbar-track);
 }
-
-/* Handle */
 ::-webkit-scrollbar-thumb {
-    background: var(--sidebar);
+    background: var(--scrollbar-handle);
     border-radius: 10px;
-    border: 2px solid var(--background);
+    border: 2px solid var(--scrollbar-track);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--sidebar-border);
+    background: var(--scrollbar-handle-hover);
 }
-
 ::-webkit-scrollbar-thumb:window-inactive {
-    background: var(--sidebar);
+    background: var(--scrollbar-handle);
 }
 
 [data-scrollbar-custom]::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-track {
     background: transparent;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-thumb {
     background: var(--sidebar-border);
     border-radius: 10px;
     border: none;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-thumb:hover {
     background: var(--sidebar-ring);
 }
-
 /* Hide scrollbar unless hovering for a cleaner look */
 [data-scrollbar-custom]:not(:hover)::-webkit-scrollbar-thumb {
     background: transparent;
@@ -318,7 +322,7 @@ li {
 @-moz-document url-prefix() {
     * {
         scrollbar-width: auto;
-        scrollbar-color: var(--sidebar) var(--background);
+        scrollbar-color: var(--scrollbar-handle) var(--scrollbar-track);
     }
 
     [data-scrollbar-custom="true"] {
