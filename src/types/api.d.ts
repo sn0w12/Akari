@@ -4,6 +4,91 @@
  */
 
 export interface paths {
+    "/v2/analytics/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/overview */
+        get: operations["overview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/requests */
+        get: operations["requests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/slowest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/slowest */
+        get: operations["slowest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/timeseries */
+        get: operations["timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/top": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/top */
+        get: operations["top"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/ani/logout": {
         parameters: {
             query?: never;
@@ -847,6 +932,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/manga/{id}/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/relationships */
+        get: operations["get_work_relationships"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/manga/{id}/view": {
         parameters: {
             query?: never;
@@ -1008,6 +1110,172 @@ export interface components {
             languageCode: string;
             title: string;
             titleType: string;
+        };
+        /** @enum {string} */
+        AnalyticsInterval: "hour" | "day";
+        AnalyticsOverviewResponse: {
+            /**
+             * Format: double
+             * @example 38.5
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            errorCount: number;
+            /**
+             * Format: double
+             * @example 0.0018
+             */
+            errorRate: number;
+            /**
+             * Format: double
+             * @example 142.2
+             */
+            p95ResponseTime: number;
+            /**
+             * Format: int64
+             * @example 114000
+             */
+            status2xx: number;
+            /**
+             * Format: int64
+             * @example 2100
+             */
+            status3xx: number;
+            /**
+             * Format: int64
+             * @example 3600
+             */
+            status4xx: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            status5xx: number;
+            /**
+             * Format: int64
+             * @example 120000
+             */
+            totalRequests: number;
+            /**
+             * Format: int64
+             * @example 8420
+             */
+            uniqueVisitors: number;
+        };
+        AnalyticsRequestRow: {
+            countryCode: string;
+            /** Format: date-time */
+            createdAt?: string | null;
+            hostname: string;
+            /** Format: int32 */
+            id: number;
+            ipAddress: string;
+            method: string;
+            path: string;
+            /** Format: int32 */
+            responseTime: number;
+            route: string;
+            /** Format: int32 */
+            status: number;
+            userAgent: string;
+        };
+        AnalyticsSlowestRoute: {
+            /**
+             * Format: double
+             * @example 183.4
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 2140
+             */
+            count: number;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            errorCount: number;
+            /**
+             * Format: int64
+             * @example 1240
+             */
+            maxResponseTime: number;
+            route: string;
+        };
+        AnalyticsTimeseriesPoint: {
+            /**
+             * Format: double
+             * @example 41.2
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 12
+             */
+            errors: number;
+            /**
+             * Format: double
+             * @example 21.3
+             */
+            p50ResponseTime: number;
+            /**
+             * Format: double
+             * @example 150.7
+             */
+            p95ResponseTime: number;
+            /**
+             * Format: double
+             * @example 412.9
+             */
+            p99ResponseTime: number;
+            /**
+             * Format: int64
+             * @example 4150
+             */
+            requests: number;
+            /**
+             * Format: int64
+             * @example 3890
+             */
+            status2xx: number;
+            /**
+             * Format: int64
+             * @example 120
+             */
+            status3xx: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            status4xx: number;
+            /**
+             * Format: int64
+             * @example 12
+             */
+            status5xx: number;
+            /** Format: date-time */
+            time: string;
+            /**
+             * Format: int64
+             * @example 940
+             */
+            uniqueVisitors: number;
+        };
+        AnalyticsTopItem: {
+            /**
+             * Format: double
+             * @example 35.2
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 15320
+             */
+            count: number;
+            name: string;
         };
         AniEntry: {
             /** Format: int64 */
@@ -1504,6 +1772,33 @@ export interface components {
             /** Format: int32 */
             totalPages: number;
         };
+        PaginatedResponse_AnalyticsRequestRow: {
+            /** Format: int32 */
+            currentPage: number;
+            items: {
+                countryCode: string;
+                /** Format: date-time */
+                createdAt?: string | null;
+                hostname: string;
+                /** Format: int32 */
+                id: number;
+                ipAddress: string;
+                method: string;
+                path: string;
+                /** Format: int32 */
+                responseTime: number;
+                route: string;
+                /** Format: int32 */
+                status: number;
+                userAgent: string;
+            }[];
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int64 */
+            totalItems: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
         ProfileUpdateBody: {
             displayName?: string | null;
             username?: string | null;
@@ -1546,6 +1841,16 @@ export interface components {
             /** Format: int64 */
             uniqueManga: number;
         };
+        /** @enum {string} */
+        RelationshipType:
+            | "prequel"
+            | "sequel"
+            | "spin_off"
+            | "adaptation"
+            | "alternate_version"
+            | "side_story"
+            | "shared_universe"
+            | "other";
         ReportBody: {
             description?: string | null;
             reason: string;
@@ -1561,6 +1866,63 @@ export interface components {
             mangaId: string;
             title: string;
             url: string;
+        };
+        SuccessResponse_AnalyticsOverviewResponse: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 38.5
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                errorCount: number;
+                /**
+                 * Format: double
+                 * @example 0.0018
+                 */
+                errorRate: number;
+                /**
+                 * Format: double
+                 * @example 142.2
+                 */
+                p95ResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 114000
+                 */
+                status2xx: number;
+                /**
+                 * Format: int64
+                 * @example 2100
+                 */
+                status3xx: number;
+                /**
+                 * Format: int64
+                 * @example 3600
+                 */
+                status4xx: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                status5xx: number;
+                /**
+                 * Format: int64
+                 * @example 120000
+                 */
+                totalRequests: number;
+                /**
+                 * Format: int64
+                 * @example 8420
+                 */
+                uniqueVisitors: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
         };
         SuccessResponse_AniMediaListCollection: {
             data: {
@@ -2100,6 +2462,116 @@ export interface components {
             /** Format: int32 */
             status: number;
         };
+        SuccessResponse_Vec_AnalyticsSlowestRoute: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 183.4
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 2140
+                 */
+                count: number;
+                /**
+                 * Format: int64
+                 * @example 42
+                 */
+                errorCount: number;
+                /**
+                 * Format: int64
+                 * @example 1240
+                 */
+                maxResponseTime: number;
+                route: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_AnalyticsTimeseriesPoint: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 41.2
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 12
+                 */
+                errors: number;
+                /**
+                 * Format: double
+                 * @example 21.3
+                 */
+                p50ResponseTime: number;
+                /**
+                 * Format: double
+                 * @example 150.7
+                 */
+                p95ResponseTime: number;
+                /**
+                 * Format: double
+                 * @example 412.9
+                 */
+                p99ResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 4150
+                 */
+                requests: number;
+                /**
+                 * Format: int64
+                 * @example 3890
+                 */
+                status2xx: number;
+                /**
+                 * Format: int64
+                 * @example 120
+                 */
+                status3xx: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                status4xx: number;
+                /**
+                 * Format: int64
+                 * @example 12
+                 */
+                status5xx: number;
+                /** Format: date-time */
+                time: string;
+                /**
+                 * Format: int64
+                 * @example 940
+                 */
+                uniqueVisitors: number;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_AnalyticsTopItem: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 35.2
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 15320
+                 */
+                count: number;
+                name: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
         SuccessResponse_Vec_CommentResponse: {
             data: {
                 content: string;
@@ -2224,6 +2696,15 @@ export interface components {
             /** Format: int32 */
             status: number;
         };
+        SuccessResponse_Vec_WorkRelationship: {
+            data: {
+                manga: components["schemas"]["MangaResponse"];
+                relationshipType: components["schemas"]["RelationshipType"];
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
         SuccessResponse_i64: {
             /** Format: int64 */
             data: number;
@@ -2334,6 +2815,10 @@ export interface components {
             | "OneShot"
             | "Comic"
             | "Other";
+        WorkRelationship: {
+            manga: components["schemas"]["MangaResponse"];
+            relationshipType: components["schemas"]["RelationshipType"];
+        };
     };
     responses: never;
     parameters: never;
@@ -2343,6 +2828,284 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    overview: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_AnalyticsOverviewResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    requests: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 7 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                page?: number | null;
+                pageSize?: number | null;
+                method?: string | null;
+                status?: number | null;
+                /** @description Substring match against the request path. */
+                path?: string | null;
+                route?: string | null;
+                hostname?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_AnalyticsRequestRow"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    slowest: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Dimension to group by: route, path, method, status, countryCode, userAgent, ipAddress or hostname. Defaults to "route". */
+                dimension?: string | null;
+                /** @description Max number of results. Defaults to 10. */
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsSlowestRoute"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    timeseries: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Bucket granularity. Defaults to "day". */
+                interval?: null | components["schemas"]["AnalyticsInterval"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsTimeseriesPoint"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    top: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Dimension to group by: route, path, method, status, countryCode, userAgent, ipAddress or hostname. Defaults to "route". */
+                dimension?: string | null;
+                /** @description Max number of results. Defaults to 10. */
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsTopItem"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     ani_logout: {
         parameters: {
             query?: never;
@@ -4722,6 +5485,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SuccessResponse_Vec_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_work_relationships: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_WorkRelationship"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Internal error */

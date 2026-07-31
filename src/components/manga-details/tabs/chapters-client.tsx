@@ -8,17 +8,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpDown, BookOpen, Clock } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ButtonLink } from "../ui/button-link";
-import ClientPagination from "../ui/pagination/client-pagination";
+import { ButtonLink } from "../../ui/button-link";
+import ClientPagination from "../../ui/pagination/client-pagination";
 import {
     Select,
     SelectItem,
     SelectPopup,
     SelectTrigger,
     SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
 import { fillChapterGaps } from "@/lib/manga/chapters";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 
 interface ChaptersSectionProps {
     mangaId: string;

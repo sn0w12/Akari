@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
 import type { components } from "@/types/api";
-import { Suspense, useState } from "react";
-import { GridBodySkeleton } from "../grid-page";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { ChaptersSectionServer } from "./chapters";
-import { MangaRecommendations } from "./recommended";
+import { ChaptersSectionServer } from "./tabs/chapters";
+import { MangaRecommendations } from "./tabs/recommended";
+import { MangaRelationships } from "./tabs/relationships";
+import { ScrollArea } from "../ui/scroll-area";
 
-type MangaDetailsTab = "chapters" | "recommendations";
+type MangaDetailsTab = "chapters" | "recommendations" | "relationships";
 
 export function MangaDetailsBody({
     chapters,
@@ -18,42 +19,52 @@ export function MangaDetailsBody({
     const [activeTab, setActiveTab] = useState<MangaDetailsTab>("chapters");
     const [hasOpenedRecommendations, setHasOpenedRecommendations] =
         useState(false);
+    const [hasOpenedRelationships, setHasOpenedRelationships] = useState(false);
 
     return (
         <Tabs
             swipeable
             value={activeTab}
-            onValueChange={(value) => {
-                if (value !== "chapters" && value !== "recommendations") {
-                    return;
-                }
+            onValueChange={(value: MangaDetailsTab) => {
                 if (value === "recommendations") {
                     setHasOpenedRecommendations(true);
+                }
+                if (value === "relationships") {
+                    setHasOpenedRelationships(true);
                 }
                 setActiveTab(value);
             }}
             className="w-full p-0"
         >
-            <TabsList
-                className={cn("bg-background py-0 gap-2 w-full lg:w-fit", {
-                    "lg:mb-1": activeTab === "chapters",
-                    "mb-0": activeTab === "recommendations",
-                })}
-                variant="underline"
-            >
-                <TabsTrigger
-                    className="text-xl lg:text-2xl font-bold"
-                    value="chapters"
+            <ScrollArea className="h-9">
+                <TabsList
+                    className={cn("bg-background py-0 gap-2 lg:w-fit h-9", {
+                        "lg:mb-1": activeTab === "chapters",
+                        "mb-0":
+                            activeTab === "recommendations" || "relationships",
+                    })}
+                    variant="underline"
                 >
-                    Chapters
-                </TabsTrigger>
-                <TabsTrigger
-                    className="text-xl lg:text-2xl font-bold"
-                    value="recommendations"
-                >
-                    Recommendations
-                </TabsTrigger>
-            </TabsList>
+                    <TabsTrigger
+                        className="text-xl lg:text-2xl font-bold"
+                        value="chapters"
+                    >
+                        Chapters
+                    </TabsTrigger>
+                    <TabsTrigger
+                        className="text-xl lg:text-2xl font-bold"
+                        value="recommendations"
+                    >
+                        Recommendations
+                    </TabsTrigger>
+                    <TabsTrigger
+                        className="text-xl lg:text-2xl font-bold"
+                        value="relationships"
+                    >
+                        Relationships
+                    </TabsTrigger>
+                </TabsList>
+            </ScrollArea>
 
             <TabsContent value="chapters" keepMounted>
                 <ChaptersSectionServer chapters={chapters} mangaId={mangaId} />
@@ -63,9 +74,14 @@ export function MangaDetailsBody({
                 value="recommendations"
                 keepMounted={hasOpenedRecommendations}
             >
-                <Suspense fallback={<GridBodySkeleton pageSize={12} />}>
-                    <MangaRecommendations id={mangaId} />
-                </Suspense>
+                <MangaRecommendations id={mangaId} />
+            </TabsContent>
+
+            <TabsContent
+                value="relationships"
+                keepMounted={hasOpenedRelationships}
+            >
+                <MangaRelationships id={mangaId} />
             </TabsContent>
         </Tabs>
     );
