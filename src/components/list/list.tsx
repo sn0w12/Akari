@@ -106,7 +106,8 @@ function Entry({
                 className="shrink-0"
             >
                 <Image
-                    src={entry.mangaCover}
+                    src={entry.mangaCover.url}
+                    thumbHash={entry.mangaCover.thumbhash}
                     alt={entry.mangaTitle}
                     className="w-12 h-18 object-cover rounded-md"
                     width={48}

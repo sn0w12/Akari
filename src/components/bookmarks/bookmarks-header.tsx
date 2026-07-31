@@ -10,12 +10,30 @@ import {
     TooltipTrigger,
 } from "../ui/tooltip";
 import { TabBarAdditionList, TabBarAdditionTrigger } from "../ui/tab-bar";
-import { BookmarkSearch } from "./header/search";
+import { client } from "@/lib/api";
+import { SearchBar, SearchResult } from "../search/search-bar";
 
 type BookmarksHeaderProps = {
     onRefresh: () => void;
     isRefreshing?: boolean;
 };
+
+async function getBookmarkSearchResults(
+    query: string,
+): Promise<SearchResult[]> {
+    const { data, error } = await client.GET("/v2/bookmarks/search", {
+        params: { query: { query } },
+    });
+    if (error || !data) return [];
+    return data.data.items.map((bookmark) => {
+        return {
+            id: bookmark.mangaId,
+            cover: bookmark.cover,
+            title: bookmark.title,
+            type: bookmark.type,
+        };
+    });
+}
 
 export default function BookmarksHeader({
     onRefresh,
@@ -79,7 +97,10 @@ export default function BookmarksHeader({
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-                    <BookmarkSearch />
+                    <SearchBar
+                        getSearchResults={getBookmarkSearchResults}
+                        className="w-full"
+                    />
                 </div>
             </div>
             <TabBarAdditionList>

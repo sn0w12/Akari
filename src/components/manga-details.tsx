@@ -48,11 +48,10 @@ function ExternalLinks({
                     rel="noopener noreferrer"
                     className="h-10"
                 >
-                    <Image
+                    <img
                         src="/img/icons/AniList-logo.webp"
                         alt="AniList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        sizes={{ default: "40px" }}
                     />
                 </a>
             )}
@@ -63,11 +62,10 @@ function ExternalLinks({
                     rel="noopener noreferrer"
                     className="h-10"
                 >
-                    <Image
+                    <img
                         src="/img/icons/MAL-logo.webp"
                         alt="MyAnimeList Logo"
                         className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        sizes={{ default: "40px" }}
                     />
                 </a>
             )}
@@ -88,7 +86,7 @@ export function MangaDetailsComponent({
         alternateName: manga.alternativeTitles
             ?.map((title) => title.title)
             .join(", "),
-        image: manga.cover,
+        image: manga.cover.url,
         description: manga.description,
         genre: sortedGenres,
         author: manga.authors.map((author) =>
@@ -120,7 +118,8 @@ export function MangaDetailsComponent({
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
                         <Image
-                            src={manga.cover}
+                            src={manga.cover.url}
+                            thumbHash={manga.cover.thumbhash}
                             alt={manga.title}
                             className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
                             width={400}

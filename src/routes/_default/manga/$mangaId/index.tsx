@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_default/manga/$mangaId/")({
             type: "book",
             preloadImages: [
                 {
-                    src: manga.cover,
+                    src: manga.cover.url,
                     sizes: MANGA_DETAILS_COVER_IMAGE_SIZES,
                     quality: 60,
                 },

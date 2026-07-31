@@ -227,7 +227,8 @@ export function MangaCard({
                     className="relative block h-full w-full"
                 >
                     <Image
-                        src={manga.cover}
+                        src={manga.cover.url}
+                        thumbHash={manga.cover.thumbhash}
                         alt={manga.title}
                         className="h-full w-full object-cover"
                         width={200}

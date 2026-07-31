@@ -127,7 +127,8 @@ function PopularMangaCard({ manga, priority }: PopularMangaCardProps) {
                 className="flex flex-row h-full w-full"
             >
                 <Image
-                    src={manga.cover}
+                    src={manga.cover.url}
+                    thumbHash={manga.cover.thumbhash}
                     alt={manga.title}
                     className="h-auto w-full sm:w-64 object-cover rounded-l-2xl rounded-r-2xl sm:rounded-r-none"
                     width={160}

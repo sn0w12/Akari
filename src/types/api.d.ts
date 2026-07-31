@@ -1109,7 +1109,7 @@ export interface components {
             bookmarkUpdatedAt: string;
             /** Format: int32 */
             chaptersBehind: number;
-            cover: string;
+            cover: components["schemas"]["Cover"];
             description: string;
             genres: string[];
             lastReadChapter: components["schemas"]["MangaChapter"];
@@ -1226,6 +1226,10 @@ export interface components {
             upvotes: number;
             userProfile: components["schemas"]["UserProfile"];
         };
+        Cover: {
+            thumbhash?: string | null;
+            url: string;
+        };
         CreateCommentBody: {
             content: string;
             /** Format: uuid */
@@ -1279,7 +1283,7 @@ export interface components {
             id: string;
             /** Format: uuid */
             listId: string;
-            mangaCover: string;
+            mangaCover: components["schemas"]["Cover"];
             mangaDescription: string;
             /** Format: uuid */
             mangaId: string;
@@ -1373,7 +1377,7 @@ export interface components {
             alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
             chapters: components["schemas"]["MangaChapter"][];
-            cover: string;
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
             description: string;
@@ -1435,7 +1439,7 @@ export interface components {
         MangaResponse: {
             alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
-            cover: string;
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
             description: string;
@@ -1457,7 +1461,7 @@ export interface components {
         MangaSearchResponse: {
             alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
-            cover: string;
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
             description: string;
@@ -1694,7 +1698,7 @@ export interface components {
                 items: {
                     alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                     authors: string[];
-                    cover: string;
+                    cover: components["schemas"]["Cover"];
                     /** Format: date-time */
                     createdAt: string;
                     description: string;
@@ -1805,7 +1809,7 @@ export interface components {
                 alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
                 chapters: components["schemas"]["MangaChapter"][];
-                cover: string;
+                cover: components["schemas"]["Cover"];
                 /** Format: date-time */
                 createdAt: string;
                 description: string;
@@ -1848,7 +1852,7 @@ export interface components {
             data: {
                 alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
-                cover: string;
+                cover: components["schemas"]["Cover"];
                 /** Format: date-time */
                 createdAt: string;
                 description: string;
@@ -1930,7 +1934,7 @@ export interface components {
                 items: {
                     alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                     authors: string[];
-                    cover: string;
+                    cover: components["schemas"]["Cover"];
                     /** Format: date-time */
                     createdAt: string;
                     description: string;
@@ -2139,7 +2143,7 @@ export interface components {
             data: {
                 alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
-                cover: string;
+                cover: components["schemas"]["Cover"];
                 /** Format: date-time */
                 createdAt: string;
                 description: string;
@@ -2166,7 +2170,7 @@ export interface components {
             data: {
                 alternativeTitles?: components["schemas"]["AlternativeTitle"][];
                 authors: string[];
-                cover: string;
+                cover: components["schemas"]["Cover"];
                 /** Format: date-time */
                 createdAt: string;
                 description: string;

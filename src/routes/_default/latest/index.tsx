@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_default/latest/")({
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
                 preloadImages?.map((item) => ({
-                    src: item.cover,
+                    src: item.cover.url,
                     sizes: MANGA_CARD_IMG_OPTS.sizes,
                     quality: MANGA_CARD_IMG_OPTS.quality,
                 })) ?? [],
@@ -91,7 +91,7 @@ function Latest() {
                         url: `/manga/${item.id}`,
                         name: item.title,
                         description: item.description,
-                        image: item.cover,
+                        image: item.cover.url,
                         genre: item.genres,
                         author: item.authors.map((author) => ({
                             "@type": "Person",

@@ -64,7 +64,7 @@ export const Route = createFileRoute("/_default/author/$authorId/")({
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
                 preloadImages?.map((item) => ({
-                    src: item.cover,
+                    src: item.cover.url,
                     sizes: MANGA_CARD_IMG_OPTS.sizes,
                     quality: MANGA_CARD_IMG_OPTS.quality,
                 })) ?? [],

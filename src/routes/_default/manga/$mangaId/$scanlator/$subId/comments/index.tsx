@@ -6,9 +6,9 @@ import { MangaComments } from "@/components/manga-details/manga-comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { client } from "@/lib/api";
 import { createMetadata, createOgImage } from "@/lib/seo";
-import { generateSizes } from "@/lib/utils";
 import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
+import { Image } from "@/components/image";
 
 const loadManga = createServerFn({ method: "GET" })
     .validator((d: string) => d)
@@ -103,16 +103,17 @@ function MangaCommentsHeader({
     const manga = mangaData;
     return (
         <div className="flex flex-row gap-4 items-start bg-card rounded-lg p-4 border">
-            <img
-                src={manga.cover}
+            <Image
+                src={manga.cover.url}
+                thumbHash={manga.cover.thumbhash}
                 alt={manga.title}
                 className="rounded-lg object-cover w-20 h-28 sm:w-24 sm:h-32 flex-shrink-0"
                 width={150}
                 height={200}
-                sizes={generateSizes({
-                    sm: "96px",
+                sizes={{
+                    sm: 96,
                     default: "128px",
-                })}
+                }}
             />
             <div className="flex flex-col min-w-0 flex-1">
                 <h1 className="text-lg sm:text-xl font-semibold">

@@ -30,7 +30,8 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
                             aria-hidden="true"
                         >
                             <Image
-                                src={bookmark.cover}
+                                src={bookmark.cover.url}
+                                thumbHash={bookmark.cover.thumbhash}
                                 alt={bookmark.title}
                                 height={180}
                                 width={120}

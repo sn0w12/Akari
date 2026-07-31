@@ -59,7 +59,7 @@ export const Route = createFileRoute("/_default/")({
             image: "/og/akari.webp",
             preloadImages: [
                 {
-                    src: loaderData?.popular?.[0]?.cover,
+                    src: loaderData?.popular?.[0]?.cover.url,
                     sizes: {
                         default: "50vw",
                         sm: 240,
@@ -67,7 +67,7 @@ export const Route = createFileRoute("/_default/")({
                     quality: 40,
                 },
                 {
-                    src: loaderData?.popular?.[1]?.cover,
+                    src: loaderData?.popular?.[1]?.cover.url,
                     sizes: {
                         default: "50vw",
                         sm: 240,

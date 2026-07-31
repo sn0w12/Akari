@@ -122,7 +122,10 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                                 className="flex items-center gap-3"
                                             >
                                                 <Image
-                                                    src={item.cover}
+                                                    src={item.cover.url}
+                                                    thumbHash={
+                                                        item.cover.thumbhash
+                                                    }
                                                     alt={item.title}
                                                     className="rounded-sm"
                                                     height={72}

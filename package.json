@@ -48,6 +48,7 @@
         "recharts": "^3.8.1",
         "schema-dts": "^2.0.0",
         "tailwind-merge": "^3.6.0",
+        "thumbhash": "^0.1.1",
         "tw-fade": "^0.7.1",
         "vite": "npm:@voidzero-dev/vite-plus-core@latest",
         "web-haptics": "^0.0.6"
