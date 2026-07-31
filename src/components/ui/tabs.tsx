@@ -1,22 +1,173 @@
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
-import type React from "react";
+import useEmblaCarousel, {
+    type UseEmblaCarouselType,
+} from "embla-carousel-react";
+import * as React from "react";
+
+type EmblaCarouselApi = UseEmblaCarouselType[1];
 
 export type TabsVariant = "default" | "underline";
 
+export type TabsSwipeableProps = {
+    /**
+     * Allows swiping between tab panels on touch devices (coarse pointer).
+     * Desktop keeps the default tab behavior.
+     */
+    swipeable?: boolean;
+};
+
 export function Tabs({
     className,
+    swipeable = false,
+    value,
+    defaultValue,
+    onValueChange,
+    children,
     ...props
-}: TabsPrimitive.Root.Props): React.ReactElement {
+}: TabsPrimitive.Root.Props & TabsSwipeableProps): React.ReactElement {
+    const { panels, otherChildren, panelValues } = React.useMemo(() => {
+        const panels: React.ReactElement<TabsPrimitive.Panel.Props>[] = [];
+        const otherChildren: React.ReactNode[] = [];
+        React.Children.forEach(children, (child) => {
+            if (React.isValidElement(child) && child.type === TabsPanel) {
+                panels.push(
+                    child as React.ReactElement<TabsPrimitive.Panel.Props>,
+                );
+            } else {
+                otherChildren.push(child);
+            }
+        });
+        return {
+            panels,
+            otherChildren,
+            panelValues: panels.map((panel) => panel.props.value),
+        };
+    }, [children]);
+
+    const isTouch = useMediaQuery({ pointer: "coarse" });
+    const enableSwipe =
+        swipeable &&
+        isTouch &&
+        panels.length > 1 &&
+        props.orientation !== "vertical";
+
+    const [internalValue, setInternalValue] =
+        React.useState<TabsPrimitive.Tab.Value>(
+            value !== undefined ? value : defaultValue,
+        );
+    const activeValue = value !== undefined ? value : internalValue;
+
+    const handleValueChange = React.useCallback(
+        (
+            nextValue: TabsPrimitive.Tab.Value,
+            eventDetails: TabsPrimitive.Root.ChangeEventDetails,
+        ) => {
+            setInternalValue(nextValue);
+            onValueChange?.(nextValue, eventDetails);
+        },
+        [onValueChange],
+    );
+
+    const [carouselRef, emblaApi] = useEmblaCarousel(
+        enableSwipe ? { axis: "x", containScroll: "keepSnaps" } : undefined,
+    );
+
+    const activeValueRef = React.useRef(activeValue);
+    activeValueRef.current = activeValue;
+    const didInitialAlignRef = React.useRef(false);
+
+    // Keep the carousel in sync when the active tab changes.
+    React.useEffect(() => {
+        if (!enableSwipe || !emblaApi) return;
+        const firstAlign = !didInitialAlignRef.current;
+        didInitialAlignRef.current = true;
+        const index = panelValues.indexOf(activeValue);
+        if (index < 0) return;
+        if (index === emblaApi.selectedScrollSnap()) return;
+        emblaApi.scrollTo(index, firstAlign);
+    }, [enableSwipe, emblaApi, activeValue, panelValues]);
+
+    // Update the active tab when the user finishes swiping to another panel.
+    // `select` is used instead of `settle` because `settle` never fires when
+    // the carousel stops at the first or last slide.
+    React.useEffect(() => {
+        if (!enableSwipe || !emblaApi) return;
+        const onSelect = (api: EmblaCarouselApi) => {
+            if (!api) return;
+            // Ignore mid-drag target changes; only react once the user has
+            // released and the carousel has settled on its final snap.
+            if (api.internalEngine().dragHandler.pointerDown()) return;
+            const index = api.selectedScrollSnap();
+            const nextValue = panelValues[index];
+            if (nextValue === undefined) return;
+            if (nextValue === activeValueRef.current) return;
+            const previousIndex = panelValues.indexOf(activeValueRef.current);
+            handleValueChange(nextValue, {
+                reason: "none",
+                activationDirection: index > previousIndex ? "right" : "left",
+            } as unknown as TabsPrimitive.Root.ChangeEventDetails);
+        };
+        emblaApi.on("select", onSelect);
+        return () => {
+            emblaApi.off("select", onSelect);
+        };
+    }, [enableSwipe, emblaApi, panelValues, handleValueChange]);
+
+    const rootClassName = cn(
+        "flex flex-col gap-2 data-[orientation=vertical]:flex-row",
+        className,
+    );
+
+    if (!enableSwipe) {
+        return (
+            <TabsPrimitive.Root
+                className={rootClassName}
+                value={value}
+                defaultValue={defaultValue}
+                onValueChange={onValueChange}
+                data-slot="tabs"
+                {...props}
+            >
+                {children}
+            </TabsPrimitive.Root>
+        );
+    }
+
     return (
         <TabsPrimitive.Root
-            className={cn(
-                "flex flex-col gap-2 data-[orientation=vertical]:flex-row",
-                className,
-            )}
+            className={rootClassName}
+            value={activeValue}
+            onValueChange={handleValueChange}
             data-slot="tabs"
             {...props}
-        />
+        >
+            {otherChildren}
+            <div
+                ref={carouselRef}
+                className="min-w-0 overflow-hidden"
+                data-slot="tabs-swipe-viewport"
+            >
+                <div className="flex w-full gap-2">
+                    {panels.map((panel) => (
+                        <div
+                            key={panel.props.value}
+                            className="flex min-w-0 shrink-0 grow-0 basis-full flex-col"
+                            data-slot="tabs-swipe-slide"
+                        >
+                            {React.cloneElement(panel, {
+                                keepMounted: true,
+                                // base-ui hides not-yet-open panels with the
+                                // `hidden` attribute; keep all slides visible so
+                                // their content is already there while swiping.
+                                hidden: false,
+                            })}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </TabsPrimitive.Root>
     );
 }
 

@@ -58,14 +58,14 @@ function ChaptersControls({
     const { data: user, isLoading: isUserLoading } = useUser();
 
     return (
-        <div className="flex gap-2 w-full flex-col md:flex-row md:w-auto pointer-events-auto">
+        <div className="flex gap-2 w-full flex-col lg:flex-row lg:w-auto pointer-events-auto">
             {scanlatorOptions.length > 1 && (
                 <Select
                     items={scanlatorOptions}
                     onValueChange={(value) => setScanlatorId(Number(value))}
                     value={scanlatorId}
                 >
-                    <SelectTrigger className="w-full md:w-auto">
+                    <SelectTrigger className="w-full lg:w-40">
                         <SelectValue placeholder="Select Scanlator" />
                     </SelectTrigger>
                     <SelectPopup align="center">
@@ -77,42 +77,39 @@ function ChaptersControls({
                     </SelectPopup>
                 </Select>
             )}
-            <div className="flex gap-2 w-full">
-                {isLoading || isUserLoading ? (
-                    <Button className="flex-1 md:w-40" disabled />
-                ) : latestData ? (
-                    <Button
-                        onClick={onFindLatestRead}
-                        className="flex-1 md:w-40"
-                        disabled={isLoading || !user}
-                    >
-                        Find Latest Read
-                    </Button>
-                ) : (
-                    <ButtonLink
-                        to="/manga/$mangaId/$scanlator/$subId"
-                        params={
-                            {
-                                mangaId,
-                                scanlator: String(scanlatorId),
-                                subId: String(firstChapterNumber),
-                            } as never
-                        }
-                        className="flex-1 md:w-40"
-                    >
-                        Go to First Chapter
-                    </ButtonLink>
-                )}
+            {latestData ? (
                 <Button
-                    onClick={() =>
-                        onSortChange(sortOrder === "asc" ? "desc" : "asc")
-                    }
-                    className="flex-1 md:w-40 has-[>svg]:px-4"
+                    onClick={onFindLatestRead}
+                    className="flex-1 lg:w-40"
+                    disabled={!isUserLoading && !user}
+                    loading={isLoading || isUserLoading}
                 >
-                    <ArrowUpDown className="size-4" />
-                    Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
+                    Find Latest Read
                 </Button>
-            </div>
+            ) : (
+                <ButtonLink
+                    to="/manga/$mangaId/$scanlator/$subId"
+                    params={
+                        {
+                            mangaId,
+                            scanlator: String(scanlatorId),
+                            subId: String(firstChapterNumber),
+                        } as never
+                    }
+                    className="flex-1 lg:w-40"
+                >
+                    Go to First Chapter
+                </ButtonLink>
+            )}
+            <Button
+                onClick={() =>
+                    onSortChange(sortOrder === "asc" ? "desc" : "asc")
+                }
+                className="flex-1 lg:w-40 has-[>svg]:px-4"
+            >
+                <ArrowUpDown className="size-4" />
+                Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
+            </Button>
         </div>
     );
 }
@@ -226,7 +223,7 @@ export function ChaptersSection({
     }, [scanlators]);
 
     return (
-        <div className="relative md:-top-11 md:pointer-events-none md:-mb-11">
+        <div className="relative lg:-top-11 lg:pointer-events-none lg:-mb-11">
             <div className="flex justify-end mb-2">
                 <ChaptersControls
                     mangaId={mangaId}
@@ -324,7 +321,7 @@ export function ChaptersSection({
                     currentPage={currentPage}
                     totalPages={totalPages}
                     handlePageChange={setCurrentPage}
-                    className="mb-4 md:mb-0 pointer-events-auto"
+                    className="mb-2 md:mb-0 pointer-events-auto"
                 />
             )}
         </div>

@@ -21,6 +21,7 @@ export function MangaDetailsBody({
 
     return (
         <Tabs
+            swipeable
             value={activeTab}
             onValueChange={(value) => {
                 if (value !== "chapters" && value !== "recommendations") {
@@ -34,20 +35,20 @@ export function MangaDetailsBody({
             className="w-full p-0"
         >
             <TabsList
-                className={cn("bg-background py-0 gap-2 w-full md:w-fit", {
-                    "mb-1": activeTab === "chapters",
+                className={cn("bg-background py-0 gap-2 w-full lg:w-fit", {
+                    "lg:mb-1": activeTab === "chapters",
                     "mb-0": activeTab === "recommendations",
                 })}
                 variant="underline"
             >
                 <TabsTrigger
-                    className="text-xl md:text-2xl font-bold"
+                    className="text-xl lg:text-2xl font-bold"
                     value="chapters"
                 >
                     Chapters
                 </TabsTrigger>
                 <TabsTrigger
-                    className="text-xl md:text-2xl font-bold"
+                    className="text-xl lg:text-2xl font-bold"
                     value="recommendations"
                 >
                     Recommendations

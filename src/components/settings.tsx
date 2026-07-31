@@ -257,6 +257,7 @@ export default function SettingsPage() {
             </div>
 
             <Tabs
+                swipeable
                 value={activeTab}
                 defaultValue="General"
                 onValueChange={(tab) => {
