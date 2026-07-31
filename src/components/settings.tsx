@@ -277,7 +277,7 @@ export default function SettingsPage() {
                 >
                     <TabsList
                         variant="underline"
-                        className="bg-background rounded-b-none p-0"
+                        className="bg-background rounded-b-none p-0 h-9.5 overflow-hidden"
                     >
                         {Object.keys(settingsMaps).map((groupName) => (
                             <TabsTrigger
