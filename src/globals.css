@@ -60,7 +60,6 @@ body {
     --animate-skeleton: skeleton 2s -1s infinite linear;
 
     --color-accent-positive: var(--accent-color);
-    --color-negative: var(--negative-color);
     --color-info: var(--info-color);
     --color-warning: var(--warning-color);
 
@@ -98,8 +97,8 @@ body {
     );
     --accent: --alpha(var(--color-black) / 4%);
     --accent-foreground: var(--color-neutral-800);
-    --destructive: var(--color-red-500);
-    --destructive-foreground: var(--color-red-700);
+    --destructive: oklch(0.631 0.2357 17.99);
+    --destructive-foreground: oklch(63.801% 0.18664 12.385);
     --info: var(--color-blue-500);
     --info-foreground: var(--color-blue-700);
     --success: var(--color-emerald-500);
@@ -120,7 +119,6 @@ body {
 
     --accent-color: oklch(0.631 0.2157 287.24);
     --accent-color-foreground: oklch(76.838% 0.09842 293.239);
-    --negative-color: oklch(0.631 0.2357 17.99);
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
 
@@ -167,12 +165,8 @@ body {
     );
     --accent: --alpha(var(--color-white) / 4%);
     --accent-foreground: var(--color-neutral-100);
-    --destructive: color-mix(
-        in srgb,
-        var(--color-red-500) 90%,
-        var(--color-white)
-    );
-    --destructive-foreground: var(--color-red-400);
+    --destructive: oklch(0.631 0.2357 17.99);
+    --destructive-foreground: oklch(63.801% 0.18664 12.385);
     --info: var(--color-blue-500);
     --info-foreground: var(--color-blue-400);
     --success: var(--color-emerald-500);
