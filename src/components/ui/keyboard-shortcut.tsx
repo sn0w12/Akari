@@ -7,7 +7,6 @@ import {
     RegisterableHotkey,
     useHeldKeys,
 } from "@tanstack/react-hotkeys";
-import { badgeVariants } from "./badge";
 
 interface KeyboardShortcutProps {
     keys: RegisterableHotkey;
@@ -15,22 +14,36 @@ interface KeyboardShortcutProps {
 }
 
 function Kbd({
-    children,
+    className,
     isPressed,
-}: {
-    children: React.ReactNode;
-    isPressed: boolean;
-}) {
-    const variant = isPressed ? "success" : "outline";
+    ...props
+}: React.ComponentProps<"kbd"> & { isPressed: boolean }): React.ReactElement {
+    const bg = isPressed
+        ? "bg-success text-background dark:text-foreground"
+        : "bg-muted text-muted-foreground";
     return (
         <kbd
             className={cn(
-                badgeVariants({ variant, size: "default" }),
-                "px-1 py-0.5 text-xs transition-colors",
+                "pointer-events-none inline-flex h-5 min-w-5 select-none items-center justify-center gap-1 rounded-[.25rem] px-1 font-medium text-xs transition-colors duration-50 ease-snappy [&_svg:not([class*='size-'])]:size-3",
+                bg,
+                className,
             )}
-        >
-            {children}
-        </kbd>
+            data-slot="kbd"
+            {...props}
+        />
+    );
+}
+
+function KbdGroup({
+    className,
+    ...props
+}: React.ComponentProps<"kbd">): React.ReactElement {
+    return (
+        <kbd
+            className={cn("inline-flex items-center gap-1", className)}
+            data-slot="kbd-group"
+            {...props}
+        />
     );
 }
 
@@ -46,9 +59,9 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
     if (!shouldShow || deviceType === "mobile") return null;
 
     return (
-        <span
+        <KbdGroup
             className={cn(
-                "text-foreground/70 pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 gap-1 text-sm",
+                "absolute top-1/2 right-3 flex -translate-y-1/2",
                 className,
             )}
         >
@@ -62,7 +75,7 @@ function KeyboardShortcut({ keys, className = "" }: KeyboardShortcutProps) {
                         {key}
                     </Kbd>
                 ))}
-        </span>
+        </KbdGroup>
     );
 }
 
@@ -81,12 +94,7 @@ function ContextKeyboardShortcut({
     if (!shouldShow || deviceType === "mobile") return null;
 
     return (
-        <span
-            className={cn(
-                "text-muted-foreground pointer-events-none flex gap-1 text-sm",
-                className,
-            )}
-        >
+        <KbdGroup className={className}>
             {formatForDisplay(keys as Hotkey)
                 .split("+")
                 .map((key, index) => (
@@ -97,7 +105,7 @@ function ContextKeyboardShortcut({
                         {key}
                     </Kbd>
                 ))}
-        </span>
+        </KbdGroup>
     );
 }
 
