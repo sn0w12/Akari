@@ -1,4 +1,6 @@
 import "@/globals.css";
+import "@fontsource-variable/geist/wght.css";
+import "@fontsource-variable/geist-mono/wght.css";
 import {
     HeadContent,
     Outlet,

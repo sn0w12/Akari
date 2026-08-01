@@ -83,7 +83,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
                 {notification && notification !== "0" ? (
                     <Badge
                         variant="success"
-                        className={cn("text-xs font-bold px-2 h-5", {
+                        className={cn("text-xs font-bold font-mono px-2 h-5", {
                             "ml-1": isSidebarCollapsed,
                         })}
                     >

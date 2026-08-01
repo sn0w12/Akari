@@ -5,21 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-    font-family: "Geist Sans";
-    src: url("/fonts/GeistVF.woff") format("woff");
-    font-weight: 100 900;
-    font-display: swap;
-}
-
-:root {
-    --font-geist-sans: "Geist Sans", sans-serif;
-}
-
-body {
-    font-family: var(--font-geist-sans);
-}
-
 @theme inline {
     --font-sans: var(--font-sans);
     --font-heading: var(--font-heading);
@@ -71,6 +56,10 @@ body {
 }
 
 :root {
+    --font-sans: "Geist Variable", sans-serif;
+    --font-heading: "Geist Variable", sans-serif;
+    --font-mono: "Geist Mono Variable", monospace;
+
     --radius: 0.5rem;
     --radius-sm: calc(var(--radius) * 0.5);
     --radius-md: calc(var(--radius) * 0.75);
@@ -214,7 +203,13 @@ body {
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground font-sans;
+    }
+    code,
+    kbd,
+    samp,
+    pre {
+        @apply font-mono;
     }
 }
 

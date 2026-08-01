@@ -101,7 +101,10 @@ export function AlternativeTitlesPopover({
                         className="relative shrink-0"
                     >
                         <LanguagesIcon className="size-4" />
-                        <Badge size="sm" className="absolute -top-1 -right-1">
+                        <Badge
+                            size="sm"
+                            className="absolute -top-1 -right-1 font-mono"
+                        >
                             {titles.length}
                         </Badge>
                     </Button>
