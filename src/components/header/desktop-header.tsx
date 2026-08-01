@@ -139,6 +139,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
                 <div className="flex items-center flex-grow justify-end">
                     <SearchBar
                         getSearchResults={getSearchResults}
+                        searchType="manga"
                         shortcut={useSetting("searchManga")}
                         className="relative transition-[width] w-auto flex-grow lg:grow-0 lg:w-96 xl:w-128"
                         focusClassName="xl:w-[40rem] lg:w-128"

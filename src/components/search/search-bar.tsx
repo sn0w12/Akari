@@ -46,6 +46,7 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
 
 interface SearchBarProps {
     getSearchResults: (search: string) => Promise<SearchResult[]>;
+    searchType: string;
     shortcut?: RegisterableHotkey;
     className?: string;
     focusClassName?: string;
@@ -54,6 +55,7 @@ interface SearchBarProps {
 
 export function SearchBar({
     getSearchResults,
+    searchType,
     shortcut,
     className,
     focusClassName,
@@ -126,7 +128,7 @@ export function SearchBar({
             >
                 <AutocompleteInput
                     ref={inputRef}
-                    placeholder="Search bookmarks..."
+                    placeholder={`Search ${searchType}...`}
                     className="w-full"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}

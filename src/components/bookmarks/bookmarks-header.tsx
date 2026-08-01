@@ -98,6 +98,7 @@ export default function BookmarksHeader({
                         </TooltipProvider>
                     </div>
                     <SearchBar
+                        searchType="bookmarks"
                         getSearchResults={getBookmarkSearchResults}
                         className="w-full"
                     />
