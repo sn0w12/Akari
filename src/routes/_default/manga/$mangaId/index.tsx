@@ -78,7 +78,10 @@ function MangaPage() {
         <div className="w-full p-4">
             {manga?.data && <MangaDetailsComponent manga={manga.data} />}
             {chapters?.data && (
-                <MangaDetailsBody chapters={chapters.data} mangaId={mangaId} />
+                <MangaDetailsBody
+                    rawChapters={chapters.data}
+                    mangaId={mangaId}
+                />
             )}
 
             <Suspense fallback={null}>

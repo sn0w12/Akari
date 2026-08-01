@@ -1,5 +1,5 @@
 type MangaChapter = components["schemas"]["MangaChapter"];
-interface ChapterEntry extends MangaChapter {
+export interface ChapterEntry extends MangaChapter {
     isGapFill?: boolean;
 }
 
