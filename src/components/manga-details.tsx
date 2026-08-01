@@ -138,7 +138,7 @@ export function MangaDetailsComponent({
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
-                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl lg:max-h-27">
+                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl min-h-10 lg:max-h-27">
                                 {manga.title}
                             </h1>
                             {manga.alternativeTitles && (
