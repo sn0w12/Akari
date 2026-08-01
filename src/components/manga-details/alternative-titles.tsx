@@ -119,7 +119,10 @@ export function AlternativeTitlesPopover({
                     </ResponsiveModalDrawerOnly>
                     <ScrollArea
                         render={<ul />}
-                        className="max-h-72 overflow-y-auto overscroll-contain"
+                        scrollFade
+                        scrollbarGutter
+                        overscrollContain
+                        className={titles.length > 10 ? "h-72" : undefined}
                     >
                         {sorted.map((title) => {
                             const lang = getLanguage(title.languageCode);
@@ -128,7 +131,11 @@ export function AlternativeTitlesPopover({
                                     key={title.title}
                                     className="flex items-center gap-2 rounded-sm px-2 py-1"
                                 >
-                                    <Badge size="sm" variant="default">
+                                    <Badge
+                                        size="sm"
+                                        variant="default"
+                                        className="font-mono"
+                                    >
                                         {lang.label}
                                     </Badge>
                                     <span
