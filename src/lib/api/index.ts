@@ -2,6 +2,8 @@ import { env } from "@/lib/env";
 import type { paths } from "@/types/api";
 import createClient from "openapi-fetch";
 import { authClient } from "@/lib/auth/client";
+import os from "os";
+import pkg from "../../../package.json";
 
 const apiUrl =
     env("API_URL") || env("VITE_API_URL") || "http://localhost:5188/";
@@ -37,6 +39,10 @@ const authenticatedFetch = async (input: Request): Promise<Response> => {
             serverHeaders[key as keyof typeof serverHeaders],
         );
     });
+    if (typeof window === "undefined") {
+        const userAgent = `Akari/${pkg.version} (${os.type()} ${os.arch()}; Node.js ${process.version})`;
+        request.headers.set("User-Agent", userAgent);
+    }
 
     return fetch(request);
 };
