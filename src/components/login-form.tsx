@@ -43,7 +43,15 @@ export function LoginForm({
                           password,
                       });
 
-                if (result.error) throw result.error;
+                if (result.error) {
+                    if (isEmail && result.error.status === 403) {
+                        setError(
+                            "Please verify your email address before signing in.",
+                        );
+                        return;
+                    }
+                    throw result.error;
+                }
                 void queryClient.invalidateQueries({ queryKey: ["user"] });
                 void router.navigate({ to: "/account" });
             } catch (error: unknown) {

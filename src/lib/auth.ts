@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { sendAuthEmail } from "@/lib/email";
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins";
@@ -36,6 +37,18 @@ export const auth = betterAuth({
     database: pool,
     emailAndPassword: {
         enabled: true,
+        requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            sendAuthEmail({ kind: "password-reset", to: user.email, url });
+        },
+    },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            sendAuthEmail({ kind: "verification", to: user.email, url });
+        },
+        sendOnSignUp: true,
+        sendOnSignIn: true,
+        autoSignInAfterVerification: true,
     },
     plugins: [username(), passkey(), tanstackStartCookies()],
     baseURL: toFullUrl(env("VITE_HOST") ?? "localhost:3000"),

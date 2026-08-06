@@ -45,6 +45,7 @@ export function SignUpForm({
                     name: displayName,
                     username: userName,
                     displayUsername: displayName,
+                    callbackURL: `${window.location.origin}/auth/sign-up-success`,
                 });
                 if (error) throw error;
                 void router.navigate({ to: "/auth/sign-up-success" });
