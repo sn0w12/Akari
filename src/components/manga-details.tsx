@@ -128,7 +128,7 @@ export function MangaDetailsComponent({
                             src={manga.cover.url}
                             thumbHash={manga.cover.thumbhash}
                             alt={manga.title}
-                            className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
+                            className="aspect-2/3 rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
                             width={400}
                             height={600}
                             loading="eager"
@@ -138,7 +138,7 @@ export function MangaDetailsComponent({
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
-                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl min-h-10 lg:max-h-27">
+                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl min-h-10 pb-0.5 lg:max-h-[calc(3lh+0.5rem)]">
                                 {manga.title}
                             </h1>
                             {manga.alternativeTitles && (
