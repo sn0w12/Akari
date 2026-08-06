@@ -4,7 +4,7 @@
     "homepage": "https://github.com/sn0w12/Akari#readme",
     "type": "module",
     "scripts": {
-        "dev": "vite dev",
+        "dev": "vp preview",
         "build:sw": "tsc -p src/sw/tsconfig.json",
         "build": "npm run build:sw && vp build",
         "preview": "vp preview",
@@ -16,7 +16,7 @@
         "prepare": "vp config"
     },
     "dependencies": {
-        "@base-ui/react": "^1.6.0",
+        "@base-ui/react": "^1.7.0",
         "@better-auth/passkey": "^1.6.25",
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/sortable": "^10.0.0",
