@@ -144,14 +144,14 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
                 <>
                     {!hasError ? (
                         <img
+                            {...props}
                             ref={ref}
                             key={reloadKey}
-                            src={src}
                             alt={alt}
                             className={className}
+                            src={src}
                             onLoad={() => setLoaded(true)}
                             onError={() => setHasError(true)}
-                            {...props}
                         />
                     ) : (
                         <ReloadCard
@@ -182,20 +182,27 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
                     {/* Main image */}
                     {!hasError ? (
                         <img
+                            {...props}
                             ref={ref}
                             key={reloadKey}
-                            src={finalSrc}
-                            srcSet={srcSet}
-                            sizes={sizeAttr}
                             alt={alt}
                             className={cn(
                                 "block w-full h-auto transition-opacity ease-snappy opacity-0",
                                 loaded && "opacity-100",
                                 className,
                             )}
+                            // https://github.com/vercel/next.js/blob/1c50e09d1dc3f5be50c5e2f9b99816ad47e11f05/packages/next/src/client/image-component.tsx#L291-L296
+                            // It's intended to keep `src` the last attribute because React updates
+                            // attributes in order. If we keep `src` the first one, Safari will
+                            // immediately start to fetch `src`, before `sizes` and `srcSet` are even
+                            // updated by React. That causes multiple unnecessary requests if `srcSet`
+                            // and `sizes` are defined.
+                            // This bug cannot be reproduced in Chrome or Firefox.
+                            srcSet={srcSet}
+                            sizes={sizeAttr}
+                            src={finalSrc}
                             onLoad={() => setLoaded(true)}
                             onError={() => setHasError(true)}
-                            {...props}
                         />
                     ) : (
                         <ReloadCard
