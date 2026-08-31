@@ -1,19 +1,15 @@
 import { JsonLd } from "@/components/json-ld";
 import { createJsonLd } from "@/lib/seo";
 import { CollectionPage } from "schema-dts";
-import { ChaptersSection } from "./chapters-client";
 import type { components } from "@/types/api";
 
-export function ChaptersSectionServer({
+export function ChaptersJsonLd({
     chapters,
     mangaId,
 }: {
     chapters: components["schemas"]["MangaChapterResponse"];
     mangaId: string;
 }) {
-    const preferredScanlator =
-        chapters.preferredScanlatorId ?? chapters.chapters[0]?.scanlatorId ?? 1;
-
     const chapterListJsonLd = createJsonLd<CollectionPage>({
         "@type": "CollectionPage",
         url: `/manga/${mangaId}`,
@@ -30,15 +26,5 @@ export function ChaptersSectionServer({
         },
     });
 
-    return (
-        <>
-            <JsonLd data={chapterListJsonLd} />
-            <ChaptersSection
-                mangaId={mangaId}
-                chapters={chapters.chapters}
-                preferredScanlator={preferredScanlator}
-                scanlators={chapters.scanlators}
-            />
-        </>
-    );
+    return <JsonLd data={chapterListJsonLd} />;
 }

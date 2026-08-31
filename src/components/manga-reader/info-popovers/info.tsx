@@ -34,7 +34,8 @@ export function InfoContent({
                 </h2>
                 <ChapterSelector
                     chapters={chapter.chapters}
-                    value={chapter.number.toString()}
+                    scanlatorId={chapter.scanlator?.id || 0}
+                    value={chapter.id}
                     className="w-full"
                 />
                 <div className="flex flex-col gap-2 md:pt-2 md:border-t">

@@ -4,7 +4,7 @@ import { GridSortSelect } from "@/components/grid/grid-sort";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -26,7 +26,6 @@ const getPopularData = createServerFn({ method: "GET" })
                         excludedGenres: data.excludedGenres ?? [],
                     },
                 },
-                headers: serverHeaders,
             },
         );
         return { data: result, error };
@@ -73,7 +72,7 @@ export const Route = createFileRoute("/_default/popular/")({
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
                 preloadImages?.map((item) => ({
-                    src: item.cover,
+                    src: item.cover.url,
                     sizes: MANGA_CARD_IMG_OPTS.sizes,
                     quality: MANGA_CARD_IMG_OPTS.quality,
                 })) ?? [],
@@ -128,7 +127,7 @@ function Popular() {
                         url: `/manga/${item.id}`,
                         name: item.title,
                         description: item.description,
-                        image: item.cover,
+                        image: item.cover.url,
                         genre: item.genres,
                         author: item.authors.map((author) => ({
                             "@type": "Person",

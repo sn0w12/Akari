@@ -2,7 +2,7 @@ import { Image } from "@/components/image";
 import { AutocompleteItem } from "@/components/ui/autocomplete";
 
 interface SearchItemProps {
-    cover: string;
+    cover: components["schemas"]["Cover"];
     title: string;
     subtitle: string;
     value: unknown;
@@ -23,7 +23,8 @@ export function SearchItem({
             onClick={onSelect}
         >
             <Image
-                src={cover}
+                src={cover.url}
+                thumbHash={cover.thumbhash}
                 alt={title}
                 className="max-h-10 w-auto rounded"
                 height={60}

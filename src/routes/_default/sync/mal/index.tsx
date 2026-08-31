@@ -5,6 +5,7 @@ import { toastManager } from "@/components/ui/toast";
 import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
+import { getTrackerId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
 import { useEffect, useReducer } from "react";
@@ -13,7 +14,7 @@ const ALLOWED_MEDIA_TYPES = ["manga", "manhwa", "manhua"];
 
 type SyncState = {
     malData: components["schemas"]["MalMangaListItem"][];
-    bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
+    bookmarks: components["schemas"]["BookmarkResponse"][];
     malLoading: boolean;
     bookmarksLoading: boolean;
     bookmarksProgress: number;
@@ -24,7 +25,7 @@ type SyncAction =
     | { type: "MAL_ERROR" }
     | {
           type: "BOOKMARKS";
-          data: components["schemas"]["BookmarkListResponse"]["items"];
+          data: components["schemas"]["BookmarkResponse"][];
       }
     | { type: "BOOKMARKS_ERROR" }
     | { type: "BOOKMARKS_PROGRESS"; progress: number };
@@ -64,7 +65,7 @@ function SyncMalPage() {
         dispatch,
     ] = useReducer(syncReducer, {
         malData: [] as components["schemas"]["MalMangaListItem"][],
-        bookmarks: [] as components["schemas"]["BookmarkListResponse"]["items"],
+        bookmarks: [] as components["schemas"]["BookmarkResponse"][],
         malLoading: true,
         bookmarksLoading: true,
         bookmarksProgress: 0,
@@ -149,8 +150,7 @@ function SyncMalPage() {
         }
 
         async function fetchAllBookmarks() {
-            let allData: components["schemas"]["BookmarkListResponse"]["items"] =
-                [];
+            let allData: components["schemas"]["BookmarkResponse"][] = [];
             let page: number = 1;
             let totalPages = 0;
 
@@ -224,7 +224,11 @@ function SyncMalPage() {
 
         const malDataToSync = malData.filter((item) => {
             const node = item.node;
-            return !bookmarks.some((bookmark) => bookmark.malId === node.id);
+            return !bookmarks.some(
+                (bookmark) =>
+                    Number(getTrackerId(bookmark.trackers, "myanimelist")) ===
+                    node.id,
+            );
         });
 
         if (malDataToSync.length === 0) {
@@ -247,7 +251,7 @@ function SyncMalPage() {
         });
 
         const batchSize = 50;
-        const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
+        const updateItems: components["schemas"]["BookmarkBatchBody"]["items"] =
             [];
         let errorCount = 0;
 
@@ -265,8 +269,11 @@ function SyncMalPage() {
                 .map((item) => item.node.id);
             const batchSet = new Set(batchIds);
             const bookmarkRatings = bookmarks.flatMap((bookmark) => {
-                if (!bookmark.malId || !batchSet.has(bookmark.malId)) return [];
-                const malItem = malDataById.get(bookmark.malId);
+                const malId = Number(
+                    getTrackerId(bookmark.trackers, "myanimelist"),
+                );
+                if (!malId || !batchSet.has(malId)) return [];
+                const malItem = malDataById.get(malId);
                 const rating = malItem?.listStatus?.score;
                 if (typeof rating === "number" && rating > 0) {
                     return [{ mangaId: bookmark.mangaId, rating }];
@@ -312,8 +319,11 @@ function SyncMalPage() {
         for (const data of batchResults) {
             if (!data) continue;
             for (const manga of data) {
-                if (!manga.malId) continue;
-                const malItem = malDataToSyncById.get(manga.malId);
+                const malId = Number(
+                    getTrackerId(manga.trackers, "myanimelist"),
+                );
+                if (!malId) continue;
+                const malItem = malDataToSyncById.get(malId);
                 if (malItem) {
                     updateItems.push({
                         mangaId: manga.id,
@@ -399,7 +409,10 @@ function SyncMalPage() {
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.malId === item.node.id,
+                    (bookmark) =>
+                        Number(
+                            getTrackerId(bookmark.trackers, "myanimelist"),
+                        ) === item.node.id,
                 ) ? (
                     <Check className="size-4 text-green-600" />
                 ) : (

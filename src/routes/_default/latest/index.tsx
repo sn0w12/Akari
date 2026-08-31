@@ -3,7 +3,7 @@ import ErrorPage from "@/components/error-page";
 import { MANGA_CARD_IMG_OPTS } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createJsonLd, createMetadata } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -14,7 +14,6 @@ const getLatestData = createServerFn({ method: "GET" })
     .handler(async ({ data }) => {
         const { data: result, error } = await client.GET("/v2/manga/list", {
             params: { query: { page: data.page, pageSize: 24 } },
-            headers: serverHeaders,
         });
         return { data: result, error };
     });
@@ -53,7 +52,7 @@ export const Route = createFileRoute("/_default/latest/")({
                 Object.keys(pagination).length > 0 ? pagination : undefined,
             preloadImages:
                 preloadImages?.map((item) => ({
-                    src: item.cover,
+                    src: item.cover.url,
                     sizes: MANGA_CARD_IMG_OPTS.sizes,
                     quality: MANGA_CARD_IMG_OPTS.quality,
                 })) ?? [],
@@ -92,7 +91,7 @@ function Latest() {
                         url: `/manga/${item.id}`,
                         name: item.title,
                         description: item.description,
-                        image: item.cover,
+                        image: item.cover.url,
                         genre: item.genres,
                         author: item.authors.map((author) => ({
                             "@type": "Person",

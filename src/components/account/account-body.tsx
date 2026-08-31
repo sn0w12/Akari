@@ -6,23 +6,21 @@ import { Skeleton } from "../ui/skeleton";
 import { AccountActions } from "./account-actions";
 import { ConnectedAccounts } from "./connected-accounts";
 import { UserMangaLists } from "./lists";
+import { PasskeySection } from "./passkeys";
 import { UserProfile } from "./user-profile";
+import { useUser } from "@/hooks/use-user";
 
 export function AccountBody() {
+    const { data: user } = useUser();
     const { data, error, isLoading } = useQuery({
         queryKey: ["account"],
         queryFn: async () => {
-            const [userRes, listsRes] = await Promise.all([
-                client.GET("/v2/user/me"),
-                client.GET("/v2/lists/user/me", {
-                    params: { query: { pageSize: 100 } },
-                }),
-            ]);
+            const { data } = await client.GET("/v2/lists/user/me", {
+                params: { query: { pageSize: 100 } },
+            });
 
-            if (userRes.error) throw userRes.error;
             return {
-                user: userRes.data.data,
-                lists: listsRes.data?.data?.items || [],
+                lists: data?.data?.items || [],
             };
         },
         retry: false,
@@ -37,12 +35,13 @@ export function AccountBody() {
                 }
             />
         );
-    if (!data) return null;
+    if (!user || !data) return null;
 
     return (
         <div className="space-y-4">
-            <UserProfile user={data.user} />
-            <AccountActions user={data.user} />
+            <UserProfile user={user} />
+            <AccountActions user={user} />
+            <PasskeySection />
             <ConnectedAccounts />
             <UserMangaLists initialLists={data.lists} />
         </div>

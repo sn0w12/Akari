@@ -1,7 +1,7 @@
 import { client } from "@/lib/api";
 import { getBaseUrl } from "@/lib/api/base-url";
 import { env } from "@/lib/env";
-import { getCookie, removeCookie, setCookie } from "@/lib/utils";
+import { getCookie, getTrackerId, removeCookie, setCookie } from "@/lib/utils";
 import { SecondaryAccountBase } from "./general";
 
 export class MalAccount extends SecondaryAccountBase {
@@ -54,14 +54,15 @@ export class MalAccount extends SecondaryAccountBase {
     async sync(
         manga: components["schemas"]["ChapterResponse"],
     ): Promise<boolean> {
-        if (!manga.malId) {
+        const malId = getTrackerId(manga.trackers, "myanimelist");
+        if (!malId) {
             return false;
         }
 
         try {
             const { error } = await client.POST("/v2/mal/mangalist", {
                 body: {
-                    mangaId: manga.malId,
+                    mangaId: Number(malId),
                     numChaptersRead: manga.number,
                 },
             });

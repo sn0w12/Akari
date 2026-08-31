@@ -62,7 +62,7 @@ function isSeparator(o: Option): o is { value: "separator"; label: "" } {
 }
 
 function resolveBucketRange(value: string): {
-    bucket: components["schemas"]["HistoryBucket"];
+    bucket: HistoryBucket;
     range: number;
 } {
     const now = new Date();
@@ -285,11 +285,14 @@ export function HistoryContent() {
     } = useQuery({
         queryKey: ["reading-history", "stats", bucket, range],
         queryFn: async () => {
-            const res = await client.GET("/v2/bookmarks/history/stats", {
-                params: { query: { bucket, range } },
-            });
-            if (res.error) throw res.error;
-            return res.data.data;
+            const { data, error } = await client.GET(
+                "/v2/bookmarks/history/stats",
+                {
+                    params: { query: { bucket, range } },
+                },
+            );
+            if (error) throw error;
+            return data.data;
         },
     });
 

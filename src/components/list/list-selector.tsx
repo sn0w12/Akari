@@ -26,7 +26,7 @@ type ListOption = {
 };
 
 type UserListsQueryData = {
-    items: components["schemas"]["UserMangaListResponse"][];
+    items: components["schemas"]["SuccessResponse_UserListResponse"]["data"][];
     totalCount?: number;
     currentPage?: number;
     pageSize?: number;
@@ -255,7 +255,7 @@ export function ListSelector({ mangaId }: { mangaId: string }) {
     }
 
     function handleListCreated(
-        list: components["schemas"]["UserMangaListResponse"],
+        list: components["schemas"]["SuccessResponse_UserListResponse"]["data"],
     ) {
         const createdOption: ListOption = {
             value: list.id,

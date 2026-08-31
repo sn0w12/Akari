@@ -1,4 +1,4 @@
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import ErrorPage from "../error-page";
 import { UserLists } from "./user-lists";
@@ -14,7 +14,6 @@ function getUserData(userId: string) {
                 pageSize: 12,
             },
         },
-        headers: serverHeaders,
     });
 }
 

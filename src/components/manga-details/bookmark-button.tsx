@@ -27,7 +27,6 @@ export function BookmarkButton({
     onMouseEnter,
     onMouseLeave,
     size,
-    variant = "ghost",
     ...props
 }: BookmarkButtonProps) {
     const queryClient = useQueryClient();
@@ -128,36 +127,49 @@ export function BookmarkButton({
     }, [canHover, hovered]);
 
     const buttonContent = (
-        <div className="relative flex h-full w-full items-center justify-center">
+        <div
+            className={cn(
+                "relative flex h-full w-full items-center justify-center",
+            )}
+        >
             {fancyAnimationsEnabled ? (
                 <>
                     <Bookmark
-                        className={`transition-all duration-300 ease-in-out ${
-                            isBookmarked && hovered
-                                ? "-translate-x-7"
-                                : "translate-x-0"
-                        }`}
+                        className={cn(
+                            "transition-all duration-300 ease-in-out",
+                            {
+                                "-translate-x-7": isBookmarked && hovered,
+                                "translate-x-0": !hovered,
+                                "translate-x-2": !isBookmarked,
+                            },
+                        )}
                     />
                     <span
-                        className={`absolute transition-all duration-300 ease-in-out -translate-x-8.5 ${
-                            isBookmarked && hovered
-                                ? "opacity-100"
-                                : "opacity-0"
-                        }`}
+                        className={cn(
+                            "absolute transition-all duration-300 ease-in-out -translate-x-8.5",
+                            {
+                                "opacity-100": isBookmarked && hovered,
+                                "opacity-0": !isBookmarked || !hovered,
+                            },
+                        )}
                     >
                         Remove
                     </span>
                     <span
-                        className={`ml-2 transition-all duration-300 ease-in-out ${
-                            isBookmarked && hovered
-                                ? "translate-x-7.5"
-                                : "translate-x-0"
-                        }`}
+                        className={cn(
+                            "ml-2 transition-all duration-300 ease-in-out",
+                            {
+                                "translate-x-7.5": isBookmarked && hovered,
+                                "translate-x-0": !hovered,
+                                "translate-x-2": !isBookmarked,
+                            },
+                        )}
                     >
                         <span>Bookmark</span>
                         <span
                             className={cn("opacity-100 transition-opacity", {
-                                "opacity-0": isBookmarked && hovered,
+                                "opacity-0":
+                                    (isBookmarked && hovered) || !isBookmarked,
                             })}
                         >
                             ed
@@ -180,10 +192,10 @@ export function BookmarkButton({
     );
 
     const buttonClass = cn(
-        `border border-input relative overflow-hidden text-primary not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] ${
+        `relative overflow-hidden ${
             isBookmarked
-                ? "bg-accent-positive hover:bg-negative"
-                : "bg-background hover:bg-accent-positive"
+                ? "transition-colors text-background dark:text-primary bg-accent-positive dark:bg-accent-positive border-accent-positive shadow-accent-positive/36 hover:bg-destructive dark:hover:bg-destructive hover:border-destructive hover:shadow-destructive/36"
+                : ""
         }`,
         className,
     );
@@ -191,7 +203,7 @@ export function BookmarkButton({
     const button = (
         <Button
             aria-label={isBookmarked ? "Remove Bookmark" : "Bookmark"}
-            variant={variant}
+            variant="default"
             size={size}
             className={buttonClass}
             disabled={disabled || !user || isBookmarked === undefined}

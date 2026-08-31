@@ -1,4 +1,15 @@
-import { forwardRef, type ImgHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+import {
+    forwardRef,
+    useMemo,
+    useState,
+    type ImgHTMLAttributes,
+    type MouseEvent,
+} from "react";
+import { thumbHashToDataURL } from "thumbhash";
+import { Button } from "../ui/button";
+import { RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export interface SizesConfig {
     default?: string;
@@ -7,16 +18,6 @@ export interface SizesConfig {
     lg?: ImageWidths;
     xl?: ImageWidths;
     "2xl"?: ImageWidths;
-}
-
-export interface ImageProps extends Omit<
-    ImgHTMLAttributes<HTMLImageElement>,
-    "src" | "srcSet" | "sizes"
-> {
-    src: string;
-    sizes?: SizesConfig;
-    quality?: number;
-    unOptimized?: boolean;
 }
 
 const DEFAULT_WIDTHS = [48, 96, 128, 240, 320, 400, 640, 1080, 1920] as const;
@@ -30,13 +31,31 @@ const breakpoints: { key: keyof SizesConfig; min: number }[] = [
     { key: "2xl", min: 1536 },
 ];
 
-function buildImageUrl(src: string, width: number, quality = 80) {
-    return `${src}?width=${width}&quality=${quality}`;
+function buildImageUrl(
+    src: string,
+    width: number,
+    quality = 80,
+    query: Record<string, string | number | boolean | undefined> = {},
+) {
+    const url = new URL(src);
+    url.searchParams.append("width", width.toString());
+    url.searchParams.append("quality", quality.toString());
+
+    Object.entries(query).forEach(([key, value]) => {
+        if (value === undefined) return;
+        url.searchParams.append(key, String(value));
+    });
+
+    return url.toString();
 }
 
-export function buildSrcSet(src: string, quality?: number) {
+export function buildSrcSet(
+    src: string,
+    quality?: number,
+    query: Record<string, string | number | boolean | undefined> = {},
+) {
     return DEFAULT_WIDTHS.map(
-        (width) => `${buildImageUrl(src, width, quality)} ${width}w`,
+        (width) => `${buildImageUrl(src, width, quality, query)} ${width}w`,
     ).join(", ");
 }
 
@@ -67,38 +86,161 @@ export function buildImageUrlWithQuality(
     return buildImageUrl(src, 1920, quality);
 }
 
+export interface ImageProps extends Omit<
+    ImgHTMLAttributes<HTMLImageElement>,
+    "src" | "srcSet" | "sizes"
+> {
+    src: string;
+    sizes?: SizesConfig;
+    quality?: number;
+    unOptimized?: boolean;
+    thumbHash?: string | null;
+}
+
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
-    { src, alt, className, quality, sizes, unOptimized, ...props },
+    { src, alt, className, quality, sizes, unOptimized, thumbHash, ...props },
     ref,
 ) {
-    if (unOptimized) {
-        return (
-            <img
-                ref={ref}
-                src={src}
-                alt={alt}
-                className={className}
-                {...props}
-            />
-        );
-    }
+    const [loaded, setLoaded] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [reloadKey, setReloadKey] = useState(0);
 
-    if (!sizes) {
+    const placeholderSrc = useMemo(() => {
+        if (!thumbHash) return null;
+        try {
+            const hashData =
+                typeof thumbHash === "string"
+                    ? Uint8Array.from(atob(thumbHash), (c) => c.charCodeAt(0))
+                    : thumbHash;
+            return thumbHashToDataURL(hashData);
+        } catch {
+            return null;
+        }
+    }, [thumbHash]);
+
+    const handleRetry = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setHasError(false);
+        setLoaded(false);
+        setReloadKey((prev) => prev + 1);
+    };
+
+    if (!sizes && !unOptimized) {
         console.warn(
             "Image component: No sizes provided, defaulting to 100vw. This may lead to suboptimal image loading on different screen sizes. Consider providing a sizes prop for better performance.",
         );
-        sizes = { default: "100vw" };
     }
 
+    // If we have no thumbhash, instruct proxy to generate and insert
+    const query = thumbHash ? undefined : { gen: 1 };
+    const finalSrc = buildImageUrl(src, 1920, quality, query);
+    const srcSet = buildSrcSet(src, quality, query);
+    const sizeAttr = buildSizes(sizes ?? { default: "100vw" });
+
     return (
-        <img
-            ref={ref}
-            src={buildImageUrl(src, 1920, quality)}
-            srcSet={buildSrcSet(src, quality)}
-            sizes={buildSizes(sizes)}
-            alt={alt}
-            className={className}
-            {...props}
-        />
+        <>
+            {unOptimized ? (
+                <>
+                    {!hasError ? (
+                        <img
+                            {...props}
+                            ref={ref}
+                            key={reloadKey}
+                            alt={alt}
+                            className={className}
+                            src={src}
+                            onLoad={() => setLoaded(true)}
+                            onError={() => setHasError(true)}
+                        />
+                    ) : (
+                        <ReloadCard
+                            handleReload={handleRetry}
+                            className={className}
+                        />
+                    )}
+                </>
+            ) : (
+                <div
+                    className={cn(
+                        "relative overflow-hidden",
+                        hasError && "h-full w-full",
+                    )}
+                >
+                    {/* Placeholder image (hidden when main image is loaded) */}
+                    {placeholderSrc && (
+                        <img
+                            src={placeholderSrc}
+                            alt=""
+                            className={cn(
+                                "absolute inset-0 w-full h-full object-cover transition-opacity ease-snappy pointer-events-none opacity-100",
+                                loaded && "opacity-0",
+                                className,
+                            )}
+                        />
+                    )}
+                    {/* Main image */}
+                    {!hasError ? (
+                        <img
+                            {...props}
+                            ref={ref}
+                            key={reloadKey}
+                            alt={alt}
+                            className={cn(
+                                "block w-full h-auto transition-opacity ease-snappy opacity-0",
+                                loaded && "opacity-100",
+                                className,
+                            )}
+                            // https://github.com/vercel/next.js/blob/1c50e09d1dc3f5be50c5e2f9b99816ad47e11f05/packages/next/src/client/image-component.tsx#L291-L296
+                            // It's intended to keep `src` the last attribute because React updates
+                            // attributes in order. If we keep `src` the first one, Safari will
+                            // immediately start to fetch `src`, before `sizes` and `srcSet` are even
+                            // updated by React. That causes multiple unnecessary requests if `srcSet`
+                            // and `sizes` are defined.
+                            // This bug cannot be reproduced in Chrome or Firefox.
+                            srcSet={srcSet}
+                            sizes={sizeAttr}
+                            src={finalSrc}
+                            onLoad={() => setLoaded(true)}
+                            onError={() => setHasError(true)}
+                        />
+                    ) : (
+                        <ReloadCard
+                            handleReload={handleRetry}
+                            className={cn("block w-full h-auto", className)}
+                        />
+                    )}
+                </div>
+            )}
+        </>
     );
 });
+
+function ReloadCard({
+    handleReload,
+    className,
+}: {
+    handleReload: (e: MouseEvent<HTMLButtonElement>) => void;
+    className?: string;
+}) {
+    return (
+        <div
+            className={cn(
+                "w-full h-full",
+                className,
+                "flex justify-center items-center",
+            )}
+        >
+            <Tooltip>
+                <TooltipTrigger
+                    render={
+                        <Button size="icon-lg" onClick={handleReload}>
+                            <RotateCcw />
+                        </Button>
+                    }
+                />
+                <TooltipContent>Reload Image</TooltipContent>
+            </Tooltip>
+        </div>
+    );
+}

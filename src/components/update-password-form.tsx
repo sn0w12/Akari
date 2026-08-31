@@ -9,27 +9,36 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/auth/client";
+import { resetPassword } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@tanstack/react-router";
 import { useState, useTransition } from "react";
 
 export function UpdatePasswordForm({
     className,
+    token,
+    error: linkError,
     ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: React.ComponentPropsWithoutRef<"div"> & {
+    token?: string;
+    error?: string;
+}) {
     const [error, setError] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
+    const invalidLink = Boolean(linkError) || !token;
+
     const handleUpdatePassword = async (values: Record<string, unknown>) => {
         const password = values.password as string;
-        const supabase = createClient();
         startTransition(async () => {
             setError(null);
 
             try {
-                const { error } = await supabase.auth.updateUser({ password });
+                const { error } = await resetPassword({
+                    newPassword: password,
+                    token,
+                });
                 if (error) throw error;
                 void router.navigate({ to: "/account" });
             } catch (error: unknown) {
@@ -49,34 +58,46 @@ export function UpdatePasswordForm({
                     <CardTitle className="text-2xl">
                         Reset Your Password
                     </CardTitle>
-                    <CardDescription>
-                        Please enter your new password below.
-                    </CardDescription>
+                    {!invalidLink && (
+                        <CardDescription>
+                            Please enter your new password below.
+                        </CardDescription>
+                    )}
                 </CardHeader>
                 <CardContent>
-                    <Form onFormSubmit={handleUpdatePassword}>
-                        <div className="flex flex-col gap-6">
-                            <Field name="password">
-                                <FieldLabel>New password</FieldLabel>
-                                <Input
-                                    type="password"
-                                    placeholder="New password"
-                                    required
-                                />
-                                <FieldError />
-                            </Field>
-                            {error && (
-                                <p className="text-sm text-red-500">{error}</p>
-                            )}
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isPending}
-                            >
-                                {isPending ? "Saving..." : "Save new password"}
-                            </Button>
-                        </div>
-                    </Form>
+                    {invalidLink ? (
+                        <p className="text-sm text-muted-foreground">
+                            This password reset link is invalid or expired.
+                        </p>
+                    ) : (
+                        <Form onFormSubmit={handleUpdatePassword}>
+                            <div className="flex flex-col gap-6">
+                                <Field name="password">
+                                    <FieldLabel>New password</FieldLabel>
+                                    <Input
+                                        type="password"
+                                        placeholder="New password"
+                                        required
+                                    />
+                                    <FieldError />
+                                </Field>
+                                {error && (
+                                    <p className="text-sm text-red-500">
+                                        {error}
+                                    </p>
+                                )}
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={isPending}
+                                >
+                                    {isPending
+                                        ? "Saving..."
+                                        : "Save new password"}
+                                </Button>
+                            </div>
+                        </Form>
+                    )}
                 </CardContent>
             </Card>
         </div>

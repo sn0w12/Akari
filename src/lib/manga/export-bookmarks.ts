@@ -1,11 +1,20 @@
 import { client } from "@/lib/api";
+import { toastManager } from "@/components/ui/toast";
 
 const PAGE_SIZE = 100;
 
-type Bookmark = components["schemas"]["BookmarkListResponse"]["items"][number];
+type Bookmark = components["schemas"]["BookmarkResponse"][][number];
 
 export async function exportBookmarks() {
     const bookmarks = await fetchAllBookmarks();
+    if (!bookmarks || bookmarks.length === 0) {
+        toastManager.add({
+            title: "No bookmarks",
+            type: "warning",
+        });
+        return 0;
+    }
+
     const simplified = bookmarks.map(simplifyBookmark);
     const bookmarksBlob = new Blob([JSON.stringify(simplified, null, 2)], {
         type: "application/json",
@@ -75,8 +84,7 @@ function simplifyBookmark(b: Bookmark) {
         alternativeTitles: b.alternativeTitles,
         authors: b.authors,
         genres: b.genres,
-        malId: b.malId,
-        aniId: b.aniId,
+        trackers: b.trackers,
         lastReadChapter: b.lastReadChapter
             ? {
                   number: b.lastReadChapter.number,

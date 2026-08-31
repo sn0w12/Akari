@@ -4,7 +4,7 @@ import {
 } from "@/components/manga-details";
 import { MangaDetailsBody } from "@/components/manga-details/body";
 import { MangaComments } from "@/components/manga-details/manga-comments";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { createMetadata, createOgImage } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
@@ -17,11 +17,9 @@ const loadMangaPage = createServerFn({ method: "GET" })
         const [mangaRes, chaptersRes] = await Promise.all([
             client.GET("/v2/manga/{id}", {
                 params: { path: { id } },
-                headers: serverHeaders,
             }),
             client.GET("/v2/manga/{id}/chapters", {
                 params: { path: { id } },
-                headers: serverHeaders,
             }),
         ]);
         return {
@@ -51,7 +49,7 @@ export const Route = createFileRoute("/_default/manga/$mangaId/")({
             type: "book",
             preloadImages: [
                 {
-                    src: manga.cover,
+                    src: manga.cover.url,
                     sizes: MANGA_DETAILS_COVER_IMAGE_SIZES,
                     quality: 60,
                 },
@@ -80,11 +78,14 @@ function MangaPage() {
         <div className="w-full p-4">
             {manga?.data && <MangaDetailsComponent manga={manga.data} />}
             {chapters?.data && (
-                <MangaDetailsBody chapters={chapters.data} mangaId={mangaId} />
+                <MangaDetailsBody
+                    rawChapters={chapters.data}
+                    mangaId={mangaId}
+                />
             )}
 
             <Suspense fallback={null}>
-                <MangaComments id={mangaId} target="manga" />
+                <MangaComments id={mangaId} target="work" />
             </Suspense>
         </div>
     );

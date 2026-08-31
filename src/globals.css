@@ -5,21 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-    font-family: "Geist Sans";
-    src: url("/fonts/GeistVF.woff") format("woff");
-    font-weight: 100 900;
-    font-display: swap;
-}
-
-:root {
-    --font-geist-sans: "Geist Sans", sans-serif;
-}
-
-body {
-    font-family: var(--font-geist-sans);
-}
-
 @theme inline {
     --font-sans: var(--font-sans);
     --font-heading: var(--font-heading);
@@ -60,7 +45,6 @@ body {
     --animate-skeleton: skeleton 2s -1s infinite linear;
 
     --color-accent-positive: var(--accent-color);
-    --color-negative: var(--negative-color);
     --color-info: var(--info-color);
     --color-warning: var(--warning-color);
 
@@ -72,6 +56,10 @@ body {
 }
 
 :root {
+    --font-sans: "Geist Variable", sans-serif;
+    --font-heading: "Geist Variable", sans-serif;
+    --font-mono: "Geist Mono Variable", monospace;
+
     --radius: 0.5rem;
     --radius-sm: calc(var(--radius) * 0.5);
     --radius-md: calc(var(--radius) * 0.75);
@@ -98,8 +86,8 @@ body {
     );
     --accent: --alpha(var(--color-black) / 4%);
     --accent-foreground: var(--color-neutral-800);
-    --destructive: var(--color-red-500);
-    --destructive-foreground: var(--color-red-700);
+    --destructive: oklch(0.631 0.2357 17.99);
+    --destructive-foreground: oklch(63.801% 0.18664 12.385);
     --info: var(--color-blue-500);
     --info-foreground: var(--color-blue-700);
     --success: var(--color-emerald-500);
@@ -120,9 +108,20 @@ body {
 
     --accent-color: oklch(0.631 0.2157 287.24);
     --accent-color-foreground: oklch(76.838% 0.09842 293.239);
-    --negative-color: oklch(0.631 0.2357 17.99);
     --info-color: oklch(0.631 0.1567 224.48);
     --warning-color: oklch(0.8294 0.1312 94.28);
+
+    --scrollbar-track: transparent;
+    --scrollbar-handle: color-mix(
+        in oklab,
+        var(--foreground) 94%,
+        var(--foreground)
+    );
+    --scrollbar-handle-hover: color-mix(
+        in oklab,
+        var(--scrollbar-handle) 80%,
+        transparent
+    );
 
     --safe-top: env(safe-area-inset-top);
     --safe-bottom: env(safe-area-inset-bottom);
@@ -167,12 +166,8 @@ body {
     );
     --accent: --alpha(var(--color-white) / 4%);
     --accent-foreground: var(--color-neutral-100);
-    --destructive: color-mix(
-        in srgb,
-        var(--color-red-500) 90%,
-        var(--color-white)
-    );
-    --destructive-foreground: var(--color-red-400);
+    --destructive: oklch(0.631 0.2357 17.99);
+    --destructive-foreground: oklch(63.801% 0.18664 12.385);
     --info: var(--color-blue-500);
     --info-foreground: var(--color-blue-400);
     --success: var(--color-emerald-500);
@@ -194,6 +189,8 @@ body {
     --sidebar-accent-foreground: var(--color-neutral-100);
     --sidebar-border: --alpha(var(--color-white) / 5%);
     --sidebar-ring: var(--color-neutral-400);
+
+    --scrollbar-handle: color-mix(in oklab, var(--card) 94%, var(--foreground));
 }
 
 .debug {
@@ -206,7 +203,13 @@ body {
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground font-sans;
+    }
+    code,
+    kbd,
+    samp,
+    pre {
+        @apply font-mono;
     }
 }
 
@@ -273,48 +276,38 @@ li {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: calc(var(--spacing) * 2.5);
+    width: calc(var(--spacing) * 1.5);
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
-    background-color: var(--background);
+    background-color: var(--scrollbar-track);
 }
-
-/* Handle */
 ::-webkit-scrollbar-thumb {
-    background: var(--sidebar);
+    background: var(--scrollbar-handle);
     border-radius: 10px;
-    border: 2px solid var(--background);
+    border: 2px solid var(--scrollbar-track);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--sidebar-border);
+    background: var(--scrollbar-handle-hover);
 }
-
 ::-webkit-scrollbar-thumb:window-inactive {
-    background: var(--sidebar);
+    background: var(--scrollbar-handle);
 }
 
 [data-scrollbar-custom]::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-track {
     background: transparent;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-thumb {
     background: var(--sidebar-border);
     border-radius: 10px;
     border: none;
 }
-
 [data-scrollbar-custom]::-webkit-scrollbar-thumb:hover {
     background: var(--sidebar-ring);
 }
-
 /* Hide scrollbar unless hovering for a cleaner look */
 [data-scrollbar-custom]:not(:hover)::-webkit-scrollbar-thumb {
     background: transparent;
@@ -324,7 +317,7 @@ li {
 @-moz-document url-prefix() {
     * {
         scrollbar-width: auto;
-        scrollbar-color: var(--sidebar) var(--background);
+        scrollbar-color: var(--scrollbar-handle) var(--scrollbar-track);
     }
 
     [data-scrollbar-custom="true"] {

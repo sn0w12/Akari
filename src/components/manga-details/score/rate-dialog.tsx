@@ -48,7 +48,7 @@ async function getUserScore(mangaId: string): Promise<number | null> {
         return null;
     }
 
-    return data.data;
+    return data.data.rating || null;
 }
 
 interface RateDialogProps {

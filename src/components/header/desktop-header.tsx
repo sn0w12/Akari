@@ -14,7 +14,9 @@ import { cn } from "@/lib/utils";
 import { useRouterState } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
-import SearchBar from "./search/search-bar";
+import { getSearchResults } from "@/lib/api/search";
+import { SearchBar } from "../search/search-bar";
+import { useSetting } from "@/lib/settings";
 
 interface HeaderProps {
     notification: string;
@@ -81,7 +83,7 @@ export function DesktopHeader({ notification }: HeaderProps) {
                 {notification && notification !== "0" ? (
                     <Badge
                         variant="success"
-                        className={cn("text-xs font-bold px-2 h-5", {
+                        className={cn("text-xs font-bold font-mono px-2 h-5", {
                             "ml-1": isSidebarCollapsed,
                         })}
                     >
@@ -135,7 +137,14 @@ export function DesktopHeader({ notification }: HeaderProps) {
                     </Breadcrumb>
                 </div>
                 <div className="flex items-center flex-grow justify-end">
-                    <SearchBar />
+                    <SearchBar
+                        getSearchResults={getSearchResults}
+                        searchType="manga"
+                        shortcut={useSetting("searchManga")}
+                        className="relative transition-[width] w-auto flex-grow lg:grow-0 lg:w-96 xl:w-128"
+                        focusClassName="xl:w-[40rem] lg:w-128"
+                        moreUrl="/search"
+                    />
                 </div>
             </div>
         </header>

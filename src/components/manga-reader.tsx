@@ -61,7 +61,7 @@ export function Reader({ chapter }: ReaderProps) {
     }
 
     return (
-        <>
+        <div>
             <BreadcrumbSetter
                 orig={chapter.mangaId}
                 title={chapter.mangaTitle}
@@ -80,6 +80,6 @@ export function Reader({ chapter }: ReaderProps) {
                     setBookmarkState={setBookmarkState}
                 />
             )}
-        </>
+        </div>
     );
 }

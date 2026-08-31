@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { ButtonGroup } from "../ui/group";
-import { CommentAttachment } from "./attachment";
 
 export type CommentData =
     | components["schemas"]["CommentWithRepliesResponse"]
@@ -26,11 +25,7 @@ interface CommentProps {
     comment: CommentData;
     onLoadReplies?: (commentId: string) => Promise<void>;
     onVote?: (commentId: string, voteType: VoteType) => Promise<void>;
-    onReply?: (
-        parentId: string,
-        content: string,
-        attachment?: components["schemas"]["UploadResponse"],
-    ) => Promise<CommentData>;
+    onReply?: (parentId: string, content: string) => Promise<CommentData>;
     onEdit?: (commentId: string, content: string) => Promise<void>;
     onDelete?: (commentId: string) => Promise<void>;
     depth?: number;
@@ -175,12 +170,12 @@ export function Comment({
         ("replyCount" in comment && (comment.replyCount ?? 0) > 0) ||
         ("replies" in comment && comment.replies && comment.replies.length > 0);
 
-    const replyCount =
-        "replyCount" in comment
-            ? (comment.replyCount ?? 0)
-            : Array.isArray(comment.replies)
-              ? comment.replies.length
-              : 0;
+    let replyCount = 0;
+    if ("replyCount" in comment) {
+        replyCount = comment.replyCount ?? 0;
+    } else if ("replies" in comment) {
+        replyCount = comment.replies.length;
+    }
 
     const handleShowReplies = async () => {
         if (
@@ -216,13 +211,10 @@ export function Comment({
         }
     };
 
-    const handleReplySubmit = async (
-        content: string,
-        attachment?: components["schemas"]["UploadResponse"],
-    ) => {
+    const handleReplySubmit = async (content: string) => {
         if (!onReply) return;
         try {
-            await onReply(comment.id, content, attachment);
+            await onReply(comment.id, content);
             dispatchUI({ type: "SET_REPLY_FORM", open: false });
             // If replies aren't shown yet, show them after posting
             if (!showReplies && hasReplies) {
@@ -351,10 +343,6 @@ export function Comment({
                         <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">
                             {comment.content}
                         </p>
-                    )}
-
-                    {comment.attachment && (
-                        <CommentAttachment attachment={comment.attachment} />
                     )}
 
                     <div className="flex items-center gap-1 sm:gap-2">

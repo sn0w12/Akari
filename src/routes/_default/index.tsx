@@ -8,7 +8,7 @@ import { MangaCard } from "@/components/manga/manga-card";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { ServerPagination } from "@/components/ui/pagination/server-pagination";
 import { PromptStack } from "@/components/ui/prompt-stack";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { env } from "@/lib/env";
 import { createMetadata } from "@/lib/seo";
@@ -29,7 +29,6 @@ const getPopularSection = createServerFn({ method: "GET" })
                     excludedGenres: ["Hentai", "Adult"],
                 },
             },
-            headers: serverHeaders,
         });
         return { data: data?.data.items ?? null, error };
     });
@@ -39,7 +38,6 @@ const getLatestSection = createServerFn({ method: "GET" })
     .handler(async () => {
         const { data, error } = await client.GET("/v2/manga/list", {
             params: { query: { page: 1, pageSize: 24 } },
-            headers: serverHeaders,
         });
         return { data: data?.data ?? null, error };
     });
@@ -61,7 +59,7 @@ export const Route = createFileRoute("/_default/")({
             image: "/og/akari.webp",
             preloadImages: [
                 {
-                    src: loaderData?.popular?.[0]?.cover,
+                    src: loaderData?.popular?.[0]?.cover.url,
                     sizes: {
                         default: "50vw",
                         sm: 240,
@@ -69,7 +67,7 @@ export const Route = createFileRoute("/_default/")({
                     quality: 40,
                 },
                 {
-                    src: loaderData?.popular?.[1]?.cover,
+                    src: loaderData?.popular?.[1]?.cover.url,
                     sizes: {
                         default: "50vw",
                         sm: 240,

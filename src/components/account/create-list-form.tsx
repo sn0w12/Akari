@@ -9,7 +9,9 @@ import { useTransition } from "react";
 import { Button } from "../ui/button";
 
 interface CreateListFormProps {
-    onSuccess: (list: components["schemas"]["UserMangaListResponse"]) => void;
+    onSuccess: (
+        list: components["schemas"]["SuccessResponse_UserListResponse"]["data"],
+    ) => void;
     onClose: () => void;
 }
 

@@ -47,7 +47,7 @@ export function MangaCommentList({
                 );
             }
 
-            return data.data;
+            return data.data.items;
         },
     });
     const [comments, setComments] =
@@ -152,7 +152,7 @@ export function MangaCommentList({
                 return {
                     ...comment,
                     replies: updateCommentContent(
-                        comment.replies,
+                        comment.replies as components["schemas"]["CommentWithRepliesResponse"][],
                         commentId,
                         newContent,
                     ),
@@ -173,7 +173,7 @@ export function MangaCommentList({
                 },
             },
         );
-        if (error) {
+        if (error || !data) {
             console.error("Failed to load replies:", error);
             return;
         }
@@ -195,7 +195,7 @@ export function MangaCommentList({
                         return {
                             ...comment,
                             replies: updateReplies(
-                                comment.replies,
+                                comment.replies as components["schemas"]["CommentWithRepliesResponse"][],
                                 commentId,
                                 replies,
                             ),
@@ -205,7 +205,11 @@ export function MangaCommentList({
                 });
             };
 
-            return updateReplies(prevComments, commentId, data.data);
+            return updateReplies(
+                prevComments,
+                commentId,
+                data.data as components["schemas"]["CommentWithRepliesResponse"][],
+            );
         });
     };
 
@@ -236,7 +240,6 @@ export function MangaCommentList({
     const handleReply = async (
         parentId: string,
         content: string,
-        attachment?: components["schemas"]["UploadResponse"],
     ): Promise<CommentData> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
@@ -245,10 +248,9 @@ export function MangaCommentList({
                 },
             },
             body: {
-                targetType: "manga",
+                targetType: "work",
                 content: content,
                 parentId: parentId,
-                attachmentId: attachment?.id,
             },
         });
 
@@ -282,7 +284,7 @@ export function MangaCommentList({
                     return {
                         ...comment,
                         replies: insertReply(
-                            comment.replies,
+                            comment.replies as components["schemas"]["CommentWithRepliesResponse"][],
                             parentId,
                             newReply,
                         ),
@@ -303,10 +305,7 @@ export function MangaCommentList({
         return data.data;
     };
 
-    const handleNewComment = async (
-        content: string,
-        attachment?: components["schemas"]["UploadResponse"],
-    ): Promise<void> => {
+    const handleNewComment = async (content: string): Promise<void> => {
         const { data, error } = await client.POST("/v2/comments/{id}", {
             params: {
                 path: {
@@ -316,7 +315,6 @@ export function MangaCommentList({
             body: {
                 targetType: target,
                 content: content,
-                attachmentId: attachment?.id,
             },
         });
 

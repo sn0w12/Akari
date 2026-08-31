@@ -1,5 +1,5 @@
 import ErrorPage from "@/components/error-page";
-import { client, serverHeaders } from "@/lib/api";
+import { client } from "@/lib/api";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_shortcut/mal/$malId/")({
@@ -10,7 +10,6 @@ export const Route = createFileRoute("/_shortcut/mal/$malId/")({
 
         const { data, error } = await client.GET("/v2/manga/mal/{id}", {
             params: { path: { id: Number(malId) } },
-            headers: serverHeaders,
         });
         if (!data || error) return;
 

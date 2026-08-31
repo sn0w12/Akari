@@ -39,7 +39,7 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
 
     const existingEntryIds = useMemo(() => {
         const listData = queryClient.getQueryData(["list", listId]) as
-            | components["schemas"]["UserMangaListWithEntriesResponse"]
+            | components["schemas"]["UserListDetailResponse"]
             | undefined;
         if (!listData?.entries) return new Set<string>();
         return new Set(listData.entries.map((entry) => entry.mangaId));
@@ -122,7 +122,10 @@ export function ListCommand({ listId, disabled }: ListCommandProps) {
                                                 className="flex items-center gap-3"
                                             >
                                                 <Image
-                                                    src={item.cover}
+                                                    src={item.cover.url}
+                                                    thumbHash={
+                                                        item.cover.thumbhash
+                                                    }
                                                     alt={item.title}
                                                     className="rounded-sm"
                                                     height={72}

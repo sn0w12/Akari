@@ -6,13 +6,14 @@ import { useConfirm } from "@/contexts/confirm-context";
 import { client } from "@/lib/api";
 import { ResponseCacheControlBuilder } from "@/lib/cache";
 import { StorageManager } from "@/lib/storage";
+import { getTrackerId } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
 import { useEffect, useReducer } from "react";
 
 type SyncState = {
     aniData: components["schemas"]["AniEntry"][];
-    bookmarks: components["schemas"]["BookmarkListResponse"]["items"];
+    bookmarks: components["schemas"]["BookmarkResponse"][];
     aniLoading: boolean;
     bookmarksLoading: boolean;
     bookmarksProgress: number;
@@ -23,7 +24,7 @@ type SyncAction =
     | { type: "ANI_ERROR" }
     | {
           type: "BOOKMARKS";
-          data: components["schemas"]["BookmarkListResponse"]["items"];
+          data: components["schemas"]["BookmarkResponse"][];
       }
     | { type: "BOOKMARKS_ERROR" }
     | { type: "BOOKMARKS_PROGRESS"; progress: number };
@@ -63,7 +64,7 @@ function SyncAniPage() {
         dispatch,
     ] = useReducer(syncReducer, {
         aniData: [] as components["schemas"]["AniEntry"][],
-        bookmarks: [] as components["schemas"]["BookmarkListResponse"]["items"],
+        bookmarks: [] as components["schemas"]["BookmarkResponse"][],
         aniLoading: true,
         bookmarksLoading: true,
         bookmarksProgress: 0,
@@ -126,8 +127,7 @@ function SyncAniPage() {
         }
 
         async function fetchAllBookmarks() {
-            let allData: components["schemas"]["BookmarkListResponse"]["items"] =
-                [];
+            let allData: components["schemas"]["BookmarkResponse"][] = [];
             let page: number = 1;
             let totalPages = 0;
 
@@ -204,7 +204,11 @@ function SyncAniPage() {
 
         const aniDataToSync = aniData.filter((item) => {
             const media = item.media;
-            return !bookmarks.some((bookmark) => bookmark.aniId === media.id);
+            return !bookmarks.some(
+                (bookmark) =>
+                    Number(getTrackerId(bookmark.trackers, "anilist")) ===
+                    media.id,
+            );
         });
 
         if (aniDataToSync.length === 0) {
@@ -227,7 +231,7 @@ function SyncAniPage() {
         });
 
         const batchSize = 50;
-        const updateItems: components["schemas"]["BatchUpdateBookmarkItem"][] =
+        const updateItems: components["schemas"]["BookmarkBatchBody"]["items"] =
             [];
         let errorCount = 0;
 
@@ -245,8 +249,11 @@ function SyncAniPage() {
                 .map((item) => item.media.id);
             const batchSet = new Set(batchIds);
             const bookmarkRatings = bookmarks.flatMap((bookmark) => {
-                if (!bookmark.aniId || !batchSet.has(bookmark.aniId)) return [];
-                const aniItem = aniDataById.get(bookmark.aniId);
+                const aniId = Number(
+                    getTrackerId(bookmark.trackers, "anilist"),
+                );
+                if (!aniId || !batchSet.has(aniId)) return [];
+                const aniItem = aniDataById.get(aniId);
                 const rating = aniItem?.score;
                 if (typeof rating === "number" && rating > 0) {
                     return [{ mangaId: bookmark.mangaId, rating }];
@@ -292,8 +299,9 @@ function SyncAniPage() {
         for (const data of batchResults) {
             if (!data) continue;
             for (const manga of data) {
-                if (!manga.aniId) continue;
-                const aniItem = aniDataToSyncById.get(manga.aniId);
+                const aniId = Number(getTrackerId(manga.trackers, "anilist"));
+                if (!aniId) continue;
+                const aniItem = aniDataToSyncById.get(aniId);
                 if (aniItem) {
                     updateItems.push({
                         mangaId: manga.id,
@@ -370,7 +378,9 @@ function SyncAniPage() {
             </TableCell>
             <TableCell className="w-12">
                 {bookmarks.some(
-                    (bookmark) => bookmark.aniId === item.media.id,
+                    (bookmark) =>
+                        Number(getTrackerId(bookmark.trackers, "anilist")) ===
+                        item.media.id,
                 ) ? (
                     <Check className="size-4 text-green-600" />
                 ) : (

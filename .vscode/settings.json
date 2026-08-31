@@ -6,6 +6,7 @@
         "mangalist",
         "scanlator",
         "scanlators",
+        "thumbhash",
         "Umami"
     ],
     "editor.defaultFormatter": "oxc.oxc-vscode",

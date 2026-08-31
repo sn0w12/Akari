@@ -9,12 +9,11 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/auth/client";
+import { signIn } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useState, useTransition } from "react";
-import { Providers } from "./auth/oauth";
 
 export function LoginForm({
     className,
@@ -26,18 +25,33 @@ export function LoginForm({
     const router = useRouter();
 
     const handleLogin = async (values: Record<string, unknown>) => {
-        const email = values.email as string;
+        const identifier = values.identifier as string;
         const password = values.password as string;
-        const supabase = createClient();
+
         startTransition(async () => {
             setError(null);
 
             try {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
+                const isEmail = identifier.includes("@");
+                const result = isEmail
+                    ? await signIn.email({
+                          email: identifier,
+                          password,
+                      })
+                    : await signIn.username({
+                          username: identifier.toLowerCase(),
+                          password,
+                      });
+
+                if (result.error) {
+                    if (isEmail && result.error.status === 403) {
+                        setError(
+                            "Please verify your email address before signing in.",
+                        );
+                        return;
+                    }
+                    throw result.error;
+                }
                 void queryClient.invalidateQueries({ queryKey: ["user"] });
                 void router.navigate({ to: "/account" });
             } catch (error: unknown) {
@@ -56,18 +70,20 @@ export function LoginForm({
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account
+                        Enter your email or username below to login to your
+                        account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Form onFormSubmit={handleLogin}>
                         <div className="flex flex-col gap-6">
-                            <Field name="email">
-                                <FieldLabel>Email</FieldLabel>
+                            <Field name="identifier">
+                                <FieldLabel>Email or Username</FieldLabel>
                                 <Input
-                                    type="email"
+                                    type="text"
                                     placeholder="m@example.com"
                                     required
+                                    autoComplete="username webauthn"
                                 />
                                 <FieldError />
                             </Field>
@@ -81,7 +97,11 @@ export function LoginForm({
                                         Forgot your password?
                                     </Link>
                                 </div>
-                                <Input type="password" required />
+                                <Input
+                                    type="password"
+                                    required
+                                    autoComplete="current-password webauthn"
+                                />
                                 <FieldError />
                             </Field>
                             {error && (
@@ -94,7 +114,6 @@ export function LoginForm({
                             >
                                 {isPending ? "Logging in..." : "Login"}
                             </Button>
-                            <Providers />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}

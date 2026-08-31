@@ -188,7 +188,7 @@ export default function PageReader({
                     pageHeightClass,
                 )}
             >
-                <div className="flex flex-col h-[calc(100%-var(--header-height)-var(--safe-top)-var(--safe-bottom))]">
+                <div className="flex flex-col h-[100dvh]">
                     <div className="flex-1"></div>
                     <div
                         className="flex-shrink-0"

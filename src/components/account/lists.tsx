@@ -3,7 +3,7 @@ import { ListItem } from "./list-item";
 import { ListCreate } from "../list/list-create";
 
 interface UserMangaListsProps {
-    initialLists: components["schemas"]["UserMangaListResponse"][];
+    initialLists: components["schemas"]["SuccessResponse_UserListResponse"]["data"][];
 }
 
 export function UserMangaLists({ initialLists }: UserMangaListsProps) {

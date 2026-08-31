@@ -1,9 +1,17 @@
-import { env } from "@/lib/env";
-import { createBrowserClient } from "@supabase/ssr";
+import { passkeyClient } from "@better-auth/passkey/client";
+import { createAuthClient } from "better-auth/react";
+import { usernameClient } from "better-auth/client/plugins";
 
-export function createClient() {
-    return createBrowserClient(
-        env("VITE_SUPABASE_URL")!,
-        env("VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY")!,
-    );
-}
+export const authClient = createAuthClient({
+    plugins: [usernameClient(), passkeyClient()],
+});
+
+export const {
+    signIn,
+    signUp,
+    signOut,
+    useSession,
+    getSession,
+    requestPasswordReset,
+    resetPassword,
+} = authClient;

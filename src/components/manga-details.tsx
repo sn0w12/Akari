@@ -1,14 +1,12 @@
 import { Image, type SizesConfig } from "@/components/image";
 import { JsonLd } from "@/components/json-ld";
 import { Badge, BadgeVariantProps } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { sortGenresByCategory } from "@/lib/api/search";
 import { createJsonLd } from "@/lib/seo";
 import { formatNumberShort, pluralize } from "@/lib/utils";
 import type { components } from "@/types/api";
 import { Link } from "@tanstack/react-router";
-import { LanguagesIcon } from "lucide-react";
 import { ComicSeries, Person } from "schema-dts";
 import { BreadcrumbSetter } from "./breadcrumb-setter";
 import { GenreBadge } from "./manga-details/badges/genre";
@@ -17,15 +15,8 @@ import Buttons from "./manga-details/buttons";
 import { ScoreDisplay } from "./manga-details/score/score-display";
 import { MangaUpdatedAt } from "./manga-details/updated-at";
 import { ViewManga } from "./manga-details/view-manga";
-import {
-    ResponsiveModal,
-    ResponsiveModalDrawerOnly,
-    ResponsiveModalPanel,
-    ResponsiveModalPopup,
-    ResponsiveModalTitle,
-    ResponsiveModalTrigger,
-} from "./ui/responsive-modal";
-import { Separator } from "./ui/separator";
+import { AlternativeTitlesPopover } from "./manga-details/alternative-titles";
+import { AniIcon, MalIcon } from "./icons";
 
 export const MANGA_DETAILS_COVER_IMAGE_SIZES = {
     default: "200px",
@@ -41,6 +32,23 @@ const getViewsVariant = (views: number): BadgeVariantProps["variant"] => {
     return "success";
 };
 
+const trackerInfo = {
+    myanimelist: {
+        url: "https://myanimelist.net/manga",
+        icon: MalIcon,
+    },
+    anilist: {
+        url: "https://anilist.co/manga",
+        icon: AniIcon,
+    },
+} as const;
+type TrackerInfoKey = keyof typeof trackerInfo;
+
+function getTrackerInfo(tracker: components["schemas"]["TrackerItem"]) {
+    const key = tracker.code as TrackerInfoKey;
+    return key in trackerInfo ? trackerInfo[key] : null;
+}
+
 function ExternalLinks({
     manga,
 }: {
@@ -48,36 +56,26 @@ function ExternalLinks({
 }) {
     return (
         <>
-            {manga.aniId && (
-                <a
-                    href={`https://anilist.co/manga/${manga.aniId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-10"
-                >
-                    <Image
-                        src="/img/icons/AniList-logo.webp"
-                        alt="AniList Logo"
-                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        sizes={{ default: "40px" }}
-                    />
-                </a>
-            )}
-            {manga.malId && (
-                <a
-                    href={`https://myanimelist.net/manga/${manga.malId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-10"
-                >
-                    <Image
-                        src="/img/icons/MAL-logo.webp"
-                        alt="MyAnimeList Logo"
-                        className="h-10 ml-2 rounded hover:opacity-75 transition-opacity duration-300 ease-out"
-                        sizes={{ default: "40px" }}
-                    />
-                </a>
-            )}
+            {manga.trackers.map((tracker) => {
+                const trackerInfo = getTrackerInfo(tracker);
+                if (!trackerInfo) return;
+
+                return (
+                    <Card
+                        key={`${tracker.code}-${tracker.id}`}
+                        render={
+                            <a
+                                href={`${trackerInfo.url}/${tracker.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="h-10 rounded-lg before:rounded-[calc(var(--radius-lg)-1px)]"
+                            />
+                        }
+                    >
+                        <trackerInfo.icon className="h-10 rounded-[inherit] hover:opacity-75 transition-opacity duration-300 ease-out" />
+                    </Card>
+                );
+            })}
         </>
     );
 }
@@ -88,16 +86,14 @@ export function MangaDetailsComponent({
     manga: components["schemas"]["MangaResponse"];
 }) {
     const sortedGenres = sortGenresByCategory(manga.genres);
-
-    const alternativeTitles = (manga.alternativeTitles || []).filter(
-        (title) => title.toLowerCase() !== manga.title.toLowerCase(),
-    );
     const jsonLd = createJsonLd<ComicSeries>({
         "@type": "ComicSeries",
         url: `/manga/${manga.id}`,
         name: manga.title,
-        alternateName: alternativeTitles.join(", "),
-        image: manga.cover,
+        alternateName: manga.alternativeTitles
+            ?.map((title) => title.title)
+            .join(", "),
+        image: manga.cover.url,
         description: manga.description,
         genre: sortedGenres,
         author: manga.authors.map((author) =>
@@ -129,9 +125,10 @@ export function MangaDetailsComponent({
                 <div className="mb-4 flex items-center justify-between border-b pb-4 lg:contents">
                     <div className="mr-4 flex flex-shrink-0 justify-center lg:col-start-1 lg:row-span-2 lg:mr-0 lg:block lg:w-[400px]">
                         <Image
-                            src={manga.cover}
+                            src={manga.cover.url}
+                            thumbHash={manga.cover.thumbhash}
                             alt={manga.title}
-                            className="rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
+                            className="aspect-2/3 rounded-lg object-cover h-auto w-24 sm:w-30 md:w-40 lg:h-[600px] lg:w-full"
                             width={400}
                             height={600}
                             loading="eager"
@@ -141,57 +138,16 @@ export function MangaDetailsComponent({
                     </div>
                     <div className="flex min-w-0 flex-1 items-center justify-between lg:col-start-2 lg:row-start-1 lg:mb-4 lg:border-b lg:pb-4">
                         <div className="flex min-w-0 items-center gap-2">
-                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl lg:max-h-27">
+                            <h1 className="overflow-y-auto text-2xl font-semibold md:text-3xl min-h-10 pb-0.5 lg:max-h-[calc(3lh+0.5rem)]">
                                 {manga.title}
                             </h1>
-                            {alternativeTitles.length > 0 && (
-                                <ResponsiveModal desktop="popover">
-                                    <ResponsiveModalTrigger
-                                        render={
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                aria-label={`Alternative titles (${alternativeTitles.length})`}
-                                                className="relative shrink-0"
-                                            >
-                                                <LanguagesIcon className="size-4" />
-                                                <Badge
-                                                    size="sm"
-                                                    className="absolute -top-1 -right-1"
-                                                >
-                                                    {alternativeTitles.length}
-                                                </Badge>
-                                            </Button>
-                                        }
-                                    />
-                                    <ResponsiveModalPopup
-                                        side="bottom"
-                                        align="start"
-                                        dialogClassName="w-auto max-w-80"
-                                    >
-                                        <ResponsiveModalPanel>
-                                            <ResponsiveModalTitle>
-                                                Also known as
-                                            </ResponsiveModalTitle>
-                                            <ResponsiveModalDrawerOnly>
-                                                <Separator className="mt-1" />
-                                            </ResponsiveModalDrawerOnly>
-                                            {alternativeTitles.map(
-                                                (mangaName: string) => (
-                                                    <p
-                                                        className="text-sm text-muted-foreground py-0.5"
-                                                        key={`${manga.id}-${mangaName}`}
-                                                    >
-                                                        {mangaName}
-                                                    </p>
-                                                ),
-                                            )}
-                                        </ResponsiveModalPanel>
-                                    </ResponsiveModalPopup>
-                                </ResponsiveModal>
+                            {manga.alternativeTitles && (
+                                <AlternativeTitlesPopover
+                                    titles={manga.alternativeTitles}
+                                />
                             )}
                         </div>
-                        <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row lg:gap-0">
+                        <div className="flex flex-shrink-0 flex-col gap-2 lg:flex-row ml-2">
                             <ExternalLinks manga={manga} />
                         </div>
                     </div>

@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useReducer, useRef } from "react";
 import { GenreBadge } from "../manga-details/badges/genre";
 import { StatusBadge } from "../manga-details/badges/status";
-import { Badge } from "../ui/badge";
+import { Badge, BadgeVariantProps } from "../ui/badge";
 import { Card } from "../ui/card";
 
 interface MangaCardProps {
@@ -15,6 +15,10 @@ interface MangaCardProps {
     expandDirection?: "left" | "right" | "auto";
     className?: string;
     priority?: boolean;
+    badge?: {
+        title: string;
+        variant?: BadgeVariantProps["variant"];
+    };
 }
 
 export const MANGA_CARD_IMG_OPTS = {
@@ -70,6 +74,7 @@ export function MangaCard({
     expandDirection = "auto",
     className,
     priority = false,
+    badge,
 }: MangaCardProps) {
     const sortedGenres = sortGenresByCategory(manga.genres);
 
@@ -227,7 +232,8 @@ export function MangaCard({
                     className="relative block h-full w-full"
                 >
                     <Image
-                        src={manga.cover}
+                        src={manga.cover.url}
+                        thumbHash={manga.cover.thumbhash}
                         alt={manga.title}
                         className="h-full w-full object-cover"
                         width={200}
@@ -238,6 +244,14 @@ export function MangaCard({
                         quality={MANGA_CARD_IMG_OPTS.quality}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    {badge && (
+                        <Badge
+                            className="absolute right-2 bottom-2"
+                            variant={badge.variant}
+                        >
+                            {badge.title}
+                        </Badge>
+                    )}
                 </Link>
             </div>
 

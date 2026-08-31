@@ -14,8 +14,6 @@ import { Route as DefaultRouteImport } from './routes/_default'
 import { Route as ShortcutRouteImport } from './routes/_shortcut'
 import { Route as DefaultIndexRouteImport } from './routes/_default/index'
 import { Route as AuthAuthCallbackRouteImport } from './routes/_auth/auth/callback'
-import { Route as AuthAuthConfirmRouteImport } from './routes/_auth/auth/confirm'
-import { Route as AuthAuthOauthRouteImport } from './routes/_auth/auth/oauth'
 import { Route as DefaultAboutIndexRouteImport } from './routes/_default/about/index'
 import { Route as DefaultAccountIndexRouteImport } from './routes/_default/account/index'
 import { Route as DefaultBookmarksIndexRouteImport } from './routes/_default/bookmarks/index'
@@ -26,7 +24,7 @@ import { Route as DefaultPrivacyIndexRouteImport } from './routes/_default/priva
 import { Route as DefaultSearchIndexRouteImport } from './routes/_default/search/index'
 import { Route as DefaultSettingsIndexRouteImport } from './routes/_default/settings/index'
 import { Route as DefaultTermsIndexRouteImport } from './routes/_default/terms/index'
-import { Route as DefaultUserIndexRouteImport } from './routes/_default/user/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiV1RevalidateRouteImport } from './routes/api.v1.revalidate'
 import { Route as DefaultAccountHistoryIndexRouteImport } from './routes/_default/account/history/index'
 import { Route as DefaultAccountSetupIndexRouteImport } from './routes/_default/account/setup/index'
@@ -70,16 +68,6 @@ const DefaultIndexRoute = DefaultIndexRouteImport.update({
 const AuthAuthCallbackRoute = AuthAuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthAuthConfirmRoute = AuthAuthConfirmRouteImport.update({
-  id: '/auth/confirm',
-  path: '/auth/confirm',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthAuthOauthRoute = AuthAuthOauthRouteImport.update({
-  id: '/auth/oauth',
-  path: '/auth/oauth',
   getParentRoute: () => AuthRoute,
 } as any)
 const DefaultAboutIndexRoute = DefaultAboutIndexRouteImport.update({
@@ -132,10 +120,10 @@ const DefaultTermsIndexRoute = DefaultTermsIndexRouteImport.update({
   path: '/terms/',
   getParentRoute: () => DefaultRoute,
 } as any)
-const DefaultUserIndexRoute = DefaultUserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
-  getParentRoute: () => DefaultRoute,
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1RevalidateRoute = ApiV1RevalidateRouteImport.update({
   id: '/api/v1/revalidate',
@@ -261,8 +249,7 @@ const DefaultMangaMangaIdScanlatorSubIdCommentsIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof DefaultIndexRoute
   '/auth/callback': typeof AuthAuthCallbackRoute
-  '/auth/confirm': typeof AuthAuthConfirmRoute
-  '/auth/oauth': typeof AuthAuthOauthRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/revalidate': typeof ApiV1RevalidateRoute
   '/about/': typeof DefaultAboutIndexRoute
   '/account/': typeof DefaultAccountIndexRoute
@@ -274,7 +261,6 @@ export interface FileRoutesByFullPath {
   '/search/': typeof DefaultSearchIndexRoute
   '/settings/': typeof DefaultSettingsIndexRoute
   '/terms/': typeof DefaultTermsIndexRoute
-  '/user/': typeof DefaultUserIndexRoute
   '/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/auth/error/': typeof DefaultAuthErrorIndexRoute
@@ -300,8 +286,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof DefaultIndexRoute
   '/auth/callback': typeof AuthAuthCallbackRoute
-  '/auth/confirm': typeof AuthAuthConfirmRoute
-  '/auth/oauth': typeof AuthAuthOauthRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/revalidate': typeof ApiV1RevalidateRoute
   '/about': typeof DefaultAboutIndexRoute
   '/account': typeof DefaultAccountIndexRoute
@@ -313,7 +298,6 @@ export interface FileRoutesByTo {
   '/search': typeof DefaultSearchIndexRoute
   '/settings': typeof DefaultSettingsIndexRoute
   '/terms': typeof DefaultTermsIndexRoute
-  '/user': typeof DefaultUserIndexRoute
   '/account/history': typeof DefaultAccountHistoryIndexRoute
   '/account/setup': typeof DefaultAccountSetupIndexRoute
   '/auth/error': typeof DefaultAuthErrorIndexRoute
@@ -343,8 +327,7 @@ export interface FileRoutesById {
   '/_shortcut': typeof ShortcutRouteWithChildren
   '/_default/': typeof DefaultIndexRoute
   '/_auth/auth/callback': typeof AuthAuthCallbackRoute
-  '/_auth/auth/confirm': typeof AuthAuthConfirmRoute
-  '/_auth/auth/oauth': typeof AuthAuthOauthRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/revalidate': typeof ApiV1RevalidateRoute
   '/_default/about/': typeof DefaultAboutIndexRoute
   '/_default/account/': typeof DefaultAccountIndexRoute
@@ -356,7 +339,6 @@ export interface FileRoutesById {
   '/_default/search/': typeof DefaultSearchIndexRoute
   '/_default/settings/': typeof DefaultSettingsIndexRoute
   '/_default/terms/': typeof DefaultTermsIndexRoute
-  '/_default/user/': typeof DefaultUserIndexRoute
   '/_default/account/history/': typeof DefaultAccountHistoryIndexRoute
   '/_default/account/setup/': typeof DefaultAccountSetupIndexRoute
   '/_default/auth/error/': typeof DefaultAuthErrorIndexRoute
@@ -384,8 +366,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth/callback'
-    | '/auth/confirm'
-    | '/auth/oauth'
+    | '/api/auth/$'
     | '/api/v1/revalidate'
     | '/about/'
     | '/account/'
@@ -397,7 +378,6 @@ export interface FileRouteTypes {
     | '/search/'
     | '/settings/'
     | '/terms/'
-    | '/user/'
     | '/account/history/'
     | '/account/setup/'
     | '/auth/error/'
@@ -423,8 +403,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth/callback'
-    | '/auth/confirm'
-    | '/auth/oauth'
+    | '/api/auth/$'
     | '/api/v1/revalidate'
     | '/about'
     | '/account'
@@ -436,7 +415,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/terms'
-    | '/user'
     | '/account/history'
     | '/account/setup'
     | '/auth/error'
@@ -465,8 +443,7 @@ export interface FileRouteTypes {
     | '/_shortcut'
     | '/_default/'
     | '/_auth/auth/callback'
-    | '/_auth/auth/confirm'
-    | '/_auth/auth/oauth'
+    | '/api/auth/$'
     | '/api/v1/revalidate'
     | '/_default/about/'
     | '/_default/account/'
@@ -478,7 +455,6 @@ export interface FileRouteTypes {
     | '/_default/search/'
     | '/_default/settings/'
     | '/_default/terms/'
-    | '/_default/user/'
     | '/_default/account/history/'
     | '/_default/account/setup/'
     | '/_default/auth/error/'
@@ -506,6 +482,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   DefaultRoute: typeof DefaultRouteWithChildren
   ShortcutRoute: typeof ShortcutRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiV1RevalidateRoute: typeof ApiV1RevalidateRoute
 }
 
@@ -544,20 +521,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthAuthCallbackRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/auth/confirm': {
-      id: '/_auth/auth/confirm'
-      path: '/auth/confirm'
-      fullPath: '/auth/confirm'
-      preLoaderRoute: typeof AuthAuthConfirmRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/auth/oauth': {
-      id: '/_auth/auth/oauth'
-      path: '/auth/oauth'
-      fullPath: '/auth/oauth'
-      preLoaderRoute: typeof AuthAuthOauthRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_default/about/': {
@@ -630,12 +593,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DefaultTermsIndexRouteImport
       parentRoute: typeof DefaultRoute
     }
-    '/_default/user/': {
-      id: '/_default/user/'
-      path: '/user'
-      fullPath: '/user/'
-      preLoaderRoute: typeof DefaultUserIndexRouteImport
-      parentRoute: typeof DefaultRoute
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/v1/revalidate': {
       id: '/api/v1/revalidate'
@@ -796,14 +759,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthAuthCallbackRoute: typeof AuthAuthCallbackRoute
-  AuthAuthConfirmRoute: typeof AuthAuthConfirmRoute
-  AuthAuthOauthRoute: typeof AuthAuthOauthRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAuthCallbackRoute: AuthAuthCallbackRoute,
-  AuthAuthConfirmRoute: AuthAuthConfirmRoute,
-  AuthAuthOauthRoute: AuthAuthOauthRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -820,7 +779,6 @@ interface DefaultRouteChildren {
   DefaultSearchIndexRoute: typeof DefaultSearchIndexRoute
   DefaultSettingsIndexRoute: typeof DefaultSettingsIndexRoute
   DefaultTermsIndexRoute: typeof DefaultTermsIndexRoute
-  DefaultUserIndexRoute: typeof DefaultUserIndexRoute
   DefaultAccountHistoryIndexRoute: typeof DefaultAccountHistoryIndexRoute
   DefaultAccountSetupIndexRoute: typeof DefaultAccountSetupIndexRoute
   DefaultAuthErrorIndexRoute: typeof DefaultAuthErrorIndexRoute
@@ -853,7 +811,6 @@ const DefaultRouteChildren: DefaultRouteChildren = {
   DefaultSearchIndexRoute: DefaultSearchIndexRoute,
   DefaultSettingsIndexRoute: DefaultSettingsIndexRoute,
   DefaultTermsIndexRoute: DefaultTermsIndexRoute,
-  DefaultUserIndexRoute: DefaultUserIndexRoute,
   DefaultAccountHistoryIndexRoute: DefaultAccountHistoryIndexRoute,
   DefaultAccountSetupIndexRoute: DefaultAccountSetupIndexRoute,
   DefaultAuthErrorIndexRoute: DefaultAuthErrorIndexRoute,
@@ -899,6 +856,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   DefaultRoute: DefaultRouteWithChildren,
   ShortcutRoute: ShortcutRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiV1RevalidateRoute: ApiV1RevalidateRoute,
 }
 export const routeTree = rootRouteImport

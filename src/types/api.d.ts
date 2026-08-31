@@ -4,55 +4,83 @@
  */
 
 export interface paths {
-    "/v2/ani/me": {
+    "/v2/analytics/overview": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get current user info from AniList */
-        get: {
-            parameters: {
-                query?: {
-                    access_token?: string;
-                    expires_in?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AniViewerSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        /** GET /v2/analytics/overview */
+        get: operations["overview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/analytics/requests */
+        get: operations["requests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/slowest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/slowest */
+        get: operations["slowest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/timeseries */
+        get: operations["timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/analytics/top": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/analytics/top */
+        get: operations["top"];
         put?: never;
         post?: never;
         delete?: never;
@@ -70,27 +98,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Logout by clearing tokens */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/ani/logout */
+        post: operations["ani_logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -104,162 +113,26 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get user's manga list from AniList */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The AniList username */
-                    userName?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AniMediaListCollectionSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/ani/mangalist */
+        get: operations["ani_get_manga_list"];
         put?: never;
-        /** Update user's manga list on AniList */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The update request containing mediaId and progress. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["AniUpdateMangaListRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AniUpdatedEntrySuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/ani/mangalist */
+        post: operations["ani_update_manga_list"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/author/{name}": {
+    "/v2/ani/me": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get manga by author */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description The author name to search for. */
-                    name: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/ani/me */
+        get: operations["ani_me"];
         put?: never;
         post?: never;
         delete?: never;
@@ -275,41 +148,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get list of authors */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AuthorListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        /** GET /v2/author/list */
+        get: operations["list_authors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/author/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/author/{name} */
+        get: operations["manga_by_author"];
         put?: never;
         post?: never;
         delete?: never;
@@ -325,454 +182,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get bookmarks */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["BookmarkListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/bookmarks/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Search user's bookmarks */
-        get: {
-            parameters: {
-                query: {
-                    /** @description The search query to filter bookmarks by manga title. */
-                    query: string;
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["BookmarkListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/bookmarks/unread": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get unread bookmarks count */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Int32SuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/bookmarks/{mangaId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get last read chapter */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The manga ID. */
-                    mangaId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LastReadResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        /** Update bookmark */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The manga ID. */
-                    mangaId: string;
-                };
-                cookie?: never;
-            };
-            /** @description The update request containing chapter number. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UpdateBookmarkRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        /** Delete bookmark */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The manga ID. */
-                    mangaId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/bookmarks/history": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get reading history timeline for charts */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Time bucket: Hour, Day, Week, Month, Year */
-                    bucket?: components["schemas"]["HistoryBucket"];
-                    /** @description Number of buckets to look back */
-                    range?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ReadingHistoryTimelineEntryListSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/bookmarks/history/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get reading history stats for charts */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Time bucket: Hour, Day, Week, Month, Year */
-                    bucket?: components["schemas"]["HistoryBucket"];
-                    /** @description Number of buckets to look back */
-                    range?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ReadingHistoryStatsResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/bookmarks */
+        get: operations["list_bookmarks"];
         put?: never;
         post?: never;
         delete?: never;
@@ -790,254 +201,114 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Batch update bookmarks */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The batch update request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["BatchUpdateBookmarksRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/bookmarks/batch */
+        post: operations["batch_upsert"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/comments/{id}": {
+    "/v2/bookmarks/history": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get comments for a target */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                    /** @description The sort order: Latest or Upvoted. Defaults to Latest. */
-                    sort?: components["schemas"]["CommentSortOrder"];
-                };
-                header?: never;
-                path: {
-                    /** @description The comment target ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PaginatedCommentResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Create a comment on a target */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The target ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description The comment creation request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CreateCommentRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["CommentResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/comments/{id}/votes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user's votes on comments in a target */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The comment target ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["CommentVoteResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/bookmarks/history */
+        get: operations["reading_history"];
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/bookmarks/history/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/bookmarks/history/stats */
+        get: operations["reading_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/bookmarks/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/bookmarks/search */
+        get: operations["search_bookmarks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/bookmarks/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/bookmarks/unread */
+        get: operations["unread_count"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/bookmarks/{mangaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/bookmarks/{manga_id} */
+        get: operations["get_bookmark"];
+        /** PUT /v2/bookmarks/{manga_id} */
+        put: operations["upsert_bookmark"];
+        post?: never;
+        /** DELETE /v2/bookmarks/{manga_id} */
+        delete: operations["delete_bookmark"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** PUT /v2/comments/{commentId} */
+        put: operations["update_comment"];
+        post?: never;
+        /** DELETE /v2/comments/{commentId} */
+        delete: operations["delete_comment"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1050,139 +321,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get replies for a specific comment */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the comment. */
-                    commentId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["CommentWithRepliesResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/comments/{commentId}/replies */
+        get: operations["get_comment_replies"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/comments/{commentId}/vote": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Vote on a comment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the comment. */
-                    commentId: string;
-                };
-                cookie?: never;
-            };
-            /** @description The vote request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["VoteCommentRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1198,96 +340,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Report a comment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the comment. */
-                    commentId: string;
-                };
-                cookie?: never;
-            };
-            /** @description The report request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["ReportCommentRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Conflict */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/comments/{comment_id}/report */
+        post: operations["report_comment"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/comments/{commentId}": {
+    "/v2/comments/{commentId}/vote": {
         parameters: {
             query?: never;
             header?: never;
@@ -1295,141 +356,62 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update a comment */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the comment. */
-                    commentId: string;
-                };
-                cookie?: never;
-            };
-            /** @description The update request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UpdateCommentRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        put?: never;
+        /** POST /v2/comments/{comment_id}/vote */
+        post: operations["vote_comment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/comments/{id} */
+        get: operations["list_comments"];
+        put?: never;
+        /** POST /v2/comments/{id} */
+        post: operations["create_comment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/comments/{id}/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/comments/{id}/votes */
+        get: operations["get_votes"];
+        put?: never;
         post?: never;
-        /** Delete a comment */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the comment. */
-                    commentId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/genre/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/genre/list */
+        get: operations["list_genres"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1442,336 +424,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get manga by genre */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description The genre name to search for. */
-                    name: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/lists/user/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user lists */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description The user ID. */
-                    userId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/lists/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get list with entries */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The list ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListWithEntriesResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Add entry to list */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The list ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description The create entry request (manga id). */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CreateUserMangaListEntryRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListEntryResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        /** Delete a list */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The list ID. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/lists/user/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get my lists */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListPaginatedResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/genre/{name} */
+        get: operations["manga_by_genre"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1789,60 +443,79 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a list */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The create list request. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CreateUserMangaListRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/lists */
+        post: operations["create_list"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/lists/user/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/lists/user/me */
+        get: operations["list_my_lists"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/lists/user/me/manga/{mangaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/lists/user/me/manga/{manga_id} */
+        get: operations["list_ids_containing_manga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/lists/user/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/lists/user/{user_id} */
+        get: operations["list_user_lists"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/lists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/lists/{id} */
+        get: operations["get_list"];
+        put?: never;
+        /** POST /v2/lists/{id} — add entry */
+        post: operations["add_entry"];
+        /** DELETE /v2/lists/{id} */
+        delete: operations["delete_list"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1856,181 +529,60 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update entry order */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The list ID. */
-                    id: string;
-                    /** @description The entry ID. */
-                    entryId: string;
-                };
-                cookie?: never;
-            };
-            /** @description The update request with the new order index. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UpdateUserMangaListEntryRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserMangaListEntryResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** PUT /v2/lists/{id}/{entry_id} */
+        put: operations["update_entry"];
         post?: never;
-        /** Remove entry from list */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The list ID. */
-                    id: string;
-                    /** @description The entry ID. */
-                    entryId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** DELETE /v2/lists/{id}/{entry_id} */
+        delete: operations["remove_entry"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/lists/user/me/manga/{mangaId}": {
+    "/v2/mal/logout": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get my lists containing a specific manga */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The manga ID. */
-                    mangaId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["GuidListSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        get?: never;
+        put?: never;
+        /** POST /v2/mal/logout */
+        post: operations["mal_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/mal/mangalist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/mal/mangalist */
+        get: operations["mal_get_manga_list"];
+        put?: never;
+        /** POST /v2/mal/mangalist */
+        post: operations["mal_update_manga_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/mal/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/mal/me */
+        get: operations["mal_me"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2048,172 +600,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Exchange authorization code for access token */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The token request containing code and code_verifier. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["MalTokenRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MalTokenResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/mal/token */
+        post: operations["mal_token"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/mal/mangalist": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user's manga list */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Filters returned manga list by status. */
-                    status?: string;
-                    /** @description Sort order for the list. */
-                    sort?: string;
-                    /** @description Maximum number of items to return (default 100, max 1000). */
-                    limit?: number;
-                    /** @description Offset for pagination (default 0). */
-                    offset?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MalMangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Update user's manga list status */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The update request containing manga_id and num_chapters_read. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["MalUpdateMangaListRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MalListStatusSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/mal/logout": {
+    "/v2/manga/ani/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -2222,79 +617,74 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Logout by clearing tokens */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/manga/ani/batch */
+        post: operations["batch_by_ani"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/mal/me": {
+    "/v2/manga/ani/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get current user information */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MalUserSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        /** GET /v2/manga/ani/{aniId} */
+        get: operations["by_ani_id"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/manga/batch */
+        get: operations["batch_manga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/chapter/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/chapter/ids (global, paginated) */
+        get: operations["global_chapter_ids"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/ids */
+        get: operations["manga_ids"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2310,57 +700,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get manga list */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The sort order: 'popular', 'latest', 'newest'. */
-                    sortBy?: components["schemas"]["MangaListSortOrder"];
-                    /** @description Search query string. */
-                    query?: string;
-                    /** @description Filter by genres. */
-                    genres?: string[];
-                    /** @description Filter by authors. */
-                    authors?: string[];
-                    /** @description Filter by manga types. */
-                    types?: string[];
-                    /** @description Exclude by genres. */
-                    excludedGenres?: string[];
-                    /** @description Exclude by authors. */
-                    excludedAuthors?: string[];
-                    /** @description Exclude by manga types. */
-                    excludedTypes?: string[];
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/list */
+        get: operations["list_manga"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2376,691 +717,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get popular manga */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The number of days to look back for views. */
-                    days?: number;
-                    /** @description Filter by genres. */
-                    genres?: string[];
-                    /** @description Exclude by genres. */
-                    excludedGenres?: string[];
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaListResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get manga by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/details": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get detailed manga information by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaDetailResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/chapters": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get chapters for a manga */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaChapterResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/recommendations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get recommended manga for a manga */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The maximum number of recommendations to return. */
-                    limit?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/view": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update manga views */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Optional request body for view tracking preferences. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["ViewMangaRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/viewed": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user's recently viewed manga */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The maximum number of unique manga to return. */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/rate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Rate a manga */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description The rating request containing the rating value. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["RateMangaRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        /** Remove user's rating for a manga */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/rating": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get user's rating for a manga */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Int32NullableSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/rate/batch": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Batch rate multiple manga */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The request containing manga IDs and their ratings. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["BatchRateMangaRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/mal/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get manga by MAL ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The MyAnimeList ID of the manga. */
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaDetailResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/popular */
+        get: operations["popular_manga"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3078,105 +736,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Get manga by MAL IDs */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The request containing the list of MAL IDs. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["BatchGetMangaRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/manga/mal/batch */
+        post: operations["batch_by_mal"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/manga/ani/{id}": {
+    "/v2/manga/mal/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get manga by AniList ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The AniList ID of the manga. */
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaDetailResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/mal/{malId} */
+        get: operations["by_mal_id"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3185,7 +761,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/manga/ani/batch": {
+    "/v2/manga/rate/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -3194,112 +770,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Get manga by AniList IDs */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The request containing the list of AniList IDs. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["BatchGetAniMangaRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/manga/{id}/{subId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get manga chapter */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Optional scanlator identifier to select a specific chapter release. */
-                    scanlatorId?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the manga. */
-                    id: string;
-                    /** @description The chapter number. */
-                    subId: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ChapterResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
+        /** POST /v2/manga/rate/batch */
+        post: operations["batch_rate"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3313,50 +785,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Search manga */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The search query string. */
-                    query?: string;
-                    /** @description The maximum number of results. */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaSearchResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/search */
+        get: operations["search_manga"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3365,48 +795,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/manga/ids": {
+    "/v2/manga/viewed": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get list of manga IDs */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaIdsResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/viewed */
+        get: operations["recently_viewed"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3415,48 +812,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/manga/chapter/ids": {
+    "/v2/manga/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get list of manga with their chapter IDs */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number. */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MangaChapterIdsResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/manga/{id} */
+        get: operations["get_manga"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3465,7 +829,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/notifications/subscribe": {
+    "/v2/manga/{id}/chapter-ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/chapter-ids */
+        get: operations["chapter_ids"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/chapters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/chapters */
+        get: operations["manga_chapters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/details */
+        get: operations["manga_details"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/rate": {
         parameters: {
             query?: never;
             header?: never;
@@ -3474,102 +889,92 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Subscribe to push notifications */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The subscription request containing endpoint, p256dh, and auth. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["PushSubscriptionRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
+        /** POST /v2/manga/{id}/rate */
+        post: operations["rate_manga"];
+        /** DELETE /v2/manga/{id}/rate */
+        delete: operations["delete_rating"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/notifications/website": {
+    "/v2/manga/{id}/rating": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get visible website notifications */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["WebsiteNotificationIEnumerableSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        /** GET /v2/manga/{id}/rating */
+        get: operations["get_rating"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/manga/{id}/recommendations */
+        get: operations["manga_recommendations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/relationships */
+        get: operations["get_work_relationships"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** POST /v2/manga/{id}/view */
+        post: operations["record_view"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/manga/{id}/{subId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /v2/manga/{id}/{sub_id}  (sub_id = chapter number) */
+        get: operations["chapter_detail"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3587,206 +992,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Send push notification to users who bookmarked the manga */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The notification payload. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["NotificationPayload"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/notifications/send */
+        post: operations["send_notification"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/uploads": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    query?: string;
-                    page?: number;
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UploadResponsePaginatedResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "multipart/form-data": {
-                        /** Format: binary */
-                        File?: string;
-                        Tags: string[];
-                    };
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UploadResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/uploads/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    page?: number;
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UploadResponsePaginatedResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/uploads/batch": {
+    "/v2/notifications/subscribe": {
         parameters: {
             query?: never;
             header?: never;
@@ -3795,336 +1009,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["BatchUploadRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UploadResponseListSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** POST /v2/notifications/subscribe */
+        post: operations["subscribe"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v2/uploads/{id}": {
+    "/v2/notifications/website": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/user/signup": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a user */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The signup request containing email and password. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["SignUpRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["SessionSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/user/signin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sign in a user */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The signin request containing email and password. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["SignInRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserResponseSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/user/signout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sign out a user */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/user/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get current user */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserResponseSuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/notifications/website */
+        get: operations["website_notifications"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4140,45 +1041,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a paginated list of users */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description The page number (1-based). */
-                    page?: number;
-                    /** @description The number of items per page. */
-                    pageSize?: number;
-                    /** @description The field to sort by. */
-                    sortBy?: components["schemas"]["UserSortBy"];
-                    /** @description The sort direction. */
-                    sortDirection?: components["schemas"]["SortDirection"];
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserProfileDetailsResponsePaginatedResponseSuccessResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/user/list */
+        get: operations["list_users"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4187,55 +1051,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/user/{userId}": {
+    "/v2/user/me": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get user profile details by user ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The unique identifier of the user. */
-                    userId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["UserProfileDetailsResponseSuccessResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        /** GET /v2/user/me */
+        get: operations["me"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4252,59 +1076,25 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update user profile */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The update profile request containing new username and display name. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UpdateProfileRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["StringSuccessResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
+        /** PUT /v2/user/profile */
+        put: operations["update_profile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/user/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
+        /** GET /v2/user/{id}/profile */
+        get: operations["user_profile"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -4316,19 +1106,190 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AlternativeTitle: {
+            languageCode: string;
+            title: string;
+            titleType: string;
+        };
+        /** @enum {string} */
+        AnalyticsInterval: "hour" | "day";
+        AnalyticsOverviewResponse: {
+            /**
+             * Format: double
+             * @example 38.5
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            errorCount: number;
+            /**
+             * Format: double
+             * @example 0.0018
+             */
+            errorRate: number;
+            /**
+             * Format: double
+             * @example 142.2
+             */
+            p95ResponseTime: number;
+            /**
+             * Format: int64
+             * @example 114000
+             */
+            status2xx: number;
+            /**
+             * Format: int64
+             * @example 2100
+             */
+            status3xx: number;
+            /**
+             * Format: int64
+             * @example 3600
+             */
+            status4xx: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            status5xx: number;
+            /**
+             * Format: int64
+             * @example 120000
+             */
+            totalRequests: number;
+            /**
+             * Format: int64
+             * @example 8420
+             */
+            uniqueVisitors: number;
+        };
+        AnalyticsRequestRow: {
+            countryCode: string;
+            /** Format: date-time */
+            createdAt?: string | null;
+            hostname: string;
+            /** Format: int32 */
+            id: number;
+            ipAddress: string;
+            method: string;
+            path: string;
+            /** Format: int32 */
+            responseTime: number;
+            route: string;
+            /** Format: int32 */
+            status: number;
+            userAgent: string;
+        };
+        AnalyticsSlowestRoute: {
+            /**
+             * Format: double
+             * @example 183.4
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 2140
+             */
+            count: number;
+            /**
+             * Format: int64
+             * @example 42
+             */
+            errorCount: number;
+            /**
+             * Format: int64
+             * @example 1240
+             */
+            maxResponseTime: number;
+            route: string;
+        };
+        AnalyticsTimeseriesPoint: {
+            /**
+             * Format: double
+             * @example 41.2
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 12
+             */
+            errors: number;
+            /**
+             * Format: double
+             * @example 21.3
+             */
+            p50ResponseTime: number;
+            /**
+             * Format: double
+             * @example 150.7
+             */
+            p95ResponseTime: number;
+            /**
+             * Format: double
+             * @example 412.9
+             */
+            p99ResponseTime: number;
+            /**
+             * Format: int64
+             * @example 4150
+             */
+            requests: number;
+            /**
+             * Format: int64
+             * @example 3890
+             */
+            status2xx: number;
+            /**
+             * Format: int64
+             * @example 120
+             */
+            status3xx: number;
+            /**
+             * Format: int64
+             * @example 210
+             */
+            status4xx: number;
+            /**
+             * Format: int64
+             * @example 12
+             */
+            status5xx: number;
+            /** Format: date-time */
+            time: string;
+            /**
+             * Format: int64
+             * @example 940
+             */
+            uniqueVisitors: number;
+        };
+        AnalyticsTopItem: {
+            /**
+             * Format: double
+             * @example 35.2
+             */
+            avgResponseTime: number;
+            /**
+             * Format: int64
+             * @example 15320
+             */
+            count: number;
+            name: string;
+        };
         AniEntry: {
             /** Format: int64 */
             id: number;
-            /** Format: int32 */
-            score: number;
+            media: components["schemas"]["AniMedia"];
             /** Format: int32 */
             progress: number;
+            /** Format: int32 */
+            score: number;
             status: string;
-            media: components["schemas"]["AniMedia"];
         };
         AniList: {
-            name: string;
             entries: components["schemas"]["AniEntry"][];
+            name: string;
         };
         AniMedia: {
             /** Format: int32 */
@@ -4337,13 +1298,6 @@ export interface components {
         };
         AniMediaListCollection: {
             lists: components["schemas"]["AniList"][];
-        };
-        AniMediaListCollectionSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["AniMediaListCollection"];
         };
         AniTitle: {
             english?: string | null;
@@ -4357,398 +1311,285 @@ export interface components {
         AniUpdatedEntry: {
             /** Format: int64 */
             id: number;
-            status: string;
             /** Format: int32 */
             progress: number;
-        };
-        AniUpdatedEntrySuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["AniUpdatedEntry"];
+            status: string;
         };
         AniViewer: {
             /** Format: int32 */
             id: number;
             name: string;
         };
-        AniViewerSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["AniViewer"];
-        };
-        AuthorListResponse: {
-            items: components["schemas"]["AuthorResponse"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        AuthorListResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["AuthorListResponse"];
-        };
         AuthorResponse: {
-            name: string;
-            /** Format: int32 */
+            /** Format: int64 */
             mangaCount: number;
+            name: string;
         };
-        BatchGetAniMangaRequest: {
+        BatchAniBody: {
             aniIds: number[];
         };
-        BatchGetMangaRequest: {
+        BatchMalBody: {
             malIds: number[];
         };
-        BatchRateMangaItem: {
+        BatchRateBody: {
+            ratings: components["schemas"]["BatchRateItem"][];
+        };
+        BatchRateItem: {
             /** Format: uuid */
             mangaId: string;
             /** Format: int32 */
             rating: number;
         };
-        BatchRateMangaRequest: {
-            ratings: components["schemas"]["BatchRateMangaItem"][];
+        BookmarkBatchBody: {
+            items: components["schemas"]["BookmarkBatchItem"][];
         };
-        BatchUpdateBookmarkItem: {
+        BookmarkBatchItem: {
+            /** Format: double */
+            chapterNumber?: number | null;
             /** Format: uuid */
             mangaId: string;
+        };
+        BookmarkDetailResponse: {
+            /** Format: uuid */
+            chapterId?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            id: string;
             /** Format: double */
-            chapterNumber: number;
-        };
-        BatchUpdateBookmarksRequest: {
-            items: components["schemas"]["BatchUpdateBookmarkItem"][];
-        };
-        BatchUploadRequest: {
-            ids: string[];
-        };
-        BookmarkListResponse: {
-            items: components["schemas"]["BookmarkResponse"][];
+            number: number;
             /** Format: int32 */
-            totalItems: number;
+            pages?: number | null;
             /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        BookmarkListResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["BookmarkListResponse"];
+            scanlatorId?: number | null;
+            title?: string | null;
+            /** Format: date-time */
+            updatedAt: string;
         };
         BookmarkResponse: {
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+            authors: string[];
+            /** Format: date-time */
+            bookmarkCreatedAt: string;
             /** Format: uuid */
             bookmarkId: string;
             /** Format: date-time */
-            bookmarkCreatedAt: string;
-            /** Format: date-time */
             bookmarkUpdatedAt: string;
-            /** Format: uuid */
-            mangaId: string;
-            title: string;
-            cover: string;
-            description: string;
-            status: string;
-            type: components["schemas"]["MangaType"];
-            authors: string[];
-            genres: string[];
-            /** Format: int32 */
-            views: number;
-            /** Format: double */
-            score: number;
-            /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
-            aniId?: number | null;
-            alternativeTitles: string[];
-            /** Format: date-time */
-            mangaCreatedAt: string;
-            /** Format: date-time */
-            mangaUpdatedAt: string;
-            lastReadChapter: components["schemas"]["MangaChapter"];
-            latestChapter: components["schemas"]["MangaChapter"];
-            nextChapter: components["schemas"]["MangaChapter"];
             /** Format: int32 */
             chaptersBehind: number;
+            cover: components["schemas"]["Cover"];
+            description: string;
+            genres: string[];
+            lastReadChapter: components["schemas"]["MangaChapter"];
+            latestChapter: components["schemas"]["MangaChapter"];
+            /** Format: date-time */
+            mangaCreatedAt: string;
+            /** Format: uuid */
+            mangaId: string;
+            /** Format: date-time */
+            mangaUpdatedAt: string;
+            nextChapter?: components["schemas"]["MangaChapter"];
+            /** Format: double */
+            score: number;
+            status: string;
+            title: string;
+            trackers: components["schemas"]["TrackerItem"][];
+            type: components["schemas"]["WorkFormat"];
+            /** Format: int32 */
+            views: number;
+        };
+        BookmarkUpsertBody: {
+            /** Format: double */
+            chapterNumber?: number | null;
+        };
+        ChapterIdsResponse: {
+            chapterIds: number[];
+            /** Format: uuid */
+            mangaId: string;
         };
         ChapterNavigation: {
-            /** Format: float */
+            /** Format: double */
             number: number;
-            /** Format: int32 */
-            scanlatorId: number;
-        };
-        ChapterOption: {
-            label: string;
-            value: string;
             /** Format: int32 */
             scanlatorId: number;
         };
         ChapterResponse: {
+            chapters: components["schemas"]["MangaChapter"][];
             /** Format: uuid */
             id: string;
-            type: components["schemas"]["MangaType"];
-            /** Format: int32 */
-            pages: number;
-            title: string;
             images: string[];
-            /** Format: float */
-            number: number;
-            chapters: components["schemas"]["ChapterOption"][];
+            lastChapter?: null | components["schemas"]["ChapterNavigation"];
             /** Format: uuid */
             mangaId: string;
             mangaTitle: string;
-            lastChapter?: components["schemas"]["ChapterNavigation"];
-            nextChapter?: components["schemas"]["ChapterNavigation"];
+            nextChapter?: null | components["schemas"]["ChapterNavigation"];
+            /** Format: double */
+            number: number;
             /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
-            aniId?: number | null;
-        };
-        ChapterResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["ChapterResponse"];
+            pages: number;
+            scanlator?: null | components["schemas"]["Scanlator"];
+            title: string;
+            trackers: components["schemas"]["TrackerItem"][];
+            type: components["schemas"]["WorkFormat"];
         };
         /** @enum {string} */
-        CommentReportReason: "spam" | "harassment" | "inappropriate" | "hate_speech" | "other";
+        CommentReportReason:
+            | "Spam"
+            | "Harassment"
+            | "Inappropriate"
+            | "HateSpeech"
+            | "Other";
         CommentResponse: {
-            /** Format: uuid */
-            id: string;
-            targetType: string;
-            /** Format: uuid */
-            targetId: string;
-            userProfile: components["schemas"]["UserProfile"];
-            /** Format: uuid */
-            parentId?: string | null;
             content: string;
             /** Format: date-time */
             createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            edited: boolean;
             deleted: boolean;
             /** Format: int32 */
-            upvotes: number;
-            /** Format: int32 */
             downvotes: number;
-            attachment?: components["schemas"]["UploadResponse"];
+            edited: boolean;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            parentId?: string | null;
             /** Format: int64 */
-            replyCount: number;
-        };
-        CommentResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
+            replyCount?: number | null;
+            /** Format: uuid */
+            targetId: string;
+            targetType: string;
+            /** Format: date-time */
+            updatedAt: string;
             /** Format: int32 */
-            status: number;
-            data: components["schemas"]["CommentResponse"];
+            upvotes: number;
+            userProfile: components["schemas"]["UserProfile"];
         };
         /** @enum {string} */
-        CommentSortOrder: "Latest" | "Upvoted";
+        CommentSortOrder: "Latest" | "Oldest" | "Upvoted";
         CommentVoteResponse: {
             /** Format: uuid */
             commentId: string;
+            /** Format: uuid */
+            targetId: string;
             /** Format: int32 */
             value: number;
-            /** Format: uuid */
-            targetId: string;
-        };
-        CommentVoteResponseListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["CommentVoteResponse"][];
         };
         CommentWithRepliesResponse: {
-            /** Format: uuid */
-            id: string;
-            targetType: string;
-            /** Format: uuid */
-            targetId: string;
-            userProfile: components["schemas"]["UserProfile"];
-            /** Format: uuid */
-            parentId?: string | null;
             content: string;
             /** Format: date-time */
             createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            edited: boolean;
             deleted: boolean;
             /** Format: int32 */
-            upvotes: number;
-            /** Format: int32 */
             downvotes: number;
-            attachment?: components["schemas"]["UploadResponse"];
-            replies: components["schemas"]["CommentWithRepliesResponse"][];
-        };
-        CommentWithRepliesResponseListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["CommentWithRepliesResponse"][];
-        };
-        CreateCommentRequest: {
+            edited: boolean;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            parentId?: string | null;
+            replies: components["schemas"]["CommentResponse"][];
+            /** Format: uuid */
+            targetId: string;
             targetType: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: int32 */
+            upvotes: number;
+            userProfile: components["schemas"]["UserProfile"];
+        };
+        Cover: {
+            thumbhash?: string | null;
+            url: string;
+        };
+        CreateCommentBody: {
             content: string;
             /** Format: uuid */
             parentId?: string | null;
-            /** Format: uuid */
-            attachmentId?: string | null;
+            targetType: string;
         };
-        CreateUserMangaListEntryRequest: {
-            /** Format: uuid */
-            mangaId: string;
-        };
-        CreateUserMangaListRequest: {
-            title: string;
+        CreateListBody: {
             description?: string | null;
-            isPublic?: boolean;
+            isPublic?: boolean | null;
+            title: string;
         };
         DayOfWeekReadCount: {
+            /** Format: int64 */
+            count: number;
             /** Format: int32 */
             dayOfWeek: number;
-            /** Format: int32 */
-            count: number;
         };
         ErrorData: {
-            message: string;
             details?: string | null;
+            message: string;
         };
         ErrorResponse: {
-            /** @enum {string} */
-            result: "Error";
-            /** Format: int32 */
-            status: number;
             data: components["schemas"]["ErrorData"];
-        };
-        Factor: {
-            id?: string | null;
-            friendlyName?: string | null;
-            factorType?: string | null;
-            status?: string | null;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        GenreReadCount: {
-            genre: string;
-            /** Format: int32 */
-            count: number;
-        };
-        GuidListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
+            result: string;
             /** Format: int32 */
             status: number;
-            data: string[];
+        };
+        GenreCount: {
+            /** Format: int64 */
+            count: number;
+            name: string;
+        };
+        GenreResponse: {
+            description?: string | null;
+            /** Format: int32 */
+            id: number;
+            name: string;
         };
         /** @enum {string} */
         HistoryBucket: "Hour" | "Day" | "Week" | "Month" | "Year";
         HourReadCount: {
+            /** Format: int64 */
+            count: number;
             /** Format: int32 */
             hour: number;
-            /** Format: int32 */
-            count: number;
         };
-        Int32NullableSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            /** Format: int32 */
-            data: number;
-        };
-        Int32SuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            /** Format: int32 */
-            data: number;
-        };
-        LastReadResponse: {
+        ListEntryResponse: {
+            /** Format: date-time */
+            createdAt: string;
             /** Format: uuid */
             id: string;
-            type: components["schemas"]["MangaType"];
+            /** Format: uuid */
+            listId: string;
+            mangaCover: components["schemas"]["Cover"];
+            mangaDescription: string;
+            /** Format: uuid */
+            mangaId: string;
+            mangaTitle: string;
             /** Format: int32 */
-            pages: number;
-            title: string;
-            /** Format: float */
-            number: number;
-            /** Format: int32 */
-            scanlatorId: number;
+            orderIndex: number;
             /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        LastReadResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["LastReadResponse"];
+            updatedAt: string;
         };
         MalListStatus: {
-            status?: string | null;
-            isRereading?: boolean;
+            isRereading: boolean;
             /** Format: int32 */
-            numVolumesRead?: number;
+            numChaptersRead: number;
             /** Format: int32 */
-            numChaptersRead?: number;
+            numVolumesRead: number;
             /** Format: int32 */
-            score?: number;
-            updatedAt?: string | null;
-        };
-        MalListStatusSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MalListStatus"];
+            score: number;
+            status: string;
+            updatedAt: string;
         };
         MalMainPicture: {
-            medium: string;
             large: string;
+            medium: string;
         };
         MalMangaListItem: {
-            node: components["schemas"]["MalMangaNode"];
             listStatus: components["schemas"]["MalListStatus"];
+            node: components["schemas"]["MalMangaNode"];
         };
         MalMangaListResponse: {
             data: components["schemas"]["MalMangaListItem"][];
             paging: components["schemas"]["MalPaging"];
         };
-        MalMangaListResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MalMangaListResponse"];
-        };
         MalMangaNode: {
             /** Format: int32 */
             id: number;
-            title: string;
-            mainPicture?: components["schemas"]["MalMainPicture"];
+            mainPicture?: null | components["schemas"]["MalMainPicture"];
             mediaType: string;
+            title: string;
         };
         MalPaging: {
             next?: string | null;
@@ -4759,18 +1600,11 @@ export interface components {
             redirectUri: string;
         };
         MalTokenResponse: {
-            access_token: string;
-            refresh_token: string;
+            accessToken: string;
             /** Format: int32 */
-            expires_in: number;
-            token_type: string;
-        };
-        MalTokenResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MalTokenResponse"];
+            expiresIn: number;
+            refreshToken: string;
+            tokenType: string;
         };
         MalUpdateMangaListRequest: {
             /** Format: int32 */
@@ -4781,139 +1615,66 @@ export interface components {
         MalUser: {
             /** Format: int32 */
             id: number;
-            name: string;
+            joinedAt: string;
             location: string;
-            joined_at: string;
-        };
-        MalUserSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MalUser"];
+            name: string;
         };
         MangaChapter: {
+            /** Format: date-time */
+            createdAt: string;
             /** Format: uuid */
             id: string;
-            title: string;
-            /** Format: float */
+            /** Format: double */
             number: number;
             /** Format: int32 */
-            pages: number;
+            pages?: number | null;
             /** Format: int32 */
             scanlatorId: number;
-            /** Format: date-time */
-            createdAt: string;
+            title: string;
             /** Format: date-time */
             updatedAt: string;
-        };
-        MangaChapterIdsPair: {
-            /** Format: uuid */
-            mangaId: string;
-            chapterIds: number[];
-        };
-        MangaChapterIdsResponse: {
-            items: components["schemas"]["MangaChapterIdsPair"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        MangaChapterIdsResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaChapterIdsResponse"];
         };
         MangaChapterResponse: {
-            scanlators: components["schemas"]["Scanlator"][];
             chapters: components["schemas"]["MangaChapter"][];
             /** Format: int32 */
             preferredScanlatorId?: number | null;
+            scanlators: components["schemas"]["Scanlator"][];
         };
-        MangaChapterResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaChapterResponse"];
-        };
+        /** @description MangaDetailResponse extends MangaResponse (all manga fields) + chapters */
         MangaDetailResponse: {
-            /** Format: uuid */
-            id: string;
-            title: string;
-            cover: string;
-            description: string;
-            status: string;
-            type: components["schemas"]["MangaType"];
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
-            genres: string[];
-            /** Format: int32 */
-            views: number;
-            rating: components["schemas"]["MangaRatingResponse"];
-            alternativeTitles?: string[] | null;
-            /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
-            aniId?: number | null;
-            /** Format: int32 */
-            preferredScanlatorId?: number | null;
+            chapters: components["schemas"]["MangaChapter"][];
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
+            description: string;
+            genres: string[];
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
+            rating: components["schemas"]["MangaRatingResponse"];
+            status: string;
+            title: string;
+            trackers: components["schemas"]["TrackerItem"][];
+            type: components["schemas"]["WorkFormat"];
             /** Format: date-time */
             updatedAt: string;
-            chapters: components["schemas"]["MangaChapter"][];
-        };
-        MangaDetailResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
             /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaDetailResponse"];
+            views: number;
         };
         MangaIdsResponse: {
+            /** Format: int32 */
+            currentPage: number;
             items: string[];
             /** Format: int32 */
+            pageSize: number;
+            /** Format: int64 */
             totalItems: number;
             /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
+            totalPages: number;
         };
-        MangaIdsResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaIdsResponse"];
-        };
-        MangaListResponse: {
-            items: components["schemas"]["MangaResponse"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        MangaListResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaListResponse"];
-        };
-        /** @enum {string} */
-        MangaListSortOrder: "latest" | "popular" | "newest" | "search";
         MangaRatingDistribution: {
             /** Format: int32 */
             1: number;
@@ -4939,502 +1700,1124 @@ export interface components {
         MangaRatingResponse: {
             /** Format: double */
             average: number;
+            distribution: components["schemas"]["MangaRatingDistribution"];
             /** Format: int32 */
             total: number;
-            distribution: components["schemas"]["MangaRatingDistribution"];
         };
         MangaResponse: {
-            /** Format: uuid */
-            id: string;
-            title: string;
-            cover: string;
-            description: string;
-            status: string;
-            type: components["schemas"]["MangaType"];
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
-            genres: string[];
-            /** Format: int32 */
-            views: number;
-            rating: components["schemas"]["MangaRatingResponse"];
-            alternativeTitles?: string[] | null;
-            /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
-            aniId?: number | null;
-            /** Format: int32 */
-            preferredScanlatorId?: number | null;
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
+            description: string;
+            genres: string[];
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
+            rating: components["schemas"]["MangaRatingResponse"];
+            status: string;
+            title: string;
+            trackers: components["schemas"]["TrackerItem"][];
+            type: components["schemas"]["WorkFormat"];
             /** Format: date-time */
             updatedAt: string;
-        };
-        MangaResponseListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
             /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaResponse"][];
-        };
-        MangaResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaResponse"];
+            views: number;
         };
         MangaSearchResponse: {
-            /** Format: uuid */
-            id: string;
-            title: string;
-            cover: string;
-            description: string;
-            status: string;
-            type: components["schemas"]["MangaType"];
+            alternativeTitles?: components["schemas"]["AlternativeTitle"][];
             authors: string[];
-            genres: string[];
-            /** Format: int32 */
-            views: number;
-            rating: components["schemas"]["MangaRatingResponse"];
-            alternativeTitles?: string[] | null;
-            /** Format: int32 */
-            malId?: number | null;
-            /** Format: int32 */
-            aniId?: number | null;
-            /** Format: int32 */
-            preferredScanlatorId?: number | null;
+            cover: components["schemas"]["Cover"];
             /** Format: date-time */
             createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
+            description: string;
+            genres: string[];
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            preferredScanlatorId?: number | null;
             /** Format: double */
             rank: number;
-        };
-        MangaSearchResponseListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["MangaSearchResponse"][];
-        };
-        /** @enum {string} */
-        MangaType: "Manga" | "Manhwa" | "Manhua" | "Other";
-        NotificationPayload: {
+            rating: components["schemas"]["MangaRatingResponse"];
+            status: string;
             title: string;
-            body: string;
-            url: string;
-            /** Format: uuid */
-            mangaId: string;
-        };
-        PaginatedCommentResponse: {
-            items: components["schemas"]["CommentResponse"][];
+            trackers: components["schemas"]["TrackerItem"][];
+            type: components["schemas"]["WorkFormat"];
+            /** Format: date-time */
+            updatedAt: string;
             /** Format: int32 */
-            totalItems: number;
+            views: number;
+        };
+        PaginatedBookmarkResponse: {
             /** Format: int32 */
             currentPage: number;
+            items: components["schemas"]["BookmarkResponse"][];
             /** Format: int32 */
             pageSize: number;
+            /** Format: int64 */
+            totalItems: number;
             /** Format: int32 */
-            readonly totalPages: number;
+            totalPages: number;
         };
-        PaginatedCommentResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
+        PaginatedCommentResponse: {
             /** Format: int32 */
-            status: number;
-            data: components["schemas"]["PaginatedCommentResponse"];
+            currentPage: number;
+            items: components["schemas"]["CommentResponse"][];
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int64 */
+            totalItems: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
+        PaginatedResponse_AnalyticsRequestRow: {
+            /** Format: int32 */
+            currentPage: number;
+            items: {
+                countryCode: string;
+                /** Format: date-time */
+                createdAt?: string | null;
+                hostname: string;
+                /** Format: int32 */
+                id: number;
+                ipAddress: string;
+                method: string;
+                path: string;
+                /** Format: int32 */
+                responseTime: number;
+                route: string;
+                /** Format: int32 */
+                status: number;
+                userAgent: string;
+            }[];
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int64 */
+            totalItems: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
+        ProfileUpdateBody: {
+            displayName?: string | null;
+            username?: string | null;
         };
         PushSubscriptionRequest: {
+            auth: string;
             endpoint: string;
             p256dh: string;
-            auth: string;
         };
-        RateMangaRequest: {
+        RateBody: {
             /** Format: int32 */
             rating: number;
         };
-        ReadingHistoryStatsResponse: {
+        RatingResponse: {
             /** Format: int32 */
-            totalReads: number;
-            /** Format: int32 */
-            uniqueManga: number;
-            /** Format: double */
-            avgPerDay: number;
-            /** Format: int32 */
-            currentStreak: number;
-            /** Format: int32 */
-            longestStreak: number;
-            topGenres: components["schemas"]["GenreReadCount"][];
-            readsByDayOfWeek: components["schemas"]["DayOfWeekReadCount"][];
-            readsByHour: components["schemas"]["HourReadCount"][];
+            rating?: number | null;
         };
-        ReadingHistoryStatsResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["ReadingHistoryStatsResponse"];
-        };
-        ReadingHistoryTimelineEntry: {
-            /** Format: date-time */
+        ReadingHistoryResponse: {
             date: string;
-            /** Format: int32 */
+            /** Format: int64 */
             reads: number;
         };
-        ReadingHistoryTimelineEntryListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["ReadingHistoryTimelineEntry"][];
+        ReadingHistoryTimelineEntry: {
+            date: string;
+            /** Format: int64 */
+            reads: number;
         };
-        ReportCommentRequest: {
-            reason: components["schemas"]["CommentReportReason"];
-            description?: string | null;
+        ReadingStatsResponse: {
+            /** Format: double */
+            avgPerDay: number;
+            /** Format: int64 */
+            currentStreak: number;
+            /** Format: int64 */
+            longestStreak: number;
+            readsByDayOfWeek: components["schemas"]["DayOfWeekReadCount"][];
+            readsByHour: components["schemas"]["HourReadCount"][];
+            topGenres: components["schemas"]["GenreCount"][];
+            /** Format: int64 */
+            totalReads: number;
+            /** Format: int64 */
+            uniqueManga: number;
         };
         /** @enum {string} */
-        ResultType: "Success" | "Error";
+        RelationshipType:
+            | "prequel"
+            | "sequel"
+            | "spin_off"
+            | "adaptation"
+            | "alternate_version"
+            | "side_story"
+            | "shared_universe"
+            | "other";
+        ReportBody: {
+            description?: string | null;
+            reason: string;
+        };
         Scanlator: {
             /** Format: int32 */
             id: number;
             name: string;
         };
-        Session: {
-            accessToken?: string | null;
-            /** Format: int64 */
-            expiresIn?: number;
-            providerToken?: string | null;
-            providerRefreshToken?: string | null;
-            refreshToken?: string | null;
-            tokenType?: string | null;
-            user?: components["schemas"]["User"];
-            /** Format: date-time */
-            createdAt?: string;
-        };
-        SessionSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["Session"];
-        };
-        SignInRequest: {
-            /** Format: email */
-            email: string;
-            password: string;
-        };
-        SignUpRequest: {
-            /** Format: email */
-            email: string;
-            password: string;
-            userName: string;
-            displayName: string;
-        };
-        /** @enum {string} */
-        SortDirection: "Ascending" | "Descending";
-        StringSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: string;
-        };
-        UpdateBookmarkRequest: {
-            /** Format: double */
-            chapterNumber?: number | null;
-        };
-        UpdateCommentRequest: {
-            content: string;
-        };
-        UpdateProfileRequest: {
-            username: string;
-            displayName: string;
-        };
-        UpdateUserMangaListEntryRequest: {
-            /** Format: int32 */
-            newOrderIndex: number;
-        };
-        UploadResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            userId: string;
-            md5Hash?: string | null;
-            /** Format: int64 */
-            size: number;
-            url?: string | null;
-            /** Format: int32 */
-            usageCount: number;
-            tags: string[];
-            /** Format: date-time */
-            createdAt: string;
-            deleted: boolean;
-        };
-        UploadResponseListSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UploadResponse"][];
-        };
-        UploadResponsePaginatedResponse: {
-            items: components["schemas"]["UploadResponse"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        UploadResponsePaginatedResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UploadResponsePaginatedResponse"];
-        };
-        UploadResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UploadResponse"];
-        };
-        User: {
-            appMetadata?: {
-                [key: string]: unknown;
-            } | null;
-            aud?: string | null;
-            /** Format: date-time */
-            confirmationSentAt?: string | null;
-            /** Format: date-time */
-            confirmedAt?: string | null;
-            /** Format: date-time */
-            createdAt?: string;
-            email?: string | null;
-            /** Format: date-time */
-            emailConfirmedAt?: string | null;
-            id?: string | null;
-            identities?: components["schemas"]["UserIdentity"][] | null;
-            /** Format: date-time */
-            invitedAt?: string | null;
-            /** Format: date-time */
-            lastSignInAt?: string | null;
-            phone?: string | null;
-            /** Format: date-time */
-            phoneConfirmedAt?: string | null;
-            /** Format: date-time */
-            recoverySentAt?: string | null;
-            role?: string | null;
-            /** Format: date-time */
-            updatedAt?: string | null;
-            /** Format: date-time */
-            bannedUntil?: string | null;
-            isAnonymous?: boolean;
-            factors?: components["schemas"]["Factor"][] | null;
-            userMetadata?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        UserIdentity: {
-            id?: string | null;
-            userId?: string | null;
-            identityData?: {
-                [key: string]: unknown;
-            } | null;
-            identityId?: string | null;
-            provider?: string | null;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            lastSignInAt?: string;
-            /** Format: date-time */
-            updatedAt?: string | null;
-        };
-        UserMangaListEntryResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            listId: string;
+        SendNotificationBody: {
+            body: string;
             /** Format: uuid */
             mangaId: string;
+            title: string;
+            url: string;
+        };
+        SuccessResponse_AnalyticsOverviewResponse: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 38.5
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                errorCount: number;
+                /**
+                 * Format: double
+                 * @example 0.0018
+                 */
+                errorRate: number;
+                /**
+                 * Format: double
+                 * @example 142.2
+                 */
+                p95ResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 114000
+                 */
+                status2xx: number;
+                /**
+                 * Format: int64
+                 * @example 2100
+                 */
+                status3xx: number;
+                /**
+                 * Format: int64
+                 * @example 3600
+                 */
+                status4xx: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                status5xx: number;
+                /**
+                 * Format: int64
+                 * @example 120000
+                 */
+                totalRequests: number;
+                /**
+                 * Format: int64
+                 * @example 8420
+                 */
+                uniqueVisitors: number;
+            };
+            result: string;
             /** Format: int32 */
-            orderIndex: number;
+            status: number;
+        };
+        SuccessResponse_AniMediaListCollection: {
+            data: {
+                lists: components["schemas"]["AniList"][];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_AniUpdatedEntry: {
+            data: {
+                /** Format: int64 */
+                id: number;
+                /** Format: int32 */
+                progress: number;
+                status: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_AniViewer: {
+            data: {
+                /** Format: int32 */
+                id: number;
+                name: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_BookmarkDetailResponse: {
+            data: {
+                /** Format: uuid */
+                chapterId?: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: uuid */
+                id: string;
+                /** Format: double */
+                number: number;
+                /** Format: int32 */
+                pages?: number | null;
+                /** Format: int32 */
+                scanlatorId?: number | null;
+                title?: string | null;
+                /** Format: date-time */
+                updatedAt: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ChapterResponse: {
+            data: {
+                chapters: components["schemas"]["MangaChapter"][];
+                /** Format: uuid */
+                id: string;
+                images: string[];
+                lastChapter?: null | components["schemas"]["ChapterNavigation"];
+                /** Format: uuid */
+                mangaId: string;
+                mangaTitle: string;
+                nextChapter?: null | components["schemas"]["ChapterNavigation"];
+                /** Format: double */
+                number: number;
+                /** Format: int32 */
+                pages: number;
+                scanlator?: null | components["schemas"]["Scanlator"];
+                title: string;
+                trackers: components["schemas"]["TrackerItem"][];
+                type: components["schemas"]["WorkFormat"];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_CommentResponse: {
+            data: {
+                content: string;
+                /** Format: date-time */
+                createdAt: string;
+                deleted: boolean;
+                /** Format: int32 */
+                downvotes: number;
+                edited: boolean;
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                parentId?: string | null;
+                /** Format: int64 */
+                replyCount?: number | null;
+                /** Format: uuid */
+                targetId: string;
+                targetType: string;
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                upvotes: number;
+                userProfile: components["schemas"]["UserProfile"];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ItemsResponse_ChapterIdsResponse: {
+            data: {
+                items: {
+                    chapterIds: number[];
+                    /** Format: uuid */
+                    mangaId: string;
+                }[];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ItemsResponse_CommentVoteResponse: {
+            data: {
+                items: {
+                    /** Format: uuid */
+                    commentId: string;
+                    /** Format: uuid */
+                    targetId: string;
+                    /** Format: int32 */
+                    value: number;
+                }[];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ItemsResponse_MangaResponse: {
+            data: {
+                items: {
+                    alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                    authors: string[];
+                    cover: components["schemas"]["Cover"];
+                    /** Format: date-time */
+                    createdAt: string;
+                    description: string;
+                    genres: string[];
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: int32 */
+                    preferredScanlatorId?: number | null;
+                    rating: components["schemas"]["MangaRatingResponse"];
+                    status: string;
+                    title: string;
+                    trackers: components["schemas"]["TrackerItem"][];
+                    type: components["schemas"]["WorkFormat"];
+                    /** Format: date-time */
+                    updatedAt: string;
+                    /** Format: int32 */
+                    views: number;
+                }[];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ItemsResponse_UserListResponse: {
+            data: {
+                items: {
+                    /** Format: date-time */
+                    createdAt: string;
+                    description?: string | null;
+                    /** Format: uuid */
+                    id: string;
+                    isPublic: boolean;
+                    title: string;
+                    /** Format: int32 */
+                    totalEntries: number;
+                    /** Format: date-time */
+                    updatedAt: string;
+                    userId: string;
+                }[];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MalListStatus: {
+            data: {
+                isRereading: boolean;
+                /** Format: int32 */
+                numChaptersRead: number;
+                /** Format: int32 */
+                numVolumesRead: number;
+                /** Format: int32 */
+                score: number;
+                status: string;
+                updatedAt: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MalMangaListResponse: {
+            data: {
+                data: components["schemas"]["MalMangaListItem"][];
+                paging: components["schemas"]["MalPaging"];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MalTokenResponse: {
+            data: {
+                accessToken: string;
+                /** Format: int32 */
+                expiresIn: number;
+                refreshToken: string;
+                tokenType: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MalUser: {
+            data: {
+                /** Format: int32 */
+                id: number;
+                joinedAt: string;
+                location: string;
+                name: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MangaChapterResponse: {
+            data: {
+                chapters: components["schemas"]["MangaChapter"][];
+                /** Format: int32 */
+                preferredScanlatorId?: number | null;
+                scanlators: components["schemas"]["Scanlator"][];
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MangaDetailResponse: {
+            /** @description MangaDetailResponse extends MangaResponse (all manga fields) + chapters */
+            data: {
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                authors: string[];
+                chapters: components["schemas"]["MangaChapter"][];
+                cover: components["schemas"]["Cover"];
+                /** Format: date-time */
+                createdAt: string;
+                description: string;
+                genres: string[];
+                /** Format: uuid */
+                id: string;
+                /** Format: int32 */
+                preferredScanlatorId?: number | null;
+                rating: components["schemas"]["MangaRatingResponse"];
+                status: string;
+                title: string;
+                trackers: components["schemas"]["TrackerItem"][];
+                type: components["schemas"]["WorkFormat"];
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                views: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MangaIdsResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: string[];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_MangaResponse: {
+            data: {
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                authors: string[];
+                cover: components["schemas"]["Cover"];
+                /** Format: date-time */
+                createdAt: string;
+                description: string;
+                genres: string[];
+                /** Format: uuid */
+                id: string;
+                /** Format: int32 */
+                preferredScanlatorId?: number | null;
+                rating: components["schemas"]["MangaRatingResponse"];
+                status: string;
+                title: string;
+                trackers: components["schemas"]["TrackerItem"][];
+                type: components["schemas"]["WorkFormat"];
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                views: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_PaginatedBookmarkResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: components["schemas"]["BookmarkResponse"][];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_PaginatedCommentResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: components["schemas"]["CommentResponse"][];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_PaginatedResponse_AuthorResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: {
+                    /** Format: int64 */
+                    mangaCount: number;
+                    name: string;
+                }[];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_PaginatedResponse_MangaResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: {
+                    alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                    authors: string[];
+                    cover: components["schemas"]["Cover"];
+                    /** Format: date-time */
+                    createdAt: string;
+                    description: string;
+                    genres: string[];
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: int32 */
+                    preferredScanlatorId?: number | null;
+                    rating: components["schemas"]["MangaRatingResponse"];
+                    status: string;
+                    title: string;
+                    trackers: components["schemas"]["TrackerItem"][];
+                    type: components["schemas"]["WorkFormat"];
+                    /** Format: date-time */
+                    updatedAt: string;
+                    /** Format: int32 */
+                    views: number;
+                }[];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_PaginatedResponse_UserListResponse: {
+            data: {
+                /** Format: int32 */
+                currentPage: number;
+                items: {
+                    /** Format: date-time */
+                    createdAt: string;
+                    description?: string | null;
+                    /** Format: uuid */
+                    id: string;
+                    isPublic: boolean;
+                    title: string;
+                    /** Format: int32 */
+                    totalEntries: number;
+                    /** Format: date-time */
+                    updatedAt: string;
+                    userId: string;
+                }[];
+                /** Format: int32 */
+                pageSize: number;
+                /** Format: int64 */
+                totalItems: number;
+                /** Format: int32 */
+                totalPages: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_RatingResponse: {
+            data: {
+                /** Format: int32 */
+                rating?: number | null;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_ReadingStatsResponse: {
+            data: {
+                /** Format: double */
+                avgPerDay: number;
+                /** Format: int64 */
+                currentStreak: number;
+                /** Format: int64 */
+                longestStreak: number;
+                readsByDayOfWeek: components["schemas"]["DayOfWeekReadCount"][];
+                readsByHour: components["schemas"]["HourReadCount"][];
+                topGenres: components["schemas"]["GenreCount"][];
+                /** Format: int64 */
+                totalReads: number;
+                /** Format: int64 */
+                uniqueManga: number;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_UserListDetailResponse: {
+            data: {
+                /** Format: date-time */
+                createdAt: string;
+                description?: string | null;
+                entries: components["schemas"]["ListEntryResponse"][];
+                /** Format: uuid */
+                id: string;
+                isPublic: boolean;
+                title: string;
+                /** Format: int32 */
+                totalEntries: number;
+                /** Format: date-time */
+                updatedAt: string;
+                user: components["schemas"]["UserResponse"];
+                userId: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_UserListResponse: {
+            data: {
+                /** Format: date-time */
+                createdAt: string;
+                description?: string | null;
+                /** Format: uuid */
+                id: string;
+                isPublic: boolean;
+                title: string;
+                /** Format: int32 */
+                totalEntries: number;
+                /** Format: date-time */
+                updatedAt: string;
+                userId: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_UserProfileDetailsResponse: {
+            data: {
+                banned: boolean;
+                /** Format: date-time */
+                createdAt?: string | null;
+                displayName: string;
+                role: components["schemas"]["UserRole"];
+                /** Format: int64 */
+                totalBookmarks?: number | null;
+                /** Format: int64 */
+                totalComments?: number | null;
+                /** Format: int64 */
+                totalDownvotes?: number | null;
+                /** Format: int64 */
+                totalLists?: number | null;
+                /** Format: int64 */
+                totalUploads?: number | null;
+                /** Format: int64 */
+                totalUpvotes?: number | null;
+                userId: string;
+                username: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_UserResponse: {
+            data: {
+                banned: boolean;
+                displayName: string;
+                role: components["schemas"]["UserRole"];
+                userId: string;
+                username: string;
+            };
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_AnalyticsSlowestRoute: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 183.4
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 2140
+                 */
+                count: number;
+                /**
+                 * Format: int64
+                 * @example 42
+                 */
+                errorCount: number;
+                /**
+                 * Format: int64
+                 * @example 1240
+                 */
+                maxResponseTime: number;
+                route: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_AnalyticsTimeseriesPoint: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 41.2
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 12
+                 */
+                errors: number;
+                /**
+                 * Format: double
+                 * @example 21.3
+                 */
+                p50ResponseTime: number;
+                /**
+                 * Format: double
+                 * @example 150.7
+                 */
+                p95ResponseTime: number;
+                /**
+                 * Format: double
+                 * @example 412.9
+                 */
+                p99ResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 4150
+                 */
+                requests: number;
+                /**
+                 * Format: int64
+                 * @example 3890
+                 */
+                status2xx: number;
+                /**
+                 * Format: int64
+                 * @example 120
+                 */
+                status3xx: number;
+                /**
+                 * Format: int64
+                 * @example 210
+                 */
+                status4xx: number;
+                /**
+                 * Format: int64
+                 * @example 12
+                 */
+                status5xx: number;
+                /** Format: date-time */
+                time: string;
+                /**
+                 * Format: int64
+                 * @example 940
+                 */
+                uniqueVisitors: number;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_AnalyticsTopItem: {
+            data: {
+                /**
+                 * Format: double
+                 * @example 35.2
+                 */
+                avgResponseTime: number;
+                /**
+                 * Format: int64
+                 * @example 15320
+                 */
+                count: number;
+                name: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_CommentResponse: {
+            data: {
+                content: string;
+                /** Format: date-time */
+                createdAt: string;
+                deleted: boolean;
+                /** Format: int32 */
+                downvotes: number;
+                edited: boolean;
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                parentId?: string | null;
+                /** Format: int64 */
+                replyCount?: number | null;
+                /** Format: uuid */
+                targetId: string;
+                targetType: string;
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                upvotes: number;
+                userProfile: components["schemas"]["UserProfile"];
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_GenreResponse: {
+            data: {
+                description?: string | null;
+                /** Format: int32 */
+                id: number;
+                name: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_MangaResponse: {
+            data: {
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                authors: string[];
+                cover: components["schemas"]["Cover"];
+                /** Format: date-time */
+                createdAt: string;
+                description: string;
+                genres: string[];
+                /** Format: uuid */
+                id: string;
+                /** Format: int32 */
+                preferredScanlatorId?: number | null;
+                rating: components["schemas"]["MangaRatingResponse"];
+                status: string;
+                title: string;
+                trackers: components["schemas"]["TrackerItem"][];
+                type: components["schemas"]["WorkFormat"];
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                views: number;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_MangaSearchResponse: {
+            data: {
+                alternativeTitles?: components["schemas"]["AlternativeTitle"][];
+                authors: string[];
+                cover: components["schemas"]["Cover"];
+                /** Format: date-time */
+                createdAt: string;
+                description: string;
+                genres: string[];
+                /** Format: uuid */
+                id: string;
+                /** Format: int32 */
+                preferredScanlatorId?: number | null;
+                /** Format: double */
+                rank: number;
+                rating: components["schemas"]["MangaRatingResponse"];
+                status: string;
+                title: string;
+                trackers: components["schemas"]["TrackerItem"][];
+                type: components["schemas"]["WorkFormat"];
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: int32 */
+                views: number;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_ReadingHistoryResponse: {
+            data: {
+                date: string;
+                /** Format: int64 */
+                reads: number;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_String: {
+            data: string[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_WebsiteNotification: {
+            data: {
+                content: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: int64 */
+                id: number;
+                title: string;
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_Vec_WorkRelationship: {
+            data: {
+                manga: components["schemas"]["MangaResponse"];
+                relationshipType: components["schemas"]["RelationshipType"];
+            }[];
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        SuccessResponse_i64: {
+            /** Format: int64 */
+            data: number;
+            result: string;
+            /** Format: int32 */
+            status: number;
+        };
+        TrackerItem: {
+            code: string;
+            id: string;
+        };
+        UpdateCommentBody: {
+            content: string;
+        };
+        UpdateEntryBody: {
+            /** Format: int32 */
+            newOrderIndex?: number | null;
+        };
+        UserListDetailResponse: {
             /** Format: date-time */
             createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            mangaTitle: string;
-            mangaCover: string;
-            mangaDescription: string;
-        };
-        UserMangaListEntryResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserMangaListEntryResponse"];
-        };
-        UserMangaListPaginatedResponse: {
-            items: components["schemas"]["UserMangaListResponse"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        UserMangaListPaginatedResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserMangaListPaginatedResponse"];
-        };
-        UserMangaListResponse: {
+            description?: string | null;
+            entries: components["schemas"]["ListEntryResponse"][];
             /** Format: uuid */
             id: string;
-            /** Format: uuid */
-            userId: string;
-            title: string;
-            description?: string | null;
             isPublic: boolean;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
+            title: string;
             /** Format: int32 */
             totalEntries: number;
-        };
-        UserMangaListResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserMangaListResponse"];
-        };
-        UserMangaListWithEntriesResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            userId: string;
-            title: string;
-            description?: string | null;
-            isPublic: boolean;
-            /** Format: date-time */
-            createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            /** Format: int32 */
-            totalEntries: number;
-            entries: components["schemas"]["UserMangaListEntryResponse"][];
             user: components["schemas"]["UserResponse"];
+            userId: string;
         };
-        UserMangaListWithEntriesResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
+        UserListResponse: {
+            /** Format: date-time */
+            createdAt: string;
+            description?: string | null;
+            /** Format: uuid */
+            id: string;
+            isPublic: boolean;
+            title: string;
             /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserMangaListWithEntriesResponse"];
+            totalEntries: number;
+            /** Format: date-time */
+            updatedAt: string;
+            userId: string;
         };
         UserProfile: {
-            /** Format: uuid */
-            id: string;
-            username: string;
-            displayName: string;
-            role: string;
             banned: boolean;
+            displayName: string;
+            id: string;
+            role: string;
+            username: string;
         };
         UserProfileDetailsResponse: {
-            /** Format: uuid */
-            userId: string;
-            username: string;
-            displayName: string;
-            role: components["schemas"]["UserRole"];
             banned: boolean;
             /** Format: date-time */
             createdAt?: string | null;
-            /** Format: int64 */
-            totalComments: number;
-            /** Format: int64 */
-            totalUpvotes: number;
-            /** Format: int64 */
-            totalDownvotes: number;
-            /** Format: int64 */
-            totalBookmarks: number;
-            /** Format: int64 */
-            totalUploads: number;
-            /** Format: int64 */
-            totalLists: number;
-        };
-        UserProfileDetailsResponsePaginatedResponse: {
-            items: components["schemas"]["UserProfileDetailsResponse"][];
-            /** Format: int32 */
-            totalItems: number;
-            /** Format: int32 */
-            currentPage: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            readonly totalPages: number;
-        };
-        UserProfileDetailsResponsePaginatedResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserProfileDetailsResponsePaginatedResponse"];
-        };
-        UserProfileDetailsResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserProfileDetailsResponse"];
-        };
-        UserResponse: {
-            /** Format: uuid */
-            userId: string;
-            username: string;
             displayName: string;
             role: components["schemas"]["UserRole"];
+            /** Format: int64 */
+            totalBookmarks?: number | null;
+            /** Format: int64 */
+            totalComments?: number | null;
+            /** Format: int64 */
+            totalDownvotes?: number | null;
+            /** Format: int64 */
+            totalLists?: number | null;
+            /** Format: int64 */
+            totalUploads?: number | null;
+            /** Format: int64 */
+            totalUpvotes?: number | null;
+            userId: string;
+            username: string;
+        };
+        UserResponse: {
             banned: boolean;
-        };
-        UserResponseSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["UserResponse"];
+            displayName: string;
+            role: components["schemas"]["UserRole"];
+            userId: string;
+            username: string;
         };
         /** @enum {string} */
-        UserRole: "user" | "admin" | "moderator" | "owner";
-        /** @enum {string} */
-        UserSortBy: "CreatedAt" | "Username" | "TotalComments" | "TotalUpvotes" | "TotalBookmarks" | "TotalUploads" | "TotalLists";
-        ViewMangaRequest: {
-            saveUserId?: boolean;
+        UserRole: "user" | "admin" | "owner";
+        ViewBody: {
+            saveUserId?: boolean | null;
         };
-        VoteCommentRequest: {
+        VoteBody: {
             /** Format: int32 */
             value: number;
         };
         WebsiteNotification: {
-            /** Format: int64 */
-            id: number;
-            title: string;
             content: string;
             /** Format: date-time */
             createdAt: string;
+            /** Format: int64 */
+            id: number;
+            title: string;
         };
-        WebsiteNotificationIEnumerableSuccessResponse: {
-            /** @enum {string} */
-            result: "Success";
-            /** Format: int32 */
-            status: number;
-            data: components["schemas"]["WebsiteNotification"][];
+        /** @enum {string} */
+        WorkFormat:
+            | "Manga"
+            | "Manhwa"
+            | "Manhua"
+            | "Webtoon"
+            | "Doujinshi"
+            | "OneShot"
+            | "Comic"
+            | "Other";
+        WorkRelationship: {
+            manga: components["schemas"]["MangaResponse"];
+            relationshipType: components["schemas"]["RelationshipType"];
         };
     };
     responses: never;
@@ -5444,4 +2827,3068 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    overview: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_AnalyticsOverviewResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    requests: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 7 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                page?: number | null;
+                pageSize?: number | null;
+                method?: string | null;
+                status?: number | null;
+                /** @description Substring match against the request path. */
+                path?: string | null;
+                route?: string | null;
+                hostname?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_AnalyticsRequestRow"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    slowest: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Dimension to group by: route, path, method, status, countryCode, userAgent, ipAddress or hostname. Defaults to "route". */
+                dimension?: string | null;
+                /** @description Max number of results. Defaults to 10. */
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsSlowestRoute"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    timeseries: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Bucket granularity. Defaults to "day". */
+                interval?: null | components["schemas"]["AnalyticsInterval"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsTimeseriesPoint"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    top: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of the range (ISO 8601). Defaults to 30 days ago. */
+                from?: string | null;
+                /** @description Exclusive end of the range (ISO 8601). Defaults to now. */
+                to?: string | null;
+                /** @description Dimension to group by: route, path, method, status, countryCode, userAgent, ipAddress or hostname. Defaults to "route". */
+                dimension?: string | null;
+                /** @description Max number of results. Defaults to 10. */
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_AnalyticsTopItem"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ani_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ani_get_manga_list: {
+        parameters: {
+            query: {
+                userName: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_AniMediaListCollection"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ani_update_manga_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AniUpdateMangaListRequest"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_AniUpdatedEntry"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ani_me: {
+        parameters: {
+            query?: {
+                access_token?: string | null;
+                expires_in?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_AniViewer"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_authors: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_AuthorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_by_author: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+                sortBy?: string | null;
+                query?: string | null;
+                genres?: string[] | null;
+                excludedGenres?: string[] | null;
+                authors?: string[] | null;
+                types?: components["schemas"]["WorkFormat"][] | null;
+                excludedTypes?: components["schemas"]["WorkFormat"][] | null;
+                status?: string | null;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_bookmarks: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedBookmarkResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    batch_upsert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookmarkBatchBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    reading_history: {
+        parameters: {
+            query?: {
+                bucket?: null | components["schemas"]["HistoryBucket"];
+                range?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_ReadingHistoryResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    reading_stats: {
+        parameters: {
+            query?: {
+                bucket?: null | components["schemas"]["HistoryBucket"];
+                range?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ReadingStatsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_bookmarks: {
+        parameters: {
+            query: {
+                query: string;
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedBookmarkResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    unread_count: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_i64"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_bookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mangaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_BookmarkDetailResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    upsert_bookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mangaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookmarkUpsertBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_bookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mangaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommentBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_comment_replies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_CommentResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    report_comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    vote_comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_comments: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+                sort?: null | components["schemas"]["CommentSortOrder"];
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedCommentResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_CommentResponse"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_votes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ItemsResponse_CommentVoteResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_genres: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of genre names */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_GenreResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_by_genre: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+                sortBy?: string | null;
+                query?: string | null;
+                genres?: string[] | null;
+                excludedGenres?: string[] | null;
+                authors?: string[] | null;
+                types?: components["schemas"]["WorkFormat"][] | null;
+                excludedTypes?: components["schemas"]["WorkFormat"][] | null;
+                status?: string | null;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateListBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_UserListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_my_lists: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ItemsResponse_UserListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_ids_containing_manga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mangaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_String"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_user_lists: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+            };
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_UserListResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_UserListDetailResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    add_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": unknown;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateEntryBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    remove_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    mal_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mal_get_manga_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                sort?: string | null;
+                limit?: number | null;
+                offset?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MalMangaListResponse"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    mal_update_manga_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MalUpdateMangaListRequest"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MalListStatus"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    mal_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MalUser"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    mal_token: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MalTokenRequest"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MalTokenResponse"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    batch_by_ani: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchAniBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_MangaResponse"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    by_ani_id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaDetailResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    batch_manga: {
+        parameters: {
+            query?: {
+                ids?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ItemsResponse_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    global_chapter_ids: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaIdsResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_ids: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaIdsResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_manga: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                pageSize?: number | null;
+                sortBy?: string | null;
+                query?: string | null;
+                genres?: string[] | null;
+                excludedGenres?: string[] | null;
+                authors?: string[] | null;
+                types?: components["schemas"]["WorkFormat"][] | null;
+                excludedTypes?: components["schemas"]["WorkFormat"][] | null;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    popular_manga: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                limit?: number | null;
+                excludedGenres?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_PaginatedResponse_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    batch_by_mal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchMalBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_MangaResponse"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    by_mal_id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaDetailResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    batch_rate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchRateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_manga: {
+        parameters: {
+            query?: {
+                query?: string | null;
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_MangaSearchResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    recently_viewed: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                limit?: number | null;
+                excludedGenres?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_MangaResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_manga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    chapter_ids: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ItemsResponse_ChapterIdsResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_chapters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaChapterResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_details: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_MangaDetailResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    rate_manga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_rating: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_rating: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_RatingResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manga_recommendations: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                limit?: number | null;
+                excludedGenres?: string[] | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_MangaResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_work_relationships: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_WorkRelationship"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    record_view: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ViewBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    chapter_detail: {
+        parameters: {
+            query?: {
+                scanlatorId?: number | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+                subId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_ChapterResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    send_notification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendNotificationBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    subscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    website_notifications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_Vec_WebsiteNotification"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_users: {
+        parameters: {
+            query?: {
+                page?: number | null;
+                page_size?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_UserListResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_UserResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    user_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse_UserProfileDetailsResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+}

@@ -40,7 +40,7 @@ function Entry({
     setNodeRef,
     style,
 }: {
-    entry: components["schemas"]["UserMangaListEntryResponse"];
+    entry: components["schemas"]["ListEntryResponse"];
     userId: string | undefined;
     ownerId: string;
     dragHandle?: ReactNode;
@@ -106,7 +106,8 @@ function Entry({
                 className="shrink-0"
             >
                 <Image
-                    src={entry.mangaCover}
+                    src={entry.mangaCover.url}
+                    thumbHash={entry.mangaCover.thumbhash}
                     alt={entry.mangaTitle}
                     className="w-12 h-18 object-cover rounded-md"
                     width={48}
@@ -147,7 +148,7 @@ function SortableEntry({
     ownerId,
     isDraggable,
 }: {
-    entry: components["schemas"]["UserMangaListEntryResponse"];
+    entry: components["schemas"]["ListEntryResponse"];
     userId: string | undefined;
     ownerId: string;
     isDraggable: boolean;

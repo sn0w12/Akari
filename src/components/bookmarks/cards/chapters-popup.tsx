@@ -11,6 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { client } from "@/lib/api";
+import { fillChapterGaps } from "@/lib/manga/chapters";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -60,32 +61,8 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
         },
     });
 
-    const visibleChapters = useMemo(() => {
-        if (!data?.chapters) return [];
-
-        const chaptersByNumber = new Map<
-            string,
-            components["schemas"]["MangaChapter"]
-        >();
-
-        for (const chapter of data.chapters) {
-            const key = String(chapter.number);
-            const selectedChapter = chaptersByNumber.get(key);
-
-            if (!selectedChapter) {
-                chaptersByNumber.set(key, chapter);
-                continue;
-            }
-
-            if (
-                selectedChapter.scanlatorId !== scanlatorId &&
-                chapter.scanlatorId === scanlatorId
-            ) {
-                chaptersByNumber.set(key, chapter);
-            }
-        }
-
-        return Array.from(chaptersByNumber.values());
+    const chapters = useMemo(() => {
+        return fillChapterGaps(scanlatorId, data?.chapters || []);
     }, [data, scanlatorId]);
 
     return (
@@ -113,7 +90,7 @@ export const ChaptersPopup: React.FC<ChaptersPopupProps> = ({
                     {open ? (
                         <ChaptersList
                             isLoading={isLoading}
-                            chapters={visibleChapters}
+                            chapters={chapters}
                             estimatedChapters={estimatedChapters}
                             mangaId={mangaId}
                             lastReadChapter={lastReadChapter}
@@ -243,7 +220,7 @@ const ChapterRow = memo(function ChapterRow({
             )}
             aria-label={`Read ${chapter.title} ${isLastRead ? "(Last Read)" : ""}`}
         >
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center justify-between gap-3">
                 <span className="min-w-0 break-words">{chapter.title}</span>
                 <span
                     className={cn(
