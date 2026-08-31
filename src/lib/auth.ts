@@ -53,6 +53,12 @@ export const auth = betterAuth({
     plugins: [username(), passkey(), tanstackStartCookies()],
     baseURL: toFullUrl(env("VITE_HOST") ?? "localhost:3000"),
     allowedHosts: [toHost(env("VITE_HOST")), toHost(env("VITE_API_URL"))],
+    advanced: {
+        crossSubDomainCookies: {
+            enabled: true,
+            domain: env("COOKIE_DOMAIN"),
+        },
+    },
     user: {
         additionalFields: {
             role: {
